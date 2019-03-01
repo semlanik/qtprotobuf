@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classQtProtobuf_1_1QAbstractGrpcChannel.html" title="The QAbstractGrpcChannel class is interface that represents common gRPC channel functionality." alt="" coords="5,23,185,65"/>
+<area shape="rect" id="node2" href="$classQtProtobuf_1_1QGrpcChannel.html" title="The QGrpcChannel class is a gRPC&#45;cpp native api implementation of QAbstractGrpcChannel interface." alt="" coords="249,5,428,32"/>
+<area shape="rect" id="node3" href="$classQtProtobuf_1_1QGrpcHttp2Channel.html" title="The QGrpcHttp2Channel class is HTTP/2 implementation of QAbstractGrpcChannel interface." alt="" coords="233,56,444,83"/>
+</map>

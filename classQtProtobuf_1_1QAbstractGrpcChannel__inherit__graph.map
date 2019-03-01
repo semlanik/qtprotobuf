@@ -1,0 +1,5 @@
+<map id="QtProtobuf::QAbstractGrpcChannel" name="QtProtobuf::QAbstractGrpcChannel">
+<area shape="rect" id="node1" title="The QAbstractGrpcChannel class is interface that represents common gRPC channel functionality." alt="" coords="114,5,294,47"/>
+<area shape="rect" id="node2" href="$classQtProtobuf_1_1QGrpcChannel.html" title="The QGrpcChannel class is a gRPC&#45;cpp native api implementation of QAbstractGrpcChannel interface." alt="" coords="5,95,184,121"/>
+<area shape="rect" id="node3" href="$classQtProtobuf_1_1QGrpcHttp2Channel.html" title="The QGrpcHttp2Channel class is HTTP/2 implementation of QAbstractGrpcChannel interface." alt="" coords="208,95,419,121"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classQtProtobuf_1_1QAbstractProtobufSerializer.html" title="The QAbstractProtobufSerializer class is interface that represents basic functions for serialization/..." alt="" coords="5,35,207,76"/>
+<area shape="rect" id="node2" href="$classQtProtobuf_1_1QProtobufJsonSerializer.html" title="The QProtobufJsonSerializer class." alt="" coords="268,5,448,47"/>
+<area shape="rect" id="node3" href="$classQtProtobuf_1_1QProtobufSerializer.html" title="The QProtobufSerializer class." alt="" coords="255,71,461,98"/>
+</map>

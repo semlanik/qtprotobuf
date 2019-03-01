@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classQtProtobuf_1_1QGrpcChannelCredentials.html" title="The QGrpcChannelCredentials is base class for gRPC channel credentials." alt="" coords="5,35,184,76"/>
+<area shape="rect" id="node2" href="$classQtProtobuf_1_1QGrpcInsecureChannelCredentials.html" title="The QGrpcInsecureChannelCredentials class is dummy implementation of QGrpcChannelCredentials." alt="" coords="249,5,431,47"/>
+<area shape="rect" id="node3" href="$classQtProtobuf_1_1QGrpcSslCredentials.html" title="The QGrpcSslCredentials class." alt="" coords="232,71,448,98"/>
+</map>
