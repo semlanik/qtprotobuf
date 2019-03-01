@@ -11,8 +11,10 @@
  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and
  * to permit persons to whom the Software is furnished to do so, subject to the following
  * conditions:
+ *
  * The above copyright notice and this permission notice shall be included in all copies
  * or substantial portions of the Software.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
  * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -280,7 +282,7 @@ private:
 };
 
 bool QtGenerator::Generate(const FileDescriptor* file,
-                           const std::string& parameter,
+                           const std::string& /*parameter*/,
                            GeneratorContext* generator_context,
                            std::string* error) const
 {
@@ -293,7 +295,8 @@ bool QtGenerator::Generate(const FileDescriptor* file,
         const Descriptor* message = file->message_type(i);
         std::string filename = message->name() + ".h";
         std::transform(std::begin(filename), std::end(filename), std::begin(filename), ::tolower);
-        QtClassGenerator classGen(file->package(), message, std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generator_context->Open(filename))));
+        QtClassGenerator classGen(file->package(), message,
+                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generator_context->Open(filename))));
         classGen.run();
     }
 
