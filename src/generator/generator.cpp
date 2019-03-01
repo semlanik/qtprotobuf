@@ -113,7 +113,7 @@ private:
             return false;
         }
 
-        string capProperty = field->camelcase_name();
+        std::string capProperty = field->camelcase_name();
         capProperty[0] = ::toupper(capProperty[0]);
 
         propertyMap = {{"type", typeName},
@@ -127,7 +127,7 @@ private:
     }
 
     void printNamespaces() {
-        std::vector<string> namespaces;
+        std::vector<std::string> namespaces;
         utils::split(mPackage, namespaces, '.');
         mNamespaceCount = namespaces.size();
         for(auto ns: namespaces) {
@@ -169,7 +169,7 @@ private:
     }
 
     void printField(const FieldDescriptor* field, const char* fieldTemplate) {
-        std::map<string, string> propertyMap;
+        std::map<std::string, std::string> propertyMap;
         if(producePropertyMap(field, propertyMap)) {
             mPrinter.Print(propertyMap, fieldTemplate);
         }
@@ -291,7 +291,7 @@ bool QtGenerator::Generate(const FileDescriptor* file,
 
     for(int i = 0; i < file->message_type_count(); i++) {
         const Descriptor* message = file->message_type(i);
-        string filename = message->name() + ".h";
+        std::string filename = message->name() + ".h";
         std::transform(std::begin(filename), std::end(filename), std::begin(filename), ::tolower);
         QtClassGenerator classGen(file->package(), message, std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generator_context->Open(filename))));
         classGen.run();
