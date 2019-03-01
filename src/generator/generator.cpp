@@ -70,7 +70,7 @@ static std::unordered_map<FieldDescriptor::Type, std::string> TypeReflection = {
 //    {FieldDescriptor::TYPE_MESSAGE, ""},//Custom typename
     {FieldDescriptor::TYPE_BYTES, "QByteArray"},
     {FieldDescriptor::TYPE_UINT32, "int"},//Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
-    {FieldDescriptor::TYPE_ENUM, "$custom_enumtype$"},
+//    {FieldDescriptor::TYPE_ENUM, ""},//Custom typename
     {FieldDescriptor::TYPE_SFIXED32, "int"},
     //        {FieldDescriptor::TYPE_SFIXED64, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
     {FieldDescriptor::TYPE_SINT32, "int"},
@@ -148,20 +148,21 @@ private:
         printQEnums();
 
         //public section
-        mPrinter.Print("public:\n");
+        printPublic();
         printConstructor();
         for(int i = 0; i < mMessage->field_count(); i++) {
             printField(mMessage->field(i), GetterTemplate);
         }
         for(int i = 0; i < mMessage->field_count(); i++) {
             auto field = mMessage->field(i);
-            if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
+            if (field->type() == FieldDescriptor::TYPE_MESSAGE
+                    || field->type() == FieldDescriptor::TYPE_STRING) {
                 printField(field, SetterTemplateComplexType);
             } else {
                 printField(field, SetterTemplateSimpleType);
             }
         }
-        mPrinter.Print("signals:\n");
+        mPrinter.Print("\nsignals:\n");
         for(int i = 0; i < mMessage->field_count(); i++) {
             printField(mMessage->field(i), SignalTemplate);
         }
@@ -186,6 +187,8 @@ private:
         string typeName;
         if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
             typeName = field->message_type()->name();
+        } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
+            typeName = field->enum_type()->name();
         } else {
             auto it = TypeReflection.find(field->type());
             if(it != std::end(TypeReflection)) {
@@ -210,8 +213,8 @@ private:
             const auto enumDescr = mMessage->enum_type(i);
             mPrinter.Print(enumDescr->name().c_str());
         }
-        mPrinter.Print(")\n\n");
-        mPrinter.Print("public:\n");
+        mPrinter.Print(")\n");
+        printPublic();
         for(int i = 0; mMessage->enum_type_count(); i++) {
             const auto enumDescr = mMessage->enum_type(i);
             mPrinter.Print({{"enum", enumDescr->name()}}, "    enum $enum$ {\n");
@@ -228,7 +231,7 @@ private:
         //FIXME: Explicit default values are not allowed in proto3 seems
         //this function is useless
         mPrinter.Print({{"classname", mMessage->name()}},
-                       "$classname$(QObject parent = nullptr) : QObject(parent)\n");
+                       "    $classname$(QObject parent = nullptr) : QObject(parent)\n");
         for (int i = 0; i < mMessage->field_count(); i++) {
             const FieldDescriptor* field = mMessage->field(i);
             std::string defaultValue;
@@ -264,11 +267,15 @@ private:
                 if (defaultValue.size() > 0) {
                     mPrinter.Print({{"property_name", field->camelcase_name()},
                                     {"default_value", defaultValue}},
-                                   ", $m_property_name$($default_value$)\n");
+                                   "    , $m_property_name$($default_value$)\n");
                 }
             }
         }
-        mPrinter.Print("{}\n\n");
+        mPrinter.Print("    {}\n\n");
+    }
+
+    void printPublic() {
+        mPrinter.Print("\npublic:\n");
     }
 };
 

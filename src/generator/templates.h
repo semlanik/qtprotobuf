@@ -27,12 +27,12 @@
 
 namespace qtprotobuf {
 
-static const char* StartTemplate = "class $classname$ : public QObject\n"
+static const char* StartTemplate = "\nclass $classname$ : public QObject\n"
                       "{\n"
                       "    Q_OBJECT\n";
 
-static const char* NamespaceTemplate = "namespace $namespace$\n"
-                                  "{\n";
+static const char* NamespaceTemplate = "\nnamespace $namespace$\n"
+                                  "{\n\n";
 static const char* PropertyTemplate = "    Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
 static const char* GetterTemplate = "    $type$ $property_name$() const {\n"
                                     "        return m_$property_name$;\n"
