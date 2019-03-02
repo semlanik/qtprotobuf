@@ -31,6 +31,8 @@
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 
+#include <set>
+
 using namespace qtprotobuf;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
@@ -44,7 +46,8 @@ ClassGeneratorBase::ClassGeneratorBase(std::string mClassName, std::unique_ptr<:
 
 }
 
-bool ClassGeneratorBase::producePropertyMap(const FieldDescriptor* field, PropertyMap& propertyMap) {
+bool ClassGeneratorBase::producePropertyMap(const FieldDescriptor* field, PropertyMap& propertyMap)
+{
     std::string typeName = getTypeName(field);
 
     if (typeName.size() <= 0) {
@@ -56,21 +59,52 @@ bool ClassGeneratorBase::producePropertyMap(const FieldDescriptor* field, Proper
         return false;
     }
 
+    std::string typeNameLower(typeName);
+    std::transform(std::begin(typeName), std::end(typeName), std::begin(typeNameLower), ::tolower);
+
     std::string capProperty = field->camelcase_name();
     capProperty[0] = ::toupper(capProperty[0]);
 
     propertyMap = {{"type", typeName},
-        {"property_name", field->camelcase_name()},
-        {"property_name_cap", capProperty}};
+                   {"type_lower", typeNameLower},
+                   {"property_name", field->camelcase_name()},
+                   {"property_name_cap", capProperty}};
     return true;
 }
 
-void ClassGeneratorBase::printPreamble() {
+void ClassGeneratorBase::printPreamble()
+{
     mPrinter.Print("#pragma once\n"
                    "#include <QObject>\n");
 }
 
-void ClassGeneratorBase::printNamespaces(const std::string& package) {
+void ClassGeneratorBase::printIncludes(const Descriptor* message)
+{
+    PropertyMap properties;
+    std::set<std::string> existingIncludes;
+    std::string newinclude;
+    const char* includeTemplate;
+    for (int i = 0; i < message->field_count(); i++) {
+        const FieldDescriptor* field = message->field(i);
+        if (producePropertyMap(field, properties)) {
+            if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
+                newinclude = properties["type_lower"];
+                includeTemplate = InternalIncludeTemplate;
+            } else if (field->type() == FieldDescriptor::TYPE_STRING) {
+                includeTemplate = ExternalIncludeTemplate;
+            } else {
+                continue;
+            }
+            if (existingIncludes.find(newinclude) == std::end(existingIncludes)) {
+                mPrinter.Print(properties, includeTemplate);
+                existingIncludes.insert(newinclude);
+            }
+        }
+    }
+}
+
+void ClassGeneratorBase::printNamespaces(const std::string& package)
+{
     std::vector<std::string> namespaces;
     utils::split(package, namespaces, '.');
     mNamespaceCount = namespaces.size();
@@ -79,11 +113,13 @@ void ClassGeneratorBase::printNamespaces(const std::string& package) {
     }
 }
 
-void ClassGeneratorBase::printClass() {
+void ClassGeneratorBase::printClass()
+{
     mPrinter.Print({{"classname", mClassName}}, StartTemplate);
 }
 
-void ClassGeneratorBase::printProperties(const Descriptor* message) {
+void ClassGeneratorBase::printProperties(const Descriptor* message)
+{
     //private section
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), PropertyTemplate);
@@ -113,14 +149,17 @@ void ClassGeneratorBase::printProperties(const Descriptor* message) {
         printField(message->field(i), SignalTemplate);
     }
 }
-void ClassGeneratorBase::printField(const FieldDescriptor* field, const char* fieldTemplate) {
+
+void ClassGeneratorBase::printField(const FieldDescriptor* field, const char* fieldTemplate)
+{
     std::map<std::string, std::string> propertyMap;
     if (producePropertyMap(field, propertyMap)) {
         mPrinter.Print(propertyMap, fieldTemplate);
     }
 }
 
-void ClassGeneratorBase::enclose() {
+void ClassGeneratorBase::enclose()
+{
     mPrinter.Print("};\n");
     while (mNamespaceCount > 0) {
         mPrinter.Print("}\n");
@@ -128,27 +167,37 @@ void ClassGeneratorBase::enclose() {
     }
 }
 
-std::string ClassGeneratorBase::getTypeName(const FieldDescriptor* field) {
+std::string ClassGeneratorBase::getTypeName(const FieldDescriptor* field)
+{
     std::string typeName;
     if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
         typeName = field->message_type()->name();
-    } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
-        typeName = field->enum_type()->name();
-    } else {
-        auto it = TypeReflection.find(field->type());
-        if (it != std::end(TypeReflection)) {
-            typeName = it->second;
+        if (field->is_repeated()) {
+            typeName = typeName.append("Model");
         }
+    } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
+        if (field->is_repeated()) {
+            typeName = std::string("QVariantList");
+        } else {
+            typeName = field->enum_type()->name();
+        }
+    } else {
+            auto it = TypeReflection.find(field->type());
+            if (it != std::end(TypeReflection)) {
+                if (field->is_repeated()) {
+                    typeName = std::string("QVariantList");
+                } else {
+                    typeName = it->second;
+                }
+            }
     }
 
-    if (field->is_repeated()) {
-        typeName = typeName.append("Model");
-    }
 
     return typeName;
 }
 
-void ClassGeneratorBase::printConstructor() {
+void ClassGeneratorBase::printConstructor()
+{
     mPrinter.Print({{"classname", mClassName}},
                    "    $classname$(QObject parent = nullptr) : QObject(parent)\n");
 
@@ -196,6 +245,7 @@ void ClassGeneratorBase::printConstructor() {
     mPrinter.Print("    {}\n\n");
 }
 
-void ClassGeneratorBase::printPublic() {
+void ClassGeneratorBase::printPublic()
+{
     mPrinter.Print("\npublic:\n");
 }

@@ -31,35 +31,38 @@
 
 namespace qtprotobuf {
 
-static const char* StartTemplate = "\nclass $classname$ : public QObject\n"
+static const char *StartTemplate = "\nclass $classname$ : public QObject\n"
                       "{\n"
                       "    Q_OBJECT\n";
 
-static const char* NamespaceTemplate = "\nnamespace $namespace$\n"
+static const char *NamespaceTemplate = "\nnamespace $namespace$\n"
                                   "{\n\n";
-static const char* PropertyTemplate = "    Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
-static const char* GetterTemplate = "    $type$ $property_name$() const {\n"
+static const char *PropertyTemplate = "    Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
+static const char *GetterTemplate = "    $type$ $property_name$() const {\n"
                                     "        return m_$property_name$;\n"
                                     "    }\n";
 
-static const char* SetterTemplateSimpleType = "    void set$property_name_cap$($type$ $property_name$) {\n"
+static const char *SetterTemplateSimpleType = "    void set$property_name_cap$($type$ $property_name$) {\n"
                                               "        if (m_$property_name$ != $property_name$) {\n"
                                               "             m_$property_name$ == $property_name$;\n"
                                               "             $property_name$Changed();\n"
                                               "        }\n"
                                               "    }\n";
 
-static const char* SetterTemplateComplexType = "    void set$property_name_cap$(const $type$ &$property_name$) {\n"
+static const char *SetterTemplateComplexType = "    void set$property_name_cap$(const $type$ &$property_name$) {\n"
                                               "        if (m_$property_name$ != $property_name$) {\n"
                                               "             m_$property_name$ == $property_name$;\n"
                                               "             $property_name$Changed();\n"
                                               "        }\n"
                                               "    }\n";
 
-static const char* SignalTemplate = "    void $property_name$Changed();\n";
-static const char* MemberTemplate = "    $type$ m_$property_name$;\n";
+static const char *SignalTemplate = "    void $property_name$Changed();\n";
+static const char *MemberTemplate = "    $type$ m_$property_name$;\n";
 
-static const char* EnumTemplate = "$type$";
+static const char *InternalIncludeTemplate =  "#include \"$type_lower$.h\"\n";
+static const char *ExternalIncludeTemplate = "#include <$type$>\n";
+
+static const char *EnumTemplate = "$type$";
 
 static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "qreal"},

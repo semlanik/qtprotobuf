@@ -57,6 +57,7 @@ public:
 
     void run() {
         printPreamble();
+        printIncludes(mMessage);
         printNamespaces(mPackage);
         printClass();
         printProperties(mMessage);

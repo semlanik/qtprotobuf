@@ -49,6 +49,7 @@ public:
 protected:
     bool producePropertyMap(const ::google::protobuf::FieldDescriptor* field, PropertyMap& propertyMap);
     void printPreamble();
+    void printIncludes(const ::google::protobuf::Descriptor* message);
     void printNamespaces(const std::string& package);
     void printClass();
     void printField(const ::google::protobuf::FieldDescriptor* field, const char* fieldTemplate);
