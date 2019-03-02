@@ -23,26 +23,21 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "enumsgenerator.h"
+#include <string>
+#include <vector>
+#include <sstream>
 
-#include <google/protobuf/io/zero_copy_stream.h>
+namespace qtprotobuf {
+namespace utils {
 
-using namespace qtprotobuf;
-using namespace google::protobuf;
-using namespace google::protobuf::io;
-
-GlobalEnumsGenerator::GlobalEnumsGenerator(std::unique_ptr<ZeroCopyOutputStream> out) : mOutput(std::move(out))
-  , mPrinter(mOutput.get(), '$')
+void split(const std::string& str, std::vector<std::string>& container, char delim)
 {
+    std::stringstream stream(str);
+    std::string token;
+    while (std::getline(stream, token, delim)) {
+        container.push_back(token);
+    }
 }
 
-void GlobalEnumsGenerator::run(const FileDescriptor* file)
-{
-    if (file->enum_type_count() <= 0) {
-        return;
-    }
-//TODO:
-    for(int i = 0; i < file->enum_type_count(); i++) {
-
-    }
+}
 }

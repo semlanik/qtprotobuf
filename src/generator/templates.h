@@ -25,7 +25,9 @@
 
 #pragma once
 
+#include <unordered_map>
 #include <string>
+#include <google/protobuf/descriptor.h>
 
 namespace qtprotobuf {
 
@@ -55,8 +57,29 @@ static const char* SetterTemplateComplexType = "    void set$property_name_cap$(
                                               "    }\n";
 
 static const char* SignalTemplate = "    void $property_name$Changed();\n";
-static const char* MemberTemplate = "    $type$ m_$property_name$Changed();\n";
+static const char* MemberTemplate = "    $type$ m_$property_name$;\n";
 
 static const char* EnumTemplate = "$type$";
+
+static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection = {
+    {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "qreal"},
+    {::google::protobuf::FieldDescriptor::TYPE_FLOAT, "qreal"},
+    //        {FieldDescriptor::TYPE_INT64, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    //        {FieldDescriptor::TYPE_UINT64,"int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    {::google::protobuf::FieldDescriptor::TYPE_INT32, "int"},
+    //        {FieldDescriptor::TYPE_FIXED64, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    //        {FieldDescriptor::TYPE_FIXED32, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    {::google::protobuf::FieldDescriptor::TYPE_BOOL, "bool"},
+    {::google::protobuf::FieldDescriptor::TYPE_STRING, "QString"},
+    {::google::protobuf::FieldDescriptor::TYPE_GROUP, ""},//Not supported and deprecated in protobuf
+//    {FieldDescriptor::TYPE_MESSAGE, ""},//Custom typename
+    {::google::protobuf::FieldDescriptor::TYPE_BYTES, "QByteArray"},
+    {::google::protobuf::FieldDescriptor::TYPE_UINT32, "int"},//Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+//    {FieldDescriptor::TYPE_ENUM, ""},//Custom typename
+    {::google::protobuf::FieldDescriptor::TYPE_SFIXED32, "int"},
+    //        {FieldDescriptor::TYPE_SFIXED64, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    {::google::protobuf::FieldDescriptor::TYPE_SINT32, "int"},
+    //        {FieldDescriptor::TYPE_SINT64, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+};
 
 }
