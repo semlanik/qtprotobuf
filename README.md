@@ -2,7 +2,7 @@
 
 Protobuf plugin to generate Qt classes
 
-# Linix Build
+# Linux Build
 
 ```bash
 mkdir build
@@ -12,6 +12,7 @@ make -j<N>
 ```
 
 # Windows Build
+
 ```Windows Qt command line
 mkdir build
 cd build
