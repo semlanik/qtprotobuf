@@ -39,14 +39,15 @@ using PropertyMap = std::map<std::string, std::string>;
 
 class ClassGeneratorBase
 {
-    std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> mOutput;
-    ::google::protobuf::io::Printer mPrinter;
-    std::string mClassName;
-    int mNamespaceCount;
 public:
     ClassGeneratorBase(std::string mClassName, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);
 
 protected:
+    std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> mOutput;
+    ::google::protobuf::io::Printer mPrinter;
+    std::string mClassName;
+    int mNamespaceCount;
+
     bool producePropertyMap(const ::google::protobuf::FieldDescriptor* field, PropertyMap& propertyMap);
     void printPreamble();
     void printIncludes(const ::google::protobuf::Descriptor* message);

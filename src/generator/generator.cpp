@@ -48,21 +48,42 @@ class QtClassGenerator : public ClassGeneratorBase
 {
     std::string mPackage;
     const Descriptor* mMessage;
+    std::set<std::string> mExtractedModels;
 
 public:
     QtClassGenerator(const std::string& package, const Descriptor* message, std::unique_ptr<io::ZeroCopyOutputStream> out) :
         ClassGeneratorBase(message->name(), std::move(out))
       , mPackage(std::move(package))
-      ,mMessage(message){}
+      , mMessage(message){}
 
     void run() {
+        //Post generation collect all generated model types
+        for (int i = 0; i < mMessage->field_count(); i++) {
+            const FieldDescriptor* field = mMessage->field(i);
+            if (field->is_repeated()
+                    && field->type() == FieldDescriptor::TYPE_MESSAGE) {
+                std::string typeName = field->message_type()->name();
+                mExtractedModels.insert(typeName);
+            }
+        }
+
         printPreamble();
         printIncludes(mMessage);
+
+        if (mExtractedModels.size() > 0) {
+            mPrinter.Print("\n#include <universallistmodel.h>\n");
+        }
+
         printNamespaces(mPackage);
         printClass();
         printProperties(mMessage);
         enclose();
     }
+
+    const std::set<std::string>& extractedModels() const {
+        return mExtractedModels;
+    }
+
 };
 
 class GlobalEnumsGenerator : public ClassGeneratorBase
@@ -94,6 +115,8 @@ bool QtGenerator::Generate(const FileDescriptor* file,
         return false;
     }
 
+    std::set<std::string> extractedModels;
+
     for(int i = 0; i < file->message_type_count(); i++) {
         const Descriptor* message = file->message_type(i);
         std::string filename = message->name() + ".h";
@@ -101,10 +124,29 @@ bool QtGenerator::Generate(const FileDescriptor* file,
         QtClassGenerator classGen(file->package(), message,
                                   std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generator_context->Open(filename))));
         classGen.run();
+        extractedModels.insert(std::begin(classGen.extractedModels()), std::end(classGen.extractedModels()));
     }
 
     std::string globalEnumsFilename = "globalenums.h";
     GlobalEnumsGenerator enumGen(file, std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generator_context->Open(globalEnumsFilename))));
     enumGen.run();
+
+    //TODO: move to separate class also slipt definitions
+    //Print list models
+    std::unique_ptr<io::ZeroCopyOutputStream> out(generator_context->Open("listmodels.h"));
+    io::Printer printer(out.get(), '$');
+    printer.Print(PreambleTemplate);
+
+    for(auto modelTypeName : extractedModels) {
+        std::string modelTypeNameLower(modelTypeName);
+        std::transform(std::begin(modelTypeNameLower), std::end(modelTypeNameLower), std::begin(modelTypeNameLower), ::tolower);
+        printer.Print({{"type_lower", modelTypeNameLower}}, InternalIncludeTemplate);
+    }
+
+    printer.Print("\n#include <universallistmodel.h>\n");
+    for(auto modelTypeName : extractedModels) {
+        printer.Print({{"type", modelTypeName}}, ModelClassTemplate);
+    }
+
     return true;
 }

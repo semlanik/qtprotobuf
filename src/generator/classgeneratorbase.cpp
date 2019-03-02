@@ -74,8 +74,7 @@ bool ClassGeneratorBase::producePropertyMap(const FieldDescriptor* field, Proper
 
 void ClassGeneratorBase::printPreamble()
 {
-    mPrinter.Print("#pragma once\n"
-                   "#include <QObject>\n");
+    mPrinter.Print(PreambleTemplate);
 }
 
 void ClassGeneratorBase::printIncludes(const Descriptor* message)
