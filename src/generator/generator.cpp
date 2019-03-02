@@ -25,8 +25,7 @@
 
 #include "generator.h"
 #include "templates.h"
-
-#include <google/protobuf/descriptor.pb.h>
+#include "enumsgenerator.h"
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
@@ -81,7 +80,7 @@ static std::unordered_map<FieldDescriptor::Type, std::string> TypeReflection = {
 
 class QtClassGenerator {
     std::unique_ptr<io::ZeroCopyOutputStream> mOutput;
-    string mPackage;
+    std::string mPackage;
     const Descriptor* mMessage;
     int mNamespaceCount;
     io::Printer mPrinter;
@@ -123,6 +122,7 @@ private:
             {"property_name_cap", capProperty}};
         return true;
     }
+
     void printPreamble() {
         mPrinter.Print("#pragma once\n"
                        "#include <QObject>\n");
@@ -300,5 +300,8 @@ bool QtGenerator::Generate(const FileDescriptor* file,
         classGen.run();
     }
 
+    std::string globalEnumsFilename = file->package() + "globalenums.h";
+    GlobalEnumsGenerator enumGen(std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generator_context->Open(globalEnumsFilename))));
+    enumGen.run(file);
     return true;
 }
