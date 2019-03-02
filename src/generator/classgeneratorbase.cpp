@@ -94,9 +94,12 @@ void ClassGeneratorBase::printIncludes(const Descriptor* message)
             } else {
                 continue;
             }
-            if (existingIncludes.find(newinclude) == std::end(existingIncludes)) {
-                mPrinter.Print(properties, includeTemplate);
-                existingIncludes.insert(newinclude);
+
+            if (!field->is_repeated()) {
+                if (existingIncludes.find(newinclude) == std::end(existingIncludes)) {
+                    mPrinter.Print(properties, includeTemplate);
+                    existingIncludes.insert(newinclude);
+                }
             }
         }
     }
@@ -198,7 +201,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor* field)
 void ClassGeneratorBase::printConstructor()
 {
     mPrinter.Print({{"classname", mClassName}},
-                   "    $classname$(QObject parent = nullptr) : QObject(parent)\n");
+                   "    $classname$(QObject *parent = nullptr) : QObject(parent)\n");
 
     //FIXME: Explicit default values are not allowed in proto3 seems
     //this function is useless

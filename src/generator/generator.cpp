@@ -71,7 +71,7 @@ public:
         printIncludes(mMessage);
 
         if (mExtractedModels.size() > 0) {
-            mPrinter.Print("\n#include <universallistmodel.h>\n");
+            mPrinter.Print("\n#include \"listmodels.h\"\n");
         }
 
         printNamespaces(mPackage);
