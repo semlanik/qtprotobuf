@@ -182,14 +182,14 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor* field)
             typeName = field->enum_type()->name();
         }
     } else {
-            auto it = TypeReflection.find(field->type());
-            if (it != std::end(TypeReflection)) {
-                if (field->is_repeated()) {
-                    typeName = std::string("QVariantList");
-                } else {
-                    typeName = it->second;
-                }
+        auto it = TypeReflection.find(field->type());
+        if (it != std::end(TypeReflection)) {
+            if (field->is_repeated()) {
+                typeName = std::string("QVariantList");
+            } else {
+                typeName = it->second;
             }
+        }
     }
 
 
@@ -203,45 +203,45 @@ void ClassGeneratorBase::printConstructor()
 
     //FIXME: Explicit default values are not allowed in proto3 seems
     //this function is useless
-//    for (int i = 0; i < mMessage->field_count(); i++) {
-//        const FieldDescriptor* field = mMessage->field(i);
-//        std::string defaultValue;
-//        if (field->has_default_value()) {
-//            switch (field->type()) {
-//            case FieldDescriptor::TYPE_DOUBLE:
-//                defaultValue = std::to_string(field->default_value_double());
-//                break;
-//            case FieldDescriptor::TYPE_FLOAT:
-//                defaultValue = std::to_string(field->default_value_float());
-//                break;
-//            case FieldDescriptor::TYPE_INT32:
-//            case FieldDescriptor::TYPE_UINT32:
-//            case FieldDescriptor::TYPE_SFIXED32:
-//            case FieldDescriptor::TYPE_SINT32:
-//                defaultValue = std::to_string(field->default_value_int32());
-//                break;
-//            case FieldDescriptor::TYPE_BOOL:
-//                defaultValue = field->default_value_bool() ? "true" : "false";
-//                break;
-//            case FieldDescriptor::TYPE_STRING:
-//                defaultValue = field->default_value_string();
-//                break;
-//            case FieldDescriptor::TYPE_ENUM:
-//                defaultValue = field->default_value_enum()->name();
-//                break;
-//            default:
-//                std::cerr << "Default value substitution"
-//                             " is not supported for type"
-//                          << field->type_name() << std::endl;
-//                break;
-//            }
-//            if (defaultValue.size() > 0) {
-//                mPrinter.Print({{"property_name", field->camelcase_name()},
-//                                {"default_value", defaultValue}},
-//                               "    , $m_property_name$($default_value$)\n");
-//            }
-//        }
-//    }
+    //    for (int i = 0; i < mMessage->field_count(); i++) {
+    //        const FieldDescriptor* field = mMessage->field(i);
+    //        std::string defaultValue;
+    //        if (field->has_default_value()) {
+    //            switch (field->type()) {
+    //            case FieldDescriptor::TYPE_DOUBLE:
+    //                defaultValue = std::to_string(field->default_value_double());
+    //                break;
+    //            case FieldDescriptor::TYPE_FLOAT:
+    //                defaultValue = std::to_string(field->default_value_float());
+    //                break;
+    //            case FieldDescriptor::TYPE_INT32:
+    //            case FieldDescriptor::TYPE_UINT32:
+    //            case FieldDescriptor::TYPE_SFIXED32:
+    //            case FieldDescriptor::TYPE_SINT32:
+    //                defaultValue = std::to_string(field->default_value_int32());
+    //                break;
+    //            case FieldDescriptor::TYPE_BOOL:
+    //                defaultValue = field->default_value_bool() ? "true" : "false";
+    //                break;
+    //            case FieldDescriptor::TYPE_STRING:
+    //                defaultValue = field->default_value_string();
+    //                break;
+    //            case FieldDescriptor::TYPE_ENUM:
+    //                defaultValue = field->default_value_enum()->name();
+    //                break;
+    //            default:
+    //                std::cerr << "Default value substitution"
+    //                             " is not supported for type"
+    //                          << field->type_name() << std::endl;
+    //                break;
+    //            }
+    //            if (defaultValue.size() > 0) {
+    //                mPrinter.Print({{"property_name", field->camelcase_name()},
+    //                                {"default_value", defaultValue}},
+    //                               "    , $m_property_name$($default_value$)\n");
+    //            }
+    //        }
+    //    }
     mPrinter.Print("    {}\n\n");
 }
 
