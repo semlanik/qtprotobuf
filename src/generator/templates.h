@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -54,8 +54,10 @@ static const char *EnumDefinitionTemplate = "enum $enum$ {\n";
 static const char *EnumFieldTemplate = "$enumvalue$ = $value$,\n";
 static const char *ConstructorTemplate = "$classname$(QObject *parent = nullptr) : QObject(parent)\n";
 static const char *CopyConstructorTemplate = "$classname$(const $classname$ &other) {\n";
+static const char *MoveConstructorTemplate = "$classname$(const $classname$ &&other) {\n";
 static const char *CopyFieldTemplate = "m_$property_name$ = other.m_$property_name$;\n";
 static const char *AssignmentOperatorTemplate = "$classname$ &operator =(const $classname$ &other) {\n";
+static const char *MoveAssignmentOperatorTemplate = "$classname$ &operator =(const $classname$ &&other) {\n";
 static const char *EqualOperatorTemplate = "bool operator ==(const $type$ &other) {\n"
                                           "    return ";
 static const char *EqualOperatorPropertyTemplate = "m_$property_name$ == other.m_$property_name$";

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -94,6 +94,7 @@ protected:
     }
 
     void printCopyFunctionality(const ::google::protobuf::Descriptor *message);
+    void printMoveSemantic(const ::google::protobuf::Descriptor *message);
     void printEqualOperator(const ::google::protobuf::Descriptor *message);
     void printProperties(const ::google::protobuf::Descriptor *message);
     void printConstructor();

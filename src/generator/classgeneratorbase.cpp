@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -141,7 +141,9 @@ void ClassGeneratorBase::printProperties(const Descriptor *message)
     Indent();
     printConstructor();
     printCopyFunctionality(message);
+    printMoveSemantic(message);
     printEqualOperator(message);
+
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), GetterTemplate);
     }
@@ -234,6 +236,30 @@ void ClassGeneratorBase::printCopyFunctionality(const ::google::protobuf::Descri
 
     mPrinter.Print(SimpleBlockEnclosureTemplate);
 
+}
+
+void ClassGeneratorBase::printMoveSemantic(const ::google::protobuf::Descriptor *message)
+{
+    mPrinter.Print({{"classname", mClassName}},
+                   MoveConstructorTemplate);
+
+    Indent();
+    for (int i = 0; i < message->field_count(); i++) {
+        printField(message->field(i), CopyFieldTemplate);
+    }
+    Outdent();
+
+    mPrinter.Print(SimpleBlockEnclosureTemplate);
+    mPrinter.Print({{"classname", mClassName}},
+                   MoveAssignmentOperatorTemplate);
+
+    Indent();
+    for (int i = 0; i < message->field_count(); i++) {
+        printField(message->field(i), CopyFieldTemplate);
+    }
+    Outdent();
+
+    mPrinter.Print(SimpleBlockEnclosureTemplate);
 }
 
 void ClassGeneratorBase::printConstructor()
