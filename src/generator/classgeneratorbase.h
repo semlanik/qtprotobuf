@@ -82,6 +82,7 @@ protected:
         }
     }
 
+    void printCopyFunctionality(const ::google::protobuf::Descriptor *message);
     void printEqualOperator(const ::google::protobuf::Descriptor *message);
     void printProperties(const ::google::protobuf::Descriptor *message);
     void printConstructor();

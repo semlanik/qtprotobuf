@@ -134,6 +134,7 @@ void ClassGeneratorBase::printProperties(const Descriptor *message)
     //public section
     printPublic();
     printConstructor();
+    printCopyFunctionality(message);
     printEqualOperator(message);
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), GetterTemplate);
@@ -197,6 +198,27 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field)
 
 
     return typeName;
+}
+
+void ClassGeneratorBase::printCopyFunctionality(const ::google::protobuf::Descriptor *message)
+{
+    mPrinter.Print({{"classname", mClassName}},
+                   "    $classname$(const $classname$ &other) : QObject(other.parent()) {\n");
+
+    for (int i = 0; i < message->field_count(); i++) {
+        printField(message->field(i), CopyClassFunctionalityTemplate);
+    }
+
+    mPrinter.Print("    }\n\n");
+    mPrinter.Print({{"classname", mClassName}},
+                   "    $classname$ &operator =(const $classname$ &other) {\n");
+
+    for (int i = 0; i < message->field_count(); i++) {
+        printField(message->field(i), CopyClassFunctionalityTemplate);
+    }
+
+    mPrinter.Print("    }\n\n");
+
 }
 
 void ClassGeneratorBase::printConstructor()

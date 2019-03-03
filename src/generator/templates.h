@@ -41,6 +41,9 @@ static const char *StartTemplate = "\nclass $classname$ : public QObject\n"
 
 static const char *NamespaceTemplate = "\nnamespace $namespace$\n"
                                   "{\n\n";
+
+static const char *CopyClassFunctionalityTemplate = "        m_$property_name$ = other.m_$property_name$;\n";
+
 static const char *PropertyTemplate = "    Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
 static const char *GetterTemplate = "    $type$ $property_name$() const {\n"
                                     "        return m_$property_name$;\n"
@@ -69,10 +72,10 @@ static const char *ExternalIncludeTemplate = "#include <$type$>\n";
 static const char *EnumTemplate = "$type$";
 static const char *ModelClassTemplate = "using $type$Model = UniversalListModel<$type$>;\n";
 
-static const char *EqualOperatorTemplate = "    operator ==(const $type$& other) {\n"
+static const char *EqualOperatorTemplate = "    bool operator ==(const $type$ &other) {\n"
                                           "        return ";
 static const char *EqualOperatorPropertyTemplate = "m_$property_name$ == other.m_$property_name$";
-static const char *SimpleBlockEnclosureTemplate = "}\n";
+static const char *SimpleBlockEnclosureTemplate = "}\n\n";
 
 static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "qreal"},
