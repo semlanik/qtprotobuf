@@ -77,6 +77,10 @@ public:
         printNamespaces(mPackage);
         printClass();
         printProperties(mMessage);
+        printPublic();
+        printFieldsOrderingDefinition();
+        encloseClass();
+        printFieldsOrdering();
         enclose();
     }
 
@@ -84,6 +88,26 @@ public:
         return mExtractedModels;
     }
 
+    void printFieldsOrderingDefinition() {
+        Indent();
+        mPrinter.Print(FieldsOrderingDefinitionContainerTemplate);
+        Outdent();
+    }
+
+    void printFieldsOrdering() {
+        mPrinter.Print({{"type", mClassName}}, FieldsOrderingContainerTemplate);
+        Indent();
+        for (int i = 0; i < mMessage->field_count(); i++) {
+            const FieldDescriptor* field = mMessage->field(i);
+            if (i != 0) {
+                mPrinter.Print("\n,");
+            }
+            mPrinter.Print({{"field_number", std::to_string(field->number())},
+                            {"property_number", std::to_string(i)}}, FieldOrderTemplate);
+        }
+        Outdent();
+        mPrinter.Print(SemicolonBlockEnclosureTemplate);
+    }
 };
 
 class GlobalEnumsGenerator : public ClassGeneratorBase
@@ -101,6 +125,7 @@ public:
         printNamespaces(mFile->package());
         printClass();
         printQEnums<FileDescriptor>(mFile);
+        encloseClass();
         enclose();
     }
 };

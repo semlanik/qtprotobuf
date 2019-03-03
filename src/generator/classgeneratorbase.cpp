@@ -175,9 +175,13 @@ void ClassGeneratorBase::printField(const FieldDescriptor *field, const char *fi
     }
 }
 
-void ClassGeneratorBase::enclose()
+void ClassGeneratorBase::encloseClass()
 {
     mPrinter.Print(SemicolonBlockEnclosureTemplate);
+}
+
+void ClassGeneratorBase::enclose()
+{
     while (mNamespaceCount > 0) {
         mPrinter.Print(SimpleBlockEnclosureTemplate);
         --mNamespaceCount;
@@ -232,6 +236,7 @@ void ClassGeneratorBase::printCopyFunctionality(const ::google::protobuf::Descri
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), CopyFieldTemplate);
     }
+    mPrinter.Print(AssignmentOperatorReturnTemplate);
     Outdent();
 
     mPrinter.Print(SimpleBlockEnclosureTemplate);
@@ -257,6 +262,7 @@ void ClassGeneratorBase::printMoveSemantic(const ::google::protobuf::Descriptor 
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), CopyFieldTemplate);
     }
+    mPrinter.Print(AssignmentOperatorReturnTemplate);
     Outdent();
 
     mPrinter.Print(SimpleBlockEnclosureTemplate);
@@ -321,7 +327,7 @@ void ClassGeneratorBase::printEqualOperator(const Descriptor *message)
     bool isFirst = true;
     PropertyMap properties;
     mPrinter.Print({{"type", mClassName}}, EqualOperatorTemplate);
-    for (int i = 1; i < message->field_count(); i++) {
+    for (int i = 0; i < message->field_count(); i++) {
         const FieldDescriptor* field = message->field(i);
         if (producePropertyMap(field, properties)) {
             if (!isFirst) {

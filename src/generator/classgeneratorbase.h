@@ -57,6 +57,7 @@ protected:
     void printNamespaces(const std::string &package);
     void printClass();
     void printField(const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
+    void encloseClass();
     void enclose();
     std::string getTypeName(const ::google::protobuf::FieldDescriptor *field);
 

@@ -1,7 +1,9 @@
 /*
  * MIT License
  *
- * Copyright (c) 2017 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ *
+ * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -21,4 +23,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "universallistmodel.h"
+#include "protobufobject.h"
+
+using namespace qtprotobuf;
+
+ProtobufObject::ProtobufObject(QObject *parent) : QObject(parent)
+{
+
+}
