@@ -117,7 +117,7 @@ void ClassGeneratorBase::printNamespaces(const std::string &package)
 
 void ClassGeneratorBase::printClass()
 {
-    mPrinter.Print({{"classname", mClassName}}, StartTemplate);
+    mPrinter.Print({{"classname", mClassName}}, ClassDefinitionTemplate);
 }
 
 void ClassGeneratorBase::printProperties(const Descriptor *message)
@@ -148,7 +148,7 @@ void ClassGeneratorBase::printProperties(const Descriptor *message)
             printField(field, SetterTemplateSimpleType);
         }
     }
-    mPrinter.Print("\nsignals:\n");
+    mPrinter.Print(SignalsBlockTemplate);
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), SignalTemplate);
     }
@@ -164,7 +164,7 @@ void ClassGeneratorBase::printField(const FieldDescriptor *field, const char *fi
 
 void ClassGeneratorBase::enclose()
 {
-    mPrinter.Print("};\n");
+    mPrinter.Print(SemicolonBlockEnclosureTemplate);
     while (mNamespaceCount > 0) {
         mPrinter.Print(SimpleBlockEnclosureTemplate);
         --mNamespaceCount;
@@ -203,28 +203,30 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field)
 void ClassGeneratorBase::printCopyFunctionality(const ::google::protobuf::Descriptor *message)
 {
     mPrinter.Print({{"classname", mClassName}},
-                   "    $classname$(const $classname$ &other) : QObject(other.parent()) {\n");
+                   CopyConstructorTemplate);
 
     for (int i = 0; i < message->field_count(); i++) {
-        printField(message->field(i), CopyClassFunctionalityTemplate);
+        printField(message->field(i), CopyFieldTemplate);
     }
 
-    mPrinter.Print("    }\n\n");
+    mPrinter.Print("    ");
+    mPrinter.Print(SimpleBlockEnclosureTemplate);
     mPrinter.Print({{"classname", mClassName}},
-                   "    $classname$ &operator =(const $classname$ &other) {\n");
+                   AssignmentOperatorTemplate);
 
     for (int i = 0; i < message->field_count(); i++) {
-        printField(message->field(i), CopyClassFunctionalityTemplate);
+        printField(message->field(i), CopyFieldTemplate);
     }
 
-    mPrinter.Print("    }\n\n");
+    mPrinter.Print("    ");
+    mPrinter.Print(SimpleBlockEnclosureTemplate);
 
 }
 
 void ClassGeneratorBase::printConstructor()
 {
     mPrinter.Print({{"classname", mClassName}},
-                   "    $classname$(QObject *parent = nullptr) : QObject(parent)\n");
+                   ConstructorTemplate);
 
     //FIXME: Explicit default values are not allowed in proto3 seems
     //this function is useless
@@ -272,14 +274,14 @@ void ClassGeneratorBase::printConstructor()
 
 void ClassGeneratorBase::printPublic()
 {
-    mPrinter.Print("\npublic:\n");
+    mPrinter.Print(PublicBlockTemplate);
 }
 
 void ClassGeneratorBase::printEqualOperator(const Descriptor *message)
 {
     bool isFirst = true;
     PropertyMap properties;
-    mPrinter.Print({{"type", message->name()}}, EqualOperatorTemplate);
+    mPrinter.Print({{"type", mClassName}}, EqualOperatorTemplate);
     for (int i = 1; i < message->field_count(); i++) {
         const FieldDescriptor* field = message->field(i);
         if (producePropertyMap(field, properties)) {
@@ -290,6 +292,7 @@ void ClassGeneratorBase::printEqualOperator(const Descriptor *message)
             mPrinter.Print(properties, EqualOperatorPropertyTemplate);
         }
     }
-    mPrinter.Print(";\n    ");
+    mPrinter.Print(";\n");
+    mPrinter.Print("    ");
     mPrinter.Print(SimpleBlockEnclosureTemplate);
 }
