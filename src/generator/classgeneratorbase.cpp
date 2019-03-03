@@ -38,6 +38,10 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
+namespace {
+const std::string VariantList("QVariantList");
+}
+
 ClassGeneratorBase::ClassGeneratorBase(std::string mClassName, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out) : mOutput(std::move(out))
   , mPrinter(mOutput.get(), '$')
   , mClassName(std::move(mClassName))
@@ -99,6 +103,13 @@ void ClassGeneratorBase::printIncludes(const Descriptor *message)
                 if (existingIncludes.find(newinclude) == std::end(existingIncludes)) {
                     mPrinter.Print(properties, includeTemplate);
                     existingIncludes.insert(newinclude);
+                }
+            } else {
+                std::string stringInclude = properties["type"];
+                if (stringInclude == VariantList
+                     && existingIncludes.find(stringInclude) == std::end(existingIncludes)) {
+                    mPrinter.Print(properties, ExternalIncludeTemplate);
+                    existingIncludes.insert(stringInclude);
                 }
             }
         }
@@ -198,7 +209,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field)
         }
     } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
         if (field->is_repeated()) {
-            typeName = std::string("QVariantList");
+            typeName = VariantList;
         } else {
             typeName = field->enum_type()->name();
         }
@@ -206,7 +217,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field)
         auto it = TypeReflection.find(field->type());
         if (it != std::end(TypeReflection)) {
             if (field->is_repeated()) {
-                typeName = std::string("QVariantList");
+                typeName = VariantList;
             } else {
                 typeName = it->second;
             }
