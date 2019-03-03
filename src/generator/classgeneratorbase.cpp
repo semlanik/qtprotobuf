@@ -153,7 +153,7 @@ void ClassGeneratorBase::printProperties(const Descriptor *message)
     printConstructor();
     printCopyFunctionality(message);
     printMoveSemantic(message);
-    printEqualOperator(message);
+    printComparisonOperators(message);
 
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), GetterTemplate);
@@ -333,7 +333,7 @@ void ClassGeneratorBase::printPublic()
     mPrinter.Print(PublicBlockTemplate);
 }
 
-void ClassGeneratorBase::printEqualOperator(const Descriptor *message)
+void ClassGeneratorBase::printComparisonOperators(const Descriptor *message)
 {    
     bool isFirst = true;
     PropertyMap properties;
@@ -360,4 +360,6 @@ void ClassGeneratorBase::printEqualOperator(const Descriptor *message)
 
     mPrinter.Print(";\n");
     mPrinter.Print(SimpleBlockEnclosureTemplate);
+
+    mPrinter.Print({{"type", mClassName}}, NotEqualOperatorTemplate);
 }

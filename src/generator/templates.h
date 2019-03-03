@@ -59,9 +59,12 @@ static const char *CopyFieldTemplate = "m_$property_name$ = other.m_$property_na
 static const char *AssignmentOperatorTemplate = "$classname$ &operator =(const $classname$ &other) {\n";
 static const char *AssignmentOperatorReturnTemplate = "return *this;\n";
 static const char *MoveAssignmentOperatorTemplate = "$classname$ &operator =(const $classname$ &&other) {\n";
-static const char *EqualOperatorTemplate = "bool operator ==(const $type$ &other) {\n"
+static const char *EqualOperatorTemplate = "bool operator ==(const $type$ &other) const {\n"
                                           "    return ";
 static const char *EqualOperatorPropertyTemplate = "m_$property_name$ == other.m_$property_name$";
+static const char *NotEqualOperatorTemplate = "bool operator !=(const $type$ &other) const {\n"
+                                              "    return !this->operator ==(other);\n"
+                                              "}\n\n";
 
 static const char *GetterTemplate = "$type$ $property_name$() const {\n"
                                     "    return m_$property_name$;\n"
