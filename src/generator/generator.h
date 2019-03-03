@@ -38,10 +38,10 @@ namespace qtprotobuf {
 
 class QtGenerator : public ::google::protobuf::compiler::CodeGenerator
 {
-    virtual bool Generate(const ::google::protobuf::FileDescriptor* file,
-                          const std::string& parameter,
-                          ::google::protobuf::compiler::GeneratorContext* generator_context,
-                          std::string* error) const override;
+    virtual bool Generate(const ::google::protobuf::FileDescriptor *file,
+                          const std::string &parameter,
+                          ::google::protobuf::compiler::GeneratorContext *generatorContext,
+                          std::string *error) const override;
 };
 
 }  // namespace qtprotobuf

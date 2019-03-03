@@ -48,17 +48,17 @@ protected:
     std::string mClassName;
     int mNamespaceCount;
 
-    bool producePropertyMap(const ::google::protobuf::FieldDescriptor* field, PropertyMap& propertyMap);
+    bool producePropertyMap(const ::google::protobuf::FieldDescriptor *field, PropertyMap &propertyMap);
     void printPreamble();
-    void printIncludes(const ::google::protobuf::Descriptor* message);
-    void printNamespaces(const std::string& package);
+    void printIncludes(const ::google::protobuf::Descriptor *message);
+    void printNamespaces(const std::string &package);
     void printClass();
-    void printField(const ::google::protobuf::FieldDescriptor* field, const char* fieldTemplate);
+    void printField(const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
     void enclose();
-    std::string getTypeName(const ::google::protobuf::FieldDescriptor* field);
+    std::string getTypeName(const ::google::protobuf::FieldDescriptor *field);
 
     template<typename T>
-    void printQEnums(const T* message) {
+    void printQEnums(const T *message) {
         if (message->enum_type_count() <= 0) {
             return;
         }
@@ -82,7 +82,8 @@ protected:
         }
     }
 
-    void printProperties(const ::google::protobuf::Descriptor* message);
+    void printEqualOperator(const ::google::protobuf::Descriptor *message);
+    void printProperties(const ::google::protobuf::Descriptor *message);
     void printConstructor();
     void printPublic();
 };

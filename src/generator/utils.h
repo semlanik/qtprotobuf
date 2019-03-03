@@ -30,7 +30,7 @@
 namespace qtprotobuf {
 namespace utils {
 
-void split(const std::string& str, std::vector<std::string>& container, char delim)
+void split(const std::string &str, std::vector<std::string> &container, char delim)
 {
     std::stringstream stream(str);
     std::string token;

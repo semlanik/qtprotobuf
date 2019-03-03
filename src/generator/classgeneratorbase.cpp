@@ -46,7 +46,7 @@ ClassGeneratorBase::ClassGeneratorBase(std::string mClassName, std::unique_ptr<:
 
 }
 
-bool ClassGeneratorBase::producePropertyMap(const FieldDescriptor* field, PropertyMap& propertyMap)
+bool ClassGeneratorBase::producePropertyMap(const FieldDescriptor *field, PropertyMap &propertyMap)
 {
     std::string typeName = getTypeName(field);
 
@@ -77,7 +77,7 @@ void ClassGeneratorBase::printPreamble()
     mPrinter.Print(PreambleTemplate);
 }
 
-void ClassGeneratorBase::printIncludes(const Descriptor* message)
+void ClassGeneratorBase::printIncludes(const Descriptor *message)
 {
     PropertyMap properties;
     std::set<std::string> existingIncludes;
@@ -105,7 +105,7 @@ void ClassGeneratorBase::printIncludes(const Descriptor* message)
     }
 }
 
-void ClassGeneratorBase::printNamespaces(const std::string& package)
+void ClassGeneratorBase::printNamespaces(const std::string &package)
 {
     std::vector<std::string> namespaces;
     utils::split(package, namespaces, '.');
@@ -120,7 +120,7 @@ void ClassGeneratorBase::printClass()
     mPrinter.Print({{"classname", mClassName}}, StartTemplate);
 }
 
-void ClassGeneratorBase::printProperties(const Descriptor* message)
+void ClassGeneratorBase::printProperties(const Descriptor *message)
 {
     //private section
     for (int i = 0; i < message->field_count(); i++) {
@@ -134,6 +134,7 @@ void ClassGeneratorBase::printProperties(const Descriptor* message)
     //public section
     printPublic();
     printConstructor();
+    printEqualOperator(message);
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), GetterTemplate);
     }
@@ -152,7 +153,7 @@ void ClassGeneratorBase::printProperties(const Descriptor* message)
     }
 }
 
-void ClassGeneratorBase::printField(const FieldDescriptor* field, const char* fieldTemplate)
+void ClassGeneratorBase::printField(const FieldDescriptor *field, const char *fieldTemplate)
 {
     std::map<std::string, std::string> propertyMap;
     if (producePropertyMap(field, propertyMap)) {
@@ -164,12 +165,12 @@ void ClassGeneratorBase::enclose()
 {
     mPrinter.Print("};\n");
     while (mNamespaceCount > 0) {
-        mPrinter.Print("}\n");
+        mPrinter.Print(SimpleBlockEnclosureTemplate);
         --mNamespaceCount;
     }
 }
 
-std::string ClassGeneratorBase::getTypeName(const FieldDescriptor* field)
+std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field)
 {
     std::string typeName;
     if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
@@ -250,4 +251,23 @@ void ClassGeneratorBase::printConstructor()
 void ClassGeneratorBase::printPublic()
 {
     mPrinter.Print("\npublic:\n");
+}
+
+void ClassGeneratorBase::printEqualOperator(const Descriptor *message)
+{
+    bool isFirst = true;
+    PropertyMap properties;
+    mPrinter.Print({{"type", message->name()}}, EqualOperatorTemplate);
+    for (int i = 1; i < message->field_count(); i++) {
+        const FieldDescriptor* field = message->field(i);
+        if (producePropertyMap(field, properties)) {
+            if (!isFirst) {
+                mPrinter.Print("\n            && ");
+            }
+            isFirst = false;
+            mPrinter.Print(properties, EqualOperatorPropertyTemplate);
+        }
+    }
+    mPrinter.Print(";\n    ");
+    mPrinter.Print(SimpleBlockEnclosureTemplate);
 }

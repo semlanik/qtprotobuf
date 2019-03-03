@@ -48,14 +48,14 @@ static const char *GetterTemplate = "    $type$ $property_name$() const {\n"
 
 static const char *SetterTemplateSimpleType = "    void set$property_name_cap$($type$ $property_name$) {\n"
                                               "        if (m_$property_name$ != $property_name$) {\n"
-                                              "             m_$property_name$ == $property_name$;\n"
+                                              "             m_$property_name$ = $property_name$;\n"
                                               "             $property_name$Changed();\n"
                                               "        }\n"
                                               "    }\n";
 
 static const char *SetterTemplateComplexType = "    void set$property_name_cap$(const $type$ &$property_name$) {\n"
                                               "        if (m_$property_name$ != $property_name$) {\n"
-                                              "             m_$property_name$ == $property_name$;\n"
+                                              "             m_$property_name$ = $property_name$;\n"
                                               "             $property_name$Changed();\n"
                                               "        }\n"
                                               "    }\n";
@@ -68,6 +68,11 @@ static const char *ExternalIncludeTemplate = "#include <$type$>\n";
 
 static const char *EnumTemplate = "$type$";
 static const char *ModelClassTemplate = "using $type$Model = UniversalListModel<$type$>;\n";
+
+static const char *EqualOperatorTemplate = "    operator ==(const $type$& other) {\n"
+                                          "        return ";
+static const char *EqualOperatorPropertyTemplate = "m_$property_name$ == other.m_$property_name$";
+static const char *SimpleBlockEnclosureTemplate = "}\n";
 
 static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "qreal"},

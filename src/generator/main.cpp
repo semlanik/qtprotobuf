@@ -27,7 +27,7 @@
 
 #include "generator.h"
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     qtprotobuf::QtGenerator generator;
     return ::google::protobuf::compiler::PluginMain(argc, argv, &generator);

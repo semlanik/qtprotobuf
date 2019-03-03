@@ -51,7 +51,7 @@ class QtClassGenerator : public ClassGeneratorBase
     std::set<std::string> mExtractedModels;
 
 public:
-    QtClassGenerator(const std::string& package, const Descriptor* message, std::unique_ptr<io::ZeroCopyOutputStream> out) :
+    QtClassGenerator(const std::string &package, const Descriptor *message, std::unique_ptr<io::ZeroCopyOutputStream> out) :
         ClassGeneratorBase(message->name(), std::move(out))
       , mPackage(std::move(package))
       , mMessage(message){}
@@ -80,7 +80,7 @@ public:
         enclose();
     }
 
-    const std::set<std::string>& extractedModels() const {
+    const std::set<std::string> &extractedModels() const {
         return mExtractedModels;
     }
 
@@ -88,10 +88,10 @@ public:
 
 class GlobalEnumsGenerator : public ClassGeneratorBase
 {
-    const FileDescriptor* mFile;
+    const FileDescriptor *mFile;
 
 public:
-    GlobalEnumsGenerator(const FileDescriptor* file, std::unique_ptr<io::ZeroCopyOutputStream> out) :
+    GlobalEnumsGenerator(const FileDescriptor *file, std::unique_ptr<io::ZeroCopyOutputStream> out) :
         ClassGeneratorBase("GlobalEnums", std::move(out))
     , mFile(file)
     {}
@@ -105,10 +105,10 @@ public:
     }
 };
 
-bool QtGenerator::Generate(const FileDescriptor* file,
-                           const std::string& /*parameter*/,
-                           GeneratorContext* generator_context,
-                           std::string* error) const
+bool QtGenerator::Generate(const FileDescriptor *file,
+                           const std::string &/*parameter*/,
+                           GeneratorContext *generatorContext,
+                           std::string *error) const
 {
     if (file->syntax() != FileDescriptor::SYNTAX_PROTO3) {
         *error = "Invalid proto used. This plugin only supports 'proto3' syntax";
@@ -118,22 +118,22 @@ bool QtGenerator::Generate(const FileDescriptor* file,
     std::set<std::string> extractedModels;
 
     for(int i = 0; i < file->message_type_count(); i++) {
-        const Descriptor* message = file->message_type(i);
+        const Descriptor *message = file->message_type(i);
         std::string filename = message->name() + ".h";
         std::transform(std::begin(filename), std::end(filename), std::begin(filename), ::tolower);
         QtClassGenerator classGen(file->package(), message,
-                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generator_context->Open(filename))));
+                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
         classGen.run();
         extractedModels.insert(std::begin(classGen.extractedModels()), std::end(classGen.extractedModels()));
     }
 
     std::string globalEnumsFilename = "globalenums.h";
-    GlobalEnumsGenerator enumGen(file, std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generator_context->Open(globalEnumsFilename))));
+    GlobalEnumsGenerator enumGen(file, std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
     enumGen.run();
 
     //TODO: move to separate class also slipt definitions
     //Print list models
-    std::unique_ptr<io::ZeroCopyOutputStream> out(generator_context->Open("listmodels.h"));
+    std::unique_ptr<io::ZeroCopyOutputStream> out(generatorContext->Open("listmodels.h"));
     io::Printer printer(out.get(), '$');
     printer.Print(PreambleTemplate);
 
