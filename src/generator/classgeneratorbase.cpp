@@ -123,16 +123,22 @@ void ClassGeneratorBase::printClass()
 void ClassGeneratorBase::printProperties(const Descriptor *message)
 {
     //private section
+    Indent();
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), PropertyTemplate);
     }
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), MemberTemplate);
     }
+    Outdent();
+
     printQEnums(message);
 
     //public section
     printPublic();
+
+    //Body
+    Indent();
     printConstructor();
     printCopyFunctionality(message);
     printEqualOperator(message);
@@ -148,10 +154,15 @@ void ClassGeneratorBase::printProperties(const Descriptor *message)
             printField(field, SetterTemplateSimpleType);
         }
     }
+    Outdent();
+
     mPrinter.Print(SignalsBlockTemplate);
+
+    Indent();
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), SignalTemplate);
     }
+    Outdent();
 }
 
 void ClassGeneratorBase::printField(const FieldDescriptor *field, const char *fieldTemplate)
@@ -205,20 +216,22 @@ void ClassGeneratorBase::printCopyFunctionality(const ::google::protobuf::Descri
     mPrinter.Print({{"classname", mClassName}},
                    CopyConstructorTemplate);
 
+    Indent();
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), CopyFieldTemplate);
     }
+    Outdent();
 
-    mPrinter.Print("    ");
     mPrinter.Print(SimpleBlockEnclosureTemplate);
     mPrinter.Print({{"classname", mClassName}},
                    AssignmentOperatorTemplate);
 
+    Indent();
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), CopyFieldTemplate);
     }
+    Outdent();
 
-    mPrinter.Print("    ");
     mPrinter.Print(SimpleBlockEnclosureTemplate);
 
 }
@@ -269,7 +282,7 @@ void ClassGeneratorBase::printConstructor()
     //            }
     //        }
     //    }
-    mPrinter.Print("    {}\n\n");
+    mPrinter.Print(EmptyBlockTemplate);
 }
 
 void ClassGeneratorBase::printPublic()
@@ -278,7 +291,7 @@ void ClassGeneratorBase::printPublic()
 }
 
 void ClassGeneratorBase::printEqualOperator(const Descriptor *message)
-{
+{    
     bool isFirst = true;
     PropertyMap properties;
     mPrinter.Print({{"type", mClassName}}, EqualOperatorTemplate);
@@ -286,13 +299,22 @@ void ClassGeneratorBase::printEqualOperator(const Descriptor *message)
         const FieldDescriptor* field = message->field(i);
         if (producePropertyMap(field, properties)) {
             if (!isFirst) {
-                mPrinter.Print("\n            && ");
+                mPrinter.Print("\n&& ");
+            } else {
+                Indent();
+                Indent();
+                isFirst = false;
             }
-            isFirst = false;
             mPrinter.Print(properties, EqualOperatorPropertyTemplate);
         }
     }
+
+    //Only if at least one field "copied"
+    if (!isFirst) {
+        Outdent();
+        Outdent();
+    }
+
     mPrinter.Print(";\n");
-    mPrinter.Print("    ");
     mPrinter.Print(SimpleBlockEnclosureTemplate);
 }

@@ -24,7 +24,10 @@
  */
 
 #pragma once
+
 #include <google/protobuf/io/printer.h>
+
+#include "templates.h"
 
 namespace google { namespace protobuf {
 class FieldDescriptor;
@@ -63,23 +66,31 @@ protected:
             return;
         }
 
-        mPrinter.Print("    Q_ENUMS(");
+        Indent();
+        mPrinter.Print("Q_ENUMS(");
         for (int i = 0; i < message->enum_type_count(); i++) {
             const auto enumDescr = message->enum_type(i);
             mPrinter.Print(enumDescr->name().c_str());
         }
         mPrinter.Print(")\n");
+        Outdent();
+
         printPublic();
+
+        Indent();
         for (int i = 0; i < message->enum_type_count(); i++) {
             const auto enumDescr = message->enum_type(i);
-            mPrinter.Print({{"enum", enumDescr->name()}}, "    enum $enum$ {\n");
+            mPrinter.Print({{"enum", enumDescr->name()}}, EnumDefinitionTemplate);
+            Indent();
             for (int j = 0; j < enumDescr->value_count(); j++) {
                 const auto valueDescr = enumDescr->value(j);
                 mPrinter.Print({{"enumvalue", valueDescr->name()},
-                                {"value", std::to_string(valueDescr->number())}}, "        $enumvalue$ = $value$,\n");
+                                {"value", std::to_string(valueDescr->number())}}, EnumFieldTemplate);
             }
-            mPrinter.Print("    };\n");
+            Outdent();
+            mPrinter.Print(SemicolonBlockEnclosureTemplate);
         }
+        Outdent();
     }
 
     void printCopyFunctionality(const ::google::protobuf::Descriptor *message);
@@ -87,6 +98,15 @@ protected:
     void printProperties(const ::google::protobuf::Descriptor *message);
     void printConstructor();
     void printPublic();
+    void Indent() {
+        mPrinter.Indent();
+        mPrinter.Indent();
+    }
+
+    void Outdent() {
+        mPrinter.Outdent();
+        mPrinter.Outdent();
+    }
 };
 
 }

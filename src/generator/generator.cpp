@@ -71,7 +71,7 @@ public:
         printIncludes(mMessage);
 
         if (mExtractedModels.size() > 0) {
-            mPrinter.Print("\n#include \"listmodels.h\"\n");
+            mPrinter.Print(ListModelsIncludeTemplate);
         }
 
         printNamespaces(mPackage);
@@ -143,7 +143,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         printer.Print({{"type_lower", modelTypeNameLower}}, InternalIncludeTemplate);
     }
 
-    printer.Print("\n#include <universallistmodel.h>\n");
+    printer.Print(UniversalListModelIncludeTemplate);
     for(auto modelTypeName : extractedModels) {
         printer.Print({{"type", modelTypeName}}, ModelClassTemplate);
     }
