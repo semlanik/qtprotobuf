@@ -26,6 +26,6 @@ include_directories(${GTEST_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SO
 
 file(GLOB HEADERS ${TESTS_OUT_DIR})
 
-add_executable(${testtarget} "main.cpp" "simpletest.cpp" ${MOC_SRCS} ${GENERATED_SOURCES})
+add_executable(${testtarget} "main.cpp" "simpletest.cpp" "serializationtest.cpp" ${MOC_SRCS} ${GENERATED_SOURCES})
 target_link_libraries(${testtarget} ${GTEST_BOTH_LIBRARIES} Qt5::Core)
 add_dependencies(${testtarget} ${testgeneration})

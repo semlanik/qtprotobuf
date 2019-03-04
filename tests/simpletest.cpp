@@ -81,4 +81,3 @@ TEST_F(SimpleTest, SimpleDoubleMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(0.55)));
     ASSERT_EQ(test.property(propertyName).toDouble(), 0.55);
 }
-

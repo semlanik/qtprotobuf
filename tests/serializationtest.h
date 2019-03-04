@@ -25,58 +25,16 @@
 
 #pragma once
 
-#include <QObject>
-#include <QDebug>
-#include <QMetaObject>
-#include <QMetaProperty>
-#include <QBitArray>
-
-#include <unordered_map>
+#include <gtest/gtest.h>
 
 namespace qtprotobuf {
+namespace tests {
 
-enum WireTypes {
-    Varint = 0,
-    Fixed64 = 1,
-    LengthDelimited = 2,
-    Fixed32 = 5
-};
-
-template <typename T>
-class ProtobufObject : public QObject
+class SerializationTest : public ::testing::Test
 {
 public:
-    explicit ProtobufObject(QObject *parent = nullptr) : QObject(parent)
-    {}
-
-    QByteArray serialize() {
-        QByteArray result;
-        T* instance = dynamic_cast<T*>(this);
-        for(auto field : T::propertyOrdering) {
-            int propertyIndex = field.second;
-            int fieldIndex = field.first;
-            const char* propertyName = T::staticMetaObject.property(propertyIndex).name();
-            switch(T::staticMetaObject.property(propertyIndex).type()) {
-            case QVariant::Int:
-                result.append(serializeInt(instance->property(propertyName).toInt(), fieldIndex));
-                break;
-            }
-        }
-
-        return result;
-    }
-
-    void deserialize(const QByteArray& array) {
-        T* instance = dynamic_cast<T*>(this);
-        //TODO
-    }
-
-    QByteArray serializeInt(int value, int fieldIndex) {
-        char typeByte = (fieldIndex << 3) | Varint;
-        QByteArray result;
-        result.append(typeByte);
-        return result;
-    }
+    SerializationTest();
 };
 
+}
 }
