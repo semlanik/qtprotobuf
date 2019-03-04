@@ -80,7 +80,6 @@ public:
         printPublic();
         printFieldsOrderingDefinition();
         encloseClass();
-        printFieldsOrdering();
         enclose();
     }
 
@@ -94,6 +93,32 @@ public:
         Outdent();
     }
 
+
+};
+
+class QtSourcesGenerator : public ClassGeneratorBase
+{
+    std::string mPackage;
+    const Descriptor* mMessage;
+    std::set<std::string> mExtractedModels;
+public:
+    QtSourcesGenerator(const std::string &package, const Descriptor *message, std::unique_ptr<io::ZeroCopyOutputStream> out) :
+        ClassGeneratorBase(message->name(), std::move(out))
+      , mPackage(std::move(package))
+      , mMessage(message){}
+
+    void run() {
+        printClassHeaderInclude();
+        printNamespaces(mPackage);
+        printFieldsOrdering();
+        enclose();
+    }
+
+    void printClassHeaderInclude() {
+        std::string includeFileName = mClassName;
+        std::transform(std::begin(includeFileName), std::end(includeFileName), std::begin(includeFileName), ::tolower);
+        mPrinter.Print({{"type_lower", includeFileName}}, InternalIncludeTemplate);
+    }
     void printFieldsOrdering() {
         mPrinter.Print({{"type", mClassName}}, FieldsOrderingContainerTemplate);
         Indent();
@@ -102,8 +127,10 @@ public:
             if (i != 0) {
                 mPrinter.Print("\n,");
             }
+            //property_number is incremented by 1 because user properties stating from 1.
+            //Property with index 0 is "objectName"
             mPrinter.Print({{"field_number", std::to_string(field->number())},
-                            {"property_number", std::to_string(i)}}, FieldOrderTemplate);
+                            {"property_number", std::to_string(i + 1)}}, FieldOrderTemplate);
         }
         Outdent();
         mPrinter.Print(SemicolonBlockEnclosureTemplate);
@@ -144,12 +171,20 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 
     for(int i = 0; i < file->message_type_count(); i++) {
         const Descriptor *message = file->message_type(i);
-        std::string filename = message->name() + ".h";
-        std::transform(std::begin(filename), std::end(filename), std::begin(filename), ::tolower);
+        std::string baseFilename(message->name());
+        std::transform(std::begin(baseFilename), std::end(baseFilename), std::begin(baseFilename), ::tolower);
+
+        std::string filename = baseFilename + ".h";
         QtClassGenerator classGen(file->package(), message,
                                   std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
         classGen.run();
         extractedModels.insert(std::begin(classGen.extractedModels()), std::end(classGen.extractedModels()));
+
+        std::string sourceFileName = baseFilename + ".cpp";
+        QtSourcesGenerator classSourceGen(file->package(), message,
+                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(sourceFileName))));
+        classSourceGen.run();
+
     }
 
     std::string globalEnumsFilename = "globalenums.h";
