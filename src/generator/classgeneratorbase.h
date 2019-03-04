@@ -109,6 +109,8 @@ protected:
         mPrinter.Outdent();
         mPrinter.Outdent();
     }
+
+    bool isComplexType(const ::google::protobuf::FieldDescriptor *field);
 };
 
 }

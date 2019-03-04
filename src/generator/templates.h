@@ -56,6 +56,7 @@ static const char *ConstructorTemplate = "$classname$(QObject *parent = nullptr)
 static const char *CopyConstructorTemplate = "$classname$(const $classname$ &other) : QObject() {\n";
 static const char *MoveConstructorTemplate = "$classname$(const $classname$ &&other) : QObject() {\n";
 static const char *CopyFieldTemplate = "m_$property_name$ = other.m_$property_name$;\n";
+static const char *MoveFieldTemplate = "m_$property_name$ = std::move(other.m_$property_name$);\n";
 static const char *AssignmentOperatorTemplate = "$classname$ &operator =(const $classname$ &other) {\n";
 static const char *AssignmentOperatorReturnTemplate = "return *this;\n";
 static const char *MoveAssignmentOperatorTemplate = "$classname$ &operator =(const $classname$ &&other) {\n";

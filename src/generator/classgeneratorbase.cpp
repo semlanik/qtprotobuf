@@ -107,7 +107,7 @@ void ClassGeneratorBase::printIncludes(const Descriptor *message)
             } else {
                 std::string stringInclude = properties["type"];
                 if (stringInclude == VariantList
-                     && existingIncludes.find(stringInclude) == std::end(existingIncludes)) {
+                        && existingIncludes.find(stringInclude) == std::end(existingIncludes)) {
                     mPrinter.Print(properties, ExternalIncludeTemplate);
                     existingIncludes.insert(stringInclude);
                 }
@@ -254,6 +254,21 @@ void ClassGeneratorBase::printCopyFunctionality(const ::google::protobuf::Descri
 
 }
 
+bool ClassGeneratorBase::isComplexType(const FieldDescriptor *field)
+{
+    if (field == nullptr)
+        return false;
+
+    if (field->type() == FieldDescriptor::TYPE_MESSAGE
+            || field->type() == FieldDescriptor::TYPE_GROUP
+            || field->type() == FieldDescriptor::TYPE_STRING
+            || field->type() == FieldDescriptor::TYPE_BYTES) {
+        return true;
+    }
+
+    return false;
+}
+
 void ClassGeneratorBase::printMoveSemantic(const ::google::protobuf::Descriptor *message)
 {
     mPrinter.Print({{"classname", mClassName}},
@@ -261,7 +276,11 @@ void ClassGeneratorBase::printMoveSemantic(const ::google::protobuf::Descriptor 
 
     Indent();
     for (int i = 0; i < message->field_count(); i++) {
-        printField(message->field(i), CopyFieldTemplate);
+        if (isComplexType(message->field(i))) {
+            printField(message->field(i), MoveFieldTemplate);
+        } else {
+            printField(message->field(i), CopyFieldTemplate);
+        }
     }
     Outdent();
 
@@ -271,7 +290,11 @@ void ClassGeneratorBase::printMoveSemantic(const ::google::protobuf::Descriptor 
 
     Indent();
     for (int i = 0; i < message->field_count(); i++) {
-        printField(message->field(i), CopyFieldTemplate);
+        if (isComplexType(message->field(i))) {
+            printField(message->field(i), MoveFieldTemplate);
+        } else {
+            printField(message->field(i), CopyFieldTemplate);
+        }
     }
     mPrinter.Print(AssignmentOperatorReturnTemplate);
     Outdent();
