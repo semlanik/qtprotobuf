@@ -26,8 +26,3 @@
 #include "protobufobject.h"
 
 using namespace qtprotobuf;
-
-ProtobufObject::ProtobufObject(QObject *parent) : QObject(parent)
-{
-
-}

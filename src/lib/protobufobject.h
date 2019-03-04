@@ -26,22 +26,32 @@
 #pragma once
 
 #include <QObject>
+#include <QDebug>
+
+#include <unordered_map>
 
 namespace qtprotobuf {
 
+template <typename T>
 class ProtobufObject : public QObject
 {
 public:
-    explicit ProtobufObject(QObject *parent = nullptr);
+    explicit ProtobufObject(QObject *parent = nullptr) : QObject(parent)
+    {}
 
-    template <typename T>
     QByteArray serialize() {
+        T* instance = dynamic_cast<T*>(this);
+        for(auto field : T::propertyOrdering) {
+            qDebug() << "serialize map: " << field.first << " to: " << field.second;
+            qDebug() << "Property: " << field.second << T::staticMetaObject.property(field.second).name();
+        }
 
+        return QByteArray();
     }
 
-    template <typename T>
     void deserialize(const QByteArray& array) {
-
+        T* instance = dynamic_cast<T*>(this);
+        //TODO
     }
 };
 
