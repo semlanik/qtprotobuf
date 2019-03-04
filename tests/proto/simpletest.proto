@@ -3,7 +3,7 @@ syntax = "proto3";
 package qtprotobuf.tests;
 
 message SimpleIntMessage {
-    int32 testFieldInt = 5;
+    int32 testFieldInt = 1;
 }
 
 message SimpleStringMessage {

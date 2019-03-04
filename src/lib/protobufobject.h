@@ -32,6 +32,7 @@
 #include <QBitArray>
 
 #include <unordered_map>
+#include <type_traits>
 
 namespace qtprotobuf {
 
@@ -58,7 +59,7 @@ public:
             const char* propertyName = T::staticMetaObject.property(propertyIndex).name();
             switch(T::staticMetaObject.property(propertyIndex).type()) {
             case QVariant::Int:
-                result.append(serializeInt(instance->property(propertyName).toInt(), fieldIndex));
+                result.append(serializeVarint(instance->property(propertyName).toInt(), fieldIndex));
                 break;
             }
         }
@@ -71,10 +72,34 @@ public:
         //TODO
     }
 
-    QByteArray serializeInt(int value, int fieldIndex) {
+    template <typename V, typename = typename std::enable_if<std::is_integral<V>::value>::type>
+    QByteArray serializeVarint(V value, int fieldIndex) {
+        /*  Header byte
+         *  bits    | 7 6 5 4   3 | 2 1 0
+         *  ----------------------------
+         *  meaning | Field index | Type
+         */
         char typeByte = (fieldIndex << 3) | Varint;
         QByteArray result;
+        //Reserve maximum required amount of bytes
+        result.reserve(sizeof(V) + 1);
+        //Put type byte at beginning
         result.append(typeByte);
+
+        while(value > 0) {
+            //Put first 7 bits to result buffer and mark as not last
+            result.append(value & 0x7F | 0x80);
+            //Devide values to chunks of 7 bits, move to next chunk
+            value >>= 7;
+        }
+
+        //Zero case
+        if (result.size() == 1) {
+            result.append('\0');
+        }
+
+        //Mark last chunk as last
+        result.data()[result.size() - 1] &= ~0x80;
         return result;
     }
 };

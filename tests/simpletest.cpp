@@ -42,7 +42,7 @@ TEST_F(SimpleTest, SimpleIntMessageTest)
 {
     const char* propertyName = "testFieldInt";
     SimpleIntMessage test;
-    int propertyNumber = SimpleIntMessage::propertyOrdering.at(5); //See simpletest.proto
+    int propertyNumber = SimpleIntMessage::propertyOrdering.at(1); //See simpletest.proto
     ASSERT_EQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).type(), QVariant::Int);
     ASSERT_STREQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));

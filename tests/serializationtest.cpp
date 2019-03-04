@@ -38,14 +38,54 @@ TEST_F(SerializationTest, IntMessageSrializeTest)
     SimpleIntMessage test;
     test.setTestFieldInt(15);
     QByteArray result = test.serialize();
-    ASSERT_EQ(result.at(0), 40);
+    qDebug() << "Out result:" << result.toHex();
+    ASSERT_EQ(result.size(), 2);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), 0x0F);
 
-    test.setTestFieldInt(315);
+    test.setTestFieldInt(300);
     result = test.serialize();
-    ASSERT_EQ(result.at(0), 40);
+    qDebug() << "Out result:" << result.toHex();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xAC');
+    ASSERT_EQ(result.at(2), 0x02);
 
     test.setTestFieldInt(65545);
     result = test.serialize();
-    ASSERT_EQ(result.at(0), 40);
+    qDebug() << "Out result:" << result.toHex();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x89');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x04');
+
+    test.setTestFieldInt(0);
+    result = test.serialize();
+    qDebug() << "Out result:" << result.toHex();
+
+    test.setTestFieldInt(INT8_MAX + 1);
+    result = test.serialize();
+    qDebug() << "Out result:" << result.toHex();
+
+    test.setTestFieldInt(INT16_MAX + 1);
+    result = test.serialize();
+    qDebug() << "Out result:" << result.toHex();
+
+    test.setTestFieldInt(INT8_MAX);
+    result = test.serialize();
+    qDebug() << "Out result:" << result.toHex();
+
+    test.setTestFieldInt(INT16_MAX);
+    result = test.serialize();
+    qDebug() << "Out result:" << result.toHex();
+
+    test.setTestFieldInt(INT32_MAX);
+    result = test.serialize();
+    qDebug() << "Out result:" << result.toHex();
+
+    test.setTestFieldInt(INT32_MIN);
+    result = test.serialize();
+    qDebug() << "Out result:" << result.toHex();
 }
 
