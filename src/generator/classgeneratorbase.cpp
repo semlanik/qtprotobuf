@@ -81,7 +81,7 @@ void ClassGeneratorBase::printPreamble()
     mPrinter.Print(PreambleTemplate);
 }
 
-void ClassGeneratorBase::printIncludes(const Descriptor *message)
+void ClassGeneratorBase::printIncludes(const Descriptor *message, std::set<std::string> listModel)
 {
     PropertyMap properties;
     std::set<std::string> existingIncludes;
@@ -113,6 +113,17 @@ void ClassGeneratorBase::printIncludes(const Descriptor *message)
                 }
             }
         }
+    }
+
+    // Print List model class name
+    if (listModel.size() > 0) {
+        mPrinter.Print(ListModelsIncludeTemplate);
+    }
+
+    for(auto modelTypeName : listModel) {
+        std::string modelTypeNameLower(modelTypeName);
+        std::transform(std::begin(modelTypeNameLower), std::end(modelTypeNameLower), std::begin(modelTypeNameLower), ::tolower);
+        mPrinter.Print({{"type_lower", modelTypeNameLower}}, InternalIncludeTemplate);
     }
 }
 
@@ -205,7 +216,8 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field)
     if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
         typeName = field->message_type()->name();
         if (field->is_repeated()) {
-            typeName = typeName.append("Model");
+            std::string list("QList<");
+            typeName = list.append(typeName).append(">");
         }
     } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
         if (field->is_repeated()) {

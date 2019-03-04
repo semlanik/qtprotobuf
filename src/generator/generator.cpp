@@ -68,12 +68,7 @@ public:
         }
 
         printPreamble();
-        printIncludes(mMessage);
-
-        if (mExtractedModels.size() > 0) {
-            mPrinter.Print(ListModelsIncludeTemplate);
-        }
-
+        printIncludes(mMessage, mExtractedModels);
         printNamespaces(mPackage);
         printClass();
         printProperties(mMessage);
@@ -119,6 +114,7 @@ public:
         std::transform(std::begin(includeFileName), std::end(includeFileName), std::begin(includeFileName), ::tolower);
         mPrinter.Print({{"type_lower", includeFileName}}, InternalIncludeTemplate);
     }
+
     void printFieldsOrdering() {
         mPrinter.Print({{"type", mClassName}}, FieldsOrderingContainerTemplate);
         Indent();
@@ -190,23 +186,6 @@ bool QtGenerator::Generate(const FileDescriptor *file,
     std::string globalEnumsFilename = "globalenums.h";
     GlobalEnumsGenerator enumGen(file, std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
     enumGen.run();
-
-    //TODO: move to separate class also slipt definitions
-    //Print list models
-    std::unique_ptr<io::ZeroCopyOutputStream> out(generatorContext->Open("listmodels.h"));
-    io::Printer printer(out.get(), '$');
-    printer.Print(PreambleTemplate);
-
-    for(auto modelTypeName : extractedModels) {
-        std::string modelTypeNameLower(modelTypeName);
-        std::transform(std::begin(modelTypeNameLower), std::end(modelTypeNameLower), std::begin(modelTypeNameLower), ::tolower);
-        printer.Print({{"type_lower", modelTypeNameLower}}, InternalIncludeTemplate);
-    }
-
-    printer.Print(UniversalListModelIncludeTemplate);
-    for(auto modelTypeName : extractedModels) {
-        printer.Print({{"type", modelTypeName}}, ModelClassTemplate);
-    }
 
     return true;
 }
