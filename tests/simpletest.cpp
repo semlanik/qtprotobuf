@@ -26,9 +26,13 @@
 #include "simpletest.h"
 
 #include "simpleintmessage.h"
+#include "simplestringmessage.h"
+#include "simplefloatmessage.h"
+#include "simpledoublemessage.h"
 #include <QMetaProperty>
 
 using namespace qtprotobuf::tests;
+
 
 SimpleTest::SimpleTest()
 {
@@ -36,9 +40,45 @@ SimpleTest::SimpleTest()
 
 TEST_F(SimpleTest, SimpleIntMessageTest)
 {
+    const char* propertyName = "testFieldInt";
     SimpleIntMessage test;
-    test.setTestField(1);
-    ASSERT_EQ(test.testField(), 1);
-    int propertyNumber = SimpleIntMessage::propertyOrdering.at(6);
-    ASSERT_STREQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).name(), "testField");
+    int propertyNumber = SimpleIntMessage::propertyOrdering.at(5); //See simpletest.proto
+    ASSERT_EQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).type(), QVariant::Int);
+    ASSERT_STREQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
+    ASSERT_EQ(test.property(propertyName).toInt(), 1);
 }
+
+TEST_F(SimpleTest, SimpleStringMessageTest)
+{
+    const char* propertyName = "testFieldString";
+    SimpleStringMessage test;
+    int propertyNumber = SimpleStringMessage::propertyOrdering.at(6); //See simpletest.proto
+    ASSERT_EQ(SimpleStringMessage::staticMetaObject.property(propertyNumber).type(), QVariant::String);
+    ASSERT_STREQ(SimpleStringMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(QString("test1"))));
+    ASSERT_STREQ(test.property(propertyName).toString().toStdString().c_str(), "test1");
+}
+
+TEST_F(SimpleTest, SimpleFloatMessageTest)
+{
+    const char* propertyName = "testFieldFloat";
+    SimpleFloatMessage test;
+    int propertyNumber = SimpleFloatMessage::propertyOrdering.at(7); //See simpletest.proto
+    ASSERT_EQ(SimpleFloatMessage::staticMetaObject.property(propertyNumber).type(), QVariant::Double);
+    ASSERT_STREQ(SimpleFloatMessage::staticMetaObject.property(propertyNumber).name(), "testFieldFloat");
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1.55)));
+    ASSERT_EQ(test.property(propertyName).toDouble(), 1.55);
+}
+
+TEST_F(SimpleTest, SimpleDoubleMessageTest)
+{
+    const char* propertyName = "testFieldDouble";
+    SimpleDoubleMessage test;
+    int propertyNumber = SimpleDoubleMessage::propertyOrdering.at(8); //See simpletest.proto
+    ASSERT_EQ(SimpleDoubleMessage::staticMetaObject.property(propertyNumber).type(), QVariant::Double);
+    ASSERT_STREQ(SimpleDoubleMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(0.55)));
+    ASSERT_EQ(test.property(propertyName).toDouble(), 0.55);
+}
+
