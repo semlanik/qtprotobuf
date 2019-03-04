@@ -277,9 +277,9 @@ void ClassGeneratorBase::printMoveSemantic(const ::google::protobuf::Descriptor 
     Indent();
     for (int i = 0; i < message->field_count(); i++) {
         if (isComplexType(message->field(i))) {
-            printField(message->field(i), MoveFieldTemplate);
+            printField(message->field(i), MoveComplexFieldTemplate);
         } else {
-            printField(message->field(i), CopyFieldTemplate);
+            printField(message->field(i), MoveFieldTemplate);
         }
     }
     Outdent();
@@ -291,9 +291,9 @@ void ClassGeneratorBase::printMoveSemantic(const ::google::protobuf::Descriptor 
     Indent();
     for (int i = 0; i < message->field_count(); i++) {
         if (isComplexType(message->field(i))) {
-            printField(message->field(i), MoveFieldTemplate);
+            printField(message->field(i), MoveComplexFieldTemplate);
         } else {
-            printField(message->field(i), CopyFieldTemplate);
+            printField(message->field(i), MoveFieldTemplate);
         }
     }
     mPrinter.Print(AssignmentOperatorReturnTemplate);
