@@ -34,6 +34,8 @@
 #include <unordered_map>
 #include <type_traits>
 
+#define ASSERT_FIELD_NUMBER(X) Q_ASSERT_X(X < 128 && X > 0, T::staticMetaObject.className(), "fieldIndex is out of range")
+
 namespace qtprotobuf {
 
 enum WireTypes {
@@ -53,13 +55,19 @@ public:
     QByteArray serialize() {
         QByteArray result;
         T* instance = dynamic_cast<T*>(this);
-        for(auto field : T::propertyOrdering) {
+        for (auto field : T::propertyOrdering) {
             int propertyIndex = field.second;
             int fieldIndex = field.first;
             const char* propertyName = T::staticMetaObject.property(propertyIndex).name();
-            switch(T::staticMetaObject.property(propertyIndex).type()) {
-            case QVariant::Int:
+            switch (T::staticMetaObject.property(propertyIndex).type()) {
+            case QMetaType::Int:
                 result.append(serializeVarint(instance->property(propertyName).toInt(), fieldIndex));
+                break;
+            case QMetaType::Float:
+                result.append(serializeFixed(instance->property(propertyName).toFloat(), fieldIndex));
+                break;
+            case QMetaType::Double:
+                result.append(serializeFixed(instance->property(propertyName).toDouble(), fieldIndex));
                 break;
             }
         }
@@ -73,8 +81,26 @@ public:
     }
 
     template <typename V,
+              typename std::enable_if_t<std::is_floating_point<V>::value, int> = 0>
+    QByteArray serializeFixed(V value, int fieldIndex) {
+        ASSERT_FIELD_NUMBER(fieldIndex);
+
+        //Reserve required amount of bytes
+        QByteArray result(sizeof(V) + 1, '\0');
+
+        //Undentify exact wiretype
+        constexpr WireTypes wireType = sizeof(V) == 4 ? Fixed32 : Fixed64;
+        unsigned char typeByte = getTypeByte(fieldIndex, wireType);
+        result[0] = *(char *)&typeByte;
+        *(V*)&(result.data()[1]) = value;
+        return result;
+    }
+
+    template <typename V,
               typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
     QByteArray serializeVarint(V value, int fieldIndex) {
+        ASSERT_FIELD_NUMBER(fieldIndex);
+
         using UV = typename std::make_unsigned<V>::type;
         //Use ZigZag convertion first and apply unsigned variant next
         value = (value << 1) ^ (value >> (sizeof(UV) * 8 - 1));
@@ -85,21 +111,16 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
     QByteArray serializeVarint(V value, int fieldIndex) {
-        /*  Header byte
-         *  bits    | 7  6  5  4  3 |  2  1  0
-         *  -----------------------------------
-         *  meaning |  Field index  |   Type
-         */
-        Q_ASSERT_X(fieldIndex < 128 && fieldIndex > 0, T::staticMetaObject.className(), "fieldIndex is out of range");
+        ASSERT_FIELD_NUMBER(fieldIndex);
 
-        unsigned char typeByte = (fieldIndex << 3) | Varint;
+        unsigned char typeByte = getTypeByte(fieldIndex, Varint);
         QByteArray result;
         //Reserve maximum required amount of bytes
         result.reserve(sizeof(V) + 1);
         //Put type byte at beginning
         result.append(*(char *)&typeByte);
 
-        while(value > 0) {
+        while (value > 0) {
             //Put first 7 bits to result buffer and mark as not last
             result.append(value & 0x7F | 0x80);
             //Devide values to chunks of 7 bits, move to next chunk
@@ -114,6 +135,15 @@ public:
         //Mark last chunk as last
         result.data()[result.size() - 1] &= ~0x80;
         return result;
+    }
+
+    inline unsigned char getTypeByte(int fieldIndex, WireTypes wireType) {
+        /*  Header byte
+         *  bits    | 7  6  5  4  3 |  2  1  0
+         *  -----------------------------------
+         *  meaning |  Field index  |   Type
+         */
+         return (fieldIndex << 3) | wireType;
     }
 };
 

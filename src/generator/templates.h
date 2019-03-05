@@ -101,8 +101,8 @@ static const char *SemicolonBlockEnclosureTemplate = "};\n";
 static const char *EmptyBlockTemplate = "{}\n\n";
 
 static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection = {
-    {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "qreal"},
-    {::google::protobuf::FieldDescriptor::TYPE_FLOAT, "qreal"},
+    {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "double"},
+    {::google::protobuf::FieldDescriptor::TYPE_FLOAT, "float"},
     //        {FieldDescriptor::TYPE_INT64, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
     //        {FieldDescriptor::TYPE_UINT64,"int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
     {::google::protobuf::FieldDescriptor::TYPE_INT32, "int"},
