@@ -45,12 +45,23 @@ enum WireTypes {
     Fixed32 = 5
 };
 
+class ProtobufObjectPrivate : public QObject {
+protected:
+    explicit ProtobufObjectPrivate(QObject *parent = nullptr) : QObject(parent) {}
+//TODO: required for recurse serialization
+//    virtual QByteArray serializePrivate() = 0;
+};
+
 template <typename T>
-class ProtobufObject : public QObject
+class ProtobufObject : public ProtobufObjectPrivate
 {
 public:
-    explicit ProtobufObject(QObject *parent = nullptr) : QObject(parent)
-    {}
+    explicit ProtobufObject(QObject *parent = nullptr) : ProtobufObjectPrivate(parent) {}
+
+//TODO: required for recurse serialization
+//    QByteArray serializePrivate() override {
+//        serialize();
+//    }
 
     QByteArray serialize() {
         QByteArray result;
@@ -69,6 +80,20 @@ public:
             case QMetaType::Double:
                 result.append(serializeFixed(instance->property(propertyName).toDouble(), fieldIndex));
                 break;
+            case QMetaType::QString:
+                result.append(serializeLengthDelimited(instance->property(propertyName).toString().toUtf8(), fieldIndex));
+                break;
+            case QMetaType::QByteArray:
+                result.append(serializeLengthDelimited(instance->property(propertyName).toByteArray(), fieldIndex));
+                break;
+            case QMetaType::User: {
+//TODO: Implement recurse serialization
+//                ProtobufObjectPrivate *value = instance->property(propertyName).value();
+//                result.append(serializeLengthDelimited(
+//                                  ->serializePrivate(),
+//                                  fieldIndex));
+            }
+                break;
             }
         }
 
@@ -78,6 +103,15 @@ public:
     void deserialize(const QByteArray& array) {
         T* instance = dynamic_cast<T*>(this);
         //TODO
+    }
+
+    QByteArray serializeLengthDelimited(const QByteArray& data, int fieldIndex) {
+        ASSERT_FIELD_NUMBER(fieldIndex);
+        //Varint serialize field size and apply result as starting point
+        QByteArray result = serializeVarint(static_cast<unsigned int>(data.size()), 1/*field number doesn't matter*/);
+        result[0] = getTypeByte(fieldIndex, LengthDelimited);
+        result.append(data);
+        return result;
     }
 
     template <typename V,
@@ -90,8 +124,7 @@ public:
 
         //Undentify exact wiretype
         constexpr WireTypes wireType = sizeof(V) == 4 ? Fixed32 : Fixed64;
-        unsigned char typeByte = getTypeByte(fieldIndex, wireType);
-        result[0] = *(char *)&typeByte;
+        result[0] = getTypeByte(fieldIndex, wireType);
         *(V*)&(result.data()[1]) = value;
         return result;
     }
@@ -112,13 +145,11 @@ public:
               typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
     QByteArray serializeVarint(V value, int fieldIndex) {
         ASSERT_FIELD_NUMBER(fieldIndex);
-
-        unsigned char typeByte = getTypeByte(fieldIndex, Varint);
         QByteArray result;
         //Reserve maximum required amount of bytes
         result.reserve(sizeof(V) + 1);
         //Put type byte at beginning
-        result.append(*(char *)&typeByte);
+        result.append(getTypeByte(fieldIndex, Varint));
 
         while (value > 0) {
             //Put first 7 bits to result buffer and mark as not last
@@ -143,7 +174,8 @@ public:
          *  -----------------------------------
          *  meaning |  Field index  |   Type
          */
-         return (fieldIndex << 3) | wireType;
+        unsigned char header = (fieldIndex << 3) | wireType;
+        return *(char *)&header;
     }
 };
 
