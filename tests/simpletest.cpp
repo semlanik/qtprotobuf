@@ -29,6 +29,7 @@
 #include "simplestringmessage.h"
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
+#include "globalenums.h"
 #include <QMetaProperty>
 
 using namespace qtprotobuf::tests;
@@ -80,4 +81,21 @@ TEST_F(SimpleTest, SimpleDoubleMessageTest)
     ASSERT_STREQ(SimpleDoubleMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<double>(0.55)));
     ASSERT_FLOAT_EQ(test.property(propertyName).toDouble(), 0.55);
+}
+
+TEST_F(SimpleTest, SimpleEnumsTest)
+{
+    ASSERT_GT(GlobalEnums::staticMetaObject.enumeratorCount(), 0);
+    QMetaEnum simpleEnum = GlobalEnums::staticMetaObject.enumerator(0);
+    ASSERT_STREQ(simpleEnum.key(0), "TEST_ENUM_VALUE0");
+    ASSERT_STREQ(simpleEnum.key(1), "TEST_ENUM_VALUE1");
+    ASSERT_STREQ(simpleEnum.key(2), "TEST_ENUM_VALUE2");
+    ASSERT_STREQ(simpleEnum.key(3), "TEST_ENUM_VALUE3");
+    ASSERT_STREQ(simpleEnum.key(4), "TEST_ENUM_VALUE4");
+
+    ASSERT_EQ(simpleEnum.value(0), 0);
+    ASSERT_EQ(simpleEnum.value(1), 1);
+    ASSERT_EQ(simpleEnum.value(2), 2);
+    ASSERT_EQ(simpleEnum.value(3), 4);
+    ASSERT_EQ(simpleEnum.value(4), 3);
 }

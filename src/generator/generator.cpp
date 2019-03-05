@@ -146,10 +146,14 @@ public:
     void run() {
         printPreamble();
         printNamespaces(mFile->package());
-        printClass();
+        printEnumClass();
         printQEnums<FileDescriptor>(mFile);
         encloseClass();
         enclose();
+    }
+
+    void printEnumClass() {
+        mPrinter.Print({{"classname", mClassName}}, NonProtoClassDefinitionTemplate);
     }
 };
 

@@ -17,3 +17,11 @@ message SimpleFloatMessage {
 message SimpleDoubleMessage {
     double testFieldDouble = 8;
 }
+
+enum TestEnum {
+    TEST_ENUM_VALUE0 = 0;
+    TEST_ENUM_VALUE1 = 1;
+    TEST_ENUM_VALUE2 = 2;
+    TEST_ENUM_VALUE3 = 4;
+    TEST_ENUM_VALUE4 = 3;
+}

@@ -48,8 +48,7 @@ enum WireTypes {
 class ProtobufObjectPrivate : public QObject {
 protected:
     explicit ProtobufObjectPrivate(QObject *parent = nullptr) : QObject(parent) {}
-//TODO: required for recurse serialization
-//    virtual QByteArray serializePrivate() = 0;
+    virtual QByteArray serializePrivate() = 0;
 };
 
 template <typename T>
@@ -58,10 +57,9 @@ class ProtobufObject : public ProtobufObjectPrivate
 public:
     explicit ProtobufObject(QObject *parent = nullptr) : ProtobufObjectPrivate(parent) {}
 
-//TODO: required for recurse serialization
-//    QByteArray serializePrivate() override {
-//        serialize();
-//    }
+    QByteArray serializePrivate() override {
+        serialize();
+    }
 
     QByteArray serialize() {
         QByteArray result;

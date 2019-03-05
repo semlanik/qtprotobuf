@@ -43,6 +43,9 @@ static const char *ListModelsIncludeTemplate = "#include <QList>\n";
 
 static const char *NamespaceTemplate = "\nnamespace $namespace$ {\n";
 
+static const char *NonProtoClassDefinitionTemplate = "\nclass $classname$ : public QObject\n"
+                      "{\n"
+                      "    Q_OBJECT\n";
 static const char *ClassDefinitionTemplate = "\nclass $classname$ : public ProtobufObject<$classname$>\n"
                       "{\n"
                       "    Q_OBJECT\n";
