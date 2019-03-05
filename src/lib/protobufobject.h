@@ -72,19 +72,32 @@ public:
         //TODO
     }
 
-    template <typename V, typename = typename std::enable_if<std::is_integral<V>::value>::type>
+    template <typename V,
+              typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
+    QByteArray serializeVarint(V value, int fieldIndex) {
+        using UV = typename std::make_unsigned<V>::type;
+        //Use ZigZag convertion first and apply unsigned variant next
+        value = (value << 1) ^ (value >> (sizeof(UV) * 8 - 1));
+        UV uValue = *(UV *)&value;
+        return serializeVarint(uValue, fieldIndex);
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
     QByteArray serializeVarint(V value, int fieldIndex) {
         /*  Header byte
-         *  bits    | 7 6 5 4   3 | 2 1 0
-         *  ----------------------------
-         *  meaning | Field index | Type
+         *  bits    | 7  6  5  4  3 |  2  1  0
+         *  -----------------------------------
+         *  meaning |  Field index  |   Type
          */
-        char typeByte = (fieldIndex << 3) | Varint;
+        Q_ASSERT_X(fieldIndex < 128 && fieldIndex > 0, T::staticMetaObject.className(), "fieldIndex is out of range");
+
+        unsigned char typeByte = (fieldIndex << 3) | Varint;
         QByteArray result;
         //Reserve maximum required amount of bytes
         result.reserve(sizeof(V) + 1);
         //Put type byte at beginning
-        result.append(typeByte);
+        result.append(*(char *)&typeByte);
 
         while(value > 0) {
             //Put first 7 bits to result buffer and mark as not last
