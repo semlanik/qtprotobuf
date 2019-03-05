@@ -111,6 +111,7 @@ protected:
     }
 
     bool isComplexType(const ::google::protobuf::FieldDescriptor *field);
+    bool isListType(const ::google::protobuf::FieldDescriptor *field);
 };
 
 }

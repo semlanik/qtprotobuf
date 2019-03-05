@@ -147,7 +147,8 @@ void ClassGeneratorBase::printProperties(const Descriptor *message)
     //private section
     Indent();
     for (int i = 0; i < message->field_count(); i++) {
-        printField(message->field(i), PropertyTemplate);
+        if (!isListType(message->field(i)))
+            printField(message->field(i), PropertyTemplate);
     }
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), MemberTemplate);
@@ -264,6 +265,15 @@ void ClassGeneratorBase::printCopyFunctionality(const ::google::protobuf::Descri
 
     mPrinter.Print(SimpleBlockEnclosureTemplate);
 
+}
+
+bool ClassGeneratorBase::isListType(const ::google::protobuf::FieldDescriptor *field)
+{
+    if (field && field->is_repeated()
+            && field->type() == FieldDescriptor::TYPE_MESSAGE) {
+        return true;
+    }
+    return  false;
 }
 
 bool ClassGeneratorBase::isComplexType(const FieldDescriptor *field)
