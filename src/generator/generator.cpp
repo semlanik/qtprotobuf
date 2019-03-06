@@ -76,6 +76,7 @@ public:
         printFieldsOrderingDefinition();
         encloseClass();
         enclose();
+        printMetaTypeDeclaration(mPackage);
     }
 
     const std::set<std::string> &extractedModels() const {

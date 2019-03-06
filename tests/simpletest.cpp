@@ -29,6 +29,7 @@
 #include "simplestringmessage.h"
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
+#include "complexmessage.h"
 #include "globalenums.h"
 #include <QMetaProperty>
 
@@ -98,4 +99,9 @@ TEST_F(SimpleTest, SimpleEnumsTest)
     ASSERT_EQ(simpleEnum.value(2), 2);
     ASSERT_EQ(simpleEnum.value(3), 4);
     ASSERT_EQ(simpleEnum.value(4), 3);
+}
+
+TEST_F(SimpleTest, ComplexMessageTest)
+{
+    ComplexMessage msg;
 }

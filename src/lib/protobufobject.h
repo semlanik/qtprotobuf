@@ -48,18 +48,21 @@ enum WireTypes {
 class ProtobufObjectPrivate : public QObject {
 protected:
     explicit ProtobufObjectPrivate(QObject *parent = nullptr) : QObject(parent) {}
+
+public:
     virtual QByteArray serializePrivate() = 0;
 };
 
 template <typename T>
 class ProtobufObject : public ProtobufObjectPrivate
 {
+protected:
+    QByteArray serializePrivate() override {
+        return serialize();
+    }
+
 public:
     explicit ProtobufObject(QObject *parent = nullptr) : ProtobufObjectPrivate(parent) {}
-
-    QByteArray serializePrivate() override {
-        serialize();
-    }
 
     QByteArray serialize() {
         QByteArray result;
@@ -67,31 +70,37 @@ public:
         for (auto field : T::propertyOrdering) {
             int propertyIndex = field.second;
             int fieldIndex = field.first;
-            const char* propertyName = T::staticMetaObject.property(propertyIndex).name();
-            switch (T::staticMetaObject.property(propertyIndex).type()) {
+            QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
+            const char* propertyName = metaProperty.name();
+            const QVariant& propertyValue = instance->property(propertyName);
+            switch (metaProperty.type()) {
             case QMetaType::Int:
-                result.append(serializeVarint(instance->property(propertyName).toInt(), fieldIndex));
+                result.append(serializeVarint(propertyValue.toInt(), fieldIndex));
                 break;
             case QMetaType::Float:
-                result.append(serializeFixed(instance->property(propertyName).toFloat(), fieldIndex));
+                result.append(serializeFixed(propertyValue.toFloat(), fieldIndex));
                 break;
             case QMetaType::Double:
-                result.append(serializeFixed(instance->property(propertyName).toDouble(), fieldIndex));
+                result.append(serializeFixed(propertyValue.toDouble(), fieldIndex));
                 break;
             case QMetaType::QString:
-                result.append(serializeLengthDelimited(instance->property(propertyName).toString().toUtf8(), fieldIndex));
+                result.append(serializeLengthDelimited(propertyValue.toString().toUtf8(), fieldIndex));
                 break;
             case QMetaType::QByteArray:
-                result.append(serializeLengthDelimited(instance->property(propertyName).toByteArray(), fieldIndex));
+                result.append(serializeLengthDelimited(propertyValue.toByteArray(), fieldIndex));
                 break;
             case QMetaType::User: {
-//TODO: Implement recurse serialization
-//                ProtobufObjectPrivate *value = instance->property(propertyName).value();
-//                result.append(serializeLengthDelimited(
-//                                  ->serializePrivate(),
-//                                  fieldIndex));
+                int userType = metaProperty.userType();
+                const void *src = propertyValue.constData();
+                //TODO: each time huge objects will make own copies
+                //Probably generate fields reflection is better solution
+                ProtobufObjectPrivate *value = reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src));
+                result.append(serializeLengthDelimited(value->serializePrivate(),
+                                  fieldIndex));
             }
                 break;
+            default:
+                Q_ASSERT_X(false, T::staticMetaObject.className(), "Serialization of unknown type is impossible");
             }
         }
 

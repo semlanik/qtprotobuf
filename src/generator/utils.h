@@ -39,5 +39,13 @@ void split(const std::string &str, std::vector<std::string> &container, char del
     }
 }
 
+void replace(std::string & data, std::string from, std::string to) {
+    size_t pos = data.find(from);
+    while (pos != std::string::npos) {
+        data.replace(pos, from.size(), to);
+        pos = data.find(from, pos + to.size());
+    }
+}
+
 }
 }

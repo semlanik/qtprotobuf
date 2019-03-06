@@ -149,7 +149,9 @@ void ClassGeneratorBase::printProperties(const Descriptor *message)
     for (int i = 0; i < message->field_count(); i++) {
         const FieldDescriptor* field = message->field(i);
         if (!isListType(field)) {
-            printField(field, PropertyTemplate);
+            const char* propertyTemplate = field->type() == FieldDescriptor::TYPE_MESSAGE ? MessagePropertyTemplate :
+                                                                                            PropertyTemplate;
+            printField(field, propertyTemplate);
         }
     }
     for (int i = 0; i < message->field_count(); i++) {
@@ -406,3 +408,12 @@ void ClassGeneratorBase::printComparisonOperators(const Descriptor *message)
 
     mPrinter.Print({{"type", mClassName}}, NotEqualOperatorTemplate);
 }
+
+void ClassGeneratorBase::printMetaTypeDeclaration(const std::string &package)
+{
+    std::string namespaces = package;
+    utils::replace(namespaces, std::string("."), std::string("::"));
+    mPrinter.Print({{"type", mClassName},
+                    {"namespaces", namespaces}}, DeclareMetaTypeTemplate);
+}
+

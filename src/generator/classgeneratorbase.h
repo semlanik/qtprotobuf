@@ -58,6 +58,7 @@ protected:
     void printClass();
     void printField(const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
     void encloseClass();
+    void printMetaTypeDeclaration(const std::string &package);
     void enclose();
     std::string getTypeName(const ::google::protobuf::FieldDescriptor *field);
 
@@ -100,6 +101,7 @@ protected:
     void printProperties(const ::google::protobuf::Descriptor *message);
     void printConstructor();
     void printPublic();
+
     void Indent() {
         mPrinter.Indent();
         mPrinter.Indent();
