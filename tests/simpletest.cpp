@@ -30,7 +30,9 @@
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
 #include "complexmessage.h"
+#include "repeatedintmessage.h"
 #include "globalenums.h"
+#include <QVariantList>
 #include <QMetaProperty>
 
 using namespace qtprotobuf::tests;
@@ -104,4 +106,15 @@ TEST_F(SimpleTest, SimpleEnumsTest)
 TEST_F(SimpleTest, ComplexMessageTest)
 {
     ComplexMessage msg;
+}
+
+TEST_F(SimpleTest, RepeatedIntMessageTest)
+{
+    const char* propertyName = "testRepeatedInt";
+    RepeatedIntMessage test;
+    int propertyNumber = RepeatedIntMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_EQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).type(), QMetaType::QVariantList);
+    ASSERT_STREQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<QVariantList>({1,2,3,4,5})));
+    ASSERT_TRUE(test.property(propertyName).toList() == QVariantList({1,2,3,4,5}));
 }

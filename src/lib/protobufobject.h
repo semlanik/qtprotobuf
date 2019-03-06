@@ -90,6 +90,9 @@ public:
             case QMetaType::QByteArray:
                 result.append(serializeLengthDelimited(propertyValue.toByteArray(), fieldIndex));
                 break;
+            case QMetaType::QVariantList:
+                //TODO: implement lists serialization
+                break;
             case QMetaType::User: {
                 int userType = metaProperty.userType();
                 const void *src = propertyValue.constData();

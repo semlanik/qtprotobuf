@@ -52,6 +52,7 @@ ClassGeneratorBase::ClassGeneratorBase(std::string mClassName, std::unique_ptr<:
 
 bool ClassGeneratorBase::producePropertyMap(const FieldDescriptor *field, PropertyMap &propertyMap)
 {
+    assert(field != nullptr);
     std::string typeName = getTypeName(field);
 
     if (typeName.size() <= 0) {
@@ -83,6 +84,7 @@ void ClassGeneratorBase::printPreamble()
 
 void ClassGeneratorBase::printIncludes(const Descriptor *message, std::set<std::string> listModel)
 {
+    assert(message != nullptr);
     PropertyMap properties;
     std::set<std::string> existingIncludes;
     std::string newinclude;
@@ -144,6 +146,7 @@ void ClassGeneratorBase::printClass()
 
 void ClassGeneratorBase::printProperties(const Descriptor *message)
 {
+    assert(message != nullptr);
     //private section
     Indent();
     for (int i = 0; i < message->field_count(); i++) {
@@ -196,6 +199,7 @@ void ClassGeneratorBase::printProperties(const Descriptor *message)
 
 void ClassGeneratorBase::printField(const FieldDescriptor *field, const char *fieldTemplate)
 {
+    assert(field != nullptr);
     std::map<std::string, std::string> propertyMap;
     if (producePropertyMap(field, propertyMap)) {
         mPrinter.Print(propertyMap, fieldTemplate);
@@ -217,36 +221,29 @@ void ClassGeneratorBase::enclose()
 
 std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field)
 {
+    assert(field != nullptr);
+    if (field->is_repeated()) {
+        return VariantList;
+    }
+
     std::string typeName;
     if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
         typeName = field->message_type()->name();
-        if (field->is_repeated()) {
-            std::string list("QList<");
-            typeName = list.append(typeName).append(">");
-        }
     } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
-        if (field->is_repeated()) {
-            typeName = VariantList;
-        } else {
-            typeName = field->enum_type()->name();
-        }
+        typeName = field->enum_type()->name();
     } else {
         auto it = TypeReflection.find(field->type());
         if (it != std::end(TypeReflection)) {
-            if (field->is_repeated()) {
-                typeName = VariantList;
-            } else {
-                typeName = it->second;
-            }
+            typeName = it->second;
         }
     }
-
 
     return typeName;
 }
 
 void ClassGeneratorBase::printCopyFunctionality(const Descriptor *message)
 {
+    assert(message != nullptr);
     mPrinter.Print({{"classname", mClassName}},
                    CopyConstructorTemplate);
 
@@ -273,35 +270,32 @@ void ClassGeneratorBase::printCopyFunctionality(const Descriptor *message)
 
 bool ClassGeneratorBase::isListType(const FieldDescriptor *field)
 {
+    assert(field != nullptr);
     return field && field->is_repeated()
             && field->type() == FieldDescriptor::TYPE_MESSAGE;
 }
 
 bool ClassGeneratorBase::isComplexType(const FieldDescriptor *field)
 {
-    if (field == nullptr)
-        return false;
-
-    if (field->type() == FieldDescriptor::TYPE_MESSAGE
+    assert(field != nullptr);
+    return field->type() == FieldDescriptor::TYPE_MESSAGE
             || field->type() == FieldDescriptor::TYPE_STRING
-            || field->type() == FieldDescriptor::TYPE_BYTES) {
-        return true;
-    }
-
-    return false;
+            || field->type() == FieldDescriptor::TYPE_BYTES;
 }
 
 void ClassGeneratorBase::printMoveSemantic(const Descriptor *message)
 {
+    assert(message != nullptr);
     mPrinter.Print({{"classname", mClassName}},
                    MoveConstructorTemplate);
 
     Indent();
     for (int i = 0; i < message->field_count(); i++) {
-        if (isComplexType(message->field(i))) {
-            printField(message->field(i), MoveComplexFieldTemplate);
+        const FieldDescriptor* field = message->field(i);
+        if (isComplexType(field) || field->is_repeated()) {
+            printField(field, MoveComplexFieldTemplate);
         } else {
-            printField(message->field(i), MoveFieldTemplate);
+            printField(field, MoveFieldTemplate);
         }
     }
     Outdent();
@@ -312,10 +306,11 @@ void ClassGeneratorBase::printMoveSemantic(const Descriptor *message)
 
     Indent();
     for (int i = 0; i < message->field_count(); i++) {
-        if (isComplexType(message->field(i))) {
-            printField(message->field(i), MoveComplexFieldTemplate);
+        const FieldDescriptor* field = message->field(i);
+        if (isComplexType(field) || field->is_repeated()) {
+            printField(field, MoveComplexFieldTemplate);
         } else {
-            printField(message->field(i), MoveFieldTemplate);
+            printField(field, MoveFieldTemplate);
         }
     }
     mPrinter.Print(AssignmentOperatorReturnTemplate);
@@ -379,7 +374,8 @@ void ClassGeneratorBase::printPublic()
 }
 
 void ClassGeneratorBase::printComparisonOperators(const Descriptor *message)
-{    
+{
+    assert(message != nullptr);
     bool isFirst = true;
     PropertyMap properties;
     mPrinter.Print({{"type", mClassName}}, EqualOperatorTemplate);

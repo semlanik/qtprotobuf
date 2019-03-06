@@ -23,6 +23,10 @@ message ComplexMessage {
     SimpleStringMessage testComplexField = 2;
 }
 
+message RepeatedIntMessage {
+    repeated int32 testRepeatedInt = 1;
+}
+
 enum TestEnum {
     TEST_ENUM_VALUE0 = 0;
     TEST_ENUM_VALUE1 = 1;
