@@ -147,8 +147,10 @@ void ClassGeneratorBase::printProperties(const Descriptor *message)
     //private section
     Indent();
     for (int i = 0; i < message->field_count(); i++) {
-        if (!isListType(message->field(i)))
-            printField(message->field(i), PropertyTemplate);
+        const FieldDescriptor* field = message->field(i);
+        if (!isListType(field)) {
+            printField(field, PropertyTemplate);
+        }
     }
     for (int i = 0; i < message->field_count(); i++) {
         printField(message->field(i), MemberTemplate);
@@ -241,7 +243,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field)
     return typeName;
 }
 
-void ClassGeneratorBase::printCopyFunctionality(const ::google::protobuf::Descriptor *message)
+void ClassGeneratorBase::printCopyFunctionality(const Descriptor *message)
 {
     mPrinter.Print({{"classname", mClassName}},
                    CopyConstructorTemplate);
@@ -267,13 +269,10 @@ void ClassGeneratorBase::printCopyFunctionality(const ::google::protobuf::Descri
 
 }
 
-bool ClassGeneratorBase::isListType(const ::google::protobuf::FieldDescriptor *field)
+bool ClassGeneratorBase::isListType(const FieldDescriptor *field)
 {
-    if (field && field->is_repeated()
-            && field->type() == FieldDescriptor::TYPE_MESSAGE) {
-        return true;
-    }
-    return  false;
+    return field && field->is_repeated()
+            && field->type() == FieldDescriptor::TYPE_MESSAGE;
 }
 
 bool ClassGeneratorBase::isComplexType(const FieldDescriptor *field)
@@ -282,7 +281,6 @@ bool ClassGeneratorBase::isComplexType(const FieldDescriptor *field)
         return false;
 
     if (field->type() == FieldDescriptor::TYPE_MESSAGE
-            || field->type() == FieldDescriptor::TYPE_GROUP
             || field->type() == FieldDescriptor::TYPE_STRING
             || field->type() == FieldDescriptor::TYPE_BYTES) {
         return true;
@@ -291,7 +289,7 @@ bool ClassGeneratorBase::isComplexType(const FieldDescriptor *field)
     return false;
 }
 
-void ClassGeneratorBase::printMoveSemantic(const ::google::protobuf::Descriptor *message)
+void ClassGeneratorBase::printMoveSemantic(const Descriptor *message)
 {
     mPrinter.Print({{"classname", mClassName}},
                    MoveConstructorTemplate);

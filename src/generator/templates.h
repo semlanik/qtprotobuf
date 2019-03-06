@@ -51,6 +51,7 @@ static const char *ClassDefinitionTemplate = "\nclass $classname$ : public Proto
                       "    Q_OBJECT\n";
 
 static const char *PropertyTemplate = "Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
+static const char *MessagePropertyTemplate = "Q_PROPERTY($type$ * $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
 static const char *MemberTemplate = "$type$ m_$property_name$;\n";
 static const char *PublicBlockTemplate = "\npublic:\n";
 static const char *EnumDefinitionTemplate = "enum $enum$ {\n";
