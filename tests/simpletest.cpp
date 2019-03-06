@@ -31,6 +31,7 @@
 #include "simpledoublemessage.h"
 #include "complexmessage.h"
 #include "repeatedintmessage.h"
+#include "simplebytesmessage.h"
 #include "globalenums.h"
 #include <QVariantList>
 #include <QMetaProperty>
@@ -51,6 +52,7 @@ TEST_F(SimpleTest, SimpleIntMessageTest)
     ASSERT_STREQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
     ASSERT_EQ(test.property(propertyName).toInt(), 1);
+    ASSERT_EQ(test.testFieldInt(), 1);
 }
 
 TEST_F(SimpleTest, SimpleStringMessageTest)
@@ -62,6 +64,7 @@ TEST_F(SimpleTest, SimpleStringMessageTest)
     ASSERT_STREQ(SimpleStringMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(QString("test1"))));
     ASSERT_STREQ(test.property(propertyName).toString().toStdString().c_str(), "test1");
+    ASSERT_STREQ(test.testFieldString().toStdString().c_str(), "test1");
 }
 
 TEST_F(SimpleTest, SimpleFloatMessageTest)
@@ -73,6 +76,7 @@ TEST_F(SimpleTest, SimpleFloatMessageTest)
     ASSERT_STREQ(SimpleFloatMessage::staticMetaObject.property(propertyNumber).name(), "testFieldFloat");
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<float>(1.55)));
     ASSERT_TRUE(qFuzzyCompare(test.property(propertyName).toFloat(), 1.55f));
+    ASSERT_TRUE(qFuzzyCompare(test.testFieldFloat(), 1.55f));
 }
 
 TEST_F(SimpleTest, SimpleDoubleMessageTest)
@@ -84,6 +88,7 @@ TEST_F(SimpleTest, SimpleDoubleMessageTest)
     ASSERT_STREQ(SimpleDoubleMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<double>(0.55)));
     ASSERT_FLOAT_EQ(test.property(propertyName).toDouble(), 0.55);
+    ASSERT_FLOAT_EQ(test.testFieldDouble(), 0.55);
 }
 
 TEST_F(SimpleTest, SimpleEnumsTest)
@@ -108,6 +113,18 @@ TEST_F(SimpleTest, ComplexMessageTest)
     ComplexMessage msg;
 }
 
+TEST_F(SimpleTest, SimpleBytesMessageTest)
+{
+    const char* propertyName = "testFieldBytes";
+    SimpleBytesMessage test;
+    int propertyNumber = SimpleBytesMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_EQ(SimpleBytesMessage::staticMetaObject.property(propertyNumber).type(), QMetaType::QByteArray);
+    ASSERT_STREQ(SimpleBytesMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<QByteArray>("\x01\x02\x03\x04\x05")));
+    ASSERT_TRUE(test.property(propertyName).toByteArray() == QByteArray("\x01\x02\x03\x04\x05"));
+    ASSERT_TRUE(test.testFieldBytes() == QByteArray("\x01\x02\x03\x04\x05"));
+}
+
 TEST_F(SimpleTest, RepeatedIntMessageTest)
 {
     const char* propertyName = "testRepeatedInt";
@@ -116,5 +133,6 @@ TEST_F(SimpleTest, RepeatedIntMessageTest)
     ASSERT_EQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).type(), QMetaType::QVariantList);
     ASSERT_STREQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<QVariantList>({1,2,3,4,5})));
-    ASSERT_TRUE(test.property(propertyName).toList() == QVariantList({1,2,3,4,5}));
+    ASSERT_TRUE(test.property(propertyName).toList() == QVariantList({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.testRepeatedInt() == QVariantList({1, 2, 3, 4, 5}));
 }

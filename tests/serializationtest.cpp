@@ -37,7 +37,7 @@ SerializationTest::SerializationTest()
 {
 }
 
-TEST_F(SerializationTest, IntMessageSrializeTest)
+TEST_F(SerializationTest, IntMessageSerializeTest)
 {
     SimpleIntMessage test;
     test.setTestFieldInt(15);
@@ -170,7 +170,7 @@ TEST_F(SerializationTest, IntMessageSrializeTest)
     ASSERT_EQ(result.at(3), '\x04');
 }
 
-TEST_F(SerializationTest, FloatMessageSrializeTest)
+TEST_F(SerializationTest, FloatMessageSerializeTest)
 {
     constexpr int FloatMessageSize = 5;
     SimpleFloatMessage test;
@@ -220,7 +220,7 @@ TEST_F(SerializationTest, FloatMessageSrializeTest)
     ASSERT_EQ(result.at(4), '\x80');
 }
 
-TEST_F(SerializationTest, DoubleMessageSrializeTest)
+TEST_F(SerializationTest, DoubleMessageSerializeTest)
 {
     constexpr int DoubleMessageSize = 9;
     SimpleDoubleMessage test;
