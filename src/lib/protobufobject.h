@@ -32,6 +32,7 @@
 #include <QBitArray>
 
 #include <unordered_map>
+#include <memory>
 #include <type_traits>
 
 #define ASSERT_FIELD_NUMBER(X) Q_ASSERT_X(X < 128 && X > 0, T::staticMetaObject.className(), "fieldIndex is out of range")
@@ -94,7 +95,7 @@ public:
                 const void *src = propertyValue.constData();
                 //TODO: each time huge objects will make own copies
                 //Probably generate fields reflection is better solution
-                ProtobufObjectPrivate *value = reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src));
+                auto value = std::unique_ptr<ProtobufObjectPrivate>(reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src)));
                 result.append(serializeLengthDelimited(value->serializePrivate(),
                                   fieldIndex));
             }

@@ -329,6 +329,5 @@ TEST_F(SerializationTest, ComplexTypeSerializeTest)
     test.setTestComplexField(stringMsg);
 
     result = test.serialize();
-    qDebug() << "result: " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("120832067177657274790859"));
 }
