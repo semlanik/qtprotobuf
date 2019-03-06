@@ -5,6 +5,7 @@ set(testgeneration "test_generation")
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(ENV{MAKE_TESTS} ON)
 
 find_package(Protobuf)
 
@@ -29,14 +30,25 @@ endif()
 if ($ENV{MAKE_TESTS})
     set(TESTS_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/tests)
     file(MAKE_DIRECTORY ${TESTS_OUT_DIR})
-
     add_custom_target(${testgeneration})
-    add_custom_command(TARGET ${testgeneration} POST_BUILD
-        COMMAND protoc --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
-        simpletest.proto
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
-        COMMENT "Generating test headers"
-    )
+
+    if (WIN32)
+        include_directories("src/lib")
+        add_custom_command(TARGET ${testgeneration} POST_BUILD
+            COMMAND ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf.exe --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
+            simpletest.proto
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
+            COMMENT "Generating test headers"
+            )
+    elseif (UNIX)
+        add_custom_command(TARGET ${testgeneration} POST_BUILD
+            COMMAND protoc --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
+            simpletest.proto
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
+            COMMENT "Generating test headers"
+            )
+    endif()
+
     add_dependencies(${testgeneration} ${PROJECT_NAME})
     add_subdirectory("tests")
 endif()

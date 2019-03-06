@@ -13,7 +13,7 @@ endif()
 
 add_library(qtprotobufsupport "universallistmodelbase.cpp" "universallistmodel.cpp" "protobufobject.cpp")
 
-set_target_properties(qtprotobufsupport PROPERTIES PUBLIC_HEADER "universallistmodelbase.h;universallistmodel.h")
+set_target_properties(qtprotobufsupport PROPERTIES PUBLIC_HEADER "universallistmodelbase.h;universallistmodel.h;protobufobject.h")
 
 install(TARGETS qtprotobufsupport
     ARCHIVE DESTINATION lib
