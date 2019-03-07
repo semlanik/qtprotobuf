@@ -50,6 +50,16 @@ class ProtobufObjectPrivate : public QObject {
 protected:
     explicit ProtobufObjectPrivate(QObject *parent = nullptr) : QObject(parent) {}
 
+    inline static unsigned char getTypeByte(int fieldIndex, WireTypes wireType) {
+        /*  Header byte
+         *  bits    | 7  6  5  4  3 |  2  1  0
+         *  -----------------------------------
+         *  meaning |  Field index  |   Type
+         */
+        unsigned char header = (fieldIndex << 3) | wireType;
+        return *(char *)&header;
+    }
+
 public:
     virtual QByteArray serializePrivate() = 0;
 };
@@ -177,16 +187,6 @@ public:
         //Mark last chunk as last
         result.data()[result.size() - 1] &= ~0x80;
         return result;
-    }
-
-    inline unsigned char getTypeByte(int fieldIndex, WireTypes wireType) {
-        /*  Header byte
-         *  bits    | 7  6  5  4  3 |  2  1  0
-         *  -----------------------------------
-         *  meaning |  Field index  |   Type
-         */
-        unsigned char header = (fieldIndex << 3) | wireType;
-        return *(char *)&header;
     }
 };
 
