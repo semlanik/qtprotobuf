@@ -47,6 +47,10 @@ message RepeatedFloatMessage {
     repeated float testRepeatedFloat = 1;
 }
 
+message RepeatedComplexMessage {
+    repeated ComplexMessage testRepeatedComplex = 1;
+}
+
 enum TestEnum {
     TEST_ENUM_VALUE0 = 0;
     TEST_ENUM_VALUE1 = 1;

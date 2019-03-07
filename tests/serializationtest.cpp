@@ -35,6 +35,7 @@
 #include "repeateddoublemessage.h"
 #include "repeatedbytesmessage.h"
 #include "repeatedfloatmessage.h"
+#include "repeatedcomplexmessage.h"
 
 using namespace qtprotobuf::tests;
 
@@ -321,7 +322,6 @@ TEST_F(SerializationTest, ComplexTypeSerializeTest)
     ASSERT_TRUE(result == QByteArray::fromHex("120832067177657274790854")
                 || result == QByteArray::fromHex("085412083206717765727479"));
 
-
     stringMsg.setTestFieldString("YVRfJvjxqbgvFwS1YvOZXgtj5ffGLS7AiNHz9oZIoKbm7z8H79xBuyPkpQXvGoO09OY9xRawx3eOAs9xjoTA1xJhrw28TAcq1CebYlC9WUfQC6hIantaNdyHiKToffi0Zt7la42SRxXZSP4GuxbcZIp53pJnyCwfCy1qdFczT0dmn7h8fpyAdemEavwFeda4d0PApGfSU2jLt39X8kYUBxNM2WgALRBgHdVde87q6Pi5U69TjhMd28W1SFD1DxyogCCrqOct2ZPICoLnrqdF3OdNzjRVLfeyvQ8LgLvRNFR9WfWAyAz79nKgBamd8Ntlvt4Mg35E5gVS2g7AQ7rkm72cBdnW9sCEyGabeXAuH5j4GRbuLT7qBZWDcFLF4SsCdS3WfFGdNHfwaijzykByo71PvFVlTXH2WJWoFvR5FALjBTn7bCdP0pAiSbLCY8Xz2Msc3dBb5Ff9GISPbUpNmUvBdMZMHQvqOmTNXEPpN0b74MDOMQfWJShOo3NkAvMjs");
     test.setTestFieldInt(42);
     test.setTestComplexField(stringMsg);
@@ -411,9 +411,30 @@ TEST_F(SerializationTest, RepeatedFloatMessageTest)
                                 QVariant::fromValue<float>(0.5f), QVariant::fromValue<float>(1.4f),
                                 QVariant::fromValue<float>(0.6f)});
     QByteArray result = test.serialize();
+//    qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a14cdcccc3e9a99993f0000003f3333b33f9a99193f"));
 
     test.setTestRepeatedFloat(QVariantList());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedComplexMessageTest)
+{
+    return;//disabled
+    SimpleStringMessage stringMsg;
+    stringMsg.setTestFieldString("qwerty");
+    ComplexMessage msg;
+    msg.setTestFieldInt(25);
+    msg.setTestComplexField(stringMsg);
+    RepeatedComplexMessage test;
+    test.setTestRepeatedComplex({QVariant::fromValue<ComplexMessage>(msg)});
+    qDebug() << test.testRepeatedComplex().count();
+    QByteArray result = test.serialize();
+    qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a14cdcccc3e9a99993f0000003f3333b33f9a99193f"));
+
+    test.setTestRepeatedComplex(QVariantList());
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
 }
