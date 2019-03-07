@@ -24,7 +24,7 @@ file(GLOB GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/*.cpp)
 
 #Manual moc_ files generation for qt
 list(FILTER GENERATED_SOURCES EXCLUDE REGEX "moc_.*cpp")
-QT5_WRAP_CPP(MOC_SRCS ${GENERATED_HEADERS})
+QT5_WRAP_CPP(MOC_SOURCES ${GENERATED_HEADERS})
 
 if (WIN32)
     #Set  path to GTest build libraries
@@ -38,8 +38,13 @@ elseif (UNIX)
 endif()
 
 file(GLOB HEADERS ${TESTS_OUT_DIR})
+file(GLOB SOURCES main.cpp
+    simpletest.cpp
+    serializationtest.cpp)
 
-add_executable(${testtarget} "main.cpp" "simpletest.cpp" "serializationtest.cpp" ${MOC_SRCS} ${GENERATED_SOURCES} ${GENERATED_HEADERS})
+file(GLOB PROTOS proto/*.proto)
+
+add_executable(${testtarget} ${SOURCES} ${MOC_SOURCES} ${GENERATED_SOURCES} ${PROTOS})
 if (WIN32)
     target_link_libraries(${testtarget} "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib"  Qt5::Core)
 elseif (UNIX)

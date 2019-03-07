@@ -39,6 +39,14 @@ message RepeatedDoubleMessage {
     repeated double testRepeatedDouble = 1;
 }
 
+message RepeatedBytesMessage {
+    repeated bytes testRepeatedBytes = 1;
+}
+
+message RepeatedFloatMessage {
+    repeated float testRepeatedFloat = 1;
+}
+
 enum TestEnum {
     TEST_ENUM_VALUE0 = 0;
     TEST_ENUM_VALUE1 = 1;
