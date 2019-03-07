@@ -28,7 +28,15 @@ message ComplexMessage {
 }
 
 message RepeatedIntMessage {
-    repeated int32 testRepeatedInt = 1;
+    repeated sint32 testRepeatedInt = 1;
+}
+
+message RepeatedStringMessage {
+    repeated string testRepeatedString = 1;
+}
+
+message RepeatedDoubleMessage {
+    repeated double testRepeatedDouble = 1;
 }
 
 enum TestEnum {

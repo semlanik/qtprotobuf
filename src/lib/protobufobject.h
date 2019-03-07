@@ -35,16 +35,19 @@
 #include <memory>
 #include <type_traits>
 
-#define ASSERT_FIELD_NUMBER(X) Q_ASSERT_X(X < 128 && X > 0, T::staticMetaObject.className(), "fieldIndex is out of range")
+#define ASSERT_FIELD_NUMBER(X) Q_ASSERT_X(X < 128 && X > 0 && X != NotUsedFieldIndex, T::staticMetaObject.className(), "fieldIndex is out of range")
 
 namespace qtprotobuf {
 
 enum WireTypes {
+    UnknownWireType = -1,
     Varint = 0,
     Fixed64 = 1,
     LengthDelimited = 2,
     Fixed32 = 5
 };
+
+constexpr int NotUsedFieldIndex = -1;
 
 class ProtobufObjectPrivate : public QObject {
 protected:
@@ -60,6 +63,131 @@ protected:
         return *(char *)&header;
     }
 
+    inline QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex) {
+        QByteArray result;
+        WireTypes type = UnknownWireType;
+        switch (propertyValue.type()) {
+        case QMetaType::Int:
+            type = Varint;
+            result.append(serializeVarint(propertyValue.toInt()));
+            break;
+        case QMetaType::Float:
+            type = Fixed32;
+            result.append(serializeFixed(propertyValue.toFloat()));
+            break;
+        case QMetaType::Double:
+            type = Fixed64;
+            result.append(serializeFixed(propertyValue.toDouble()));
+            break;
+        case QMetaType::QString:
+            type = LengthDelimited;
+            result.append(serializeLengthDelimited(propertyValue.toString().toUtf8()));
+            break;
+        case QMetaType::QByteArray:
+            type = LengthDelimited;
+            result.append(serializeLengthDelimited(propertyValue.toByteArray()));
+            break;
+        //TODO: explicit QList<TypeName> is more user friendly and performance efficient
+        case QMetaType::QVariantList:
+            type = LengthDelimited;
+            result.append(serializeListType(propertyValue.toList(), fieldIndex));
+            break;
+        case QMetaType::User:
+            type = LengthDelimited;
+            result.append(serializeUserType(propertyValue));
+            break;
+        default:
+            Q_ASSERT_X(false, staticMetaObject.className(), "Serialization of unknown type is impossible");
+        }
+        if (fieldIndex != NotUsedFieldIndex
+                && type != UnknownWireType) {
+            result.prepend(getTypeByte(fieldIndex, type));
+        }
+        return result;
+    }
+
+    QByteArray serializeLengthDelimited(const QByteArray& data) {
+        //Varint serialize field size and apply result as starting point
+        QByteArray result = serializeVarint(static_cast<unsigned int>(data.size()));
+        result.append(data);
+        return result;
+    }
+
+    QByteArray serializeUserType(const QVariant& propertyValue) {
+        int userType = propertyValue.userType();
+        Q_ASSERT_X(QMetaType::UnknownType == userType, staticMetaObject.className(), "Serialization of unknown user type");
+        const void *src = propertyValue.constData();
+        //TODO: each time huge objects will make own copies
+        //Probably generate fields reflection is better solution
+        auto value = std::unique_ptr<ProtobufObjectPrivate>(reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src)));
+        return serializeLengthDelimited(value->serializePrivate());
+    }
+
+    QByteArray serializeListType(const QVariantList& listValue, int &outFieldIndex)
+    {
+        if (listValue.count() <= 0) {
+            outFieldIndex = NotUsedFieldIndex;
+            return QByteArray();
+        }
+        int itemType = listValue.first().type();
+        //If internal serialized type is LengthDelimited, need to specify type for each field
+        int inFieldIndex = (itemType == QMetaType::QString ||
+                      itemType == QMetaType::QByteArray ||
+                      itemType == QMetaType::User) ? outFieldIndex : NotUsedFieldIndex;
+        QByteArray serializedList;
+        for(auto& value : listValue) {
+            serializedList.append(serializeValue(value, inFieldIndex));
+        }
+        //If internal field type is not LengthDelimited, exact amount of fields to be specified
+        if(inFieldIndex == NotUsedFieldIndex) {
+            serializedList.prepend(serializeVarint(static_cast<unsigned int>(serializedList.size())));
+        } else {
+            outFieldIndex = NotUsedFieldIndex;
+        }
+        return serializedList;
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_floating_point<V>::value, int> = 0>
+    QByteArray serializeFixed(V value) {
+        //Reserve required amount of bytes
+        QByteArray result(sizeof(V), '\0');
+        *(V*)(result.data()) = value;
+        return result;
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
+    QByteArray serializeVarint(V value) {
+        using UV = typename std::make_unsigned<V>::type;
+        //Use ZigZag convertion first and apply unsigned variant next
+        value = (value << 1) ^ (value >> (sizeof(UV) * 8 - 1));
+        UV uValue = *(UV *)&value;
+        return serializeVarint(uValue);
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
+    QByteArray serializeVarint(V value) {
+        QByteArray result;
+        //Reserve maximum required amount of bytes
+        result.reserve(sizeof(V));
+        while (value > 0) {
+            //Put first 7 bits to result buffer and mark as not last
+            result.append(value & 0x7F | 0x80);
+            //Devide values to chunks of 7 bits, move to next chunk
+            value >>= 7;
+        }
+
+        //Zero case
+        if (result.isEmpty()) {
+            result.append('\0');
+        }
+
+        //Mark last chunk as last
+        result.data()[result.size() - 1] &= ~0x80;
+        return result;
+    }
 public:
     virtual QByteArray serializePrivate() = 0;
 };
@@ -81,41 +209,11 @@ public:
         for (auto field : T::propertyOrdering) {
             int propertyIndex = field.second;
             int fieldIndex = field.first;
+            ASSERT_FIELD_NUMBER(fieldIndex);
             QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
             const char* propertyName = metaProperty.name();
             const QVariant& propertyValue = instance->property(propertyName);
-            switch (metaProperty.type()) {
-            case QMetaType::Int:
-                result.append(serializeVarint(propertyValue.toInt(), fieldIndex));
-                break;
-            case QMetaType::Float:
-                result.append(serializeFixed(propertyValue.toFloat(), fieldIndex));
-                break;
-            case QMetaType::Double:
-                result.append(serializeFixed(propertyValue.toDouble(), fieldIndex));
-                break;
-            case QMetaType::QString:
-                result.append(serializeLengthDelimited(propertyValue.toString().toUtf8(), fieldIndex));
-                break;
-            case QMetaType::QByteArray:
-                result.append(serializeLengthDelimited(propertyValue.toByteArray(), fieldIndex));
-                break;
-            case QMetaType::QVariantList:
-                //TODO: implement lists serialization
-                break;
-            case QMetaType::User: {
-                int userType = metaProperty.userType();
-                const void *src = propertyValue.constData();
-                //TODO: each time huge objects will make own copies
-                //Probably generate fields reflection is better solution
-                auto value = std::unique_ptr<ProtobufObjectPrivate>(reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src)));
-                result.append(serializeLengthDelimited(value->serializePrivate(),
-                                  fieldIndex));
-            }
-                break;
-            default:
-                Q_ASSERT_X(false, T::staticMetaObject.className(), "Serialization of unknown type is impossible");
-            }
+            result.append(serializeValue(propertyValue, fieldIndex));
         }
 
         return result;
@@ -124,69 +222,6 @@ public:
     void deserialize(const QByteArray& array) {
         T* instance = dynamic_cast<T*>(this);
         //TODO
-    }
-
-    QByteArray serializeLengthDelimited(const QByteArray& data, int fieldIndex) {
-        ASSERT_FIELD_NUMBER(fieldIndex);
-        //Varint serialize field size and apply result as starting point
-        QByteArray result = serializeVarint(static_cast<unsigned int>(data.size()), 1/*field number doesn't matter*/);
-        result[0] = getTypeByte(fieldIndex, LengthDelimited);
-        result.append(data);
-        return result;
-    }
-
-    template <typename V,
-              typename std::enable_if_t<std::is_floating_point<V>::value, int> = 0>
-    QByteArray serializeFixed(V value, int fieldIndex) {
-        ASSERT_FIELD_NUMBER(fieldIndex);
-
-        //Reserve required amount of bytes
-        QByteArray result(sizeof(V) + 1, '\0');
-
-        //Undentify exact wiretype
-        constexpr WireTypes wireType = sizeof(V) == 4 ? Fixed32 : Fixed64;
-        result[0] = getTypeByte(fieldIndex, wireType);
-        *(V*)&(result.data()[1]) = value;
-        return result;
-    }
-
-    template <typename V,
-              typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
-    QByteArray serializeVarint(V value, int fieldIndex) {
-        ASSERT_FIELD_NUMBER(fieldIndex);
-
-        using UV = typename std::make_unsigned<V>::type;
-        //Use ZigZag convertion first and apply unsigned variant next
-        value = (value << 1) ^ (value >> (sizeof(UV) * 8 - 1));
-        UV uValue = *(UV *)&value;
-        return serializeVarint(uValue, fieldIndex);
-    }
-
-    template <typename V,
-              typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
-    QByteArray serializeVarint(V value, int fieldIndex) {
-        ASSERT_FIELD_NUMBER(fieldIndex);
-        QByteArray result;
-        //Reserve maximum required amount of bytes
-        result.reserve(sizeof(V) + 1);
-        //Put type byte at beginning
-        result.append(getTypeByte(fieldIndex, Varint));
-
-        while (value > 0) {
-            //Put first 7 bits to result buffer and mark as not last
-            result.append(value & 0x7F | 0x80);
-            //Devide values to chunks of 7 bits, move to next chunk
-            value >>= 7;
-        }
-
-        //Zero case
-        if (result.size() == 1) {
-            result.append('\0');
-        }
-
-        //Mark last chunk as last
-        result.data()[result.size() - 1] &= ~0x80;
-        return result;
     }
 };
 

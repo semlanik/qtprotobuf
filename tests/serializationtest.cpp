@@ -30,6 +30,9 @@
 #include "simpledoublemessage.h"
 #include "simplestringmessage.h"
 #include "complexmessage.h"
+#include "repeatedintmessage.h"
+#include "repeatedstringmessage.h"
+#include "repeateddoublemessage.h"
 
 using namespace qtprotobuf::tests;
 
@@ -333,4 +336,45 @@ TEST_F(SerializationTest, ComplexTypeSerializeTest)
     result = test.serialize();
     ASSERT_TRUE(result == QByteArray::fromHex("120832067177657274790859")
                 || result == QByteArray::fromHex("085912083206717765727479"));
+}
+
+TEST_F(SerializationTest, RepeatedIntMessageTest)
+{
+    RepeatedIntMessage test;
+    test.setTestRepeatedInt({1,400,3,4,5,6});
+    QByteArray result = test.serialize();
+//    qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a0702a00606080a0c"));
+
+    test.setTestRepeatedInt(QVariantList());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedStringMessage)
+{
+    RepeatedStringMessage test;
+    test.setTestRepeatedString({"aaaa","bbbbb","ccc","dddddd","eeeee"});
+    QByteArray result = test.serialize();
+//    qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a04616161610a0562626262620a036363630a066464646464640a056565656565"));
+
+    test.setTestRepeatedString(QVariantList());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedDoubleMessage)
+{
+    RepeatedDoubleMessage test;
+    test.setTestRepeatedDouble({QVariant::fromValue<double>(0.1), QVariant::fromValue<double>(0.2),
+                                QVariant::fromValue<double>(0.3), QVariant::fromValue<double>(0.4),
+                                QVariant::fromValue<double>(0.5)});
+    QByteArray result = test.serialize();
+//    qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a289a9999999999b93f9a9999999999c93f333333333333d33f9a9999999999d93f000000000000e03f"));
+
+    test.setTestRepeatedDouble(QVariantList());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
 }
