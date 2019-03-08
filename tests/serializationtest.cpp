@@ -36,11 +36,14 @@
 #include "repeatedbytesmessage.h"
 #include "repeatedfloatmessage.h"
 #include "repeatedcomplexmessage.h"
+#include "qtprotobuf.h"
 
 using namespace qtprotobuf::tests;
+using namespace qtprotobuf;
 
 SerializationTest::SerializationTest()
 {
+    qtprotobuf::QtProtobuf::init();
 }
 
 TEST_F(SerializationTest, IntMessageSerializeTest)
@@ -348,7 +351,7 @@ TEST_F(SerializationTest, RepeatedIntMessageTest)
 //    qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a0702a00606080a0c"));
 
-    test.setTestRepeatedInt(QVariantList());
+    test.setTestRepeatedInt(IntList());
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
 }
@@ -361,7 +364,7 @@ TEST_F(SerializationTest, RepeatedStringMessage)
 //    qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a04616161610a0562626262620a036363630a066464646464640a056565656565"));
 
-    test.setTestRepeatedString(QVariantList());
+    test.setTestRepeatedString(QStringList());
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
 }
@@ -369,14 +372,12 @@ TEST_F(SerializationTest, RepeatedStringMessage)
 TEST_F(SerializationTest, RepeatedDoubleMessageTest)
 {
     RepeatedDoubleMessage test;
-    test.setTestRepeatedDouble({QVariant::fromValue<double>(0.1), QVariant::fromValue<double>(0.2),
-                                QVariant::fromValue<double>(0.3), QVariant::fromValue<double>(0.4),
-                                QVariant::fromValue<double>(0.5)});
+    test.setTestRepeatedDouble({0.1, 0.2, 0.3, 0.4, 0.5});
     QByteArray result = test.serialize();
 //    qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a289a9999999999b93f9a9999999999c93f333333333333d33f9a9999999999d93f000000000000e03f"));
 
-    test.setTestRepeatedDouble(QVariantList());
+    test.setTestRepeatedDouble(DoubleList());
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
 }
@@ -391,7 +392,7 @@ TEST_F(SerializationTest, RepeatedBytesMessageTest)
     QByteArray result = test.serialize();
     ASSERT_TRUE(result == QByteArray::fromHex("0a060102030405060a04ffffffff0a05eaeaeaeaea0a06010203040506"));
 
-    test.setTestRepeatedBytes(QVariantList());
+    test.setTestRepeatedBytes(QByteArrayList());
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
 
@@ -407,14 +408,12 @@ TEST_F(SerializationTest, RepeatedBytesMessageTest)
 TEST_F(SerializationTest, RepeatedFloatMessageTest)
 {
     RepeatedFloatMessage test;
-    test.setTestRepeatedFloat({QVariant::fromValue<float>(0.4f), QVariant::fromValue<float>(1.2f),
-                                QVariant::fromValue<float>(0.5f), QVariant::fromValue<float>(1.4f),
-                                QVariant::fromValue<float>(0.6f)});
+    test.setTestRepeatedFloat({0.4f, 1.2f, 0.5f, 1.4f, 0.6f});
     QByteArray result = test.serialize();
 //    qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a14cdcccc3e9a99993f0000003f3333b33f9a99193f"));
 
-    test.setTestRepeatedFloat(QVariantList());
+    test.setTestRepeatedFloat(FloatList());
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
 }

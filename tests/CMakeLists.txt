@@ -48,6 +48,6 @@ add_executable(${testtarget} ${SOURCES} ${MOC_SOURCES} ${GENERATED_SOURCES} ${PR
 if (WIN32)
     target_link_libraries(${testtarget} "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib"  Qt5::Core)
 elseif (UNIX)
-    target_link_libraries(${testtarget} ${GTEST_BOTH_LIBRARIES} Qt5::Core)
+    target_link_libraries(${testtarget} ${GTEST_BOTH_LIBRARIES} qtprotobufsupport Qt5::Core)
 endif()
 add_dependencies(${testtarget} ${testgeneration})

@@ -34,6 +34,7 @@
 #include <unordered_map>
 #include <memory>
 #include <type_traits>
+#include <qtprotobuftypes.h>
 
 #define ASSERT_FIELD_NUMBER(X) Q_ASSERT_X(X < 128 && X > 0 && X != NotUsedFieldIndex, T::staticMetaObject.className(), "fieldIndex is out of range")
 
@@ -115,12 +116,21 @@ protected:
 
     QByteArray serializeUserType(const QVariant& propertyValue) {
         int userType = propertyValue.userType();
-        Q_ASSERT_X(QMetaType::UnknownType == userType, staticMetaObject.className(), "Serialization of unknown user type");
-        const void *src = propertyValue.constData();
-        //TODO: each time huge objects will make own copies
-        //Probably generate fields reflection is better solution
-        auto value = std::unique_ptr<ProtobufObjectPrivate>(reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src)));
-        return serializeLengthDelimited(value->serializePrivate());
+        if (userType == qMetaTypeId<IntList>()) {
+
+        } else if(userType == qMetaTypeId<FloatList>()) {
+
+        } else if(userType == qMetaTypeId<DoubleList>()) {
+
+        } else {
+            Q_ASSERT_X(QMetaType::UnknownType == userType, staticMetaObject.className(), "Serialization of unknown user type");
+            const void *src = propertyValue.constData();
+            //TODO: each time huge objects will make own copies
+            //Probably generate fields reflection is better solution
+            auto value = std::unique_ptr<ProtobufObjectPrivate>(reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src)));
+            return serializeLengthDelimited(value->serializePrivate());
+        }
+        return QByteArray();
     }
 
     QByteArray serializeListType(const QVariantList& listValue, int &outFieldIndex)

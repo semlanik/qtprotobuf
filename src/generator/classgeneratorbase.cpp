@@ -222,19 +222,25 @@ void ClassGeneratorBase::enclose()
 std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field)
 {
     assert(field != nullptr);
-    if (field->is_repeated()) {
-        return VariantList;
-    }
-
     std::string typeName;
     if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
+        if (field->is_repeated()) {
+            return VariantList;
+        }
         typeName = field->message_type()->name();
     } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
+        if (field->is_repeated()) {
+            return VariantList;
+        }
         typeName = field->enum_type()->name();
     } else {
         auto it = TypeReflection.find(field->type());
         if (it != std::end(TypeReflection)) {
             typeName = it->second;
+            if (field->is_repeated()) {
+                typeName[0] = ::toupper(typeName[0]);
+                typeName.append("List");
+            }
         }
     }
 

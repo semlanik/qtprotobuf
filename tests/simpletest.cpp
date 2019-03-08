@@ -33,14 +33,17 @@
 #include "repeatedintmessage.h"
 #include "simplebytesmessage.h"
 #include "globalenums.h"
+#include "qtprotobuf.h"
 #include <QVariantList>
 #include <QMetaProperty>
 
 using namespace qtprotobuf::tests;
 
+using namespace qtprotobuf;
 
 SimpleTest::SimpleTest()
 {
+    QtProtobuf::init();
 }
 
 TEST_F(SimpleTest, SimpleIntMessageTest)
@@ -130,9 +133,9 @@ TEST_F(SimpleTest, RepeatedIntMessageTest)
     const char* propertyName = "testRepeatedInt";
     RepeatedIntMessage test;
     int propertyNumber = RepeatedIntMessage::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_EQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).type(), QMetaType::QVariantList);
+    ASSERT_EQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<IntList>());
     ASSERT_STREQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<QVariantList>({1,2,3,4,5})));
-    ASSERT_TRUE(test.property(propertyName).toList() == QVariantList({1, 2, 3, 4, 5}));
-    ASSERT_TRUE(test.testRepeatedInt() == QVariantList({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<IntList>({1,2,3,4,5})));
+    ASSERT_TRUE(test.property(propertyName).value<IntList>() == IntList({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.testRepeatedInt() == IntList({1, 2, 3, 4, 5}));
 }
