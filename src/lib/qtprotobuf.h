@@ -40,6 +40,8 @@ public:
             qRegisterMetaType<IntList>("IntList");
             qRegisterMetaType<FloatList>("FloatList");
             qRegisterMetaType<DoubleList>("DoubleList");
+            qRegisterMetaType<FixedInt32>("FixedInt32");
+            qRegisterMetaType<FixedInt64>("FixedInt64");
             registationDone = true;
         }
     }

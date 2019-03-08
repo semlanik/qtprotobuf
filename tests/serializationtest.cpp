@@ -26,6 +26,8 @@
 #include "serializationtest.h"
 
 #include "simpleintmessage.h"
+#include "simplefixedint32message.h"
+#include "simplefixedint64message.h"
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
 #include "simplestringmessage.h"
@@ -178,6 +180,23 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
     ASSERT_EQ(result.at(2), '\x80');
     ASSERT_EQ(result.at(3), '\x04');
 }
+
+// Need help with result size
+//TEST_F(SerializationTest, FixedInt32MessageSerializeTest)
+//{
+//    return;
+//    SimpleFixedInt32Message test;
+//    test.setTestFieldFixedInt32(15);
+//    QByteArray result = test.serialize();
+//    ASSERT_EQ(result.size(), 2);
+//    ASSERT_EQ(result.at(0), 0x08);
+//    ASSERT_EQ(result.at(1), '\x1e');
+//}
+
+//TEST_F(SerializationTest, FixedInt64MessageSerializeTest)
+//{
+//    return;
+//}
 
 TEST_F(SerializationTest, FloatMessageSerializeTest)
 {

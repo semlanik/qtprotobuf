@@ -26,6 +26,8 @@
 #include "simpletest.h"
 
 #include "simpleintmessage.h"
+#include "simplefixedint32message.h"
+#include "simplefixedint64message.h"
 #include "simplestringmessage.h"
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
@@ -58,6 +60,30 @@ TEST_F(SimpleTest, SimpleIntMessageTest)
     ASSERT_EQ(test.testFieldInt(), 1);
 }
 
+TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
+{
+    const char* propertyName = "testFieldFixedInt32";
+    SimpleFixedInt32Message test;
+    int propertyNumber = SimpleFixedInt32Message::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_EQ(SimpleFixedInt32Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<FixedInt32>());
+    ASSERT_STREQ(SimpleFixedInt32Message::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
+    ASSERT_EQ(test.property(propertyName).value<FixedInt32>(), 1);
+    ASSERT_EQ(test.testFieldFixedInt32(), 1);
+}
+
+TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
+{
+    const char* propertyName = "testFieldFixedInt64";
+    SimpleFixedInt64Message test;
+    int propertyNumber = SimpleFixedInt64Message::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_EQ(SimpleFixedInt64Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<FixedInt64>());
+    ASSERT_STREQ(SimpleFixedInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
+    ASSERT_EQ(test.property(propertyName).value<FixedInt64>(), 1);
+    ASSERT_EQ(test.testFieldFixedInt64(), 1);
+}
+
 TEST_F(SimpleTest, SimpleStringMessageTest)
 {
     const char* propertyName = "testFieldString";
@@ -77,7 +103,7 @@ TEST_F(SimpleTest, SimpleFloatMessageTest)
     int propertyNumber = SimpleFloatMessage::propertyOrdering.at(7); //See simpletest.proto
     ASSERT_EQ(SimpleFloatMessage::staticMetaObject.property(propertyNumber).type(), QMetaType::Float);
     ASSERT_STREQ(SimpleFloatMessage::staticMetaObject.property(propertyNumber).name(), "testFieldFloat");
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<float>(1.55)));
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<float>(1.55f)));
     ASSERT_TRUE(qFuzzyCompare(test.property(propertyName).toFloat(), 1.55f));
     ASSERT_TRUE(qFuzzyCompare(test.testFieldFloat(), 1.55f));
 }

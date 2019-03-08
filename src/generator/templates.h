@@ -41,14 +41,15 @@ static const char *InternalIncludeTemplate =  "#include \"$type_lower$.h\"\n";
 static const char *ExternalIncludeTemplate = "#include <$type$>\n";
 static const char *ListModelsIncludeTemplate = "#include <QList>\n";
 
+static const char *UsingQtPeotobufNamespaceTemplate = "\nusing namespace qtprotobuf;\n";
 static const char *NamespaceTemplate = "\nnamespace $namespace$ {\n";
 
 static const char *NonProtoClassDefinitionTemplate = "\nclass $classname$ : public QObject\n"
-                      "{\n"
-                      "    Q_OBJECT\n";
+                                                     "{\n"
+                                                     "    Q_OBJECT\n";
 static const char *ClassDefinitionTemplate = "\nclass $classname$ : public ProtobufObject<$classname$>\n"
-                      "{\n"
-                      "    Q_OBJECT\n";
+                                             "{\n"
+                                             "    Q_OBJECT\n";
 
 static const char *PropertyTemplate = "Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
 static const char *MessagePropertyTemplate = "Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
@@ -66,7 +67,7 @@ static const char *AssignmentOperatorTemplate = "$classname$ &operator =(const $
 static const char *AssignmentOperatorReturnTemplate = "return *this;\n";
 static const char *MoveAssignmentOperatorTemplate = "$classname$ &operator =($classname$ &&other) {\n";
 static const char *EqualOperatorTemplate = "bool operator ==(const $type$ &other) const {\n"
-                                          "    return ";
+                                           "    return ";
 static const char *EqualOperatorPropertyTemplate = "m_$property_name$ == other.m_$property_name$";
 static const char *NotEqualOperatorTemplate = "bool operator !=(const $type$ &other) const {\n"
                                               "    return !this->operator ==(other);\n"
@@ -84,11 +85,11 @@ static const char *SetterTemplateSimpleType = "void set$property_name_cap$($type
                                               "}\n\n";
 
 static const char *SetterTemplateComplexType = "void set$property_name_cap$(const $type$ &$property_name$) {\n"
-                                              "    if (m_$property_name$ != $property_name$) {\n"
-                                              "        m_$property_name$ = $property_name$;\n"
-                                              "        $property_name$Changed();\n"
-                                              "    }\n"
-                                              "}\n\n";
+                                               "    if (m_$property_name$ != $property_name$) {\n"
+                                               "        m_$property_name$ = $property_name$;\n"
+                                               "        $property_name$Changed();\n"
+                                               "    }\n"
+                                               "}\n\n";
 
 static const char *SignalsBlockTemplate = "\nsignals:\n";
 static const char *SignalTemplate = "void $property_name$Changed();\n";
@@ -114,8 +115,8 @@ static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::
     //        {FieldDescriptor::TYPE_INT64, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
     //        {FieldDescriptor::TYPE_UINT64,"int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
     {::google::protobuf::FieldDescriptor::TYPE_INT32, "int"},
-    //        {FieldDescriptor::TYPE_FIXED64, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
-    //        {FieldDescriptor::TYPE_FIXED32, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    {::google::protobuf::FieldDescriptor::TYPE_FIXED64, "FixedInt64"},
+    {::google::protobuf::FieldDescriptor::TYPE_FIXED32, "FixedInt32"},
     {::google::protobuf::FieldDescriptor::TYPE_BOOL, "bool"},
     {::google::protobuf::FieldDescriptor::TYPE_STRING, "QString"},
     {::google::protobuf::FieldDescriptor::TYPE_GROUP, ""},//Not supported and deprecated in protobuf
