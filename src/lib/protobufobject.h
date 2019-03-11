@@ -93,9 +93,17 @@ protected:
             type = LengthDelimited;
             result.append(serializeListType(propertyValue.toList(), fieldIndex));
             break;
+        case QMetaType::QStringList:
+            type = LengthDelimited;
+            result.append(serializeListType(propertyValue.toStringList(), fieldIndex));
+            break;
+        case QMetaType::QByteArrayList:
+            type = LengthDelimited;
+            result.append(serializeListType(propertyValue.value<QByteArrayList>(), fieldIndex));
+            break;
         case QMetaType::User:
             type = LengthDelimited;
-            result.append(serializeUserType(propertyValue));
+            result.append(serializeUserType(propertyValue, fieldIndex));
             break;
         case QMetaType::UInt:
             type = Fixed32;
@@ -130,14 +138,14 @@ protected:
         return result;
     }
 
-    QByteArray serializeUserType(const QVariant& propertyValue) {
+    QByteArray serializeUserType(const QVariant& propertyValue, int& fieldIndex) {
         int userType = propertyValue.userType();
         if (userType == qMetaTypeId<IntList>()) {
-
+            return serializeListType(propertyValue.value<IntList>(), fieldIndex);
         } else if(userType == qMetaTypeId<FloatList>()) {
-
+            return serializeListType(propertyValue.value<FloatList>(), fieldIndex);
         } else if(userType == qMetaTypeId<DoubleList>()) {
-
+            return serializeListType(propertyValue.value<DoubleList>(), fieldIndex);
         } else {
             Q_ASSERT_X(QMetaType::UnknownType == userType, staticMetaObject.className(), "Serialization of unknown user type");
             const void *src = propertyValue.constData();
@@ -149,7 +157,46 @@ protected:
         return QByteArray();
     }
 
-    QByteArray serializeListType(const QVariantList& listValue, int &outFieldIndex)
+    template<typename V,
+             typename std::enable_if_t<std::is_integral<V>::value
+                                       || std::is_floating_point<V>::value, int> = 0>
+    QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) {
+        if (listValue.count() <= 0) {
+            outFieldIndex = NotUsedFieldIndex;
+            return QByteArray();
+        }
+
+        QByteArray serializedList;
+        for(auto& value : listValue) {
+            serializedList.append(serializeValue(value, NotUsedFieldIndex));
+        }
+        //If internal field type is not LengthDelimited, exact amount of fields to be specified
+        serializedList.prepend(serializeVarint(static_cast<unsigned int>(serializedList.size())));
+        return serializedList;
+    }
+
+    template<typename V,
+             typename std::enable_if_t<std::is_same<V, QString>::value
+                                       || std::is_same<V, QByteArray>::value, int> = 0>
+    QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) {
+        qDebug() << "Serialize list type LengthDelimited" << listValue.count();
+        if (listValue.count() <= 0) {
+            outFieldIndex = NotUsedFieldIndex;
+            return QByteArray();
+        }
+
+        QByteArray serializedList;
+        for(auto& value : listValue) {
+            qDebug() << "Serialize list type integral serializedList.append " << value;
+            serializedList.append(serializeValue(value, outFieldIndex));
+        }
+
+        outFieldIndex = NotUsedFieldIndex;
+        return serializedList;
+    }
+
+    //TODO: This specialization is deprecated and won't be used in future
+    QByteArray serializeListType(const QVariantList &listValue, int &outFieldIndex)
     {
         if (listValue.count() <= 0) {
             outFieldIndex = NotUsedFieldIndex;
