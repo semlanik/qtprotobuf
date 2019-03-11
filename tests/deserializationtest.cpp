@@ -27,6 +27,9 @@
 #include "qtprotobuf.h"
 #include "simplefixedint32message.h"
 #include "simplefixedint64message.h"
+#include "simplefloatmessage.h"
+#include "simpledoublemessage.h"
+#include "simpleintmessage.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf::tests;
@@ -107,5 +110,51 @@ TEST_F(DeserializationTest, FixedInt64MessageDeserializeTest)
 
     test.deserialize(QByteArray::fromHex("09ffffffffffffffff"));
     ASSERT_EQ(test.testFieldFixedInt64(), UINT64_MAX);
+}
+
+
+TEST_F(DeserializationTest, FloatMessageDeserializeTest)
+{
+    SimpleFloatMessage test;
+    test.deserialize(QByteArray::fromHex("3dcdcccc3d"));
+    ASSERT_FLOAT_EQ(test.testFieldFloat(), 0.1f);
+
+    test.deserialize(QByteArray::fromHex("3d00008000"));
+    ASSERT_FLOAT_EQ(test.testFieldFloat(), FLT_MIN);
+
+    test.deserialize(QByteArray::fromHex("3dffff7f7f"));
+    ASSERT_FLOAT_EQ(test.testFieldFloat(), FLT_MAX);
+
+    test.deserialize(QByteArray::fromHex("3d666686c0"));
+    ASSERT_FLOAT_EQ(test.testFieldFloat(), -4.2f);
+
+    test.deserialize(QByteArray::fromHex("3d00000000"));
+    ASSERT_FLOAT_EQ(test.testFieldFloat(), -0.0f);
+}
+
+TEST_F(DeserializationTest, DoubleMessageDeserializeTest)
+{
+    SimpleDoubleMessage test;
+    test.deserialize(QByteArray::fromHex("419a9999999999b93f"));
+    ASSERT_DOUBLE_EQ(0.1, test.testFieldDouble());
+
+    test.deserialize(QByteArray::fromHex("410000000000001000"));
+    ASSERT_DOUBLE_EQ(DBL_MIN, test.testFieldDouble());
+
+    test.deserialize(QByteArray::fromHex("41ffffffffffffef7f"));
+    ASSERT_DOUBLE_EQ(DBL_MAX, test.testFieldDouble());
+
+    test.deserialize(QByteArray::fromHex("41cdcccccccccc10c0"));
+    ASSERT_DOUBLE_EQ(-4.2, test.testFieldDouble());
+
+    test.deserialize(QByteArray::fromHex("410000000000000000"));
+    ASSERT_DOUBLE_EQ(0.0, test.testFieldDouble());
+}
+
+TEST_F(DeserializationTest, IntMessageDeserializeTest)
+{
+    SimpleIntMessage test;
+    test.deserialize(QByteArray::fromHex("081e"));
+    ASSERT_EQ(15, test.testFieldInt());
 }
 

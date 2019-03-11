@@ -140,7 +140,6 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
     ASSERT_EQ(result.at(2), '\xe1');
     ASSERT_EQ(result.at(3), '\x07');
 
-
     test.setTestFieldInt(INT8_MIN);
     result = test.serialize();
     ASSERT_EQ(result.size(), 3);
