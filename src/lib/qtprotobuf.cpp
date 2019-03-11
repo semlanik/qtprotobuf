@@ -24,5 +24,3 @@
  */
 
 #include <qtprotobuf.h>
-
-//bool qtprotobuf::QtProtobuf::registationDone = false;

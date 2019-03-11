@@ -64,7 +64,7 @@ protected:
         return *(char *)&header;
     }
 
-    inline QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex, bool isFixed = false) {
+    QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex, bool isFixed = false) {
         QByteArray result;
         WireTypes type = UnknownWireType;
         switch (propertyValue.type()) {
