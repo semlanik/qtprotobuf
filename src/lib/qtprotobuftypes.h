@@ -35,8 +35,7 @@ using FloatList = QList<float>;
 using DoubleList = QList<double>;
 
 using FixedInt32 = unsigned int;
-using FixedInt64 = unsigned long;
-
+using FixedInt64 = uint64_t;
 }
 
 Q_DECLARE_METATYPE(qtprotobuf::IntList)

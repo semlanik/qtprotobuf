@@ -39,6 +39,7 @@
 #include <QVariantList>
 #include <QMetaProperty>
 
+using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf::tests;
 
 using namespace qtprotobuf;

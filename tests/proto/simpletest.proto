@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package qtprotobuf.tests;
+package qtprotobufnamespace.tests;
 
 message SimpleIntMessage {
     int32 testFieldInt = 1;

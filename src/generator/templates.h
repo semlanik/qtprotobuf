@@ -41,13 +41,13 @@ static const char *InternalIncludeTemplate =  "#include \"$type_lower$.h\"\n";
 static const char *ExternalIncludeTemplate = "#include <$type$>\n";
 static const char *ListModelsIncludeTemplate = "#include <QList>\n";
 
-static const char *UsingQtPeotobufNamespaceTemplate = "\nusing namespace qtprotobuf;\n";
+static const char *UsingQtProtobufNamespaceTemplate = "\nusing namespace qtprotobuf;\n";
 static const char *NamespaceTemplate = "\nnamespace $namespace$ {\n";
 
 static const char *NonProtoClassDefinitionTemplate = "\nclass $classname$ : public QObject\n"
                                                      "{\n"
                                                      "    Q_OBJECT\n";
-static const char *ClassDefinitionTemplate = "\nclass $classname$ : public ProtobufObject<$classname$>\n"
+static const char *ClassDefinitionTemplate = "\nclass $classname$ : public qtprotobuf::ProtobufObject<$classname$>\n"
                                              "{\n"
                                              "    Q_OBJECT\n";
 
@@ -115,8 +115,8 @@ static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::
     //        {FieldDescriptor::TYPE_INT64, "int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
     //        {FieldDescriptor::TYPE_UINT64,"int"},//Not supported see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
     {::google::protobuf::FieldDescriptor::TYPE_INT32, "int"},
-    {::google::protobuf::FieldDescriptor::TYPE_FIXED64, "FixedInt64"},
-    {::google::protobuf::FieldDescriptor::TYPE_FIXED32, "FixedInt32"},
+    {::google::protobuf::FieldDescriptor::TYPE_FIXED64, "qtprotobuf::FixedInt64"},
+    {::google::protobuf::FieldDescriptor::TYPE_FIXED32, "qtprotobuf::FixedInt32"},
     {::google::protobuf::FieldDescriptor::TYPE_BOOL, "bool"},
     {::google::protobuf::FieldDescriptor::TYPE_STRING, "QString"},
     {::google::protobuf::FieldDescriptor::TYPE_GROUP, ""},//Not supported and deprecated in protobuf
