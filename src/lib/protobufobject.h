@@ -54,14 +54,24 @@ class ProtobufObjectPrivate : public QObject {
 protected:
     explicit ProtobufObjectPrivate(QObject *parent = nullptr) : QObject(parent) {}
 
-    inline static unsigned char getTypeByte(int fieldIndex, WireTypes wireType) {
-        /*  Header byte
-         *  bits    | 7  6  5  4  3 |  2  1  0
-         *  -----------------------------------
-         *  meaning |  Field index  |   Type
-         */
+    /*  Header byte
+     *  bits    | 7  6  5  4  3 |  2  1  0
+     *  -----------------------------------
+     *  meaning |  Field index  |   Type
+     */
+    inline static unsigned char encodeHeaderByte(int fieldIndex, WireTypes wireType) {
+
         unsigned char header = (fieldIndex << 3) | wireType;
         return *(char *)&header;
+    }
+
+    inline static bool decodeHeaderByte(unsigned char typeByte, int &fieldIndex, WireTypes &wireType) {
+        wireType = static_cast<WireTypes>(typeByte & 0x07);
+        fieldIndex = typeByte >> 3;
+        return fieldIndex < 128 && fieldIndex > 0 && (wireType == Varint
+                                                      || wireType == Fixed64
+                                                      || wireType == Fixed32
+                                                      || wireType == LengthDelimited);
     }
 
     QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex, bool isFixed = false) {
@@ -126,19 +136,19 @@ protected:
         }
         if (fieldIndex != NotUsedFieldIndex
                 && type != UnknownWireType) {
-            result.prepend(getTypeByte(fieldIndex, type));
+            result.prepend(encodeHeaderByte(fieldIndex, type));
         }
         return result;
     }
 
-    QByteArray serializeLengthDelimited(const QByteArray& data) {
+    QByteArray serializeLengthDelimited(const QByteArray &data) {
         //Varint serialize field size and apply result as starting point
         QByteArray result = serializeVarint(static_cast<unsigned int>(data.size()));
         result.append(data);
         return result;
     }
 
-    QByteArray serializeUserType(const QVariant& propertyValue, int& fieldIndex) {
+    QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex) {
         int userType = propertyValue.userType();
         if (userType == qMetaTypeId<IntList>()) {
             return serializeListType(propertyValue.value<IntList>(), fieldIndex);
@@ -265,6 +275,8 @@ protected:
     }
 public:
     virtual QByteArray serializePrivate() = 0;
+    virtual void deserializePrivate(QByteArray::iterator &it) = 0;
+
 };
 
 template <typename T>
@@ -275,19 +287,23 @@ protected:
         return serialize();
     }
 
+    void deserializePrivate(QByteArray::iterator &it) override {
+
+    }
+
 public:
     explicit ProtobufObject(QObject *parent = nullptr) : ProtobufObjectPrivate(parent) {}
 
     QByteArray serialize() {
         QByteArray result;
-        T* instance = dynamic_cast<T*>(this);
+        T *instance = dynamic_cast<T *>(this);
         for (auto field : T::propertyOrdering) {
             int propertyIndex = field.second;
             int fieldIndex = field.first;
             ASSERT_FIELD_NUMBER(fieldIndex);
             QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
-            const char* propertyName = metaProperty.name();
-            const QVariant& propertyValue = instance->property(propertyName);
+            const char *propertyName = metaProperty.name();
+            const QVariant &propertyValue = instance->property(propertyName);
             //TODO: flag isFixed looks ugly. Need to define more effective strategy
             //for type detection.
             result.append(serializeValue(propertyValue, fieldIndex, QString(metaProperty.typeName()).contains("Fixed")));
@@ -296,9 +312,52 @@ public:
         return result;
     }
 
-    void deserialize(const QByteArray& array) {
-        T* instance = dynamic_cast<T*>(this);
-        //TODO
+    void deserialize(const QByteArray &array) {
+        T *instance = dynamic_cast<T *>(this);
+
+        for(QByteArray::const_iterator it = array.begin(); it != array.end();) {
+            //Each iteration we expect iterator is setup to beginning of next chunk
+            int fieldNumber = NotUsedFieldIndex;
+            WireTypes wireType = UnknownWireType;
+            if (!decodeHeaderByte(*it, fieldNumber, wireType)) {
+                ++it;
+                qCritical() << "Message received doesn't contains valid header byte. "
+                               "Trying next, but seems stream is broken";
+                continue;
+            }
+
+            auto propertyNumberIt = T::propertyOrdering.find(fieldNumber);
+            if (propertyNumberIt == std::end(T::propertyOrdering)) {
+                ++it;
+                qCritical() << "Message received contains invalid field number. "
+                               "Trying next, but seems stream is broken";
+                continue;
+            }
+
+            int propertyIndex = propertyNumberIt->second;
+            QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
+
+            ++it;
+            deserializeProperty(metaProperty, it);
+        }
+    }
+
+    void deserializeProperty(const QMetaProperty &metaProperty, QByteArray::const_iterator &it)
+    {
+        QVariant newPropertyValue;
+        switch(metaProperty.userType()) {
+        case QMetaType::UInt:
+            //TODO: replace with template function for all fixed types
+            newPropertyValue.setValue(*(unsigned int*)it);
+            it += sizeof(unsigned int);
+            break;
+        case QMetaType::ULongLong:
+            //TODO: replace with template function for all fixed types
+            newPropertyValue.setValue(*(qulonglong*)it);
+            it += sizeof(qulonglong);
+            break;
+        }
+        setProperty(metaProperty.name(), newPropertyValue);
     }
 };
 
