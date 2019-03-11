@@ -38,10 +38,15 @@ public:
         Q_ASSERT_X(!registationDone, "QtProtobuf", "Protobuf registation is already done");
         if (!registationDone) {
             qRegisterMetaType<IntList>("IntList");
+            qRegisterMetaType<IntList>("qtprotobuf::IntList");
             qRegisterMetaType<FloatList>("FloatList");
+            qRegisterMetaType<FloatList>("qtprotobuf::FloatList");
             qRegisterMetaType<DoubleList>("DoubleList");
+            qRegisterMetaType<DoubleList>("qtprotobuf::DoubleList");
             qRegisterMetaType<FixedInt32>("FixedInt32");
+            qRegisterMetaType<FixedInt32>("qtprotobuf::FixedInt32");
             qRegisterMetaType<FixedInt64>("FixedInt64");
+            qRegisterMetaType<FixedInt64>("qtprotobuf::FixedInt64");
             registationDone = true;
         }
     }

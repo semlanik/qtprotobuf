@@ -64,7 +64,7 @@ protected:
         return *(char *)&header;
     }
 
-    inline QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex) {
+    inline QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex, bool isFixed = false) {
         QByteArray result;
         WireTypes type = UnknownWireType;
         switch (propertyValue.type()) {
@@ -96,6 +96,22 @@ protected:
         case QMetaType::User:
             type = LengthDelimited;
             result.append(serializeUserType(propertyValue));
+            break;
+        case QMetaType::UInt:
+            type = Fixed32;
+            if (isFixed) {
+                result.append(serializeFixed(propertyValue.toUInt()));
+            } else {
+                result.append(serializeVarint(propertyValue.toUInt()));
+            }
+            break;
+        case QMetaType::ULongLong:
+            type = Fixed64;
+            if (isFixed) {
+                result.append(serializeFixed(propertyValue.toULongLong()));
+            } else {
+                result.append(serializeVarint(propertyValue.toULongLong()));
+            }
             break;
         default:
             Q_ASSERT_X(false, staticMetaObject.className(), "Serialization of unknown type is impossible");
@@ -158,7 +174,9 @@ protected:
     }
 
     template <typename V,
-              typename std::enable_if_t<std::is_floating_point<V>::value, int> = 0>
+              typename std::enable_if_t<std::is_floating_point<V>::value
+                                        || std::is_same<V, unsigned int>::value
+                                        || std::is_same<V, qulonglong>::value, int> = 0>
     QByteArray serializeFixed(V value) {
         //Reserve required amount of bytes
         QByteArray result(sizeof(V), '\0');
@@ -223,7 +241,9 @@ public:
             QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
             const char* propertyName = metaProperty.name();
             const QVariant& propertyValue = instance->property(propertyName);
-            result.append(serializeValue(propertyValue, fieldIndex));
+            //TODO: flag isFixed looks ugly. Need to define more effective strategy
+            //for type detection.
+            result.append(serializeValue(propertyValue, fieldIndex, QString(metaProperty.typeName()).contains("Fixed")));
         }
 
         return result;

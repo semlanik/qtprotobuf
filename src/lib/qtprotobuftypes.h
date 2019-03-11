@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <qglobal.h>
 #include <QList>
 #include <QMetaType>
 
@@ -35,7 +36,7 @@ using FloatList = QList<float>;
 using DoubleList = QList<double>;
 
 using FixedInt32 = unsigned int;
-using FixedInt64 = uint64_t;
+using FixedInt64 = qulonglong;
 }
 
 Q_DECLARE_METATYPE(qtprotobuf::IntList)
