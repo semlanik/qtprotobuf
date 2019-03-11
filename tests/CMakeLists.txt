@@ -3,7 +3,18 @@ set(testtarget "qtprotobuf_test")
 if (WIN32)
     find_package(GTest)
 elseif (UNIX)
-    find_package(GTest REQUIRED)
+    find_package(GTest)
+    if (NOT GTest_FOUND)
+        message(STATUS "Gtest not found. Start downloading...")
+        include(../cmake/DownloadProject.cmake)
+        set(UPDATE_DISCONNECTED_IF_AVAILABLE "")
+        download_project(PROJ                GTest
+                         GIT_REPOSITORY      https://github.com/google/googletest.git
+                         GIT_TAG             v1.8.x
+                         ${UPDATE_DISCONNECTED_IF_AVAILABLE}
+        )
+        add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
+    endif()
 endif()
 
 find_package(Qt5 COMPONENTS Core REQUIRED)
@@ -48,6 +59,6 @@ add_executable(${testtarget} ${SOURCES} ${MOC_SOURCES} ${GENERATED_SOURCES} ${PR
 if (WIN32)
     target_link_libraries(${testtarget} "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib"  Qt5::Core)
 elseif (UNIX)
-    target_link_libraries(${testtarget} ${GTEST_BOTH_LIBRARIES} qtprotobufsupport Qt5::Core)
+    target_link_libraries(${testtarget} gtest qtprotobufsupport Qt5::Core)
 endif()
 add_dependencies(${testtarget} ${testgeneration})
