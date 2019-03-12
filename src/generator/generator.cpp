@@ -185,7 +185,6 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         QtSourcesGenerator classSourceGen(file->package(), message,
                                   std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(sourceFileName))));
         classSourceGen.run();
-
     }
 
     std::string globalEnumsFilename = "globalenums.h";

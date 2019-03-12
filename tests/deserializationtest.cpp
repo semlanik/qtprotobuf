@@ -156,5 +156,56 @@ TEST_F(DeserializationTest, IntMessageDeserializeTest)
     SimpleIntMessage test;
     test.deserialize(QByteArray::fromHex("081e"));
     ASSERT_EQ(15, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08d804"));
+    ASSERT_EQ(300, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08928008"));
+    ASSERT_EQ(65545, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("0800"));
+    ASSERT_EQ(0, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("088002"));
+    ASSERT_EQ(INT8_MAX + 1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08808004"));
+    ASSERT_EQ(INT16_MAX + 1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08fe01"));
+    ASSERT_EQ(INT8_MAX, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08feff03"));
+    ASSERT_EQ(INT16_MAX, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08feffffff0f"));
+    ASSERT_EQ(INT32_MAX, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("0801"));
+    ASSERT_EQ(-1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("0801"));
+    ASSERT_EQ(-1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("089b07"));
+    ASSERT_EQ(-462, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08c1e107"));
+    ASSERT_EQ(-63585, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08ff01"));
+    ASSERT_EQ(INT8_MIN, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08ffff03"));
+    ASSERT_EQ(INT16_MIN, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08ffffffff0f"));
+    ASSERT_EQ(INT32_MIN, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("088102"));
+    ASSERT_EQ(INT8_MIN - 1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08818004"));
+    ASSERT_EQ(INT16_MIN - 1, test.testFieldInt());
 }
 

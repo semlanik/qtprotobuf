@@ -273,10 +273,84 @@ protected:
         result.data()[result.size() - 1] &= ~0x80;
         return result;
     }
+
+//####################################################
+//               Deserialization
+//####################################################
+    void deserializeProperty(WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it)
+    {
+        QVariant newPropertyValue;
+        switch(metaProperty.userType()) {
+        case QMetaType::UInt:
+            if (wireType == Fixed32) {
+                newPropertyValue = deserializeFixed<FixedInt32>(it);
+            } else {
+                newPropertyValue = deserializeVarint<unsigned int>(it);
+            }
+            break;
+        case QMetaType::ULongLong:
+            if (wireType == Fixed64) {
+                newPropertyValue = deserializeFixed<FixedInt64>(it);
+            } else {
+                //TODO: deserialize varint
+            }
+            break;
+        case QMetaType::Float:
+            newPropertyValue = deserializeFixed<float>(it);
+            break;
+        case QMetaType::Double:
+            newPropertyValue = deserializeFixed<double>(it);
+            break;
+        case QMetaType::Int:
+            newPropertyValue = deserializeVarint<int>(it);
+            break;
+        default:
+            break;
+        }
+        setProperty(metaProperty.name(), newPropertyValue);
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_floating_point<V>::value
+                                        || std::is_same<V, unsigned int>::value
+                                        || std::is_same<V, qulonglong>::value, int> = 0>
+    QVariant deserializeFixed(QByteArray::const_iterator &it) {
+        QVariant newPropertyValue(QVariant::fromValue(*(V*)it));
+        it += sizeof(V);
+        return newPropertyValue;
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
+    QVariant deserializeVarint(QByteArray::const_iterator &it) {
+        return QVariant::fromValue(deserializeVarintCommon<V>(it));
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
+    QVariant deserializeVarint(QByteArray::const_iterator &it) {
+        using UV = typename std::make_unsigned<V>::type;
+        UV unsignedValue = deserializeVarintCommon<UV>(it);
+        V value = (unsignedValue >> 1) ^ (-(unsignedValue & 1));
+
+        return QVariant::fromValue(value);
+    }
+
+    template <typename V>
+    V deserializeVarintCommon(QByteArray::const_iterator &it) {
+        V value = 0;
+        while((*it) & 0x80) {
+            value += (*it) & 0x7f;
+            ++it;
+        }
+        value += (*it) & 0x7f;
+        it++;
+        return value;
+    }
+
 public:
     virtual QByteArray serializePrivate() = 0;
     virtual void deserializePrivate(QByteArray::iterator &it) = 0;
-
 };
 
 template <typename T>
@@ -340,76 +414,6 @@ public:
             ++it;
             deserializeProperty(wireType, metaProperty, it);
         }
-    }
-
-    void deserializeProperty(WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it)
-    {
-        QVariant newPropertyValue;
-        switch(metaProperty.userType()) {
-        case QMetaType::UInt:
-            if (wireType == Fixed32) {
-                newPropertyValue = deserializeFixed<FixedInt32>(it);
-            } else {
-                newPropertyValue = deserializeVarint<unsigned int>(it);
-            }
-            break;
-        case QMetaType::ULongLong:
-            if (wireType == Fixed64) {
-                newPropertyValue = deserializeFixed<FixedInt64>(it);
-            } else {
-                //TODO: deserialize varint
-            }
-            break;
-        case QMetaType::Float:
-            newPropertyValue = deserializeFixed<float>(it);
-            break;
-        case QMetaType::Double:
-            newPropertyValue = deserializeFixed<double>(it);
-            break;
-        case QMetaType::Int:
-            newPropertyValue = deserializeVarint<int>(it);
-            break;
-        default:
-            break;
-        }
-        setProperty(metaProperty.name(), newPropertyValue);
-    }
-
-    template <typename V,
-              typename std::enable_if_t<std::is_floating_point<V>::value
-                                        || std::is_same<V, unsigned int>::value
-                                        || std::is_same<V, qulonglong>::value, int> = 0>
-    QVariant deserializeFixed(QByteArray::const_iterator &it) {
-        QVariant newPropertyValue(QVariant::fromValue(*(V*)it));
-        it += sizeof(V);
-        return newPropertyValue;
-    }
-
-    template <typename V,
-              typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
-    QVariant deserializeVarint(QByteArray::const_iterator &it) {
-        V value = 0;
-        while((*it) & 0x80) {
-            value += (*it) & 0x7f;
-            ++it;
-        }
-        value += (*it) & 0x7f;
-        it++;
-        return QVariant::fromValue(value);
-    }
-
-    template <typename V,
-              typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
-    QVariant deserializeVarint(QByteArray::const_iterator &it) {
-        V value = 0;
-        while((*it) & 0x80) {
-            value += (*it) & 0x7f;
-            ++it;
-        }
-        value += (*it) & 0x7f;
-        it++;
-
-        return QVariant::fromValue(value);
     }
 };
 
