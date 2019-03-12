@@ -458,7 +458,7 @@ TEST_F(SerializationTest, ComplexTypeSerializeTest)
 TEST_F(SerializationTest, RepeatedIntMessageTest)
 {
     RepeatedIntMessage test;
-    test.setTestRepeatedInt({1,400,3,4,5,6});
+    test.setTestRepeatedInt({1, 400, 3, 4, 5, 6});
     QByteArray result = test.serialize();
 //    qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a0702a00606080a0c"));

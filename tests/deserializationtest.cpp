@@ -34,6 +34,9 @@
 #include "complexmessage.h"
 #include "repeatedstringmessage.h"
 #include "repeatedbytesmessage.h"
+#include "repeateddoublemessage.h"
+#include "repeatedfloatmessage.h"
+#include "repeatedintmessage.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf::tests;
@@ -270,4 +273,28 @@ TEST_F(DeserializationTest, RepeatedBytesMessageTest)
                                                              QByteArray::fromHex(""),
                                                              QByteArray::fromHex("eaeaeaeaea"),
                                                              QByteArray::fromHex("010203040506")}));
+}
+
+TEST_F(DeserializationTest, RepeatedFloatMessageTest)
+{
+    RepeatedFloatMessage test;
+    test.deserialize(QByteArray::fromHex("0a14cdcccc3e9a99993f0000003f3333b33f9a99193f"));
+    ASSERT_EQ(5, test.testRepeatedFloat().count());
+    ASSERT_TRUE(test.testRepeatedFloat() == FloatList({0.4f, 1.2f, 0.5f, 1.4f, 0.6f}));
+}
+
+TEST_F(DeserializationTest, RepeatedDoubleMessageTest)
+{
+    RepeatedDoubleMessage test;
+    test.deserialize(QByteArray::fromHex("0a289a9999999999b93f9a9999999999c93f333333333333d33f9a9999999999d93f000000000000e03f"));
+    ASSERT_EQ(5, test.testRepeatedDouble().count());
+    ASSERT_TRUE(test.testRepeatedDouble() == DoubleList({0.1, 0.2, 0.3, 0.4, 0.5}));
+}
+
+TEST_F(DeserializationTest, RepeatedIntMessageTest)
+{
+    RepeatedIntMessage test;
+    test.deserialize(QByteArray::fromHex("0a0702a00606080a0c"));
+    ASSERT_EQ(6, test.testRepeatedInt().count());
+    ASSERT_TRUE(test.testRepeatedInt() == IntList({1, 400, 3, 4, 5, 6}));
 }

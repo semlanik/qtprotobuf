@@ -380,11 +380,11 @@ protected:
     void deserializeUserType(int userType, QByteArray::const_iterator& it, QVariant &newValue)
     {
         if (userType == qMetaTypeId<IntList>()) {
-              //TODO: implement
+            newValue = deserializeVarintListType<int>(it);
         } else if(userType == qMetaTypeId<FloatList>()) {
-              //TODO: implement
+            newValue = deserializeListType<float>(it);
         } else if(userType == qMetaTypeId<DoubleList>()) {
-              //TODO: implement
+            newValue = deserializeListType<double>(it);
         } else {
             auto value = reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType));
             value->deserializePrivate(deserializeLengthDelimited(it));
@@ -398,6 +398,34 @@ protected:
     QByteArray deserializeListType(QByteArray::const_iterator& it) {
         return deserializeLengthDelimited(it);
     }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_floating_point<V>::value
+                                        || std::is_same<V, unsigned int>::value
+                                        || std::is_same<V, qulonglong>::value, int> = 0>
+    QVariant deserializeListType(QByteArray::const_iterator& it) {
+        QList<V> out;
+        unsigned int count = deserializeVarint<unsigned int>(it).toUInt() / sizeof(V);
+        for (int i = 0; i < count; i++) {
+            QVariant variant = deserializeFixed<V>(it);
+            out.append(variant.value<V>());
+        }
+        return QVariant::fromValue(out);
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_same<V, int>::value, int> = 0>
+    QVariant deserializeVarintListType(QByteArray::const_iterator& it) {
+        QList<V> out;
+        unsigned int count = deserializeVarint<unsigned int>(it).toUInt();
+        QByteArray::const_iterator lastVarint = it + count;
+        while(it != lastVarint) {
+            QVariant variant = deserializeVarint<V>(it);
+            out.append(variant.value<V>());
+        }
+        return QVariant::fromValue(out);
+    }
+
 public:
     virtual QByteArray serializePrivate() = 0;
     virtual void deserializePrivate(const QByteArray &data) = 0;
