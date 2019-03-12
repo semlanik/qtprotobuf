@@ -157,13 +157,13 @@ protected:
         } else if(userType == qMetaTypeId<DoubleList>()) {
             return serializeListType(propertyValue.value<DoubleList>(), fieldIndex);
         } else {
-            Q_ASSERT_X(QMetaType::UnknownType == userType, staticMetaObject.className(), "Serialization of unknown user type");
             const void *src = propertyValue.constData();
             //TODO: each time huge objects will make own copies
             //Probably generate fields reflection is better solution
             auto value = std::unique_ptr<ProtobufObjectPrivate>(reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src)));
             return serializeLengthDelimited(value->serializePrivate());
         }
+        Q_ASSERT_X(QMetaType::UnknownType == userType, staticMetaObject.className(), "Serialization of unknown user type");
         return QByteArray();
     }
 
@@ -189,7 +189,6 @@ protected:
              typename std::enable_if_t<std::is_same<V, QString>::value
                                        || std::is_same<V, QByteArray>::value, int> = 0>
     QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) {
-        qDebug() << "Serialize list type LengthDelimited" << listValue.count();
         if (listValue.count() <= 0) {
             outFieldIndex = NotUsedFieldIndex;
             return QByteArray();
@@ -197,7 +196,6 @@ protected:
 
         QByteArray serializedList;
         for(auto& value : listValue) {
-            qDebug() << "Serialize list type integral serializedList.append " << value;
             serializedList.append(serializeValue(value, outFieldIndex));
         }
 
@@ -280,7 +278,8 @@ protected:
     void deserializeProperty(WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it)
     {
         QVariant newPropertyValue;
-        switch(metaProperty.userType()) {
+        int type = metaProperty.type();
+        switch(type) {
         case QMetaType::UInt:
             if (wireType == Fixed32) {
                 newPropertyValue = deserializeFixed<FixedInt32>(it);
@@ -304,10 +303,19 @@ protected:
         case QMetaType::Int:
             newPropertyValue = deserializeVarint<int>(it);
             break;
+        case QMetaType::QString:
+            newPropertyValue = QString::fromUtf8(deserializeLengthDelimited(it));
+            break;
+        case QMetaType::QByteArray:
+            newPropertyValue = deserializeLengthDelimited(it);
+            break;
+        case QMetaType::User:
+            deserializeUserType(metaProperty.userType(), it, newPropertyValue);
+            break;
         default:
             break;
         }
-        setProperty(metaProperty.name(), newPropertyValue);
+        metaProperty.write(this, newPropertyValue);
     }
 
     template <typename V,
@@ -339,18 +347,33 @@ protected:
     template <typename V>
     V deserializeVarintCommon(QByteArray::const_iterator &it) {
         V value = 0;
+        int k = 0;
         while((*it) & 0x80) {
-            value += (*it) & 0x7f;
+            value += ((*it) & 0x7f) << (7 * k);
+            ++k;
             ++it;
         }
-        value += (*it) & 0x7f;
-        it++;
+        value += ((*it) & 0x7f) << (7 * k);
+        ++it;
         return value;
     }
 
+    QByteArray deserializeLengthDelimited(QByteArray::const_iterator &it) {
+        unsigned int length = deserializeVarint<unsigned int>(it).toUInt();
+        QByteArray result(it, length);
+        it += length;
+        return result;
+    }
+
+    void deserializeUserType(int userType, QByteArray::const_iterator& it, QVariant &newValue)
+    {
+        auto value = reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType));
+        value->deserializePrivate(deserializeLengthDelimited(it));
+        newValue = QVariant(userType, value);
+    }
 public:
     virtual QByteArray serializePrivate() = 0;
-    virtual void deserializePrivate(QByteArray::iterator &it) = 0;
+    virtual void deserializePrivate(const QByteArray &data) = 0;
 };
 
 template <typename T>
@@ -361,8 +384,8 @@ protected:
         return serialize();
     }
 
-    void deserializePrivate(QByteArray::iterator &it) override {
-
+    void deserializePrivate(const QByteArray &data) override {
+        deserialize(data);
     }
 
 public:
