@@ -468,7 +468,7 @@ TEST_F(SerializationTest, RepeatedIntMessageTest)
     ASSERT_TRUE(result.isEmpty());
 }
 
-TEST_F(SerializationTest, RepeatedStringMessage)
+TEST_F(SerializationTest, RepeatedStringMessageTest)
 {
     RepeatedStringMessage test;
     test.setTestRepeatedString({"aaaa","bbbbb","ccc","dddddd","eeeee"});

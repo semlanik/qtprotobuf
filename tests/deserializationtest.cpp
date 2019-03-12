@@ -32,6 +32,8 @@
 #include "simpleintmessage.h"
 #include "simplestringmessage.h"
 #include "complexmessage.h"
+#include "repeatedstringmessage.h"
+#include "repeatedbytesmessage.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf::tests;
@@ -240,4 +242,32 @@ TEST_F(DeserializationTest, ComplexTypeDeserializeTest)
     test.deserialize(QByteArray::fromHex("0854128404328104595652664a766a78716267764677533159764f5a5867746a356666474c533741694e487a396f5a496f4b626d377a3848373978427579506b70515876476f4f30394f5939785261777833654f417339786a6f544131784a68727732385441637131436562596c43395755665143366849616e74614e647948694b546f666669305a74376c613432535278585a53503447757862635a49703533704a6e79437766437931716446637a5430646d6e3768386670794164656d456176774665646134643050417047665355326a4c74333958386b595542784e4d325767414c524267486456646538377136506935553639546a684d6432385731534644314478796f67434372714f6374325a5049436f4c6e72716446334f644e7a6a52564c6665797651384c674c76524e4652395766574179417a37396e4b6742616d64384e746c7674344d6733354535675653326737415137726b6d37326342646e5739734345794761626558417548356a34475262754c543771425a574463464c463453734364533357664647644e48667761696a7a796b42796f3731507646566c54584832574a576f4676523546414c6a42546e37624364503070416953624c435938587a324d73633364426235466639474953506255704e6d557642644d5a4d485176714f6d544e584550704e306237344d444f4d5166574a53684f6f334e6b41764d6a73"));
     ASSERT_EQ(42, test.testFieldInt());
     ASSERT_TRUE(QString::fromUtf8("YVRfJvjxqbgvFwS1YvOZXgtj5ffGLS7AiNHz9oZIoKbm7z8H79xBuyPkpQXvGoO09OY9xRawx3eOAs9xjoTA1xJhrw28TAcq1CebYlC9WUfQC6hIantaNdyHiKToffi0Zt7la42SRxXZSP4GuxbcZIp53pJnyCwfCy1qdFczT0dmn7h8fpyAdemEavwFeda4d0PApGfSU2jLt39X8kYUBxNM2WgALRBgHdVde87q6Pi5U69TjhMd28W1SFD1DxyogCCrqOct2ZPICoLnrqdF3OdNzjRVLfeyvQ8LgLvRNFR9WfWAyAz79nKgBamd8Ntlvt4Mg35E5gVS2g7AQ7rkm72cBdnW9sCEyGabeXAuH5j4GRbuLT7qBZWDcFLF4SsCdS3WfFGdNHfwaijzykByo71PvFVlTXH2WJWoFvR5FALjBTn7bCdP0pAiSbLCY8Xz2Msc3dBb5Ff9GISPbUpNmUvBdMZMHQvqOmTNXEPpN0b74MDOMQfWJShOo3NkAvMjs") == test.testComplexField().testFieldString());
+}
+
+TEST_F(DeserializationTest, RepeatedStringMessageTest)
+{
+    RepeatedStringMessage test;
+    test.deserialize(QByteArray::fromHex("0a04616161610a0562626262620a036363630a066464646464640a056565656565"));
+    ASSERT_EQ(5, test.testRepeatedString().count());
+    ASSERT_TRUE(test.testRepeatedString() == QStringList({"aaaa","bbbbb","ccc","dddddd","eeeee"}));
+}
+
+TEST_F(DeserializationTest, RepeatedBytesMessageTest)
+{
+    RepeatedBytesMessage test;
+    test.deserialize(QByteArray::fromHex("0a060102030405060a04ffffffff0a05eaeaeaeaea0a06010203040506"));
+    ASSERT_EQ(4, test.testRepeatedBytes().count());
+    ASSERT_TRUE(test.testRepeatedBytes() == QByteArrayList({QByteArray::fromHex("010203040506"),
+                                                             QByteArray::fromHex("ffffffff"),
+                                                             QByteArray::fromHex("eaeaeaeaea"),
+                                                             QByteArray::fromHex("010203040506")}));
+    //TODO: Serialization for list types works partially incorrect because of appending of values to existing
+    //Need to make decision if deserialize should reset all protobuf properties or not
+    RepeatedBytesMessage test2;
+    test2.deserialize(QByteArray::fromHex("0a060102030405060a000a05eaeaeaeaea0a06010203040506"));
+    ASSERT_EQ(4, test2.testRepeatedBytes().count());
+    ASSERT_TRUE(test2.testRepeatedBytes() == QByteArrayList({QByteArray::fromHex("010203040506"),
+                                                             QByteArray::fromHex(""),
+                                                             QByteArray::fromHex("eaeaeaeaea"),
+                                                             QByteArray::fromHex("010203040506")}));
 }

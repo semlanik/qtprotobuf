@@ -312,6 +312,18 @@ protected:
         case QMetaType::User:
             deserializeUserType(metaProperty.userType(), it, newPropertyValue);
             break;
+        case QMetaType::QByteArrayList: {
+            QByteArrayList currentValue = metaProperty.read(this).value<QByteArrayList>();
+            currentValue.append(deserializeListType<QByteArray>(it));
+            metaProperty.write(this, QVariant::fromValue<QByteArrayList>(currentValue));
+        }
+            return;
+        case QMetaType::QStringList: {
+            QStringList currentValue = metaProperty.read(this).value<QStringList>();
+            currentValue.append(QString::fromUtf8(deserializeListType<QString>(it)));
+            metaProperty.write(this, currentValue);
+        }
+            return;
         default:
             break;
         }
@@ -367,9 +379,24 @@ protected:
 
     void deserializeUserType(int userType, QByteArray::const_iterator& it, QVariant &newValue)
     {
-        auto value = reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType));
-        value->deserializePrivate(deserializeLengthDelimited(it));
-        newValue = QVariant(userType, value);
+        if (userType == qMetaTypeId<IntList>()) {
+              //TODO: implement
+        } else if(userType == qMetaTypeId<FloatList>()) {
+              //TODO: implement
+        } else if(userType == qMetaTypeId<DoubleList>()) {
+              //TODO: implement
+        } else {
+            auto value = reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType));
+            value->deserializePrivate(deserializeLengthDelimited(it));
+            newValue = QVariant(userType, value);
+        }
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_same<V, QString>::value
+                                        || std::is_same<V, QByteArray>::value, int> = 0>
+    QByteArray deserializeListType(QByteArray::const_iterator& it) {
+        return deserializeLengthDelimited(it);
     }
 public:
     virtual QByteArray serializePrivate() = 0;
