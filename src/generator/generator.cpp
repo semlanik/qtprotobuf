@@ -26,6 +26,8 @@
 #include "generator.h"
 #include "templates.h"
 #include "classgeneratorbase.h"
+#include "servergenerator.h"
+#include "utils.h"
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
@@ -113,7 +115,7 @@ public:
 
     void printClassHeaderInclude() {
         std::string includeFileName = mClassName;
-        std::transform(std::begin(includeFileName), std::end(includeFileName), std::begin(includeFileName), ::tolower);
+        utils::tolower(includeFileName);
         mPrinter.Print({{"type_lower", includeFileName}}, InternalIncludeTemplate);
     }
 
@@ -180,7 +182,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
     for(int i = 0; i < file->message_type_count(); i++) {
         const Descriptor *message = file->message_type(i);
         std::string baseFilename(message->name());
-        std::transform(std::begin(baseFilename), std::end(baseFilename), std::begin(baseFilename), ::tolower);
+        utils::tolower(baseFilename);
 
         std::string filename = baseFilename + ".h";
         QtClassGenerator classGen(file->package(), message,
@@ -194,6 +196,18 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         classSourceGen.run();
     }
 
+    for(int i = 0; i < file->service_count(); i++) {
+        const ServiceDescriptor* service = file->service(i);
+        std::string baseFilename(service->name());
+        utils::tolower(baseFilename);
+
+        std::string headeFilename = baseFilename + ".h";
+        ServerGenerator serverGen(file->package(), service,
+                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(headeFilename))));
+        serverGen.run();
+
+
+    }
     return true;
 }
 
@@ -201,14 +215,14 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
 {
     std::string globalEnumsFilename = "globalenums.h";
     GlobalEnumsGenerator enumGen(std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
-    std::unordered_map<std::string/*package*/, std::list<const FileDescriptor */*file*/>> packageList;
+    std::unordered_map<std::string/*package*/, std::list<const FileDescriptor *>> packageList;
     for (auto file : files) {
         packageList[file->package()].push_back(file);
     }
 
     for (auto package : packageList) {
         enumGen.startEnum(package.first);
-        for(auto file : package.second) {
+        for (auto file : package.second) {
             enumGen.run(file);
         }
         enumGen.encloseEnum();

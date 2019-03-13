@@ -65,7 +65,7 @@ bool ClassGeneratorBase::producePropertyMap(const FieldDescriptor *field, Proper
     }
 
     std::string typeNameLower(typeName);
-    std::transform(std::begin(typeName), std::end(typeName), std::begin(typeNameLower), ::tolower);
+    utils::tolower(typeNameLower);
 
     std::string capProperty = field->camelcase_name();
     capProperty[0] = ::toupper(capProperty[0]);
@@ -87,13 +87,13 @@ void ClassGeneratorBase::printIncludes(const Descriptor *message, std::set<std::
     assert(message != nullptr);
     PropertyMap properties;
     std::set<std::string> existingIncludes;
-    std::string newinclude;
+    std::string newInclude;
     const char* includeTemplate;
     for (int i = 0; i < message->field_count(); i++) {
         const FieldDescriptor* field = message->field(i);
         if (producePropertyMap(field, properties)) {
             if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
-                newinclude = properties["type_lower"];
+                newInclude = properties["type_lower"];
                 includeTemplate = InternalIncludeTemplate;
             } else if (field->type() == FieldDescriptor::TYPE_STRING) {
                 includeTemplate = ExternalIncludeTemplate;
@@ -102,9 +102,9 @@ void ClassGeneratorBase::printIncludes(const Descriptor *message, std::set<std::
             }
 
             if (!field->is_repeated()) {
-                if (existingIncludes.find(newinclude) == std::end(existingIncludes)) {
+                if (existingIncludes.find(newInclude) == std::end(existingIncludes)) {
                     mPrinter.Print(properties, includeTemplate);
-                    existingIncludes.insert(newinclude);
+                    existingIncludes.insert(newInclude);
                 }
             } else {
                 std::string stringInclude = properties["type"];
@@ -124,7 +124,7 @@ void ClassGeneratorBase::printIncludes(const Descriptor *message, std::set<std::
 
     for(auto modelTypeName : listModel) {
         std::string modelTypeNameLower(modelTypeName);
-        std::transform(std::begin(modelTypeNameLower), std::end(modelTypeNameLower), std::begin(modelTypeNameLower), ::tolower);
+        utils::tolower(modelTypeNameLower);
         mPrinter.Print({{"type_lower", modelTypeNameLower}}, InternalIncludeTemplate);
     }
 }

@@ -11,8 +11,10 @@ find_package(Protobuf)
 
 add_subdirectory("src/lib")
 
-add_executable(${PROJECT_NAME} "src/generator/main.cpp" "src/generator/generator.cpp"
-    "src/generator/classgeneratorbase.cpp")
+add_executable(${PROJECT_NAME} src/generator/main.cpp
+    src/generator/generator.cpp
+    src/generator/classgeneratorbase.cpp
+    src/generator/servergenerator.cpp)
 
 if (WIN32)
     #Needs to set path to protobuf libraries

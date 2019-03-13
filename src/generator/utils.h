@@ -23,6 +23,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#pragma once
+
 #include <string>
 #include <vector>
 #include <sstream>
@@ -30,7 +32,7 @@
 namespace qtprotobuf {
 namespace utils {
 
-void split(const std::string &str, std::vector<std::string> &container, char delim)
+static void split(const std::string &str, std::vector<std::string> &container, char delim)
 {
     std::stringstream stream(str);
     std::string token;
@@ -39,12 +41,16 @@ void split(const std::string &str, std::vector<std::string> &container, char del
     }
 }
 
-void replace(std::string & data, std::string from, std::string to) {
+static void replace(std::string & data, std::string from, std::string to) {
     size_t pos = data.find(from);
     while (pos != std::string::npos) {
         data.replace(pos, from.size(), to);
         pos = data.find(from, pos + to.size());
     }
+}
+
+static void tolower(std::string& str) {
+    std::transform(std::begin(str), std::end(str), std::begin(str), ::tolower);
 }
 
 }

@@ -26,6 +26,7 @@
 #pragma once
 
 #include <google/protobuf/io/printer.h>
+#include <memory>
 
 #include "templates.h"
 

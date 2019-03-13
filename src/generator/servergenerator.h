@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -25,29 +25,40 @@
 
 #pragma once
 
-#include <google/protobuf/compiler/code_generator.h>
+#include "classgeneratorbase.h"
 #include <string>
 #include <memory>
+#include <google/protobuf/io/printer.h>
 
 namespace google { namespace protobuf {
-class FileDescriptor;
-namespace compiler {
-class GeneratorContext;
+class FieldDescriptor;
+class Descriptor;
+class ServiceDescriptor;
+class Message;
+namespace io {
+class ZeroCopyOutputStream;
 }}}
 
 namespace qtprotobuf {
 
-class QtGenerator : public ::google::protobuf::compiler::CodeGenerator
+class ServerGenerator : public ClassGeneratorBase
 {
-    virtual bool Generate(const ::google::protobuf::FileDescriptor *file,
-                          const std::string &parameter,
-                          ::google::protobuf::compiler::GeneratorContext *generatorContext,
-                          std::string *error) const override;
+    const google::protobuf::ServiceDescriptor *mService;
+    std::string mPackage;
+public:
+    ServerGenerator(const std::string &package, const google::protobuf::ServiceDescriptor *service, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
 
-    virtual bool GenerateAll(const std::vector<const ::google::protobuf::FileDescriptor *> &files,
-                             const std::string &parameter,
-                             ::google::protobuf::compiler::GeneratorContext *generatorContext,
-                             std::string *error) const override;
+    void run() {
+        printPreamble();
+        printIncludes(mService);
+        printNamespaces(mPackage);
+        mPrinter.Print({{"classname", mClassName}}, NonProtoClassDefinitionTemplate);
+        encloseClass();
+        enclose();
+    }
+
+protected:
+    void printIncludes(const google::protobuf::ServiceDescriptor *service);
 };
 
-}  // namespace qtprotobuf
+}

@@ -125,7 +125,7 @@ TEST_F(SimpleTest, SimpleEnumsTest)
 {
     ASSERT_GT(GlobalEnums::staticMetaObject.enumeratorCount(), 0);
     QMetaEnum simpleEnum;
-    for(int i = 0; i < GlobalEnums::staticMetaObject.enumeratorCount(); i++) {
+    for (int i = 0; i < GlobalEnums::staticMetaObject.enumeratorCount(); i++) {
         QMetaEnum tmp = GlobalEnums::staticMetaObject.enumerator(i);
         if (QString(tmp.name()) == QString("TestEnum")) {
             simpleEnum = tmp;
