@@ -24,30 +24,11 @@
  */
 
 #pragma once
+#include <QLoggingCategory>
 
-#include <qtprotobuftypes.h>
+Q_DECLARE_LOGGING_CATEGORY(qtprotobuflog)
 
-namespace qtprotobuf {
-
-class QtProtobuf {
-public:
-    static void init() {
-        static bool registationDone = false;
-        Q_ASSERT_X(!registationDone, "QtProtobuf", "Protobuf registation is already done");
-        if (!registationDone) {
-            qRegisterMetaType<IntList>("IntList");
-            qRegisterMetaType<IntList>("qtprotobuf::IntList");
-            qRegisterMetaType<FloatList>("FloatList");
-            qRegisterMetaType<FloatList>("qtprotobuf::FloatList");
-            qRegisterMetaType<DoubleList>("DoubleList");
-            qRegisterMetaType<DoubleList>("qtprotobuf::DoubleList");
-            qRegisterMetaType<FixedInt32>("FixedInt32");
-            qRegisterMetaType<FixedInt32>("qtprotobuf::FixedInt32");
-            qRegisterMetaType<FixedInt64>("FixedInt64");
-            qRegisterMetaType<FixedInt64>("qtprotobuf::FixedInt64");
-            registationDone = true;
-        }
-    }
-};
-
-}
+#define qProtoDebug(...) qCDebug(qtprotobuflog, __VA_ARGS__)
+#define qProtoInfo(...) qCInfo(qtprotobuflog, __VA_ARGS__)
+#define qProtoWarning(...) qCWarning(qtprotobuflog, __VA_ARGS__)
+#define qProtoCritical(...) qCCritical(qtprotobuflog, __VA_ARGS__)

@@ -11,7 +11,12 @@ if (Qt5_POSITION_INDEPENDENT_CODE)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-add_library(qtprotobufsupport universallistmodelbase.cpp universallistmodel.cpp protobufobject.cpp qtprotobuf.cpp)
+add_library(qtprotobufsupport
+    universallistmodelbase.cpp
+    universallistmodel.cpp
+    protobufobject.cpp
+    qtprotobuf.cpp
+    qtprotobuflogging.cpp)
 
 set_target_properties(qtprotobufsupport PROPERTIES PUBLIC_HEADER "universallistmodelbase.h;universallistmodel.h;protobufobject.h;qtprotobuftypes.h;qtprotobuf.h")
 
