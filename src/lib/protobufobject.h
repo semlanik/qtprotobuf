@@ -76,7 +76,7 @@ protected:
     }
 
     QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex, bool isFixed = false) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex << "isFixed" << isFixed;
         QByteArray result;
         WireTypes type = UnknownWireType;
         switch (propertyValue.type()) {
@@ -144,7 +144,7 @@ protected:
     }
 
     QByteArray serializeLengthDelimited(const QByteArray &data) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "data.size" << data.size() << "data" << data.toHex();
         //Varint serialize field size and apply result as starting point
         QByteArray result = serializeVarint(static_cast<unsigned int>(data.size()));
         result.append(data);
@@ -152,7 +152,7 @@ protected:
     }
 
     QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex;
         int userType = propertyValue.userType();
         if (userType == qMetaTypeId<IntList>()) {
             return serializeListType(propertyValue.value<IntList>(), fieldIndex);
@@ -175,7 +175,7 @@ protected:
              typename std::enable_if_t<std::is_integral<V>::value
                                        || std::is_floating_point<V>::value, int> = 0>
     QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
         if (listValue.count() <= 0) {
             outFieldIndex = NotUsedFieldIndex;
             return QByteArray();
@@ -194,7 +194,7 @@ protected:
              typename std::enable_if_t<std::is_same<V, QString>::value
                                        || std::is_same<V, QByteArray>::value, int> = 0>
     QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
         if (listValue.count() <= 0) {
             outFieldIndex = NotUsedFieldIndex;
             return QByteArray();
@@ -212,7 +212,7 @@ protected:
     //TODO: This specialization is deprecated and won't be used in future
     QByteArray serializeListType(const QVariantList &listValue, int &outFieldIndex)
     {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
         if (listValue.count() <= 0) {
             outFieldIndex = NotUsedFieldIndex;
             return QByteArray();
@@ -240,7 +240,7 @@ protected:
                                         || std::is_same<V, unsigned int>::value
                                         || std::is_same<V, qulonglong>::value, int> = 0>
     QByteArray serializeFixed(V value) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "value" << value;
         //Reserve required amount of bytes
         QByteArray result(sizeof(V), '\0');
         *(V*)(result.data()) = value;
@@ -250,7 +250,7 @@ protected:
     template <typename V,
               typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
     QByteArray serializeVarint(V value) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "value" << value;
         using UV = typename std::make_unsigned<V>::type;
         //Use ZigZag convertion first and apply unsigned variant next
         value = (value << 1) ^ (value >> (sizeof(UV) * 8 - 1));
@@ -261,7 +261,7 @@ protected:
     template <typename V,
               typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
     QByteArray serializeVarint(V value) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "value" << value;
         QByteArray result;
         //Reserve maximum required amount of bytes
         result.reserve(sizeof(V));
@@ -395,7 +395,7 @@ protected:
 
     void deserializeUserType(int userType, QByteArray::const_iterator& it, QVariant &newValue)
     {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "userType" << userType;
         if (userType == qMetaTypeId<IntList>()) {
             newValue = deserializeVarintListType<int>(it);
         } else if(userType == qMetaTypeId<FloatList>()) {

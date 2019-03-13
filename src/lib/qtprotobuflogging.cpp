@@ -25,4 +25,4 @@
 
 #include "qtprotobuflogging.h"
 
-Q_LOGGING_CATEGORY(qtprotobuflog, "qtprotobuflog")
+Q_LOGGING_CATEGORY(qtprotobuflog, "qtprotobuflog", QtCriticalMsg)
