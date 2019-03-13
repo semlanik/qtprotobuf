@@ -68,15 +68,6 @@ protected:
             return;
         }
 
-        Indent();
-        mPrinter.Print("Q_ENUMS(");
-        for (int i = 0; i < message->enum_type_count(); i++) {
-            const auto enumDescr = message->enum_type(i);
-            mPrinter.Print(enumDescr->name().c_str());
-        }
-        mPrinter.Print(")\n");
-        Outdent();
-
         printPublic();
 
         Indent();
@@ -91,6 +82,7 @@ protected:
             }
             Outdent();
             mPrinter.Print(SemicolonBlockEnclosureTemplate);
+            mPrinter.Print({{"type", enumDescr->name().c_str()}}, QEnumTemplate);
         }
         Outdent();
     }

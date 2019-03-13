@@ -42,6 +42,11 @@ class QtGenerator : public ::google::protobuf::compiler::CodeGenerator
                           const std::string &parameter,
                           ::google::protobuf::compiler::GeneratorContext *generatorContext,
                           std::string *error) const override;
+
+    virtual bool GenerateAll(const std::vector<const ::google::protobuf::FileDescriptor *> &files,
+                             const std::string &parameter,
+                             ::google::protobuf::compiler::GeneratorContext *generatorContext,
+                             std::string *error) const override;
 };
 
 }  // namespace qtprotobuf

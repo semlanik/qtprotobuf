@@ -124,7 +124,15 @@ TEST_F(SimpleTest, SimpleDoubleMessageTest)
 TEST_F(SimpleTest, SimpleEnumsTest)
 {
     ASSERT_GT(GlobalEnums::staticMetaObject.enumeratorCount(), 0);
-    QMetaEnum simpleEnum = GlobalEnums::staticMetaObject.enumerator(0);
+    QMetaEnum simpleEnum;
+    for(int i = 0; i < GlobalEnums::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = GlobalEnums::staticMetaObject.enumerator(i);
+        if (QString(tmp.name()) == QString("TestEnum")) {
+            simpleEnum = tmp;
+            break;
+        }
+    }
+    ASSERT_TRUE(simpleEnum.isValid());
     ASSERT_STREQ(simpleEnum.key(0), "TEST_ENUM_VALUE0");
     ASSERT_STREQ(simpleEnum.key(1), "TEST_ENUM_VALUE1");
     ASSERT_STREQ(simpleEnum.key(2), "TEST_ENUM_VALUE2");

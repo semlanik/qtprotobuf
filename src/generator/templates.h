@@ -108,6 +108,8 @@ static const char *EmptyBlockTemplate = "{}\n\n";
 static const char *DeclareMetaTypeTemplate = "#include <QMetaType>\n"
                                              "Q_DECLARE_METATYPE($namespaces$::$type$)\n";
 
+static const char *QEnumTemplate = "Q_ENUM($type$)\n";
+
 
 static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "double"},

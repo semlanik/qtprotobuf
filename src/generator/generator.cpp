@@ -38,6 +38,7 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <list>
 
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
@@ -139,16 +140,22 @@ class GlobalEnumsGenerator : public ClassGeneratorBase
     const FileDescriptor *mFile;
 
 public:
-    GlobalEnumsGenerator(const FileDescriptor *file, std::unique_ptr<io::ZeroCopyOutputStream> out) :
+    GlobalEnumsGenerator(std::unique_ptr<io::ZeroCopyOutputStream> out) :
         ClassGeneratorBase("GlobalEnums", std::move(out))
-    , mFile(file)
-    {}
-
-    void run() {
+    {
         printPreamble();
-        printNamespaces(mFile->package());
+    }
+
+    void startEnum(std::string package) {
+        printNamespaces(package);
         printEnumClass();
-        printQEnums<FileDescriptor>(mFile);
+    }
+
+    void run(const FileDescriptor *file) {
+        printQEnums<FileDescriptor>(file);
+    }
+
+    void encloseEnum() {
         encloseClass();
         enclose();
     }
@@ -187,9 +194,26 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         classSourceGen.run();
     }
 
-    std::string globalEnumsFilename = "globalenums.h";
-    GlobalEnumsGenerator enumGen(file, std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
-    enumGen.run();
-
     return true;
 }
+
+bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, const string &parameter, GeneratorContext *generatorContext, string *error) const
+{
+    std::string globalEnumsFilename = "globalenums.h";
+    GlobalEnumsGenerator enumGen(std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
+    std::unordered_map<std::string/*package*/, std::list<const FileDescriptor */*file*/>> packageList;
+    for (auto file : files) {
+        packageList[file->package()].push_back(file);
+    }
+
+    for (auto package : packageList) {
+        enumGen.startEnum(package.first);
+        for(auto file : package.second) {
+            enumGen.run(file);
+        }
+        enumGen.encloseEnum();
+    }
+
+    return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
+}
+

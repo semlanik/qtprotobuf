@@ -36,14 +36,14 @@ if ($ENV{MAKE_TESTS})
         include_directories("src/lib")
         add_custom_command(TARGET ${testgeneration} POST_BUILD
             COMMAND ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf.exe --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
-            simpletest.proto
+            *.proto
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             COMMENT "Generating test headers"
             )
     elseif (UNIX)
         add_custom_command(TARGET ${testgeneration} POST_BUILD
             COMMAND protoc --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
-            simpletest.proto
+            *.proto
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             COMMENT "Generating test headers"
             )
