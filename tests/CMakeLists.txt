@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8)
+
 set(testtarget "qtprotobuf_test")
 
 if (WIN32)
@@ -17,16 +19,16 @@ elseif (UNIX)
     endif()
 endif()
 
+include(../cmake/ProjectDefinitions.cmake)
+
 find_package(Qt5 COMPONENTS Core REQUIRED)
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
 set(CMAKE_INCLUDE_CURRENT_DIR OFF)
 set(CMAKE_AUTOMOC OFF)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (Qt5_POSITION_INDEPENDENT_CODE)
+if(Qt5_POSITION_INDEPENDENT_CODE)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -39,17 +41,16 @@ QT5_WRAP_CPP(MOC_SOURCES ${GENERATED_HEADERS})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/lib)
 
-if (WIN32)
+if(WIN32)
     #Set  path to GTest build libraries
     set(GTEST_BOTH_LIBRARIES "")
     #Set  path to GTest include directory
     include_directories(${GTEST_INCLUDE_PATHS} "/")
-    #Need for generated code
-elseif (UNIX)
+elseif(UNIX)
     include_directories(${GTEST_INCLUDE_DIRS})
 endif()
 
-file(GLOB HEADERS ${TESTS_OUT_DIR})
+file(GLOB HEADERS ${TESTS_OUT_DIR}/*.h)
 file(GLOB SOURCES main.cpp
     simpletest.cpp
     serializationtest.cpp
@@ -59,9 +60,9 @@ file(GLOB SOURCES main.cpp
 file(GLOB PROTOS proto/*.proto)
 
 add_executable(${testtarget} ${SOURCES} ${MOC_SOURCES} ${GENERATED_SOURCES} ${PROTOS})
-if (WIN32)
+if(WIN32)
     target_link_libraries(${testtarget} "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" qtprotobufsupport Qt5::Core)
-elseif (UNIX)
+elseif(UNIX)
     target_link_libraries(${testtarget} gtest qtprotobufsupport Qt5::Core)
 endif()
 add_dependencies(${testtarget} ${testgeneration})

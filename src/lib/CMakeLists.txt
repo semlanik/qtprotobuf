@@ -1,25 +1,33 @@
 find_package(Qt5 COMPONENTS Core REQUIRED)
 
+include(../../cmake/ProjectDefinitions.cmake)
+
+set(SUPPORT_LIBRARY_TARGET qtprotobufsupport)
+
 include_directories(${Qt5Core_INCLUDE_DIRS})
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (Qt5_POSITION_INDEPENDENT_CODE)
+if(Qt5_POSITION_INDEPENDENT_CODE)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-add_library(qtprotobufsupport
-    universallistmodelbase.cpp
+
+file(GLOB SOURCES universallistmodelbase.cpp
     universallistmodel.cpp
     protobufobject.cpp
     qtprotobuf.cpp
     qtprotobuflogging.cpp)
 
-set_target_properties(qtprotobufsupport PROPERTIES PUBLIC_HEADER "universallistmodelbase.h;universallistmodel.h;protobufobject.h;qtprotobuftypes.h;qtprotobuf.h;qtprotobuflogging.h")
+file(GLOB HEADERS universallistmodelbase.h
+    universallistmodel.h
+    protobufobject.h
+    qtprotobuftypes.h
+    qtprotobuf.h)
 
-install(TARGETS qtprotobufsupport
+add_library(${SUPPORT_LIBRARY_TARGET} ${SOURCES})
+set_target_properties(${SUPPORT_LIBRARY_TARGET} PROPERTIES PUBLIC_HEADER "${HEADERS}")
+install(TARGETS ${SUPPORT_LIBRARY_TARGET}
     ARCHIVE DESTINATION lib
     PUBLIC_HEADER DESTINATION include)
