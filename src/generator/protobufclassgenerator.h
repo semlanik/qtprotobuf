@@ -59,6 +59,9 @@ public:
     void printField(const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
     void printProperties();
     void printFieldsOrderingDefinition();
+    void printRegisterTypes();
+    void printConstructor();
+    void printListType();
 
     std::set<std::string> extractModels() const;
 

@@ -60,6 +60,7 @@ public:
         printClassHeaderInclude();
         printNamespaces();
         printFieldsOrdering();
+        printRegisterBody();
         encloseNamespaces();
     }
 
@@ -84,6 +85,18 @@ public:
         }
         Outdent();
         mPrinter.Print(SemicolonBlockEnclosureTemplate);
+    }
+
+    void printRegisterBody()
+    {
+        std::string namespaces;
+        for(int i = 0; i < mNamespaces.size(); i++) {
+            if(i > 0) {
+                namespaces = namespaces.append("::");
+            }
+            namespaces = namespaces.append(mNamespaces[i]);
+        }
+        mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}}, ComplexTypeRegistrationTemplate);
     }
 };
 

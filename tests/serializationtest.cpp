@@ -425,7 +425,6 @@ TEST_F(SerializationTest, StringMessageSerializeTest)
 
 TEST_F(SerializationTest, ComplexTypeSerializeTest)
 {
-    qRegisterMetaType<SimpleStringMessage>("SimpleStringMessage");
     SimpleStringMessage stringMsg;
     stringMsg.setTestFieldString("qwerty");
 
@@ -533,6 +532,7 @@ TEST_F(SerializationTest, RepeatedFloatMessageTest)
 TEST_F(SerializationTest, RepeatedComplexMessageTest)
 {
     return;//disabled
+#if 0
     SimpleStringMessage stringMsg;
     stringMsg.setTestFieldString("qwerty");
     ComplexMessage msg;
@@ -548,4 +548,5 @@ TEST_F(SerializationTest, RepeatedComplexMessageTest)
     test.setTestRepeatedComplex(QVariantList());
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
+#endif
 }

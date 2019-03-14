@@ -228,8 +228,9 @@ TEST_F(DeserializationTest, StringMessageDeserializeTest)
 
 TEST_F(DeserializationTest, ComplexTypeDeserializeTest)
 {
-    qRegisterMetaType<SimpleStringMessage>("SimpleStringMessage");
     ComplexMessage test;
+
+    qRegisterMetaType<SimpleStringMessage>("SimpleStringMessage");
 
     test.deserialize(QByteArray::fromHex("120832067177657274790859"));
     ASSERT_EQ(-45, test.testFieldInt());

@@ -204,10 +204,10 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
     assert(field != nullptr);
     std::string typeName;
     if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
-        if (field->is_repeated()) {
-            return VariantList;
-        }
         typeName = field->message_type()->name();
+        if (field->is_repeated()) {
+            return typeName.append("List");
+        }
     } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
         if (field->is_repeated()) {
             return VariantList;
@@ -274,6 +274,11 @@ bool ProtobufClassGenerator::isComplexType(const FieldDescriptor *field)
             || field->type() == FieldDescriptor::TYPE_BYTES;
 }
 
+void ProtobufClassGenerator::printConstructor()
+{
+    mPrinter.Print({{"classname", mClassName}}, ConstructorTemplate);
+    mPrinter.Print(ConstructorContentTemplate);
+}
 
 void ProtobufClassGenerator::printProperties()
 {
@@ -282,11 +287,9 @@ void ProtobufClassGenerator::printProperties()
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
-        if (!isListType(field)) {
-            const char* propertyTemplate = field->type() == FieldDescriptor::TYPE_MESSAGE ? MessagePropertyTemplate :
-                                                                                            PropertyTemplate;
-            printField(field, propertyTemplate);
-        }
+        const char* propertyTemplate = field->type() == FieldDescriptor::TYPE_MESSAGE ? MessagePropertyTemplate :
+                                                                                        PropertyTemplate;
+        printField(field, propertyTemplate);
     }
     for (int i = 0; i < mMessage->field_count(); i++) {
         printField(mMessage->field(i), MemberTemplate);
@@ -328,6 +331,16 @@ void ProtobufClassGenerator::printProperties()
     Outdent();
 }
 
+void ProtobufClassGenerator::printRegisterTypes()
+{
+    mPrinter.Print(ComplexTypeRegistrationMethodTemplate);
+}
+
+void ProtobufClassGenerator::printListType()
+{
+    mPrinter.Print({{"classname", mClassName}}, ComplexListTypeUsingTemplate);
+}
+
 void ProtobufClassGenerator::printFieldsOrderingDefinition()
 {
     Indent();
@@ -355,10 +368,12 @@ void ProtobufClassGenerator::run()
     printIncludes(extractModels());
     printNamespaces();
     printClassDeclaration();
+    printRegisterTypes();
     printProperties();
     printPublic();
     printFieldsOrderingDefinition();
     encloseClass();
-    encloseNamespaces(mNamespaces.size());
+    printListType();
+    encloseNamespaces();
     printMetaTypeDeclaration();
 }

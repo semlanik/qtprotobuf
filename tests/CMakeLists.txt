@@ -37,15 +37,16 @@ file(GLOB GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/*.cpp)
 list(FILTER GENERATED_SOURCES EXCLUDE REGEX "moc_.*cpp")
 QT5_WRAP_CPP(MOC_SOURCES ${GENERATED_HEADERS})
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/lib)
+
 if (WIN32)
     #Set  path to GTest build libraries
     set(GTEST_BOTH_LIBRARIES "")
     #Set  path to GTest include directory
     include_directories(${GTEST_INCLUDE_PATHS} "/")
     #Need for generated code
-    include_directories(${CMAKE_CURRENT_BINARY_DIR})
 elseif (UNIX)
-    include_directories(${GTEST_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/lib)
+    include_directories(${GTEST_INCLUDE_DIRS})
 endif()
 
 file(GLOB HEADERS ${TESTS_OUT_DIR})
@@ -59,7 +60,7 @@ file(GLOB PROTOS proto/*.proto)
 
 add_executable(${testtarget} ${SOURCES} ${MOC_SOURCES} ${GENERATED_SOURCES} ${PROTOS})
 if (WIN32)
-    target_link_libraries(${testtarget} "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib"  Qt5::Core)
+    target_link_libraries(${testtarget} "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" qtprotobufsupport Qt5::Core)
 elseif (UNIX)
     target_link_libraries(${testtarget} gtest qtprotobufsupport Qt5::Core)
 endif()

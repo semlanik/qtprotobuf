@@ -18,7 +18,7 @@ add_library(qtprotobufsupport
     qtprotobuf.cpp
     qtprotobuflogging.cpp)
 
-set_target_properties(qtprotobufsupport PROPERTIES PUBLIC_HEADER "universallistmodelbase.h;universallistmodel.h;protobufobject.h;qtprotobuftypes.h;qtprotobuf.h")
+set_target_properties(qtprotobufsupport PROPERTIES PUBLIC_HEADER "universallistmodelbase.h;universallistmodel.h;protobufobject.h;qtprotobuftypes.h;qtprotobuf.h;qtprotobuflogging.h")
 
 install(TARGETS qtprotobufsupport
     ARCHIVE DESTINATION lib

@@ -86,13 +86,6 @@ void ClassGeneratorBase::encloseNamespaces()
     encloseNamespaces(mNamespaces.size());
 }
 
-void ClassGeneratorBase::printConstructor()
-{
-    mPrinter.Print({{"classname", mClassName}},
-                   ConstructorTemplate);
-    mPrinter.Print(EmptyBlockTemplate);
-}
-
 void ClassGeneratorBase::printPublic()
 {
     mPrinter.Print(PublicBlockTemplate);
@@ -107,7 +100,9 @@ void ClassGeneratorBase::printMetaTypeDeclaration()
         }
         namespaces = namespaces.append(mNamespaces[i]);
     }
-    mPrinter.Print({{"type", mClassName},
-                    {"namespaces", namespaces}}, DeclareMetaTypeTemplate);
+    mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}},
+                   DeclareMetaTypeTemplate);
+    mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}},
+                   DeclareComplexListTypeTemplate);
 }
 
