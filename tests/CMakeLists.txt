@@ -52,7 +52,8 @@ file(GLOB HEADERS ${TESTS_OUT_DIR})
 file(GLOB SOURCES main.cpp
     simpletest.cpp
     serializationtest.cpp
-    deserializationtest.cpp)
+    deserializationtest.cpp
+    servertest.cpp)
 
 file(GLOB PROTOS proto/*.proto)
 

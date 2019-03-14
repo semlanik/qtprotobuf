@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,25 +23,20 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "servergenerator.h"
+#include "servertest.h"
 
-#include <google/protobuf/stubs/logging.h>
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/io/printer.h>
-#include <google/protobuf/io/zero_copy_stream.h>
-#include <google/protobuf/descriptor.h>
+#include "testserviceserver.h"
 
-#include <unordered_set>
+using namespace qtprotobufnamespace::tests;
+using namespace qtprotobuf::tests;
 
-#include "utils.h"
-#include "templates.h"
+using namespace qtprotobuf;
 
-using namespace ::qtprotobuf::generator;
-using namespace ::google::protobuf;
-using namespace ::google::protobuf::compiler;
-
-ServerGenerator::ServerGenerator(const ServiceDescriptor *service, std::unique_ptr<io::ZeroCopyOutputStream> out) :
-    ServiceGeneratorBase(service, std::move(out))
+ServerTest::ServerTest()
 {
-    mClassName += "Server";
+}
+
+TEST_F(ServerTest, CheckMethodsGeneration)
+{
+    TestServiceServer testServer;
 }

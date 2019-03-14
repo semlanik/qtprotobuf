@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "servergenerator.h"
+#include "servicegeneratorbase.h"
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
@@ -39,9 +39,34 @@
 using namespace ::qtprotobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
+using namespace qtprotobuf::generator;
 
-ServerGenerator::ServerGenerator(const ServiceDescriptor *service, std::unique_ptr<io::ZeroCopyOutputStream> out) :
-    ServiceGeneratorBase(service, std::move(out))
+ServiceGeneratorBase::ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor* service,
+                                           std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out) :
+    ClassGeneratorBase(service->full_name(), std::move(out))
+  , mService(service)
 {
-    mClassName += "Server";
+}
+
+void ServiceGeneratorBase::printIncludes()
+{
+    std::unordered_set<std::string> includeSet;
+    for(int i = 0; i < mService->method_count(); i++) {
+        const MethodDescriptor* method = mService->method(i);
+        std::string inputTypeName = method->input_type()->name();
+        std::string outputTypeName = method->output_type()->name();
+        utils::tolower(inputTypeName);
+        utils::tolower(outputTypeName);
+        includeSet.insert(inputTypeName);
+        includeSet.insert(outputTypeName);
+    }
+
+    for(auto type : includeSet) {
+        mPrinter.Print({{"type_lower", type}}, InternalIncludeTemplate);
+    }
+}
+
+void ServiceGeneratorBase::printClassName()
+{
+    mPrinter.Print({{"classname", mClassName}}, NonProtoClassDefinitionTemplate);
 }

@@ -16,7 +16,8 @@ add_executable(${PROJECT_NAME} src/generator/main.cpp
     src/generator/classgeneratorbase.cpp
     src/generator/servergenerator.cpp
     src/generator/protobufclassgenerator.cpp
-    src/generator/globalenumsgenerator.cpp)
+    src/generator/globalenumsgenerator.cpp
+    src/generator/servicegeneratorbase.cpp)
 
 if (WIN32)
     #Needs to set path to protobuf libraries

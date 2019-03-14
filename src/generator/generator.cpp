@@ -123,7 +123,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         std::string baseFilename(service->name());
         utils::tolower(baseFilename);
 
-        std::string headeFilename = baseFilename + ".h";
+        std::string headeFilename = baseFilename + "server.h";
         ServerGenerator serverGen(service,
                                   std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(headeFilename))));
         serverGen.run();

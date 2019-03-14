@@ -143,6 +143,9 @@ void ProtobufClassGenerator::printComparisonOperators()
 void ProtobufClassGenerator::printIncludes(std::set<std::string> listModel)
 {
     assert(mMessage != nullptr);
+
+    mPrinter.Print(DefaultProtobufIncludesTemplate);
+
     PropertyMap properties;
     std::set<std::string> existingIncludes;
     std::string newInclude;

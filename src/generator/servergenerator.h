@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "classgeneratorbase.h"
+#include "servicegeneratorbase.h"
 #include <string>
 #include <memory>
 #include <google/protobuf/io/printer.h>
@@ -38,7 +38,7 @@ class Message;
 namespace qtprotobuf {
 namespace generator {
 
-class ServerGenerator : public ClassGeneratorBase
+class ServerGenerator : public ServiceGeneratorBase
 {
     const google::protobuf::ServiceDescriptor *mService;
 public:
@@ -47,15 +47,12 @@ public:
 
     void run() {
         printPreamble();
-        printIncludes(mService);
+        printIncludes();
         printNamespaces();
-        mPrinter.Print({{"classname", mClassName}}, NonProtoClassDefinitionTemplate);
+        printClassName();
         encloseClass();
         encloseNamespaces();
     }
-
-private:
-    void printIncludes(const google::protobuf::ServiceDescriptor *service);
 };
 
 } //namespace generator

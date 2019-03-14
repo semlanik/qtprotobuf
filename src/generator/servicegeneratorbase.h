@@ -23,25 +23,34 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "servergenerator.h"
+#pragma once
 
-#include <google/protobuf/stubs/logging.h>
-#include <google/protobuf/stubs/common.h>
+#include "classgeneratorbase.h"
+#include <string>
+#include <memory>
 #include <google/protobuf/io/printer.h>
-#include <google/protobuf/io/zero_copy_stream.h>
-#include <google/protobuf/descriptor.h>
 
-#include <unordered_set>
+namespace google { namespace protobuf {
+class ServiceDescriptor;
+class Message;
+}}
 
-#include "utils.h"
-#include "templates.h"
+namespace qtprotobuf {
+namespace generator {
 
-using namespace ::qtprotobuf::generator;
-using namespace ::google::protobuf;
-using namespace ::google::protobuf::compiler;
-
-ServerGenerator::ServerGenerator(const ServiceDescriptor *service, std::unique_ptr<io::ZeroCopyOutputStream> out) :
-    ServiceGeneratorBase(service, std::move(out))
+class ServiceGeneratorBase : public ClassGeneratorBase
 {
-    mClassName += "Server";
-}
+protected:
+    const ::google::protobuf::ServiceDescriptor* mService;
+
+public:
+    ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor* service,
+                         std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
+    void run() = 0;
+
+    void printIncludes();
+    void printClassName();
+};
+
+} //namespace generator
+} //namespace qtprotobuf
