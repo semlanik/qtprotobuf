@@ -5,7 +5,12 @@ set(testgeneration "test_generation")
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(ENV{MAKE_TESTS} ON)
+
+if (DEFINED $ENV{MAKE_TESTS})
+    set(MAKE_TESTS ${MAKE_TESTS})
+elseif(NOT DEFINED MAKE_TESTS)
+    set(MAKE_TESTS ON)
+endif()
 
 find_package(Protobuf)
 
@@ -32,7 +37,7 @@ elseif (UNIX)
     target_link_libraries(${PROJECT_NAME} ${Protobuf_LIBRARIES} "-lprotoc")
 endif()
 
-if ($ENV{MAKE_TESTS})
+if (MAKE_TESTS)
     set(TESTS_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/tests)
     file(MAKE_DIRECTORY ${TESTS_OUT_DIR})
     add_custom_target(${testgeneration})
