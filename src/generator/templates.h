@@ -52,10 +52,11 @@ static const char *ComplexTypeRegistrationMethodTemplate = "\nstatic void regist
 static const char *ComplexTypeRegistrationTemplate = "void $classname$::registerTypes()\n{\n"
                                                      "    static bool registationDone = false;\n"
                                                      "    if (!registationDone) {\n\n"
-                                                     "        qRegisterMetaType<$classname$>(\"$classname$\");\n"
-                                                     "        qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
+                                                     "        int metaTypeId = qRegisterMetaType<$classname$>(\"$classname$\");\n"
+                                                     "        int listMetaTypeId = qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
                                                      "        qRegisterMetaType<$namespaces$::$classname$>(\"$namespaces$::$classname$\");\n"
                                                      "        qRegisterMetaType<$namespaces$::$classname$List>(\"$namespaces$::$classname$List\");\n"
+                                                     "        registerSerializers(metaTypeId, listMetaTypeId);\n"
                                                      "    }\n}\n";
 static const char *ComplexListTypeUsingTemplate = "using $classname$List = QList<$classname$>;\n";
 

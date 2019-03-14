@@ -531,22 +531,20 @@ TEST_F(SerializationTest, RepeatedFloatMessageTest)
 
 TEST_F(SerializationTest, RepeatedComplexMessageTest)
 {
-    return;//disabled
-#if 0
     SimpleStringMessage stringMsg;
     stringMsg.setTestFieldString("qwerty");
     ComplexMessage msg;
     msg.setTestFieldInt(25);
     msg.setTestComplexField(stringMsg);
     RepeatedComplexMessage test;
-    test.setTestRepeatedComplex({QVariant::fromValue<ComplexMessage>(msg)});
+    test.setTestRepeatedComplex({msg});
     qDebug() << test.testRepeatedComplex().count();
     QByteArray result = test.serialize();
     qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a14cdcccc3e9a99993f0000003f3333b33f9a99193f"));
+    ASSERT_TRUE(result == QByteArray::fromHex("0a0c083212083206717765727479")
+                || result == QByteArray::fromHex("0a0c120832067177657274790832"));
 
-    test.setTestRepeatedComplex(QVariantList());
+    test.setTestRepeatedComplex({});
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
-#endif
 }

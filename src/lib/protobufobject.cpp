@@ -26,3 +26,5 @@
 #include "protobufobject.h"
 
 using namespace qtprotobuf;
+
+ProtobufObjectPrivate::ListSerializerRegistry ProtobufObjectPrivate::listSerializers;

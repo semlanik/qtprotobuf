@@ -34,6 +34,7 @@
 #include <memory>
 #include <type_traits>
 #include <typeinfo>
+#include <functional>
 
 #include <qtprotobuftypes.h>
 #include <qtprotobuflogging.h>
@@ -53,7 +54,11 @@ enum WireTypes {
 constexpr int NotUsedFieldIndex = -1;
 
 class ProtobufObjectPrivate : public QObject {
-protected:
+public:
+    using ListSerializer = std::function<QByteArray(const ProtobufObjectPrivate *, const QVariant &, int &)>;
+    using ListSerializerRegistry = std::unordered_map<int/*metatypeid*/, ListSerializer>;
+    static ListSerializerRegistry listSerializers;
+
     explicit ProtobufObjectPrivate(QObject *parent = nullptr) : QObject(parent) {}
 
     /*  Header byte
@@ -75,7 +80,7 @@ protected:
                                                       || wireType == LengthDelimited);
     }
 
-    QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex, bool isFixed = false) {
+    QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex, bool isFixed = false) const {
         qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex << "isFixed" << isFixed;
         QByteArray result;
         WireTypes type = UnknownWireType;
@@ -143,7 +148,7 @@ protected:
         return result;
     }
 
-    QByteArray serializeLengthDelimited(const QByteArray &data) {
+    QByteArray serializeLengthDelimited(const QByteArray &data) const {
         qProtoDebug() << __func__ << "data.size" << data.size() << "data" << data.toHex();
         //Varint serialize field size and apply result as starting point
         QByteArray result = serializeVarint(static_cast<unsigned int>(data.size()));
@@ -151,9 +156,15 @@ protected:
         return result;
     }
 
-    QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex) {
+    QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex) const {
         qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex;
         int userType = propertyValue.userType();
+
+        auto it = listSerializers.find(userType);
+        if (it != std::end(listSerializers)) {
+            return (it->second)(this, propertyValue, fieldIndex);
+        }
+
         if (userType == qMetaTypeId<IntList>()) {
             return serializeListType(propertyValue.value<IntList>(), fieldIndex);
         } else if(userType == qMetaTypeId<FloatList>()) {
@@ -174,7 +185,7 @@ protected:
     template<typename V,
              typename std::enable_if_t<std::is_integral<V>::value
                                        || std::is_floating_point<V>::value, int> = 0>
-    QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) {
+    QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) const {
         qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
         if (listValue.count() <= 0) {
             outFieldIndex = NotUsedFieldIndex;
@@ -193,7 +204,7 @@ protected:
     template<typename V,
              typename std::enable_if_t<std::is_same<V, QString>::value
                                        || std::is_same<V, QByteArray>::value, int> = 0>
-    QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) {
+    QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) const {
         qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
         if (listValue.count() <= 0) {
             outFieldIndex = NotUsedFieldIndex;
@@ -209,8 +220,26 @@ protected:
         return serializedList;
     }
 
+    template<typename V,
+             typename std::enable_if_t<std::is_base_of<ProtobufObjectPrivate, V>::value, int> = 0>
+    QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) const {
+        qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
+        if (listValue.count() <= 0) {
+            outFieldIndex = NotUsedFieldIndex;
+            return QByteArray();
+        }
+
+        QByteArray serializedList;
+        for(auto& value : listValue) {
+            serializedList.append(value.serialize());
+        }
+
+        serializedList.prepend(serializeVarint(static_cast<unsigned int>(serializedList.size())));
+        return serializedList;
+    }
+
     //TODO: This specialization is deprecated and won't be used in future
-    QByteArray serializeListType(const QVariantList &listValue, int &outFieldIndex)
+    QByteArray serializeListType(const QVariantList &listValue, int &outFieldIndex) const
     {
         qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
         if (listValue.count() <= 0) {
@@ -239,7 +268,7 @@ protected:
               typename std::enable_if_t<std::is_floating_point<V>::value
                                         || std::is_same<V, unsigned int>::value
                                         || std::is_same<V, qulonglong>::value, int> = 0>
-    QByteArray serializeFixed(V value) {
+    QByteArray serializeFixed(V value) const {
         qProtoDebug() << __func__ << "value" << value;
         //Reserve required amount of bytes
         QByteArray result(sizeof(V), '\0');
@@ -249,7 +278,7 @@ protected:
 
     template <typename V,
               typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
-    QByteArray serializeVarint(V value) {
+    QByteArray serializeVarint(V value) const {
         qProtoDebug() << __func__ << "value" << value;
         using UV = typename std::make_unsigned<V>::type;
         //Use ZigZag convertion first and apply unsigned variant next
@@ -260,7 +289,7 @@ protected:
 
     template <typename V,
               typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
-    QByteArray serializeVarint(V value) {
+    QByteArray serializeVarint(V value) const {
         qProtoDebug() << __func__ << "value" << value;
         QByteArray result;
         //Reserve maximum required amount of bytes
@@ -447,7 +476,7 @@ protected:
     }
 
 public:
-    virtual QByteArray serializePrivate() = 0;
+    virtual QByteArray serializePrivate() const = 0;
     virtual void deserializePrivate(const QByteArray &data) = 0;
 };
 
@@ -455,7 +484,11 @@ template <typename T>
 class ProtobufObject : public ProtobufObjectPrivate
 {
 protected:
-    QByteArray serializePrivate() override {
+    static void registerSerializers(int metaTypeId, int listMetaTypeId) {
+        listSerializers[listMetaTypeId] = ListSerializer(serializeComplexListType);
+    }
+
+    QByteArray serializePrivate() const override {
         qProtoDebug() << T::staticMetaObject.className() << "serializePrivate";
         return serialize();
     }
@@ -468,10 +501,10 @@ protected:
 public:
     explicit ProtobufObject(QObject *parent = nullptr) : ProtobufObjectPrivate(parent) {}
 
-    QByteArray serialize() {
+    QByteArray serialize() const {
         qProtoDebug() << T::staticMetaObject.className() << "serialize";
         QByteArray result;
-        T *instance = dynamic_cast<T *>(this);
+        const T *instance = dynamic_cast<const T *>(this);
         for (auto field : T::propertyOrdering) {
             int propertyIndex = field.second;
             int fieldIndex = field.first;
@@ -485,6 +518,16 @@ public:
         }
 
         return result;
+    }
+//TODO: migrate to this function for complex types serialization
+//    static QByteArray serializeSelf(const QVariant &variantValue) {
+//        T value = variantValue.value<T>();
+//        return value->serialize();
+//    }
+
+    static QByteArray serializeComplexListType(const ProtobufObjectPrivate* serializer, const QVariant &listValue, int &outFieldIndex) {
+        QList<T> list = listValue.value<QList<T>>();
+        return serializer->serializeListType(list, outFieldIndex);
     }
 
     void deserialize(const QByteArray &array) {
