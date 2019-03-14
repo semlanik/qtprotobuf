@@ -28,12 +28,20 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <unordered_map>
+#include <list>
+
+namespace google { namespace protobuf {
+class FileDescriptor;
+}}
 
 namespace qtprotobuf {
+namespace generator {
 namespace utils {
 
 static void split(const std::string &str, std::vector<std::string> &container, char delim)
 {
+    container.clear();
     std::stringstream stream(str);
     std::string token;
     while (std::getline(stream, token, delim)) {
@@ -53,5 +61,9 @@ static void tolower(std::string& str) {
     std::transform(std::begin(str), std::end(str), std::begin(str), ::tolower);
 }
 
-}
-}
+} //namespace utils
+
+using PackagesList = std::unordered_map<std::string/*package*/, std::list<const ::google::protobuf::FileDescriptor *>>;
+
+} //namespace generator
+} //namespace qtprotobuf

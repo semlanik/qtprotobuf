@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -26,37 +26,47 @@
 #pragma once
 
 #include "classgeneratorbase.h"
-#include <string>
-#include <memory>
 #include <google/protobuf/io/printer.h>
+#include <memory>
+
+#include "templates.h"
 
 namespace google { namespace protobuf {
-class ServiceDescriptor;
-class Message;
-}}
+class FieldDescriptor;
+class Descriptor;
+namespace io {
+class ZeroCopyOutputStream;
+}}}
 
 namespace qtprotobuf {
 namespace generator {
 
-class ServerGenerator : public ClassGeneratorBase
+using PropertyMap = std::map<std::string, std::string>;
+
+class ProtobufClassGenerator : public ClassGeneratorBase
 {
-    const google::protobuf::ServiceDescriptor *mService;
+    const ::google::protobuf::Descriptor* mMessage;
 public:
-    ServerGenerator(const google::protobuf::ServiceDescriptor *service, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
-    virtual ~ServerGenerator() = default;
+    ProtobufClassGenerator(const ::google::protobuf::Descriptor* message, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);
+    virtual ~ProtobufClassGenerator() = default;
 
-    void run() {
-        printPreamble();
-        printIncludes(mService);
-        printNamespaces();
-        mPrinter.Print({{"classname", mClassName}}, NonProtoClassDefinitionTemplate);
-        encloseClass();
-        encloseNamespaces();
-    }
+    void run() override;
 
-private:
-    void printIncludes(const google::protobuf::ServiceDescriptor *service);
+    void printIncludes(std::set<std::string> listModel);
+    void printCopyFunctionality();
+    void printMoveSemantic();
+    void printComparisonOperators();
+    void printField(const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
+    void printProperties();
+    void printFieldsOrderingDefinition();
+
+    std::set<std::string> extractModels() const;
+
+    static std::string getTypeName(const ::google::protobuf::FieldDescriptor *field);
+    static bool producePropertyMap(const ::google::protobuf::FieldDescriptor *field, PropertyMap &propertyMap);
+    static bool isComplexType(const ::google::protobuf::FieldDescriptor *field);
+    static bool isListType(const ::google::protobuf::FieldDescriptor *field);
 };
 
-} //namespace generator
-} //namespace qtprotobuf
+}
+}

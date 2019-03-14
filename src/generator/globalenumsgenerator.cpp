@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,47 +23,46 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "servergenerator.h"
+#include "globalenumsgenerator.h"
 
-#include <google/protobuf/stubs/logging.h>
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/io/printer.h>
 #include <google/protobuf/io/zero_copy_stream.h>
-#include <google/protobuf/descriptor.h>
-
-#include <unordered_set>
-
-#include "utils.h"
-#include "templates.h"
 
 using namespace ::qtprotobuf::generator;
 using namespace ::google::protobuf;
+using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
-//TODO: need to decompose common and non-common logic and fields of ClassGeneratorBase 
-ServerGenerator::ServerGenerator(const ServiceDescriptor *service, std::unique_ptr<io::ZeroCopyOutputStream> out) :
-    ClassGeneratorBase(service->full_name(), std::move(out))
-  , mService(service)
-{
+GlobalEnumsGenerator::GlobalEnumsGenerator(const PackagesList &packageList, std::unique_ptr<io::ZeroCopyOutputStream> out) :
+    ClassGeneratorBase("GlobalEnums", std::move(out))
+  , mPackageList(packageList) {}
+
+void GlobalEnumsGenerator::startEnum(const std::vector<std::string>& namespaces) {
+    printNamespaces(namespaces);
+    printEnumClass();
 }
 
-void ServerGenerator::printIncludes(const ServiceDescriptor *service)
-{
-    std::unordered_set<std::string> includeSet;
-    for(int i = 0; i < service->method_count(); i++) {
-        const MethodDescriptor* method = service->method(i);
-        std::string inputTypeName = method->input_type()->name();
-        std::string outputTypeName = method->output_type()->name();
-        utils::tolower(inputTypeName);
-        utils::tolower(outputTypeName);
-        includeSet.insert(inputTypeName);
-        includeSet.insert(outputTypeName);
-    }
-
-    for(auto type : includeSet) {
-        mPrinter.Print({{"type_lower", type}}, InternalIncludeTemplate);
+void GlobalEnumsGenerator::run() {
+    printPreamble();
+    std::vector<std::string> namespaces;
+    for (auto package : mPackageList) {
+        utils::split(package.first, namespaces, '.');
+        startEnum(namespaces);
+        for (auto file : package.second) {
+            run(file);
+        }
+        encloseEnum(namespaces);
     }
 }
 
+void GlobalEnumsGenerator::run(const FileDescriptor *file) {
+    printQEnums(file);
+}
 
+void GlobalEnumsGenerator::encloseEnum(const std::vector<std::string>& namespaces) {
+    encloseClass();
+    encloseNamespaces(namespaces.size());
+}
 
+void GlobalEnumsGenerator::printEnumClass() {
+    mPrinter.Print({{"classname", mClassName}}, NonProtoClassDefinitionTemplate);
+}

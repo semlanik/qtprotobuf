@@ -26,37 +26,27 @@
 #pragma once
 
 #include "classgeneratorbase.h"
-#include <string>
-#include <memory>
-#include <google/protobuf/io/printer.h>
-
-namespace google { namespace protobuf {
-class ServiceDescriptor;
-class Message;
-}}
+#include "utils.h"
 
 namespace qtprotobuf {
 namespace generator {
 
-class ServerGenerator : public ClassGeneratorBase
+class GlobalEnumsGenerator : public ClassGeneratorBase
 {
-    const google::protobuf::ServiceDescriptor *mService;
+    const ::google::protobuf::FileDescriptor *mFile;
+    PackagesList mPackageList;
 public:
-    ServerGenerator(const google::protobuf::ServiceDescriptor *service, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
-    virtual ~ServerGenerator() = default;
+    GlobalEnumsGenerator(const PackagesList &packageList, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);
+    virtual ~GlobalEnumsGenerator() = default;
 
-    void run() {
-        printPreamble();
-        printIncludes(mService);
-        printNamespaces();
-        mPrinter.Print({{"classname", mClassName}}, NonProtoClassDefinitionTemplate);
-        encloseClass();
-        encloseNamespaces();
-    }
+    void run();
 
-private:
-    void printIncludes(const google::protobuf::ServiceDescriptor *service);
+    void startEnum(const std::vector<std::string>& namespaces);
+    void run(const ::google::protobuf::FileDescriptor *file);
+    void encloseEnum(const std::vector<std::string>& namespaces);
+    void printEnumClass();
 };
 
 } //namespace generator
 } //namespace qtprotobuf
+

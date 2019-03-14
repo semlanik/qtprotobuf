@@ -36,6 +36,7 @@ class GeneratorContext;
 }}}
 
 namespace qtprotobuf {
+namespace generator {
 
 class QtGenerator : public ::google::protobuf::compiler::CodeGenerator
 {
@@ -50,4 +51,5 @@ class QtGenerator : public ::google::protobuf::compiler::CodeGenerator
                              std::string *error) const override;
 };
 
-}  // namespace qtprotobuf
+} //namespace generator
+} // namespace qtprotobuf

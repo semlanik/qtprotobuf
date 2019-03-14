@@ -38,30 +38,33 @@ class ZeroCopyOutputStream;
 }}}
 
 namespace qtprotobuf {
+namespace generator {
 
 using PropertyMap = std::map<std::string, std::string>;
 
 class ClassGeneratorBase
 {
 public:
-    ClassGeneratorBase(std::string mClassName, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);
-
+    ClassGeneratorBase(std::string className, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
+    virtual ~ClassGeneratorBase() = default;
+    virtual void run() = 0;
 protected:
     std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> mOutput;
     ::google::protobuf::io::Printer mPrinter;
     std::string mClassName;
-    int mNamespaceCount;
+    std::vector<std::string> mNamespaces;
 
-    bool producePropertyMap(const ::google::protobuf::FieldDescriptor *field, PropertyMap &propertyMap);
     void printPreamble();
-    void printIncludes(const ::google::protobuf::Descriptor *message, std::set<std::string> listModel);
-    void printNamespaces(const std::string &package);
-    void printClass();
-    void printField(const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
+    void printNamespaces();
+    void printNamespaces(const std::vector<std::string> &namespaces);
+    void printClassDeclaration();
+    void printConstructor();
+    void printPublic();
     void encloseClass();
-    void printMetaTypeDeclaration(const std::string &package);
-    void enclose();
-    std::string getTypeName(const ::google::protobuf::FieldDescriptor *field);
+    void printMetaTypeDeclaration();
+    void encloseNamespaces();
+    void encloseNamespaces(int count);
+
 
     template<typename T>
     void printQEnums(const T *message) {
@@ -88,12 +91,6 @@ protected:
         Outdent();
     }
 
-    void printCopyFunctionality(const ::google::protobuf::Descriptor *message);
-    void printMoveSemantic(const ::google::protobuf::Descriptor *message);
-    void printComparisonOperators(const ::google::protobuf::Descriptor *message);
-    void printProperties(const ::google::protobuf::Descriptor *message);
-    void printConstructor();
-    void printPublic();
 
     void Indent() {
         mPrinter.Indent();
@@ -104,9 +101,7 @@ protected:
         mPrinter.Outdent();
         mPrinter.Outdent();
     }
-
-    bool isComplexType(const ::google::protobuf::FieldDescriptor *field);
-    bool isListType(const ::google::protobuf::FieldDescriptor *field);
 };
 
-}
+} //namespace generator
+} //namespace qtprotobuf

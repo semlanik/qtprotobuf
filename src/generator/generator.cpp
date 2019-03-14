@@ -26,6 +26,8 @@
 #include "generator.h"
 #include "templates.h"
 #include "classgeneratorbase.h"
+#include "protobufclassgenerator.h"
+#include "globalenumsgenerator.h"
 #include "servergenerator.h"
 #include "utils.h"
 
@@ -42,75 +44,23 @@
 #include <string>
 #include <list>
 
+using namespace ::qtprotobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 
-using namespace qtprotobuf;
-
-class QtClassGenerator : public ClassGeneratorBase
-{
-    std::string mPackage;
-    const Descriptor* mMessage;
-    std::set<std::string> mExtractedModels;
-
-public:
-    QtClassGenerator(const std::string &package, const Descriptor *message, std::unique_ptr<io::ZeroCopyOutputStream> out) :
-        ClassGeneratorBase(message->name(), std::move(out))
-      , mPackage(std::move(package))
-      , mMessage(message){}
-
-    void run() {
-        //Post generation collect all generated model types
-        for (int i = 0; i < mMessage->field_count(); i++) {
-            const FieldDescriptor* field = mMessage->field(i);
-            if (field->is_repeated()
-                    && field->type() == FieldDescriptor::TYPE_MESSAGE) {
-                std::string typeName = field->message_type()->name();
-                mExtractedModels.insert(typeName);
-            }
-        }
-
-        printPreamble();
-        printIncludes(mMessage, mExtractedModels);
-        printNamespaces(mPackage);
-        printClass();
-        printProperties(mMessage);
-        printPublic();
-        printFieldsOrderingDefinition();
-        encloseClass();
-        enclose();
-        printMetaTypeDeclaration(mPackage);
-    }
-
-    const std::set<std::string> &extractedModels() const {
-        return mExtractedModels;
-    }
-
-    void printFieldsOrderingDefinition() {
-        Indent();
-        mPrinter.Print(FieldsOrderingDefinitionContainerTemplate);
-        Outdent();
-    }
-
-
-};
-
 class QtSourcesGenerator : public ClassGeneratorBase
 {
-    std::string mPackage;
     const Descriptor* mMessage;
-    std::set<std::string> mExtractedModels;
 public:
-    QtSourcesGenerator(const std::string &package, const Descriptor *message, std::unique_ptr<io::ZeroCopyOutputStream> out) :
-        ClassGeneratorBase(message->name(), std::move(out))
-      , mPackage(std::move(package))
-      , mMessage(message){}
+    QtSourcesGenerator(const Descriptor *message, std::unique_ptr<io::ZeroCopyOutputStream> out) :
+        ClassGeneratorBase(message->full_name(), std::move(out))
+      , mMessage(message) {}
 
     void run() {
         printClassHeaderInclude();
-        printNamespaces(mPackage);
+        printNamespaces();
         printFieldsOrdering();
-        enclose();
+        encloseNamespaces();
     }
 
     void printClassHeaderInclude() {
@@ -137,36 +87,6 @@ public:
     }
 };
 
-class GlobalEnumsGenerator : public ClassGeneratorBase
-{
-    const FileDescriptor *mFile;
-
-public:
-    GlobalEnumsGenerator(std::unique_ptr<io::ZeroCopyOutputStream> out) :
-        ClassGeneratorBase("GlobalEnums", std::move(out))
-    {
-        printPreamble();
-    }
-
-    void startEnum(std::string package) {
-        printNamespaces(package);
-        printEnumClass();
-    }
-
-    void run(const FileDescriptor *file) {
-        printQEnums<FileDescriptor>(file);
-    }
-
-    void encloseEnum() {
-        encloseClass();
-        enclose();
-    }
-
-    void printEnumClass() {
-        mPrinter.Print({{"classname", mClassName}}, NonProtoClassDefinitionTemplate);
-    }
-};
-
 bool QtGenerator::Generate(const FileDescriptor *file,
                            const std::string &/*parameter*/,
                            GeneratorContext *generatorContext,
@@ -185,13 +105,15 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         utils::tolower(baseFilename);
 
         std::string filename = baseFilename + ".h";
-        QtClassGenerator classGen(file->package(), message,
+        ProtobufClassGenerator classGen(message,
                                   std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
         classGen.run();
-        extractedModels.insert(std::begin(classGen.extractedModels()), std::end(classGen.extractedModels()));
+
+        std::set<std::string> models = classGen.extractModels();
+        extractedModels.insert(std::begin(models), std::end(models));
 
         std::string sourceFileName = baseFilename + ".cpp";
-        QtSourcesGenerator classSourceGen(file->package(), message,
+        QtSourcesGenerator classSourceGen(message,
                                   std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(sourceFileName))));
         classSourceGen.run();
     }
@@ -202,7 +124,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         utils::tolower(baseFilename);
 
         std::string headeFilename = baseFilename + ".h";
-        ServerGenerator serverGen(file->package(), service,
+        ServerGenerator serverGen(service,
                                   std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(headeFilename))));
         serverGen.run();
 
@@ -214,19 +136,14 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, const string &parameter, GeneratorContext *generatorContext, string *error) const
 {
     std::string globalEnumsFilename = "globalenums.h";
-    GlobalEnumsGenerator enumGen(std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
-    std::unordered_map<std::string/*package*/, std::list<const FileDescriptor *>> packageList;
+
+    PackagesList packageList;
     for (auto file : files) {
         packageList[file->package()].push_back(file);
     }
 
-    for (auto package : packageList) {
-        enumGen.startEnum(package.first);
-        for (auto file : package.second) {
-            enumGen.run(file);
-        }
-        enumGen.encloseEnum();
-    }
+    GlobalEnumsGenerator enumGen(packageList, std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
+    enumGen.run();
 
     return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
 }
