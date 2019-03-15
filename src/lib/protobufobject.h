@@ -105,11 +105,6 @@ public:
             type = LengthDelimited;
             result.append(serializeLengthDelimited(propertyValue.toByteArray()));
             break;
-        //TODO: explicit QList<TypeName> is more user friendly and performance efficient
-        case QMetaType::QVariantList:
-            type = LengthDelimited;
-            result.append(serializeListType(propertyValue.toList(), fieldIndex));
-            break;
         case QMetaType::QStringList:
             type = LengthDelimited;
             result.append(serializeListType(propertyValue.toStringList(), fieldIndex));
@@ -235,32 +230,6 @@ public:
         }
 
         serializedList.prepend(serializeVarint(static_cast<unsigned int>(serializedList.size())));
-        return serializedList;
-    }
-
-    //TODO: This specialization is deprecated and won't be used in future
-    QByteArray serializeListType(const QVariantList &listValue, int &outFieldIndex) const
-    {
-        qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
-        if (listValue.count() <= 0) {
-            outFieldIndex = NotUsedFieldIndex;
-            return QByteArray();
-        }
-        int itemType = listValue.first().type();
-        //If internal serialized type is LengthDelimited, need to specify type for each field
-        int inFieldIndex = (itemType == QMetaType::QString ||
-                      itemType == QMetaType::QByteArray ||
-                      itemType == QMetaType::User) ? outFieldIndex : NotUsedFieldIndex;
-        QByteArray serializedList;
-        for(auto& value : listValue) {
-            serializedList.append(serializeValue(value, inFieldIndex));
-        }
-        //If internal field type is not LengthDelimited, exact amount of fields to be specified
-        if(inFieldIndex == NotUsedFieldIndex) {
-            serializedList.prepend(serializeVarint(static_cast<unsigned int>(serializedList.size())));
-        } else {
-            outFieldIndex = NotUsedFieldIndex;
-        }
         return serializedList;
     }
 
