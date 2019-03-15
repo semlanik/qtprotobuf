@@ -56,22 +56,22 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
     QByteArray result = test.serialize();
     ASSERT_EQ(result.size(), 2);
     ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x1e');
+    ASSERT_EQ(result.at(1), '\x0f');
 
     test.setTestFieldInt(300);
     result = test.serialize();
     ASSERT_EQ(result.size(), 3);
     ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xd8');
-    ASSERT_EQ(result.at(2), '\x04');
+    ASSERT_EQ(result.at(1), '\xac');
+    ASSERT_EQ(result.at(2), '\x02');
 
     test.setTestFieldInt(65545);
     result = test.serialize();
     ASSERT_EQ(result.size(), 4);
     ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x92');
+    ASSERT_EQ(result.at(1), '\x89');
     ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x08');
+    ASSERT_EQ(result.at(3), '\x04');
 
     test.setTestFieldInt(0);
     result = test.serialize();
@@ -84,7 +84,7 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
     ASSERT_EQ(result.size(), 3);
     ASSERT_EQ(result.at(0), 0x08);
     ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_EQ(result.at(2), '\x01');
 
     test.setTestFieldInt(INT16_MAX + 1);
     result = test.serialize();
@@ -92,32 +92,31 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
     ASSERT_EQ(result.at(0), 0x08);
     ASSERT_EQ(result.at(1), '\x80');
     ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_EQ(result.at(3), '\x02');
 
     test.setTestFieldInt(INT8_MAX);
     result = test.serialize();
-    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.size(), 2);
     ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xfe');
-    ASSERT_EQ(result.at(2), '\x01');
+    ASSERT_EQ(result.at(1), '\x7f');
 
     test.setTestFieldInt(INT16_MAX);
     result = test.serialize();
     ASSERT_EQ(result.size(), 4);
     ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xfe');
+    ASSERT_EQ(result.at(1), '\xff');
     ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\x03');
+    ASSERT_EQ(result.at(3), '\x01');
 
     test.setTestFieldInt(INT32_MAX);
     result = test.serialize();
     ASSERT_EQ(result.size(), 6);
     ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xfe');
+    ASSERT_EQ(result.at(1), '\xff');
     ASSERT_EQ(result.at(2), '\xff');
     ASSERT_EQ(result.at(3), '\xff');
     ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\x0f');
+    ASSERT_EQ(result.at(5), '\x07');
 
     test.setTestFieldInt(-1);
     result = test.serialize();
@@ -433,16 +432,18 @@ TEST_F(SerializationTest, ComplexTypeSerializeTest)
     test.setTestComplexField(stringMsg);
 
     QByteArray result = test.serialize();
-    ASSERT_TRUE(result == QByteArray::fromHex("120832067177657274790854")
-                || result == QByteArray::fromHex("085412083206717765727479"));
+    //qDebug() << "result" << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("12083206717765727479082a")
+                || result == QByteArray::fromHex("082a12083206717765727479"));
 
     stringMsg.setTestFieldString("YVRfJvjxqbgvFwS1YvOZXgtj5ffGLS7AiNHz9oZIoKbm7z8H79xBuyPkpQXvGoO09OY9xRawx3eOAs9xjoTA1xJhrw28TAcq1CebYlC9WUfQC6hIantaNdyHiKToffi0Zt7la42SRxXZSP4GuxbcZIp53pJnyCwfCy1qdFczT0dmn7h8fpyAdemEavwFeda4d0PApGfSU2jLt39X8kYUBxNM2WgALRBgHdVde87q6Pi5U69TjhMd28W1SFD1DxyogCCrqOct2ZPICoLnrqdF3OdNzjRVLfeyvQ8LgLvRNFR9WfWAyAz79nKgBamd8Ntlvt4Mg35E5gVS2g7AQ7rkm72cBdnW9sCEyGabeXAuH5j4GRbuLT7qBZWDcFLF4SsCdS3WfFGdNHfwaijzykByo71PvFVlTXH2WJWoFvR5FALjBTn7bCdP0pAiSbLCY8Xz2Msc3dBb5Ff9GISPbUpNmUvBdMZMHQvqOmTNXEPpN0b74MDOMQfWJShOo3NkAvMjs");
     test.setTestFieldInt(42);
     test.setTestComplexField(stringMsg);
 
     result = test.serialize();
-    ASSERT_TRUE(result == QByteArray::fromHex("128404328104595652664a766a78716267764677533159764f5a5867746a356666474c533741694e487a396f5a496f4b626d377a3848373978427579506b70515876476f4f30394f5939785261777833654f417339786a6f544131784a68727732385441637131436562596c43395755665143366849616e74614e647948694b546f666669305a74376c613432535278585a53503447757862635a49703533704a6e79437766437931716446637a5430646d6e3768386670794164656d456176774665646134643050417047665355326a4c74333958386b595542784e4d325767414c524267486456646538377136506935553639546a684d6432385731534644314478796f67434372714f6374325a5049436f4c6e72716446334f644e7a6a52564c6665797651384c674c76524e4652395766574179417a37396e4b6742616d64384e746c7674344d6733354535675653326737415137726b6d37326342646e5739734345794761626558417548356a34475262754c543771425a574463464c463453734364533357664647644e48667761696a7a796b42796f3731507646566c54584832574a576f4676523546414c6a42546e37624364503070416953624c435938587a324d73633364426235466639474953506255704e6d557642644d5a4d485176714f6d544e584550704e306237344d444f4d5166574a53684f6f334e6b41764d6a730854")
-                ||result == QByteArray::fromHex("0854128404328104595652664a766a78716267764677533159764f5a5867746a356666474c533741694e487a396f5a496f4b626d377a3848373978427579506b70515876476f4f30394f5939785261777833654f417339786a6f544131784a68727732385441637131436562596c43395755665143366849616e74614e647948694b546f666669305a74376c613432535278585a53503447757862635a49703533704a6e79437766437931716446637a5430646d6e3768386670794164656d456176774665646134643050417047665355326a4c74333958386b595542784e4d325767414c524267486456646538377136506935553639546a684d6432385731534644314478796f67434372714f6374325a5049436f4c6e72716446334f644e7a6a52564c6665797651384c674c76524e4652395766574179417a37396e4b6742616d64384e746c7674344d6733354535675653326737415137726b6d37326342646e5739734345794761626558417548356a34475262754c543771425a574463464c463453734364533357664647644e48667761696a7a796b42796f3731507646566c54584832574a576f4676523546414c6a42546e37624364503070416953624c435938587a324d73633364426235466639474953506255704e6d557642644d5a4d485176714f6d544e584550704e306237344d444f4d5166574a53684f6f334e6b41764d6a73"));
+    //qDebug() << "result" << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("128404328104595652664a766a78716267764677533159764f5a5867746a356666474c533741694e487a396f5a496f4b626d377a3848373978427579506b70515876476f4f30394f5939785261777833654f417339786a6f544131784a68727732385441637131436562596c43395755665143366849616e74614e647948694b546f666669305a74376c613432535278585a53503447757862635a49703533704a6e79437766437931716446637a5430646d6e3768386670794164656d456176774665646134643050417047665355326a4c74333958386b595542784e4d325767414c524267486456646538377136506935553639546a684d6432385731534644314478796f67434372714f6374325a5049436f4c6e72716446334f644e7a6a52564c6665797651384c674c76524e4652395766574179417a37396e4b6742616d64384e746c7674344d6733354535675653326737415137726b6d37326342646e5739734345794761626558417548356a34475262754c543771425a574463464c463453734364533357664647644e48667761696a7a796b42796f3731507646566c54584832574a576f4676523546414c6a42546e37624364503070416953624c435938587a324d73633364426235466639474953506255704e6d557642644d5a4d485176714f6d544e584550704e306237344d444f4d5166574a53684f6f334e6b41764d6a73082a")
+                ||result == QByteArray::fromHex("082a128404328104595652664a766a78716267764677533159764f5a5867746a356666474c533741694e487a396f5a496f4b626d377a3848373978427579506b70515876476f4f30394f5939785261777833654f417339786a6f544131784a68727732385441637131436562596c43395755665143366849616e74614e647948694b546f666669305a74376c613432535278585a53503447757862635a49703533704a6e79437766437931716446637a5430646d6e3768386670794164656d456176774665646134643050417047665355326a4c74333958386b595542784e4d325767414c524267486456646538377136506935553639546a684d6432385731534644314478796f67434372714f6374325a5049436f4c6e72716446334f644e7a6a52564c6665797651384c674c76524e4652395766574179417a37396e4b6742616d64384e746c7674344d6733354535675653326737415137726b6d37326342646e5739734345794761626558417548356a34475262754c543771425a574463464c463453734364533357664647644e48667761696a7a796b42796f3731507646566c54584832574a576f4676523546414c6a42546e37624364503070416953624c435938587a324d73633364426235466639474953506255704e6d557642644d5a4d485176714f6d544e584550704e306237344d444f4d5166574a53684f6f334e6b41764d6a73"));
 
 
     stringMsg.setTestFieldString("qwerty");
@@ -450,6 +451,8 @@ TEST_F(SerializationTest, ComplexTypeSerializeTest)
     test.setTestComplexField(stringMsg);
 
     result = test.serialize();
+    //qDebug() << "result" << result.toHex();
+
     ASSERT_TRUE(result == QByteArray::fromHex("120832067177657274790859")
                 || result == QByteArray::fromHex("085912083206717765727479"));
 }
@@ -459,7 +462,7 @@ TEST_F(SerializationTest, RepeatedIntMessageTest)
     RepeatedIntMessage test;
     test.setTestRepeatedInt({1, 400, 3, 4, 5, 6});
     QByteArray result = test.serialize();
-//    qDebug() << "result " << result.toHex();
+    //qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a0702a00606080a0c"));
 
     test.setTestRepeatedInt(IntList());
@@ -472,7 +475,7 @@ TEST_F(SerializationTest, RepeatedStringMessageTest)
     RepeatedStringMessage test;
     test.setTestRepeatedString({"aaaa","bbbbb","ccc","dddddd","eeeee"});
     QByteArray result = test.serialize();
-//    qDebug() << "result " << result.toHex();
+    //qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a04616161610a0562626262620a036363630a066464646464640a056565656565"));
 
     test.setTestRepeatedString(QStringList());
@@ -485,7 +488,7 @@ TEST_F(SerializationTest, RepeatedDoubleMessageTest)
     RepeatedDoubleMessage test;
     test.setTestRepeatedDouble({0.1, 0.2, 0.3, 0.4, 0.5});
     QByteArray result = test.serialize();
-//    qDebug() << "result " << result.toHex();
+    //qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a289a9999999999b93f9a9999999999c93f333333333333d33f9a9999999999d93f000000000000e03f"));
 
     test.setTestRepeatedDouble(DoubleList());
@@ -512,7 +515,7 @@ TEST_F(SerializationTest, RepeatedBytesMessageTest)
                                QByteArray::fromHex("eaeaeaeaea"),
                                QByteArray::fromHex("010203040506")});
     result = test.serialize();
-//    qDebug() << "result " << result.toHex();
+    //qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a060102030405060a000a05eaeaeaeaea0a06010203040506"));
 }
 
@@ -521,7 +524,7 @@ TEST_F(SerializationTest, RepeatedFloatMessageTest)
     RepeatedFloatMessage test;
     test.setTestRepeatedFloat({0.4f, 1.2f, 0.5f, 1.4f, 0.6f});
     QByteArray result = test.serialize();
-//    qDebug() << "result " << result.toHex();
+    //qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a14cdcccc3e9a99993f0000003f3333b33f9a99193f"));
 
     test.setTestRepeatedFloat(FloatList());
@@ -538,11 +541,11 @@ TEST_F(SerializationTest, RepeatedComplexMessageTest)
     msg.setTestComplexField(stringMsg);
     RepeatedComplexMessage test;
     test.setTestRepeatedComplex({msg, msg, msg});
-    qDebug() << test.testRepeatedComplex().count();
     QByteArray result = test.serialize();
-    qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a0c0832120832067177657274790a0c0832120832067177657274790a0c083212083206717765727479")
-                || result == QByteArray::fromHex("0a0c1208320671776572747908320a0c1208320671776572747908320a0c120832067177657274790832"));
+    //qDebug() << "result " << result.toHex();
+
+    ASSERT_TRUE(result == QByteArray::fromHex("0a0c0819120832067177657274790a0c0819120832067177657274790a0c081912083206717765727479")
+                || result == QByteArray::fromHex("0a0c1208320671776572747908190a0c1208320671776572747908190a0c120832067177657274790819"));
 
     test.setTestRepeatedComplex({});
     result = test.serialize();

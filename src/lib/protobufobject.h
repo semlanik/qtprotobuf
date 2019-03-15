@@ -161,31 +161,35 @@ public:
         qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex;
         int userType = propertyValue.userType();
 
+        //First looking type serializer in registred serializers
         auto it = serializers.find(userType);
         if (it != std::end(serializers)) {
             return (it->second).serializer(this, propertyValue, fieldIndex);
         }
 
+        //Check if it's special list
         if (userType == qMetaTypeId<IntList>()) {
             return serializeListType(propertyValue.value<IntList>(), fieldIndex);
-        } else if(userType == qMetaTypeId<FloatList>()) {
-            return serializeListType(propertyValue.value<FloatList>(), fieldIndex);
-        } else if(userType == qMetaTypeId<DoubleList>()) {
-            return serializeListType(propertyValue.value<DoubleList>(), fieldIndex);
-        } else {
-            const void *src = propertyValue.constData();
-            //TODO: each time huge objects will make own copies
-            //Probably generate fields reflection is better solution
-            auto value = std::unique_ptr<ProtobufObjectPrivate>(reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src)));
-            return serializeLengthDelimited(value->serializePrivate());
         }
-        Q_ASSERT_X(QMetaType::UnknownType == userType, staticMetaObject.className(), "Serialization of unknown user type");
-        return QByteArray();
+
+        if(userType == qMetaTypeId<FloatList>()) {
+            return serializeListType(propertyValue.value<FloatList>(), fieldIndex);
+        }
+
+        if(userType == qMetaTypeId<DoubleList>()) {
+            return serializeListType(propertyValue.value<DoubleList>(), fieldIndex);
+        }
+
+        //Otherwise it's user type
+        const void *src = propertyValue.constData();
+        //TODO: each time huge objects will make own copies
+        //Probably generate fields reflection is better solution
+        auto value = std::unique_ptr<ProtobufObjectPrivate>(reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src)));
+        return serializeLengthDelimited(value->serializePrivate());
     }
 
     template<typename V,
-             typename std::enable_if_t<std::is_integral<V>::value
-                                       || std::is_floating_point<V>::value, int> = 0>
+             typename std::enable_if_t<std::is_integral<V>::value, int> = 0>
     QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) const {
         qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
         if (listValue.count() <= 0) {
@@ -195,7 +199,25 @@ public:
 
         QByteArray serializedList;
         for(auto& value : listValue) {
-            serializedList.append(serializeValue(value, NotUsedFieldIndex));
+            serializedList.append(serializeVarintZZ(value));
+        }
+        //If internal field type is not LengthDelimited, exact amount of fields to be specified
+        serializedList.prepend(serializeVarint(static_cast<unsigned int>(serializedList.size())));
+        return serializedList;
+    }
+
+    template<typename V,
+             typename std::enable_if_t<std::is_floating_point<V>::value, int> = 0>
+    QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) const {
+        qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
+        if (listValue.count() <= 0) {
+            outFieldIndex = NotUsedFieldIndex;
+            return QByteArray();
+        }
+
+        QByteArray serializedList;
+        for(auto& value : listValue) {
+            serializedList.append(serializeFixed(value));
         }
         //If internal field type is not LengthDelimited, exact amount of fields to be specified
         serializedList.prepend(serializeVarint(static_cast<unsigned int>(serializedList.size())));
@@ -254,14 +276,30 @@ public:
         return result;
     }
 
-    template <typename V,
+    template <typename V, typename UV = typename std::make_unsigned<V>::type,
               typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
     QByteArray serializeVarint(V value) const {
         qProtoDebug() << __func__ << "value" << value;
-        using UV = typename std::make_unsigned<V>::type;
+        UV uValue = 0;
+        //Use ZigZag convertion first and apply unsigned variant next
+        if (value < 0) {
+            value = (value << 1) ^ (value >> (sizeof(UV) * 8 - 1));
+            uValue = *(UV *)&value;
+        } else {
+            uValue = static_cast<UV>(value);
+        }
+        return serializeVarint(uValue);
+    }
+
+    template <typename V, typename UV = typename std::make_unsigned<V>::type,
+              typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
+    QByteArray serializeVarintZZ(V value) const {
+        qProtoDebug() << __func__ << "value" << value;
+        UV uValue = 0;
+
         //Use ZigZag convertion first and apply unsigned variant next
         value = (value << 1) ^ (value >> (sizeof(UV) * 8 - 1));
-        UV uValue = *(UV *)&value;
+        uValue = *(UV *)&value;
         return serializeVarint(uValue);
     }
 
@@ -294,7 +332,7 @@ public:
 //####################################################
     void deserializeProperty(WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it)
     {
-        qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << metaProperty.typeName() << "currentByte:" << QString::number((*it),16);
+        qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << metaProperty.typeName() << "currentByte:" << QString::number((*it), 16);
         QVariant newPropertyValue;
         int type = metaProperty.type();
         switch(type) {
@@ -333,13 +371,13 @@ public:
             break;
         case QMetaType::QByteArrayList: {
             QByteArrayList currentValue = metaProperty.read(this).value<QByteArrayList>();
-            currentValue.append(deserializeListType<QByteArray>(it));
+            currentValue.append(deserializeLengthDelimited(it));
             metaProperty.write(this, QVariant::fromValue<QByteArrayList>(currentValue));
         }
             return;
         case QMetaType::QStringList: {
             QStringList currentValue = metaProperty.read(this).value<QStringList>();
-            currentValue.append(QString::fromUtf8(deserializeListType<QString>(it)));
+            currentValue.append(QString::fromUtf8(deserializeLengthDelimited(it)));
             metaProperty.write(this, currentValue);
         }
             return;
@@ -354,7 +392,7 @@ public:
                                         || std::is_same<V, unsigned int>::value
                                         || std::is_same<V, qulonglong>::value, int> = 0>
     QVariant deserializeFixed(QByteArray::const_iterator &it) {
-        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         QVariant newPropertyValue(QVariant::fromValue(*(V*)it));
         it += sizeof(V);
         return newPropertyValue;
@@ -363,15 +401,14 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
     QVariant deserializeVarint(QByteArray::const_iterator &it) {
-        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         return QVariant::fromValue(deserializeVarintCommon<V>(it));
     }
 
-    template <typename V,
+    template <typename V, typename UV = typename std::make_unsigned<V>::type,
               typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
     QVariant deserializeVarint(QByteArray::const_iterator &it) {
-        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
-        using UV = typename std::make_unsigned<V>::type;
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         UV unsignedValue = deserializeVarintCommon<UV>(it);
         V value = (unsignedValue >> 1) ^ (-(unsignedValue & 1));
 
@@ -380,7 +417,7 @@ public:
 
     template <typename V>
     V deserializeVarintCommon(QByteArray::const_iterator &it) {
-        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         V value = 0;
         int k = 0;
         while((*it) & 0x80) {
@@ -394,7 +431,7 @@ public:
     }
 
     QByteArray deserializeLengthDelimited(QByteArray::const_iterator &it) {
-        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         unsigned int length = deserializeVarint<unsigned int>(it).toUInt();
         QByteArray result(it, length);
         it += length;
@@ -403,7 +440,7 @@ public:
 
     void deserializeUserType(int userType, QByteArray::const_iterator& it, QVariant &newValue)
     {
-        qProtoDebug() << __func__ << "userType" << userType << "currentByte:" << QString::number((*it),16);
+        qProtoDebug() << __func__ << "userType" << userType << "currentByte:" << QString::number((*it), 16);
 
         auto serializerIt = serializers.find(userType);
         if (serializerIt != std::end(serializers)) {
@@ -428,14 +465,14 @@ public:
               typename std::enable_if_t<std::is_same<V, QString>::value
                                         || std::is_same<V, QByteArray>::value, int> = 0>
     QByteArray deserializeListType(QByteArray::const_iterator& it) {
-        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         return deserializeLengthDelimited(it);
     }
 
     template <typename V,
               typename std::enable_if_t<std::is_base_of<ProtobufObjectPrivate, V>::value, int> = 0>
     QVariant deserializeListType(QByteArray::const_iterator& it) {
-        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         int metaTypeId = qMetaTypeId<V>();
         QVariant variant;
         deserializeUserType(metaTypeId, it, variant);
@@ -447,7 +484,7 @@ public:
                                         || std::is_same<V, unsigned int>::value
                                         || std::is_same<V, qulonglong>::value, int> = 0>
     QVariant deserializeListType(QByteArray::const_iterator& it) {
-        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         QList<V> out;
         unsigned int count = deserializeVarint<unsigned int>(it).toUInt() / sizeof(V);
         for (unsigned int i = 0; i < count; i++) {
@@ -460,11 +497,11 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_same<V, int>::value, int> = 0>
     QVariant deserializeVarintListType(QByteArray::const_iterator& it) {
-        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         QList<V> out;
         unsigned int count = deserializeVarint<unsigned int>(it).toUInt();
         QByteArray::const_iterator lastVarint = it + count;
-        while(it != lastVarint) {
+        while (it != lastVarint) {
             QVariant variant = deserializeVarint<V>(it);
             out.append(variant.value<V>());
         }
@@ -537,7 +574,7 @@ public:
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
         //T *instance = dynamic_cast<T *>(this);
 
-        for(QByteArray::const_iterator it = array.begin(); it != array.end();) {
+        for (QByteArray::const_iterator it = array.begin(); it != array.end();) {
             //Each iteration we expect iterator is setup to beginning of next chunk
             int fieldNumber = NotUsedFieldIndex;
             WireTypes wireType = UnknownWireType;
