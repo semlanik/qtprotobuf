@@ -27,4 +27,4 @@
 
 using namespace qtprotobuf;
 
-ProtobufObjectPrivate::ListSerializerRegistry ProtobufObjectPrivate::listSerializers;
+ProtobufObjectPrivate::SerializerRegistry ProtobufObjectPrivate::serializers = {};

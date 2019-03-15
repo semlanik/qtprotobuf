@@ -37,6 +37,7 @@
 #include "repeateddoublemessage.h"
 #include "repeatedfloatmessage.h"
 #include "repeatedintmessage.h"
+#include "repeatedcomplexmessage.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf::tests;
@@ -299,4 +300,22 @@ TEST_F(DeserializationTest, RepeatedIntMessageTest)
     test.deserialize(QByteArray::fromHex("0a0702a00606080a0c"));
     ASSERT_EQ(6, test.testRepeatedInt().count());
     ASSERT_TRUE(test.testRepeatedInt() == IntList({1, 400, 3, 4, 5, 6}));
+}
+
+TEST_F(DeserializationTest, RepeatedComplexMessageTest)
+{
+    RepeatedComplexMessage test;
+    test.deserialize(QByteArray::fromHex("0a0c0832120832067177657274790a0c0832120832067177657274790a0c083212083206717765727479"));
+    ASSERT_EQ(3, test.testRepeatedComplex().count());
+    ASSERT_EQ(25, test.testRepeatedComplex().at(0).testFieldInt());
+    ASSERT_TRUE(test.testRepeatedComplex().at(0).testComplexField().testFieldString() == QString("qwerty"));
+    ASSERT_EQ(25, test.testRepeatedComplex().at(1).testFieldInt());
+    ASSERT_TRUE(test.testRepeatedComplex().at(1).testComplexField().testFieldString() == QString("qwerty"));
+    ASSERT_EQ(25, test.testRepeatedComplex().at(2).testFieldInt());
+    ASSERT_TRUE(test.testRepeatedComplex().at(2).testComplexField().testFieldString() == QString("qwerty"));
+
+    test.deserialize(QByteArray::fromHex("0a0c120832067177657274790832"));
+    ASSERT_LT(0, test.testRepeatedComplex().count());
+    ASSERT_EQ(25, test.testRepeatedComplex().at(0).testFieldInt());
+    ASSERT_TRUE(test.testRepeatedComplex().at(0).testComplexField().testFieldString() == QString("qwerty"));
 }

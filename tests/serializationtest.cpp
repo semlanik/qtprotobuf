@@ -537,12 +537,12 @@ TEST_F(SerializationTest, RepeatedComplexMessageTest)
     msg.setTestFieldInt(25);
     msg.setTestComplexField(stringMsg);
     RepeatedComplexMessage test;
-    test.setTestRepeatedComplex({msg});
+    test.setTestRepeatedComplex({msg, msg, msg});
     qDebug() << test.testRepeatedComplex().count();
     QByteArray result = test.serialize();
     qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a0c083212083206717765727479")
-                || result == QByteArray::fromHex("0a0c120832067177657274790832"));
+    ASSERT_TRUE(result == QByteArray::fromHex("0a0c0832120832067177657274790a0c0832120832067177657274790a0c083212083206717765727479")
+                || result == QByteArray::fromHex("0a0c1208320671776572747908320a0c1208320671776572747908320a0c120832067177657274790832"));
 
     test.setTestRepeatedComplex({});
     result = test.serialize();

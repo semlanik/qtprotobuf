@@ -56,8 +56,14 @@ constexpr int NotUsedFieldIndex = -1;
 class ProtobufObjectPrivate : public QObject {
 public:
     using ListSerializer = std::function<QByteArray(const ProtobufObjectPrivate *, const QVariant &, int &)>;
-    using ListSerializerRegistry = std::unordered_map<int/*metatypeid*/, ListSerializer>;
-    static ListSerializerRegistry listSerializers;
+    using ListDeserializer = std::function<void(ProtobufObjectPrivate *, QByteArray::const_iterator &, QVariant &)>;
+    struct SerializationHandlers {
+        ListSerializer serializer;
+        ListDeserializer deserializer;
+    };
+
+    using SerializerRegistry = std::unordered_map<int/*metatypeid*/, SerializationHandlers>;
+    static SerializerRegistry serializers;
 
     explicit ProtobufObjectPrivate(QObject *parent = nullptr) : QObject(parent) {}
 
@@ -155,9 +161,9 @@ public:
         qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex;
         int userType = propertyValue.userType();
 
-        auto it = listSerializers.find(userType);
-        if (it != std::end(listSerializers)) {
-            return (it->second)(this, propertyValue, fieldIndex);
+        auto it = serializers.find(userType);
+        if (it != std::end(serializers)) {
+            return (it->second).serializer(this, propertyValue, fieldIndex);
         }
 
         if (userType == qMetaTypeId<IntList>()) {
@@ -226,10 +232,13 @@ public:
 
         QByteArray serializedList;
         for(auto& value : listValue) {
-            serializedList.append(value.serialize());
+            QByteArray serializedValue = serializeLengthDelimited(value.serialize());
+            serializedValue.prepend(encodeHeaderByte(outFieldIndex, LengthDelimited));
+            serializedList.append(serializedValue);
         }
 
-        serializedList.prepend(serializeVarint(static_cast<unsigned int>(serializedList.size())));
+        outFieldIndex = NotUsedFieldIndex;
+
         return serializedList;
     }
 
@@ -285,7 +294,7 @@ public:
 //####################################################
     void deserializeProperty(WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it)
     {
-        qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << metaProperty.typeName();
+        qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << metaProperty.typeName() << "currentByte:" << QString::number((*it),16);
         QVariant newPropertyValue;
         int type = metaProperty.type();
         switch(type) {
@@ -319,6 +328,7 @@ public:
             newPropertyValue = deserializeLengthDelimited(it);
             break;
         case QMetaType::User:
+            newPropertyValue = metaProperty.read(this);
             deserializeUserType(metaProperty.userType(), it, newPropertyValue);
             break;
         case QMetaType::QByteArrayList: {
@@ -344,7 +354,7 @@ public:
                                         || std::is_same<V, unsigned int>::value
                                         || std::is_same<V, qulonglong>::value, int> = 0>
     QVariant deserializeFixed(QByteArray::const_iterator &it) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
         QVariant newPropertyValue(QVariant::fromValue(*(V*)it));
         it += sizeof(V);
         return newPropertyValue;
@@ -353,14 +363,14 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
     QVariant deserializeVarint(QByteArray::const_iterator &it) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
         return QVariant::fromValue(deserializeVarintCommon<V>(it));
     }
 
     template <typename V,
               typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
     QVariant deserializeVarint(QByteArray::const_iterator &it) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
         using UV = typename std::make_unsigned<V>::type;
         UV unsignedValue = deserializeVarintCommon<UV>(it);
         V value = (unsignedValue >> 1) ^ (-(unsignedValue & 1));
@@ -370,7 +380,7 @@ public:
 
     template <typename V>
     V deserializeVarintCommon(QByteArray::const_iterator &it) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
         V value = 0;
         int k = 0;
         while((*it) & 0x80) {
@@ -384,7 +394,7 @@ public:
     }
 
     QByteArray deserializeLengthDelimited(QByteArray::const_iterator &it) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
         unsigned int length = deserializeVarint<unsigned int>(it).toUInt();
         QByteArray result(it, length);
         it += length;
@@ -393,7 +403,14 @@ public:
 
     void deserializeUserType(int userType, QByteArray::const_iterator& it, QVariant &newValue)
     {
-        qProtoDebug() << __func__ << "userType" << userType;
+        qProtoDebug() << __func__ << "userType" << userType << "currentByte:" << QString::number((*it),16);
+
+        auto serializerIt = serializers.find(userType);
+        if (serializerIt != std::end(serializers)) {
+            (serializerIt->second).deserializer(this, it, newValue);
+            return;
+        }
+
         if (userType == qMetaTypeId<IntList>()) {
             newValue = deserializeVarintListType<int>(it);
         } else if(userType == qMetaTypeId<FloatList>()) {
@@ -411,8 +428,18 @@ public:
               typename std::enable_if_t<std::is_same<V, QString>::value
                                         || std::is_same<V, QByteArray>::value, int> = 0>
     QByteArray deserializeListType(QByteArray::const_iterator& it) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
         return deserializeLengthDelimited(it);
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_base_of<ProtobufObjectPrivate, V>::value, int> = 0>
+    QVariant deserializeListType(QByteArray::const_iterator& it) {
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
+        int metaTypeId = qMetaTypeId<V>();
+        QVariant variant;
+        deserializeUserType(metaTypeId, it, variant);
+        return variant;
     }
 
     template <typename V,
@@ -420,7 +447,7 @@ public:
                                         || std::is_same<V, unsigned int>::value
                                         || std::is_same<V, qulonglong>::value, int> = 0>
     QVariant deserializeListType(QByteArray::const_iterator& it) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
         QList<V> out;
         unsigned int count = deserializeVarint<unsigned int>(it).toUInt() / sizeof(V);
         for (unsigned int i = 0; i < count; i++) {
@@ -433,7 +460,7 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_same<V, int>::value, int> = 0>
     QVariant deserializeVarintListType(QByteArray::const_iterator& it) {
-        qProtoDebug() << __func__;
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it),16);
         QList<V> out;
         unsigned int count = deserializeVarint<unsigned int>(it).toUInt();
         QByteArray::const_iterator lastVarint = it + count;
@@ -454,7 +481,7 @@ class ProtobufObject : public ProtobufObjectPrivate
 {
 protected:
     static void registerSerializers(int metaTypeId, int listMetaTypeId) {
-        listSerializers[listMetaTypeId] = ListSerializer(serializeComplexListType);
+        serializers[listMetaTypeId] = {ListSerializer(serializeComplexListType), ListDeserializer(deserializeComplexListType)};
     }
 
     QByteArray serializePrivate() const override {
@@ -497,6 +524,13 @@ public:
     static QByteArray serializeComplexListType(const ProtobufObjectPrivate* serializer, const QVariant &listValue, int &outFieldIndex) {
         QList<T> list = listValue.value<QList<T>>();
         return serializer->serializeListType(list, outFieldIndex);
+    }
+
+    static void deserializeComplexListType(ProtobufObjectPrivate* deserializer, QByteArray::const_iterator &it, QVariant &previous) {
+        QList<T> previousList = previous.value<QList<T>>();
+        QVariant newMember = deserializer->deserializeListType<T>(it);
+        previousList.append(newMember.value<T>());
+        previous.setValue(previousList);
     }
 
     void deserialize(const QByteArray &array) {
