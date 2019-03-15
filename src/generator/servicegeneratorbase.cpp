@@ -62,11 +62,11 @@ void ServiceGeneratorBase::printIncludes()
     }
 
     for(auto type : includeSet) {
-        mPrinter.Print({{"type_lower", type}}, InternalIncludeTemplate);
+        mPrinter.Print({{"type_lower", type}}, Templates::InternalIncludeTemplate);
     }
 }
 
 void ServiceGeneratorBase::printClassName()
 {
-    mPrinter.Print({{"classname", mClassName}}, NonProtoClassDefinitionTemplate);
+    mPrinter.Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
 }

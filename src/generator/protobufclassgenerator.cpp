@@ -49,26 +49,26 @@ void ProtobufClassGenerator::printCopyFunctionality()
 {
     assert(mMessage != nullptr);
     mPrinter.Print({{"classname", mClassName}},
-                   CopyConstructorTemplate);
+                   Templates::CopyConstructorTemplate);
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage->field(i), CopyFieldTemplate);
+        printField(mMessage->field(i), Templates::CopyFieldTemplate);
     }
     Outdent();
 
-    mPrinter.Print(SimpleBlockEnclosureTemplate);
+    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
     mPrinter.Print({{"classname", mClassName}},
-                   AssignmentOperatorTemplate);
+                   Templates::AssignmentOperatorTemplate);
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage->field(i), CopyFieldTemplate);
+        printField(mMessage->field(i), Templates::CopyFieldTemplate);
     }
-    mPrinter.Print(AssignmentOperatorReturnTemplate);
+    mPrinter.Print(Templates::AssignmentOperatorReturnTemplate);
     Outdent();
 
-    mPrinter.Print(SimpleBlockEnclosureTemplate);
+    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
 
 }
 
@@ -76,36 +76,36 @@ void ProtobufClassGenerator::printMoveSemantic()
 {
     assert(mMessage != nullptr);
     mPrinter.Print({{"classname", mClassName}},
-                   MoveConstructorTemplate);
+                   Templates::MoveConstructorTemplate);
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
         if (isComplexType(field) || field->is_repeated()) {
-            printField(field, MoveComplexFieldTemplate);
+            printField(field, Templates::MoveComplexFieldTemplate);
         } else {
-            printField(field, MoveFieldTemplate);
+            printField(field, Templates::MoveFieldTemplate);
         }
     }
     Outdent();
 
-    mPrinter.Print(SimpleBlockEnclosureTemplate);
+    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
     mPrinter.Print({{"classname", mClassName}},
-                   MoveAssignmentOperatorTemplate);
+                   Templates::MoveAssignmentOperatorTemplate);
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
         if (isComplexType(field) || field->is_repeated()) {
-            printField(field, MoveComplexFieldTemplate);
+            printField(field, Templates::MoveComplexFieldTemplate);
         } else {
-            printField(field, MoveFieldTemplate);
+            printField(field, Templates::MoveFieldTemplate);
         }
     }
-    mPrinter.Print(AssignmentOperatorReturnTemplate);
+    mPrinter.Print(Templates::AssignmentOperatorReturnTemplate);
     Outdent();
 
-    mPrinter.Print(SimpleBlockEnclosureTemplate);
+    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
 }
 
 void ProtobufClassGenerator::printComparisonOperators()
@@ -113,7 +113,7 @@ void ProtobufClassGenerator::printComparisonOperators()
     assert(mMessage != nullptr);
     bool isFirst = true;
     PropertyMap properties;
-    mPrinter.Print({{"type", mClassName}}, EqualOperatorTemplate);
+    mPrinter.Print({{"type", mClassName}}, Templates::EqualOperatorTemplate);
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
         if (producePropertyMap(field, properties)) {
@@ -124,7 +124,7 @@ void ProtobufClassGenerator::printComparisonOperators()
                 Indent();
                 isFirst = false;
             }
-            mPrinter.Print(properties, EqualOperatorPropertyTemplate);
+            mPrinter.Print(properties, Templates::EqualOperatorPropertyTemplate);
         }
     }
 
@@ -135,16 +135,16 @@ void ProtobufClassGenerator::printComparisonOperators()
     }
 
     mPrinter.Print(";\n");
-    mPrinter.Print(SimpleBlockEnclosureTemplate);
+    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
 
-    mPrinter.Print({{"type", mClassName}}, NotEqualOperatorTemplate);
+    mPrinter.Print({{"type", mClassName}}, Templates::NotEqualOperatorTemplate);
 }
 
 void ProtobufClassGenerator::printIncludes(std::set<std::string> listModel)
 {
     assert(mMessage != nullptr);
 
-    mPrinter.Print(DefaultProtobufIncludesTemplate);
+    mPrinter.Print(Templates::DefaultProtobufIncludesTemplate);
 
     PropertyMap properties;
     std::set<std::string> existingIncludes;
@@ -155,9 +155,9 @@ void ProtobufClassGenerator::printIncludes(std::set<std::string> listModel)
         if (producePropertyMap(field, properties)) {
             if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
                 newInclude = properties["type_lower"];
-                includeTemplate = InternalIncludeTemplate;
+                includeTemplate = Templates::InternalIncludeTemplate;
             } else if (field->type() == FieldDescriptor::TYPE_STRING) {
-                includeTemplate = ExternalIncludeTemplate;
+                includeTemplate = Templates::ExternalIncludeTemplate;
             } else {
                 continue;
             }
@@ -171,7 +171,7 @@ void ProtobufClassGenerator::printIncludes(std::set<std::string> listModel)
                 std::string stringInclude = properties["type"];
                 if (stringInclude == VariantList
                         && existingIncludes.find(stringInclude) == std::end(existingIncludes)) {
-                    mPrinter.Print(properties, ExternalIncludeTemplate);
+                    mPrinter.Print(properties, Templates::ExternalIncludeTemplate);
                     existingIncludes.insert(stringInclude);
                 }
             }
@@ -180,13 +180,13 @@ void ProtobufClassGenerator::printIncludes(std::set<std::string> listModel)
 
     // Print List model class name
     if (listModel.size() > 0) {
-        mPrinter.Print(ListModelsIncludeTemplate);
+        mPrinter.Print(Templates::ListModelsIncludeTemplate);
     }
 
     for(auto modelTypeName : listModel) {
         std::string modelTypeNameLower(modelTypeName);
         utils::tolower(modelTypeNameLower);
-        mPrinter.Print({{"type_lower", modelTypeNameLower}}, InternalIncludeTemplate);
+        mPrinter.Print({{"type_lower", modelTypeNameLower}}, Templates::InternalIncludeTemplate);
     }
 }
 
@@ -214,8 +214,8 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
         }
         typeName = field->enum_type()->name();
     } else {
-        auto it = TypeReflection.find(field->type());
-        if (it != std::end(TypeReflection)) {
+        auto it = Templates::TypeReflection.find(field->type());
+        if (it != std::end(Templates::TypeReflection)) {
             typeName = it->second;
             if (field->is_repeated()) {
                 std::string namespaceDefinition("qtprotobuf::");
@@ -276,8 +276,8 @@ bool ProtobufClassGenerator::isComplexType(const FieldDescriptor *field)
 
 void ProtobufClassGenerator::printConstructor()
 {
-    mPrinter.Print({{"classname", mClassName}}, ConstructorTemplate);
-    mPrinter.Print(ConstructorContentTemplate);
+    mPrinter.Print({{"classname", mClassName}}, Templates::ConstructorTemplate);
+    mPrinter.Print(Templates::ConstructorContentTemplate);
 }
 
 void ProtobufClassGenerator::printProperties()
@@ -287,12 +287,12 @@ void ProtobufClassGenerator::printProperties()
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
-        const char* propertyTemplate = field->type() == FieldDescriptor::TYPE_MESSAGE ? MessagePropertyTemplate :
-                                                                                        PropertyTemplate;
+        const char* propertyTemplate = field->type() == FieldDescriptor::TYPE_MESSAGE ? Templates::MessagePropertyTemplate :
+                                                                                        Templates::PropertyTemplate;
         printField(field, propertyTemplate);
     }
     for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage->field(i), MemberTemplate);
+        printField(mMessage->field(i), Templates::MemberTemplate);
     }
     Outdent();
 
@@ -309,42 +309,42 @@ void ProtobufClassGenerator::printProperties()
     printComparisonOperators();
 
     for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage->field(i), GetterTemplate);
+        printField(mMessage->field(i), Templates::GetterTemplate);
     }
     for (int i = 0; i < mMessage->field_count(); i++) {
         auto field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_MESSAGE
                 || field->type() == FieldDescriptor::TYPE_STRING) {
-            printField(field, SetterTemplateComplexType);
+            printField(field, Templates::SetterTemplateComplexType);
         } else {
-            printField(field, SetterTemplateSimpleType);
+            printField(field, Templates::SetterTemplateSimpleType);
         }
     }
     Outdent();
 
-    mPrinter.Print(SignalsBlockTemplate);
+    mPrinter.Print(Templates::SignalsBlockTemplate);
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage->field(i), SignalTemplate);
+        printField(mMessage->field(i), Templates::SignalTemplate);
     }
     Outdent();
 }
 
 void ProtobufClassGenerator::printRegisterTypes()
 {
-    mPrinter.Print(ComplexTypeRegistrationMethodTemplate);
+    mPrinter.Print(Templates::ComplexTypeRegistrationMethodTemplate);
 }
 
 void ProtobufClassGenerator::printListType()
 {
-    mPrinter.Print({{"classname", mClassName}}, ComplexListTypeUsingTemplate);
+    mPrinter.Print({{"classname", mClassName}}, Templates::ComplexListTypeUsingTemplate);
 }
 
 void ProtobufClassGenerator::printFieldsOrderingDefinition()
 {
     Indent();
-    mPrinter.Print(FieldsOrderingDefinitionContainerTemplate);
+    mPrinter.Print(Templates::FieldsOrderingDefinitionContainerTemplate);
     Outdent();
 }
 

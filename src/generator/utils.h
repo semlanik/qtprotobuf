@@ -37,8 +37,8 @@ class FileDescriptor;
 
 namespace qtprotobuf {
 namespace generator {
-namespace utils {
-
+class utils {
+public:
 static void split(const std::string &str, std::vector<std::string> &container, char delim)
 {
     container.clear();
@@ -61,7 +61,7 @@ static void tolower(std::string& str) {
     std::transform(std::begin(str), std::end(str), std::begin(str), ::tolower);
 }
 
-} //namespace utils
+};
 
 using PackagesList = std::unordered_map<std::string/*package*/, std::list<const ::google::protobuf::FileDescriptor *>>;
 

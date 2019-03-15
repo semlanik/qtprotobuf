@@ -64,5 +64,5 @@ void GlobalEnumsGenerator::encloseEnum(const std::vector<std::string>& namespace
 }
 
 void GlobalEnumsGenerator::printEnumClass() {
-    mPrinter.Print({{"classname", mClassName}}, NonProtoClassDefinitionTemplate);
+    mPrinter.Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
 }

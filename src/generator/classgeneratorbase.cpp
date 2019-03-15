@@ -49,7 +49,7 @@ ClassGeneratorBase::ClassGeneratorBase(std::string fullClassName, std::unique_pt
 
 void ClassGeneratorBase::printPreamble()
 {
-    mPrinter.Print(PreambleTemplate);
+    mPrinter.Print(Templates::PreambleTemplate);
 }
 
 void ClassGeneratorBase::printNamespaces()
@@ -60,24 +60,24 @@ void ClassGeneratorBase::printNamespaces()
 void ClassGeneratorBase::printNamespaces(const std::vector<std::string> &namespaces)
 {
     for (auto ns: namespaces) {
-        mPrinter.Print({{"namespace", ns}}, NamespaceTemplate);
+        mPrinter.Print({{"namespace", ns}}, Templates::NamespaceTemplate);
     }
 }
 
 void ClassGeneratorBase::printClassDeclaration()
 {
-    mPrinter.Print({{"classname", mClassName}}, ClassDefinitionTemplate);
+    mPrinter.Print({{"classname", mClassName}}, Templates::ClassDefinitionTemplate);
 }
 
 void ClassGeneratorBase::encloseClass()
 {
-    mPrinter.Print(SemicolonBlockEnclosureTemplate);
+    mPrinter.Print(Templates::SemicolonBlockEnclosureTemplate);
 }
 
 void ClassGeneratorBase::encloseNamespaces(int count)
 {
     for (int i = 0; i < count; i++) {
-        mPrinter.Print(SimpleBlockEnclosureTemplate);
+        mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
     }
 }
 
@@ -88,21 +88,21 @@ void ClassGeneratorBase::encloseNamespaces()
 
 void ClassGeneratorBase::printPublic()
 {
-    mPrinter.Print(PublicBlockTemplate);
+    mPrinter.Print(Templates::PublicBlockTemplate);
 }
 
 void ClassGeneratorBase::printMetaTypeDeclaration()
 {
     std::string namespaces;
-    for(int i = 0; i < mNamespaces.size(); i++) {
+    for(size_t i = 0; i < mNamespaces.size(); i++) {
         if(i > 0) {
             namespaces = namespaces.append("::");
         }
         namespaces = namespaces.append(mNamespaces[i]);
     }
     mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}},
-                   DeclareMetaTypeTemplate);
+                   Templates::DeclareMetaTypeTemplate);
     mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}},
-                   DeclareComplexListTypeTemplate);
+                   Templates::DeclareComplexListTypeTemplate);
 }
 

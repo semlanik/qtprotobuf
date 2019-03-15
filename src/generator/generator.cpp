@@ -67,11 +67,11 @@ public:
     void printClassHeaderInclude() {
         std::string includeFileName = mClassName;
         utils::tolower(includeFileName);
-        mPrinter.Print({{"type_lower", includeFileName}}, InternalIncludeTemplate);
+        mPrinter.Print({{"type_lower", includeFileName}}, Templates::InternalIncludeTemplate);
     }
 
     void printFieldsOrdering() {
-        mPrinter.Print({{"type", mClassName}}, FieldsOrderingContainerTemplate);
+        mPrinter.Print({{"type", mClassName}}, Templates::FieldsOrderingContainerTemplate);
         Indent();
         for (int i = 0; i < mMessage->field_count(); i++) {
             const FieldDescriptor* field = mMessage->field(i);
@@ -81,22 +81,22 @@ public:
             //property_number is incremented by 1 because user properties stating from 1.
             //Property with index 0 is "objectName"
             mPrinter.Print({{"field_number", std::to_string(field->number())},
-                            {"property_number", std::to_string(i + 1)}}, FieldOrderTemplate);
+                            {"property_number", std::to_string(i + 1)}}, Templates::FieldOrderTemplate);
         }
         Outdent();
-        mPrinter.Print(SemicolonBlockEnclosureTemplate);
+        mPrinter.Print(Templates::SemicolonBlockEnclosureTemplate);
     }
 
     void printRegisterBody()
     {
         std::string namespaces;
-        for(int i = 0; i < mNamespaces.size(); i++) {
+        for(size_t i = 0; i < mNamespaces.size(); i++) {
             if(i > 0) {
                 namespaces = namespaces.append("::");
             }
             namespaces = namespaces.append(mNamespaces[i]);
         }
-        mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}}, ComplexTypeRegistrationTemplate);
+        mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}}, Templates::ComplexTypeRegistrationTemplate);
     }
 };
 

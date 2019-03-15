@@ -84,7 +84,7 @@ public:
         qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex << "isFixed" << isFixed;
         QByteArray result;
         WireTypes type = UnknownWireType;
-        switch (propertyValue.type()) {
+        switch (static_cast<QMetaType::Type>(propertyValue.type())) {
         case QMetaType::Int:
             type = Varint;
             result.append(serializeVarint(propertyValue.toInt()));
@@ -265,7 +265,7 @@ public:
         result.reserve(sizeof(V));
         while (value > 0) {
             //Put first 7 bits to result buffer and mark as not last
-            result.append(value & 0x7F | 0x80);
+            result.append((value & 0x7F) | 0x80);
             //Devide values to chunks of 7 bits, move to next chunk
             value >>= 7;
         }
@@ -423,7 +423,7 @@ public:
         qProtoDebug() << __func__;
         QList<V> out;
         unsigned int count = deserializeVarint<unsigned int>(it).toUInt() / sizeof(V);
-        for (int i = 0; i < count; i++) {
+        for (unsigned int i = 0; i < count; i++) {
             QVariant variant = deserializeFixed<V>(it);
             out.append(variant.value<V>());
         }
@@ -501,7 +501,7 @@ public:
 
     void deserialize(const QByteArray &array) {
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
-        T *instance = dynamic_cast<T *>(this);
+        //T *instance = dynamic_cast<T *>(this);
 
         for(QByteArray::const_iterator it = array.begin(); it != array.end();) {
             //Each iteration we expect iterator is setup to beginning of next chunk
