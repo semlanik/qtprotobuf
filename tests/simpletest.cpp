@@ -31,6 +31,7 @@
 #include "simplestringmessage.h"
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
+#include "simpleenummessage.h"
 #include "complexmessage.h"
 #include "repeatedintmessage.h"
 #include "simplebytesmessage.h"
@@ -119,6 +120,29 @@ TEST_F(SimpleTest, SimpleDoubleMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<double>(0.55)));
     ASSERT_FLOAT_EQ(test.property(propertyName).toDouble(), 0.55);
     ASSERT_FLOAT_EQ(test.testFieldDouble(), 0.55);
+}
+
+TEST_F(SimpleTest, SimpleLocalEnumsTest)
+{
+    ASSERT_GT(SimpleEnumMessage::staticMetaObject.enumeratorCount(), 0);
+    QMetaEnum simpleEnum;
+    for (int i = 0; i < SimpleEnumMessage::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = SimpleEnumMessage::staticMetaObject.enumerator(i);
+        if (QString(tmp.name()) == QString("LocalEnum")) {
+            simpleEnum = tmp;
+            break;
+        }
+    }
+    ASSERT_TRUE(simpleEnum.isValid());
+    ASSERT_STREQ(simpleEnum.key(0), "LOCAL_ENUM_VALUE0");
+    ASSERT_STREQ(simpleEnum.key(1), "LOCAL_ENUM_VALUE1");
+    ASSERT_STREQ(simpleEnum.key(2), "LOCAL_ENUM_VALUE2");
+    ASSERT_STREQ(simpleEnum.key(3), "LOCAL_ENUM_VALUE3");
+
+    ASSERT_EQ(simpleEnum.value(0), 0);
+    ASSERT_EQ(simpleEnum.value(1), 1);
+    ASSERT_EQ(simpleEnum.value(2), 2);
+    ASSERT_EQ(simpleEnum.value(3), 3);
 }
 
 TEST_F(SimpleTest, SimpleEnumsTest)

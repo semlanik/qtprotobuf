@@ -77,6 +77,7 @@ protected:
         for (int i = 0; i < message->enum_type_count(); i++) {
             const auto enumDescr = message->enum_type(i);
             mPrinter.Print({{"enum", enumDescr->name()}}, Templates::EnumDefinitionTemplate);
+
             Indent();
             for (int j = 0; j < enumDescr->value_count(); j++) {
                 const auto valueDescr = enumDescr->value(j);
@@ -86,6 +87,11 @@ protected:
             Outdent();
             mPrinter.Print(Templates::SemicolonBlockEnclosureTemplate);
             mPrinter.Print({{"type", enumDescr->name().c_str()}}, Templates::QEnumTemplate);
+        }
+
+        for (int i = 0; i < message->enum_type_count(); i++) {
+            const auto enumDescr = message->enum_type(i);
+            mPrinter.Print({{"enum", enumDescr->name()}}, Templates::EnumTypeUsingTemplate);
         }
         Outdent();
     }

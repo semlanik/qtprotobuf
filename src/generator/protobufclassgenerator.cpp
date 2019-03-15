@@ -84,7 +84,12 @@ void ProtobufClassGenerator::printMoveSemantic()
         if (isComplexType(field) || field->is_repeated()) {
             printField(field, Templates::MoveComplexFieldTemplate);
         } else {
-            printField(field, Templates::MoveFieldTemplate);
+            if (field->type() != FieldDescriptor::TYPE_ENUM) {
+                printField(field, Templates::MoveFieldTemplate);
+            }
+            else {
+                printField(field, Templates::EnumMoveFieldTemplate);
+            }
         }
     }
     Outdent();
@@ -99,7 +104,12 @@ void ProtobufClassGenerator::printMoveSemantic()
         if (isComplexType(field) || field->is_repeated()) {
             printField(field, Templates::MoveComplexFieldTemplate);
         } else {
-            printField(field, Templates::MoveFieldTemplate);
+            if (field->type() != FieldDescriptor::TYPE_ENUM) {
+                printField(field, Templates::MoveFieldTemplate);
+            }
+            else {
+                printField(field, Templates::EnumMoveFieldTemplate);
+            }
         }
     }
     mPrinter.Print(Templates::AssignmentOperatorReturnTemplate);
@@ -158,6 +168,8 @@ void ProtobufClassGenerator::printIncludes(std::set<std::string> listModel)
                 includeTemplate = Templates::InternalIncludeTemplate;
             } else if (field->type() == FieldDescriptor::TYPE_STRING) {
                 includeTemplate = Templates::ExternalIncludeTemplate;
+            } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
+                includeTemplate = Templates::GlobalEnumIncludeTemplate;
             } else {
                 continue;
             }
@@ -209,10 +221,10 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
             return typeName.append("List");
         }
     } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
-        if (field->is_repeated()) {
-            return VariantList;
-        }
         typeName = field->enum_type()->name();
+        if (field->is_repeated()) {
+            return typeName.append("List");
+        }
     } else {
         auto it = Templates::TypeReflection.find(field->type());
         if (it != std::end(Templates::TypeReflection)) {
@@ -291,9 +303,7 @@ void ProtobufClassGenerator::printProperties()
                                                                                         Templates::PropertyTemplate;
         printField(field, propertyTemplate);
     }
-    for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage->field(i), Templates::MemberTemplate);
-    }
+
     Outdent();
 
     printQEnums(mMessage);
@@ -339,12 +349,22 @@ void ProtobufClassGenerator::printRegisterTypes()
 void ProtobufClassGenerator::printListType()
 {
     mPrinter.Print({{"classname", mClassName}}, Templates::ComplexListTypeUsingTemplate);
+
 }
 
 void ProtobufClassGenerator::printFieldsOrderingDefinition()
 {
     Indent();
     mPrinter.Print(Templates::FieldsOrderingDefinitionContainerTemplate);
+    Outdent();
+}
+
+void ProtobufClassGenerator::printClassMembers()
+{
+    Indent();
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        printField(mMessage->field(i), Templates::MemberTemplate);
+    }
     Outdent();
 }
 
@@ -372,6 +392,7 @@ void ProtobufClassGenerator::run()
     printProperties();
     printPublic();
     printFieldsOrderingDefinition();
+    printClassMembers();
     encloseClass();
     printListType();
     encloseNamespaces();

@@ -39,10 +39,12 @@ public:
     static const char *InternalIncludeTemplate;
     static const char *ExternalIncludeTemplate;
     static const char *ListModelsIncludeTemplate;
+    static const char *GlobalEnumIncludeTemplate;
     static const char *UsingQtProtobufNamespaceTemplate;
     static const char *ComplexTypeRegistrationMethodTemplate;
     static const char *ComplexTypeRegistrationTemplate;
     static const char *ComplexListTypeUsingTemplate;
+    static const char *EnumTypeUsingTemplate;
     static const char *NamespaceTemplate;
     static const char *NonProtoClassDefinitionTemplate;
     static const char *ClassDefinitionTemplate;
@@ -58,6 +60,7 @@ public:
     static const char *CopyFieldTemplate;
     static const char *MoveComplexFieldTemplate;
     static const char *MoveFieldTemplate;
+    static const char *EnumMoveFieldTemplate;
     static const char *AssignmentOperatorTemplate;
     static const char *AssignmentOperatorReturnTemplate;
     static const char *MoveAssignmentOperatorTemplate;
