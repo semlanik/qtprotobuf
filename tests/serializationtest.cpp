@@ -26,6 +26,11 @@
 #include "serializationtest.h"
 
 #include "simpleintmessage.h"
+#include "simpleuintmessage.h"
+#include "simplesintmessage.h"
+#include "simpleint64message.h"
+#include "simpleuint64message.h"
+#include "simplesint64message.h"
 #include "simplefixedint32message.h"
 #include "simplefixedint64message.h"
 #include "simplefloatmessage.h"
@@ -75,9 +80,7 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
 
     test.setTestFieldInt(0);
     result = test.serialize();
-    ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x00');
+    ASSERT_EQ(result.size(), 0);
 
     test.setTestFieldInt(INT8_MAX + 1);
     result = test.serialize();
@@ -117,6 +120,264 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
     ASSERT_EQ(result.at(3), '\xff');
     ASSERT_EQ(result.at(4), '\xff');
     ASSERT_EQ(result.at(5), '\x07');
+
+    test.setTestFieldInt(-1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(-462);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xb2');
+    ASSERT_EQ(result.at(2), '\xfc');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(-63585);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x9f');
+    ASSERT_EQ(result.at(2), '\x8f');
+    ASSERT_EQ(result.at(3), '\xfc');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT8_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT16_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\xfe');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT32_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x80');
+    ASSERT_EQ(result.at(4), '\x80');
+    ASSERT_EQ(result.at(5), '\xf8');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT8_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xfe');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT16_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xfd');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+}
+
+TEST_F(SerializationTest, UIntMessageSerializeTest)
+{
+    SimpleUIntMessage test;
+    test.setTestFieldInt(15);
+    QByteArray result = test.serialize();
+    ASSERT_EQ(result.size(), 2);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x0f');
+
+    test.setTestFieldInt(300);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xac');
+    ASSERT_EQ(result.at(2), '\x02');
+
+    test.setTestFieldInt(65545);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x89');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x04');
+
+    test.setTestFieldInt(0);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 0);
+
+    test.setTestFieldInt(UINT8_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x02');
+
+    test.setTestFieldInt(UINT16_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x04');
+
+    test.setTestFieldInt(UINT8_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\x01');
+
+    test.setTestFieldInt(UINT16_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\x03');
+
+    test.setTestFieldInt(UINT32_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 6);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\x0f');
+}
+
+TEST_F(SerializationTest, SIntMessageSerializeTest)
+{
+    SimpleSIntMessage test;
+    test.setTestFieldInt(15);
+    QByteArray result = test.serialize();
+    ASSERT_EQ(result.size(), 2);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x1e');
+
+    test.setTestFieldInt(300);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xd8');
+    ASSERT_EQ(result.at(2), '\x04');
+
+    test.setTestFieldInt(65545);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x92');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x08');
+
+    test.setTestFieldInt(0);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 0);
+
+    test.setTestFieldInt(INT8_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x02');
+
+    test.setTestFieldInt(INT16_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x04');
+
+    test.setTestFieldInt(INT8_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xfe');
+    ASSERT_EQ(result.at(2), '\x01');
+
+    test.setTestFieldInt(INT16_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xfe');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\x03');
+
+    test.setTestFieldInt(INT32_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 6);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xfe');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\x0f');
 
     test.setTestFieldInt(-1);
     result = test.serialize();
@@ -178,6 +439,512 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
     ASSERT_EQ(result.at(1), '\x81');
     ASSERT_EQ(result.at(2), '\x80');
     ASSERT_EQ(result.at(3), '\x04');
+}
+
+TEST_F(SerializationTest, Int64MessageSerializeTest)
+{
+    SimpleInt64Message test;
+    test.setTestFieldInt(15);
+    QByteArray result = test.serialize();
+    ASSERT_EQ(result.size(), 2);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x0f');
+
+    test.setTestFieldInt(300);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xac');
+    ASSERT_EQ(result.at(2), '\x02');
+
+    test.setTestFieldInt(65545);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x89');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x04');
+
+    test.setTestFieldInt(0);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 0);
+
+    test.setTestFieldInt(INT8_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x01');
+
+    test.setTestFieldInt(INT16_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x02');
+
+    test.setTestFieldInt((qlonglong)(INT32_MAX) + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 6);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x80');
+    ASSERT_EQ(result.at(4), '\x80');
+    ASSERT_EQ(result.at(5), '\x08');
+
+    test.setTestFieldInt(INT8_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 2);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x7f');
+
+    test.setTestFieldInt(INT16_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\x01');
+
+    test.setTestFieldInt(INT32_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 6);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\x07');
+
+    test.setTestFieldInt(INT64_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 10);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\x7f');
+
+    test.setTestFieldInt(-1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(-462);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xb2');
+    ASSERT_EQ(result.at(2), '\xfc');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(-63585);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x9f');
+    ASSERT_EQ(result.at(2), '\x8f');
+    ASSERT_EQ(result.at(3), '\xfc');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT8_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT16_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\xfe');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT32_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x80');
+    ASSERT_EQ(result.at(4), '\x80');
+    ASSERT_EQ(result.at(5), '\xf8');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT8_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xfe');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT16_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xfd');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt((qlonglong)INT32_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xf7');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT64_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x80');
+    ASSERT_EQ(result.at(4), '\x80');
+    ASSERT_EQ(result.at(5), '\x80');
+    ASSERT_EQ(result.at(6), '\x80');
+    ASSERT_EQ(result.at(7), '\x80');
+    ASSERT_EQ(result.at(8), '\x80');
+    ASSERT_EQ(result.at(9), '\x80');
+    ASSERT_EQ(result.at(10), '\x01');
+}
+
+TEST_F(SerializationTest, UInt64MessageSerializeTest)
+{
+    SimpleUInt64Message test;
+    test.setTestFieldInt(15);
+    QByteArray result = test.serialize();
+    ASSERT_EQ(result.size(), 2);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x0f');
+
+    test.setTestFieldInt(300);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xac');
+    ASSERT_EQ(result.at(2), '\x02');
+
+    test.setTestFieldInt(65545);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x89');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x04');
+
+    test.setTestFieldInt(0);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 0);
+
+    test.setTestFieldInt(UINT8_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x02');
+
+    test.setTestFieldInt(UINT16_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x04');
+
+    test.setTestFieldInt((qulonglong)UINT32_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 6);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x80');
+    ASSERT_EQ(result.at(4), '\x80');
+    ASSERT_EQ(result.at(5), '\x10');
+
+    test.setTestFieldInt(UINT8_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\x01');
+
+    test.setTestFieldInt(UINT16_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\x03');
+
+    test.setTestFieldInt(UINT32_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 6);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\x0f');
+
+    test.setTestFieldInt(UINT64_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+}
+
+TEST_F(SerializationTest, SInt64MessageSerializeTest)
+{
+    SimpleSInt64Message test;
+    test.setTestFieldInt(15);
+    QByteArray result = test.serialize();
+    ASSERT_EQ(result.size(), 2);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x1e');
+
+    test.setTestFieldInt(300);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xd8');
+    ASSERT_EQ(result.at(2), '\x04');
+
+    test.setTestFieldInt(65545);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x92');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x08');
+
+    test.setTestFieldInt(0);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 0);
+
+    test.setTestFieldInt(INT8_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x02');
+
+    test.setTestFieldInt(INT16_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x80');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x04');
+
+    test.setTestFieldInt(INT8_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xfe');
+    ASSERT_EQ(result.at(2), '\x01');
+
+    test.setTestFieldInt(INT16_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xfe');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\x03');
+
+    test.setTestFieldInt(INT32_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 6);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xfe');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\x0f');
+
+    test.setTestFieldInt(INT64_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xfe');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(-1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 2);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x01');
+
+    test.setTestFieldInt(-462);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x9b');
+    ASSERT_EQ(result.at(2), '\x07');
+
+    test.setTestFieldInt(-63585);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xc1');
+    ASSERT_EQ(result.at(2), '\xe1');
+    ASSERT_EQ(result.at(3), '\x07');
+
+    test.setTestFieldInt(INT8_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\x01');
+
+    test.setTestFieldInt(INT16_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\x03');
+
+    test.setTestFieldInt(INT32_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 6);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\x0f');
+
+    test.setTestFieldInt(INT64_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 11);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\xff');
+    ASSERT_EQ(result.at(2), '\xff');
+    ASSERT_EQ(result.at(3), '\xff');
+    ASSERT_EQ(result.at(4), '\xff');
+    ASSERT_EQ(result.at(5), '\xff');
+    ASSERT_EQ(result.at(6), '\xff');
+    ASSERT_EQ(result.at(7), '\xff');
+    ASSERT_EQ(result.at(8), '\xff');
+    ASSERT_EQ(result.at(9), '\xff');
+    ASSERT_EQ(result.at(10), '\x01');
+
+    test.setTestFieldInt(INT8_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 3);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x81');
+    ASSERT_EQ(result.at(2), '\x02');
+
+    test.setTestFieldInt(INT16_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 4);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x81');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x04');
+
+    test.setTestFieldInt((qlonglong)INT32_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), 6);
+    ASSERT_EQ(result.at(0), 0x08);
+    ASSERT_EQ(result.at(1), '\x81');
+    ASSERT_EQ(result.at(2), '\x80');
+    ASSERT_EQ(result.at(3), '\x80');
+    ASSERT_EQ(result.at(4), '\x80');
+    ASSERT_EQ(result.at(5), '\x10');
 }
 
 TEST_F(SerializationTest, FixedInt32MessageSerializeTest)
@@ -453,8 +1220,8 @@ TEST_F(SerializationTest, ComplexTypeSerializeTest)
     result = test.serialize();
     //qDebug() << "result" << result.toHex();
 
-    ASSERT_TRUE(result == QByteArray::fromHex("120832067177657274790859")
-                || result == QByteArray::fromHex("085912083206717765727479"));
+    ASSERT_TRUE(result == QByteArray::fromHex("1208320671776572747908d3ffffffffffffffff01")
+                || result == QByteArray::fromHex("08d3ffffffffffffffff0112083206717765727479"));
 }
 
 TEST_F(SerializationTest, RepeatedIntMessageTest)

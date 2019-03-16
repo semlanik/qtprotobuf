@@ -95,10 +95,31 @@ public:
         qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex << "typeName" << typeName;
         QByteArray result;
         WireTypes type = UnknownWireType;
+        int resultSize = result.size();
         switch (static_cast<QMetaType::Type>(propertyValue.type())) {
         case QMetaType::Int:
             type = Varint;
-            result.append(serializeVarint(propertyValue.toInt()));
+            if (typeName == "sint32"
+                    || typeName == "qtprotobuf::sint32") {
+                result.append(serializeVarintZigZag(propertyValue.toInt()));
+            } else {
+                result.append(serializeVarint(propertyValue.toLongLong()));
+            }
+            if (resultSize == result.size()) {
+                fieldIndex = NotUsedFieldIndex;
+            }
+            break;
+        case QMetaType::LongLong:
+            type = Varint;
+            if (typeName == "sint64"
+                    || typeName == "qtprotobuf::sint64") {
+                result.append(serializeVarintZigZag(propertyValue.toLongLong()));
+            } else {
+                result.append(serializeVarint(propertyValue.toLongLong()));
+            }
+            if (resultSize == result.size()) {
+                fieldIndex = NotUsedFieldIndex;
+            }
             break;
         case QMetaType::Float:
             type = Fixed32;
@@ -137,6 +158,9 @@ public:
                 type = Varint;
                 result.append(serializeVarint(propertyValue.toUInt()));
             }
+            if (resultSize == result.size()) {
+                fieldIndex = NotUsedFieldIndex;
+            }
             break;
         case QMetaType::ULongLong:
             if (typeName == "fint64"
@@ -146,6 +170,9 @@ public:
             } else {
                 type = Varint;
                 result.append(serializeVarint(propertyValue.toULongLong()));
+            }
+            if (resultSize == result.size()) {
+                fieldIndex = NotUsedFieldIndex;
             }
             break;
         default:
@@ -161,7 +188,7 @@ public:
     QByteArray serializeLengthDelimited(const QByteArray &data) const {
         qProtoDebug() << __func__ << "data.size" << data.size() << "data" << data.toHex();
         //Varint serialize field size and apply result as starting point
-        QByteArray result = serializeVarint(static_cast<unsigned int>(data.size()));
+        QByteArray result = serializeVarintZero(static_cast<unsigned int>(data.size()));
         result.append(data);
         return result;
     }
@@ -208,10 +235,10 @@ public:
 
         QByteArray serializedList;
         for(auto& value : listValue) {
-            serializedList.append(serializeVarintZZ(value));
+            serializedList.append(serializeVarintZigZag(value));
         }
         //If internal field type is not LengthDelimited, exact amount of fields to be specified
-        serializedList.prepend(serializeVarint(static_cast<unsigned int>(serializedList.size())));
+        serializedList.prepend(serializeVarintZero(static_cast<unsigned int>(serializedList.size())));
         return serializedList;
     }
 
@@ -229,7 +256,7 @@ public:
             serializedList.append(serializeFixed(value));
         }
         //If internal field type is not LengthDelimited, exact amount of fields to be specified
-        serializedList.prepend(serializeVarint(static_cast<unsigned int>(serializedList.size())));
+        serializedList.prepend(serializeVarintZero(static_cast<unsigned int>(serializedList.size())));
         return serializedList;
     }
 
@@ -289,20 +316,12 @@ public:
               typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
     QByteArray serializeVarint(V value) const {
         qProtoDebug() << __func__ << "value" << value;
-        UV uValue = 0;
-        //Use ZigZag convertion first and apply unsigned variant next
-        if (value < 0) {
-            value = (value << 1) ^ (value >> (sizeof(UV) * 8 - 1));
-            uValue = *(UV *)&value;
-        } else {
-            uValue = static_cast<UV>(value);
-        }
-        return serializeVarint(uValue);
+        return serializeVarint(static_cast<UV>(value));
     }
 
     template <typename V, typename UV = typename std::make_unsigned<V>::type,
               typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
-    QByteArray serializeVarintZZ(V value) const {
+    QByteArray serializeVarintZigZag(V value) const {
         qProtoDebug() << __func__ << "value" << value;
         UV uValue = 0;
 
@@ -326,13 +345,26 @@ public:
             value >>= 7;
         }
 
-        //Zero case
-        if (result.isEmpty()) {
-            result.append('\0');
-        }
+        //TODO: Zero case.
+        //Aligned to reference cpp implementation. Where 0 ignored.
+        //if (result.isEmpty()) {
+        //    result.append('\0');
+        //}
 
         //Mark last chunk as last
         result.data()[result.size() - 1] &= ~0x80;
+        return result;
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
+    QByteArray serializeVarintZero(V value) const {
+        qProtoDebug() << __func__ << "value" << value;
+        QByteArray result = serializeVarint(value);
+        //Zero case.
+        if (result.isEmpty()) {
+            result.append('\0');
+        }
         return result;
     }
 
