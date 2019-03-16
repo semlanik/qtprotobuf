@@ -91,8 +91,8 @@ public:
                                                       || wireType == LengthDelimited);
     }
 
-    QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex, bool isFixed = false) const {
-        qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex << "isFixed" << isFixed;
+    QByteArray serializeValue(const QVariant& propertyValue, int fieldIndex, const QLatin1Literal& typeName) const {
+        qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex << "typeName" << typeName;
         QByteArray result;
         WireTypes type = UnknownWireType;
         switch (static_cast<QMetaType::Type>(propertyValue.type())) {
@@ -129,18 +129,22 @@ public:
             result.append(serializeUserType(propertyValue, fieldIndex));
             break;
         case QMetaType::UInt:
-            type = Fixed32;
-            if (isFixed) {
+            if (typeName == "fint32"
+                    || typeName == "qtprotobuf::fint32") {
+                type = Fixed32;
                 result.append(serializeFixed(propertyValue.toUInt()));
             } else {
+                type = Varint;
                 result.append(serializeVarint(propertyValue.toUInt()));
             }
             break;
         case QMetaType::ULongLong:
-            type = Fixed64;
-            if (isFixed) {
+            if (typeName == "fint64"
+                    || typeName == "qtprotobuf::fint64") {
+                type = Fixed64;
                 result.append(serializeFixed(propertyValue.toULongLong()));
             } else {
+                type = Varint;
                 result.append(serializeVarint(propertyValue.toULongLong()));
             }
             break;
@@ -173,8 +177,8 @@ public:
         }
 
         //Check if it's special list
-        if (userType == qMetaTypeId<IntList>()) {
-            return serializeListType(propertyValue.value<IntList>(), fieldIndex);
+        if (userType == qMetaTypeId<int32List>()) {
+            return serializeListType(propertyValue.value<int32List>(), fieldIndex);
         }
 
         if(userType == qMetaTypeId<FloatList>()) {
@@ -241,7 +245,7 @@ public:
 
         QByteArray serializedList;
         for(auto& value : listValue) {
-            serializedList.append(serializeValue(value, outFieldIndex));
+            serializedList.append(serializeValue(value, outFieldIndex, QLatin1Literal()));
         }
 
         outFieldIndex = NotUsedFieldIndex;
@@ -343,14 +347,14 @@ public:
         switch(type) {
         case QMetaType::UInt:
             if (wireType == Fixed32) {
-                newPropertyValue = deserializeFixed<FixedInt32>(it);
+                newPropertyValue = deserializeFixed<fint32>(it);
             } else {
                 newPropertyValue = deserializeVarint<unsigned int>(it);
             }
             break;
         case QMetaType::ULongLong:
             if (wireType == Fixed64) {
-                newPropertyValue = deserializeFixed<FixedInt64>(it);
+                newPropertyValue = deserializeFixed<fint64>(it);
             } else {
                 //TODO: deserialize varint
             }
@@ -453,7 +457,7 @@ public:
             return;
         }
 
-        if (userType == qMetaTypeId<IntList>()) {
+        if (userType == qMetaTypeId<int32List>()) {
             newValue = deserializeVarintListType<int>(it);
         } else if(userType == qMetaTypeId<FloatList>()) {
             newValue = deserializeListType<float>(it);
@@ -533,7 +537,7 @@ public:
             const QVariant &propertyValue = instance->property(propertyName);
             //TODO: flag isFixed looks ugly. Need to define more effective strategy
             //for type detection.
-            result.append(serializeValue(propertyValue, fieldIndex, QString(metaProperty.typeName()).contains("Fixed")));
+            result.append(serializeValue(propertyValue, fieldIndex, QLatin1Literal(metaProperty.typeName())));
         }
 
         return result;

@@ -55,7 +55,7 @@ TEST_F(SimpleTest, SimpleIntMessageTest)
     const char* propertyName = "testFieldInt";
     SimpleIntMessage test;
     int propertyNumber = SimpleIntMessage::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_EQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).type(), QMetaType::Int);
+    ASSERT_EQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<int32>());
     ASSERT_STREQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
     ASSERT_EQ(test.property(propertyName).toInt(), 1);
@@ -67,10 +67,10 @@ TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
     const char* propertyName = "testFieldFixedInt32";
     SimpleFixedInt32Message test;
     int propertyNumber = SimpleFixedInt32Message::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_EQ(SimpleFixedInt32Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<FixedInt32>());
+    ASSERT_EQ(SimpleFixedInt32Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<fint32>());
     ASSERT_STREQ(SimpleFixedInt32Message::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
-    ASSERT_EQ(test.property(propertyName).value<FixedInt32>(), 1);
+    ASSERT_EQ(test.property(propertyName).value<fint32>(), 1);
     ASSERT_EQ(test.testFieldFixedInt32(), 1);
 }
 
@@ -79,10 +79,10 @@ TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
     const char* propertyName = "testFieldFixedInt64";
     SimpleFixedInt64Message test;
     int propertyNumber = SimpleFixedInt64Message::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_EQ(SimpleFixedInt64Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<FixedInt64>());
+    ASSERT_EQ(SimpleFixedInt64Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<fint64>());
     ASSERT_STREQ(SimpleFixedInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
-    ASSERT_EQ(test.property(propertyName).value<FixedInt64>(), 1);
+    ASSERT_EQ(test.property(propertyName).value<fint64>(), 1);
     ASSERT_EQ(test.testFieldFixedInt64(), 1);
 }
 
@@ -192,9 +192,10 @@ TEST_F(SimpleTest, RepeatedIntMessageTest)
     const char* propertyName = "testRepeatedInt";
     RepeatedIntMessage test;
     int propertyNumber = RepeatedIntMessage::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_EQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<IntList>());
+    ASSERT_STREQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::sint32List");
+    ASSERT_EQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<qtprotobuf::sint32List>());
     ASSERT_STREQ(RepeatedIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<IntList>({1,2,3,4,5})));
-    ASSERT_TRUE(test.property(propertyName).value<IntList>() == IntList({1, 2, 3, 4, 5}));
-    ASSERT_TRUE(test.testRepeatedInt() == IntList({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sint32List>({1, 2, 3, 4, 5})));
+    ASSERT_TRUE(test.property(propertyName).value<sint32List>() == sint32List({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.testRepeatedInt() == sint32List({1, 2, 3, 4, 5}));
 }

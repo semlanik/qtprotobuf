@@ -26,6 +26,11 @@
 #pragma once
 
 #include <qtprotobuftypes.h>
+#include <QDebug>
+
+//registerProtobufType Not a part of API
+#define registerProtobufType(X) qDebug() << # X << "Type Id: " << qRegisterMetaType<X>(# X);\
+                              qDebug() << # X << "Type Id: " << qRegisterMetaType<X>("qtprotobuf::"# X);
 
 namespace qtprotobuf {
 
@@ -35,19 +40,35 @@ public:
         static bool registationDone = false;
         Q_ASSERT_X(!registationDone, "QtProtobuf", "Protobuf registation is already done");
         if (!registationDone) {
-            qRegisterMetaType<IntList>("IntList");
-            qRegisterMetaType<IntList>("qtprotobuf::IntList");
-            qRegisterMetaType<FloatList>("FloatList");
-            qRegisterMetaType<FloatList>("qtprotobuf::FloatList");
-            qRegisterMetaType<DoubleList>("DoubleList");
-            qRegisterMetaType<DoubleList>("qtprotobuf::DoubleList");
-            qRegisterMetaType<FixedInt32>("FixedInt32");
-            qRegisterMetaType<FixedInt32>("qtprotobuf::FixedInt32");
-            qRegisterMetaType<FixedInt64>("FixedInt64");
-            qRegisterMetaType<FixedInt64>("qtprotobuf::FixedInt64");
+            registerProtobufType(int32);
+            registerProtobufType(int64);
+            registerProtobufType(uint32);
+            registerProtobufType(uint64);
+            registerProtobufType(sint32);
+            registerProtobufType(sint64);
+            registerProtobufType(fint32);
+            registerProtobufType(fint64);
+            registerProtobufType(sfint32);
+            registerProtobufType(sfint64);
+
+            registerProtobufType(int32List);
+            registerProtobufType(int64List);
+            registerProtobufType(uint32List);
+            registerProtobufType(uint64List);
+            registerProtobufType(sint32List);
+            registerProtobufType(sint64List);
+            registerProtobufType(fint32List);
+            registerProtobufType(fint64List);
+            registerProtobufType(sfint32List);
+            registerProtobufType(sfint64List);
+
+            registerProtobufType(DoubleList);
+            registerProtobufType(FloatList);
             registationDone = true;
         }
     }
 };
 
 }
+
+#undef registerProtobufType

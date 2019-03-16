@@ -30,17 +30,41 @@
 #include <QMetaType>
 
 namespace qtprotobuf {
+using int32 = int;
+using int64 = qlonglong;
+using uint32 = unsigned int;
+using uint64 = qulonglong;
+using sint32 = int;
+using sint64 = qlonglong;
+using fint32 = unsigned int;
+using fint64 = qulonglong;
+using sfint32 = int;
+using sfint64 = qlonglong;
 
-using IntList = QList<int>;
+using int32List = QList<int32>;
+using int64List = QList<int64>;
+using uint32List = QList<uint32>;
+using uint64List = QList<uint64>;
+using sint32List = QList<sint32>;
+using sint64List = QList<sint64>;
+using fint32List = QList<fint32>;
+using fint64List = QList<fint64>;
+using sfint32List = QList<sfint32>;
+using sfint64List = QList<sfint64>;
+
 using FloatList = QList<float>;
 using DoubleList = QList<double>;
-
-using FixedInt32 = unsigned int;
-using FixedInt64 = qulonglong;
 }
 
-Q_DECLARE_METATYPE(qtprotobuf::IntList)
+Q_DECLARE_METATYPE(qtprotobuf::int32)
+Q_DECLARE_METATYPE(qtprotobuf::int64)
+Q_DECLARE_METATYPE(qtprotobuf::uint32)
+Q_DECLARE_METATYPE(qtprotobuf::uint64)
+
+Q_DECLARE_METATYPE(qtprotobuf::int32List)
+Q_DECLARE_METATYPE(qtprotobuf::int64List)
+Q_DECLARE_METATYPE(qtprotobuf::uint32List)
+Q_DECLARE_METATYPE(qtprotobuf::uint64List)
+
 Q_DECLARE_METATYPE(qtprotobuf::FloatList)
 Q_DECLARE_METATYPE(qtprotobuf::DoubleList)
-Q_DECLARE_METATYPE(qtprotobuf::FixedInt32)
-Q_DECLARE_METATYPE(qtprotobuf::FixedInt64)

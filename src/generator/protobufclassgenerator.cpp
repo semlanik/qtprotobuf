@@ -215,6 +215,7 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
 {
     assert(field != nullptr);
     std::string typeName;
+    std::string namespaceDefinition("qtprotobuf::");
     if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
         typeName = field->message_type()->name();
         if (field->is_repeated()) {
@@ -228,15 +229,22 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
     } else {
         auto it = Templates::TypeReflection.find(field->type());
         if (it != std::end(Templates::TypeReflection)) {
-            typeName = it->second;
+            if (field->type() != FieldDescriptor::TYPE_STRING
+                    && field->type() != FieldDescriptor::TYPE_BYTES
+                    && field->type() != FieldDescriptor::TYPE_BOOL
+                    && field->type() != FieldDescriptor::TYPE_FLOAT
+                    && field->type() != FieldDescriptor::TYPE_DOUBLE) {
+                typeName = namespaceDefinition.append(it->second);
+            } else {
+                typeName = it->second;
+            }
             if (field->is_repeated()) {
-                std::string namespaceDefinition("qtprotobuf::");
-                typeName[0] = ::toupper(typeName[0]);
-                typeName.append("List");
-                if (typeName != "QStringList"
-                        && typeName != "QByteArrayList") {
+                if(field->type() == FieldDescriptor::TYPE_FLOAT
+                        || field->type() == FieldDescriptor::TYPE_DOUBLE) {
+                    typeName[0] = ::toupper(typeName[0]);
                     typeName = namespaceDefinition.append(typeName);
                 }
+                typeName.append("List");
             }
         }
     }

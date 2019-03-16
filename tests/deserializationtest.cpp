@@ -299,7 +299,7 @@ TEST_F(DeserializationTest, RepeatedIntMessageTest)
     RepeatedIntMessage test;
     test.deserialize(QByteArray::fromHex("0a0702a00606080a0c"));
     ASSERT_EQ(6, test.testRepeatedInt().count());
-    ASSERT_TRUE(test.testRepeatedInt() == IntList({1, 400, 3, 4, 5, 6}));
+    ASSERT_TRUE(test.testRepeatedInt() == int32List({1, 400, 3, 4, 5, 6}));
 }
 
 TEST_F(DeserializationTest, RepeatedComplexMessageTest)
