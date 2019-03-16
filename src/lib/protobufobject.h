@@ -53,8 +53,9 @@ enum WireTypes {
 
 constexpr int NotUsedFieldIndex = -1;
 
-class ProtobufObjectPrivate : public QObject {
-public:
+class ProtobufObjectPrivate : public QObject
+{
+protected:
     using ListSerializer = std::function<QByteArray(const ProtobufObjectPrivate *, const QVariant &, int &)>;
     using ListDeserializer = std::function<void(ProtobufObjectPrivate *, QByteArray::const_iterator &, QVariant &)>;
     struct SerializationHandlers {
@@ -65,7 +66,11 @@ public:
     using SerializerRegistry = std::unordered_map<int/*metatypeid*/, SerializationHandlers>;
     static SerializerRegistry serializers;
 
+public:
     explicit ProtobufObjectPrivate(QObject *parent = nullptr) : QObject(parent) {}
+
+    virtual QByteArray serializePrivate() const = 0;
+    virtual void deserializePrivate(const QByteArray &data) = 0;
 
     /*  Header byte
      *  bits    | 7  6  5  4  3 |  2  1  0
@@ -507,30 +512,11 @@ public:
         }
         return QVariant::fromValue(out);
     }
-
-public:
-    virtual QByteArray serializePrivate() const = 0;
-    virtual void deserializePrivate(const QByteArray &data) = 0;
 };
 
 template <typename T>
 class ProtobufObject : public ProtobufObjectPrivate
 {
-protected:
-    static void registerSerializers(int metaTypeId, int listMetaTypeId) {
-        serializers[listMetaTypeId] = {ListSerializer(serializeComplexListType), ListDeserializer(deserializeComplexListType)};
-    }
-
-    QByteArray serializePrivate() const override {
-        qProtoDebug() << T::staticMetaObject.className() << "serializePrivate";
-        return serialize();
-    }
-
-    void deserializePrivate(const QByteArray &data) override {
-        qProtoDebug() << T::staticMetaObject.className() << "deserializePrivate";
-        deserialize(data);
-    }
-
 public:
     explicit ProtobufObject(QObject *parent = nullptr) : ProtobufObjectPrivate(parent) {}
 
@@ -551,23 +537,6 @@ public:
         }
 
         return result;
-    }
-//TODO: migrate to this function for complex types serialization
-//    static QByteArray serializeSelf(const QVariant &variantValue) {
-//        T value = variantValue.value<T>();
-//        return value->serialize();
-//    }
-
-    static QByteArray serializeComplexListType(const ProtobufObjectPrivate* serializer, const QVariant &listValue, int &outFieldIndex) {
-        QList<T> list = listValue.value<QList<T>>();
-        return serializer->serializeListType(list, outFieldIndex);
-    }
-
-    static void deserializeComplexListType(ProtobufObjectPrivate* deserializer, QByteArray::const_iterator &it, QVariant &previous) {
-        QList<T> previousList = previous.value<QList<T>>();
-        QVariant newMember = deserializer->deserializeListType<T>(it);
-        previousList.append(newMember.value<T>());
-        previous.setValue(previousList);
     }
 
     void deserialize(const QByteArray &array) {
@@ -599,6 +568,40 @@ public:
             ++it;
             deserializeProperty(wireType, metaProperty, it);
         }
+    }
+
+protected:
+    static void registerSerializers(int metaTypeId, int listMetaTypeId) {
+        serializers[listMetaTypeId] = {ListSerializer(serializeComplexListType), ListDeserializer(deserializeComplexListType)};
+    }
+
+private:
+    QByteArray serializePrivate() const override {
+        qProtoDebug() << T::staticMetaObject.className() << "serializePrivate";
+        return serialize();
+    }
+
+    void deserializePrivate(const QByteArray &data) override {
+        qProtoDebug() << T::staticMetaObject.className() << "deserializePrivate";
+        deserialize(data);
+    }
+
+//TODO: migrate to this function for complex types serialization
+//    static QByteArray serializeSelf(const QVariant &variantValue) {
+//        T value = variantValue.value<T>();
+//        return value->serialize();
+//    }
+
+    static QByteArray serializeComplexListType(const ProtobufObjectPrivate* serializer, const QVariant &listValue, int &outFieldIndex) {
+        QList<T> list = listValue.value<QList<T>>();
+        return serializer->serializeListType(list, outFieldIndex);
+    }
+
+    static void deserializeComplexListType(ProtobufObjectPrivate* deserializer, QByteArray::const_iterator &it, QVariant &previous) {
+        QList<T> previousList = previous.value<QList<T>>();
+        QVariant newMember = deserializer->deserializeListType<T>(it);
+        previousList.append(newMember.value<T>());
+        previous.setValue(previousList);
     }
 };
 
