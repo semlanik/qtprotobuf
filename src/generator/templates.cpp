@@ -128,17 +128,17 @@ const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> Templates::TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "double"},
     {::google::protobuf::FieldDescriptor::TYPE_FLOAT, "float"},
-    {::google::protobuf::FieldDescriptor::TYPE_INT64, "int64"},
-    {::google::protobuf::FieldDescriptor::TYPE_UINT64,"uint64"},
+    {::google::protobuf::FieldDescriptor::TYPE_INT64, "int64"},     //Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    {::google::protobuf::FieldDescriptor::TYPE_UINT64,"uint64"},    //Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
     {::google::protobuf::FieldDescriptor::TYPE_INT32, "int32"},
-    {::google::protobuf::FieldDescriptor::TYPE_FIXED64, "fint64"},
-    {::google::protobuf::FieldDescriptor::TYPE_FIXED32, "fint32"},
+    {::google::protobuf::FieldDescriptor::TYPE_FIXED64, "fint64"},  //Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    {::google::protobuf::FieldDescriptor::TYPE_FIXED32, "fint32"},  //Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
     {::google::protobuf::FieldDescriptor::TYPE_BOOL, "bool"},
     {::google::protobuf::FieldDescriptor::TYPE_STRING, "QString"},
     {::google::protobuf::FieldDescriptor::TYPE_BYTES, "QByteArray"},
-    {::google::protobuf::FieldDescriptor::TYPE_UINT32, "sint32"},//Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
-    {::google::protobuf::FieldDescriptor::TYPE_SFIXED32, "sfint32"},
-    {::google::protobuf::FieldDescriptor::TYPE_SFIXED64, "sfint64"},
-    {::google::protobuf::FieldDescriptor::TYPE_SINT32, "sint32"},
-    {::google::protobuf::FieldDescriptor::TYPE_SINT64, "sint64"}
+    {::google::protobuf::FieldDescriptor::TYPE_UINT32, "uint32"},    //Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    {::google::protobuf::FieldDescriptor::TYPE_SFIXED32, "sfint32"}, //Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    {::google::protobuf::FieldDescriptor::TYPE_SFIXED64, "sfint64"}, //Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    {::google::protobuf::FieldDescriptor::TYPE_SINT32, "sint32"},    //Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
+    {::google::protobuf::FieldDescriptor::TYPE_SINT64, "sint64"}     //Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
 };

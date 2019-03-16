@@ -26,6 +26,11 @@
 #include "simpletest.h"
 
 #include "simpleintmessage.h"
+#include "simplesintmessage.h"
+#include "simpleuintmessage.h"
+#include "simpleint64message.h"
+#include "simplesint64message.h"
+#include "simpleuint64message.h"
 #include "simplefixedint32message.h"
 #include "simplefixedint64message.h"
 #include "simplestringmessage.h"
@@ -55,8 +60,74 @@ TEST_F(SimpleTest, SimpleIntMessageTest)
     const char* propertyName = "testFieldInt";
     SimpleIntMessage test;
     int propertyNumber = SimpleIntMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::int32");
     ASSERT_EQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<int32>());
     ASSERT_STREQ(SimpleIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
+    ASSERT_EQ(test.property(propertyName).toInt(), 1);
+    ASSERT_EQ(test.testFieldInt(), 1);
+}
+
+TEST_F(SimpleTest, SimpleSIntMessageTest)
+{
+    const char* propertyName = "testFieldInt";
+    SimpleSIntMessage test;
+    int propertyNumber = SimpleSIntMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(SimpleSIntMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::sint32");
+    ASSERT_EQ(SimpleSIntMessage::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<sint32>());
+    ASSERT_STREQ(SimpleSIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
+    ASSERT_EQ(test.property(propertyName).toInt(), 1);
+    ASSERT_EQ(test.testFieldInt(), 1);
+}
+
+TEST_F(SimpleTest, SimpleUIntMessageTest)
+{
+    const char* propertyName = "testFieldInt";
+    SimpleUIntMessage test;
+    int propertyNumber = SimpleUIntMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(SimpleUIntMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::uint32");
+    ASSERT_EQ(SimpleUIntMessage::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<uint32>());
+    ASSERT_STREQ(SimpleUIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
+    ASSERT_EQ(test.property(propertyName).toInt(), 1);
+    ASSERT_EQ(test.testFieldInt(), 1);
+}
+
+TEST_F(SimpleTest, SimpleInt64MessageTest)
+{
+    const char* propertyName = "testFieldInt";
+    SimpleInt64Message test;
+    int propertyNumber = SimpleInt64Message::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(SimpleInt64Message::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::int64");
+    ASSERT_EQ(SimpleInt64Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<int64>());
+    ASSERT_STREQ(SimpleInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
+    ASSERT_EQ(test.property(propertyName).toInt(), 1);
+    ASSERT_EQ(test.testFieldInt(), 1);
+}
+
+TEST_F(SimpleTest, SimpleSInt64MessageTest)
+{
+    const char* propertyName = "testFieldInt";
+    SimpleSInt64Message test;
+    int propertyNumber = SimpleSInt64Message::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(SimpleSInt64Message::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::sint64");
+    ASSERT_EQ(SimpleSInt64Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<sint64>());
+    ASSERT_STREQ(SimpleSInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
+    ASSERT_EQ(test.property(propertyName).toInt(), 1);
+    ASSERT_EQ(test.testFieldInt(), 1);
+}
+
+TEST_F(SimpleTest, SimpleUInt64MessageTest)
+{
+    const char* propertyName = "testFieldInt";
+    SimpleUInt64Message test;
+    int propertyNumber = SimpleUInt64Message::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(SimpleUInt64Message::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::uint64");
+    ASSERT_EQ(SimpleUInt64Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<uint64>());
+    ASSERT_STREQ(SimpleUInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
     ASSERT_EQ(test.property(propertyName).toInt(), 1);
     ASSERT_EQ(test.testFieldInt(), 1);
