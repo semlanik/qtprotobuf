@@ -7,7 +7,6 @@ if (WIN32)
 elseif (UNIX)
     find_package(GTest)
     if (NOT GTest_FOUND)
-        message(STATUS "Gtest not found. Start downloading...")
         include(../cmake/DownloadProject.cmake)
         download_project(PROJ                GTest
                          GIT_REPOSITORY      https://github.com/google/googletest.git
