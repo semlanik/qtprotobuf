@@ -183,6 +183,13 @@ public:
                 fieldIndex = NotUsedFieldIndex;
             }
             break;
+        case QMetaType::Bool:
+            type = Varint;
+            result.append(serializeVarint(propertyValue.toUInt()));
+            if (resultSize == result.size()) {
+                fieldIndex = NotUsedFieldIndex;
+            }
+            break;
         default:
             Q_ASSERT_X(false, staticMetaObject.className(), "Serialization of unknown type is impossible");
         }

@@ -45,6 +45,7 @@
 #include "repeatedbytesmessage.h"
 #include "repeatedfloatmessage.h"
 #include "repeatedcomplexmessage.h"
+#include "simpleboolmessage.h"
 #include "qtprotobuf.h"
 
 using namespace qtprotobufnamespace::tests;
@@ -1484,4 +1485,18 @@ TEST_F(SerializationTest, RepeatedComplexMessageTest)
     test.setTestRepeatedComplex({});
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, BoolMessageSerializeTest)
+{
+    SimpleBoolMessage test;
+    test.setTestFieldBool(true);
+    QByteArray result = test.serialize();
+    ASSERT_EQ(2, result.size());
+    ASSERT_TRUE(result == QByteArray::fromHex("0801"));
+
+    test.setTestFieldBool(false);
+    result = test.serialize();
+    ASSERT_EQ(0, result.size());
+    ASSERT_TRUE(result == QByteArray::fromHex(""));
 }
