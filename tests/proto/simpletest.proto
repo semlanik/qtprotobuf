@@ -19,6 +19,10 @@ message SimpleFileEnumMessage {
   repeated TestEnum globalEnumList = 2;
 }
 
+message SimpleBoolMessage {
+    bool testFieldBool = 1;
+}
+
 message SimpleIntMessage {
     int32 testFieldInt = 1;
 }

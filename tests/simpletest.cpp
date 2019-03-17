@@ -25,6 +25,7 @@
 
 #include "simpletest.h"
 
+#include "simpleboolmessage.h"
 #include "simpleintmessage.h"
 #include "simplesintmessage.h"
 #include "simpleuintmessage.h"
@@ -55,6 +56,19 @@ using namespace qtprotobuf;
 SimpleTest::SimpleTest()
 {
     QtProtobuf::init();
+}
+
+TEST_F(SimpleTest, SimpleBoolMessageTest)
+{
+    const char* propertyName = "testFieldBool";
+    SimpleBoolMessage test;
+    int propertyNumber = SimpleBoolMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(SimpleBoolMessage::staticMetaObject.property(propertyNumber).typeName(), "bool");
+    ASSERT_EQ(SimpleBoolMessage::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<bool>());
+    ASSERT_STREQ(SimpleBoolMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(true)));
+    ASSERT_EQ(test.property(propertyName).toBool(), true);
+    ASSERT_EQ(test.testFieldBool(), true);
 }
 
 TEST_F(SimpleTest, SimpleIntMessageTest)
