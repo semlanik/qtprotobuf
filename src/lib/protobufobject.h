@@ -409,16 +409,20 @@ public:
             newPropertyValue = deserializeFixed<double>(it);
             break;
         case QMetaType::Int:
-            if (typeName == "sint32"
-                    || typeName == "qtprotobuf::sint32") {
+            if (wireType == Fixed32) {
+                newPropertyValue = deserializeFixed<sfint32>(it);
+            } else if (typeName == "qtprotobuf::sint32"
+                       || typeName == "sint32") {
                 newPropertyValue = deserializeVarintZigZag<sint32>(it);
             } else {
                 newPropertyValue = deserializeVarint<int64>(it);
             }
             break;
         case QMetaType::LongLong:
-            if (typeName == "sint64"
-                    || typeName == "qtprotobuf::sint64") {
+            if (wireType == Fixed64) {
+                newPropertyValue = deserializeFixed<sfint64>(it);
+            } else if (typeName == "qtprotobuf::sint64"
+                       || typeName == "sint64") {
                 newPropertyValue = deserializeVarintZigZag<sint64>(it);
             } else {
                 newPropertyValue = deserializeVarint<int64>(it);
@@ -454,6 +458,8 @@ public:
 
     template <typename V,
               typename std::enable_if_t<std::is_floating_point<V>::value
+                                        || std::is_same<V, int>::value
+                                        || std::is_same<V, qlonglong>::value
                                         || std::is_same<V, unsigned int>::value
                                         || std::is_same<V, qulonglong>::value, int> = 0>
     QVariant deserializeFixed(QByteArray::const_iterator &it) {

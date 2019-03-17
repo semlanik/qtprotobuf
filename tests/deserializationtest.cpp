@@ -27,6 +27,8 @@
 #include "qtprotobuf.h"
 #include "simplefixedint32message.h"
 #include "simplefixedint64message.h"
+#include "simplesfixedint32message.h"
+#include "simplesfixedint64message.h"
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
 #include "simpleintmessage.h"
@@ -122,6 +124,113 @@ TEST_F(DeserializationTest, FixedInt64MessageDeserializeTest)
     ASSERT_EQ(test.testFieldFixedInt64(), UINT64_MAX);
 }
 
+TEST_F(DeserializationTest, SFixedInt32MessageDeserializeTest)
+{
+    SimpleSFixedInt32Message test;
+    test.deserialize(QByteArray::fromHex("0d0f000000"));
+    ASSERT_EQ(test.testFieldFixedInt32(), 15);
+
+    test.deserialize(QByteArray::fromHex("0d2c010000"));
+    ASSERT_EQ(test.testFieldFixedInt32(), 300);
+
+    test.deserialize(QByteArray::fromHex("0d09000100"));
+    ASSERT_EQ(test.testFieldFixedInt32(), 65545);
+
+    test.deserialize(QByteArray::fromHex("0d00000000"));
+    ASSERT_EQ(test.testFieldFixedInt32(), 0);
+
+    test.deserialize(QByteArray::fromHex("0d2c010000"));
+    ASSERT_EQ(test.testFieldFixedInt32(), 300);
+
+    test.deserialize(QByteArray::fromHex("0d80000000"));
+    ASSERT_EQ(test.testFieldFixedInt32(), INT8_MAX + 1);
+
+    test.deserialize(QByteArray::fromHex("0d00800000"));
+    ASSERT_EQ(test.testFieldFixedInt32(), INT16_MAX + 1);
+
+    test.deserialize(QByteArray::fromHex("0d7f000000"));
+    ASSERT_EQ(test.testFieldFixedInt32(), INT8_MAX);
+
+    test.deserialize(QByteArray::fromHex("0dff7f0000"));
+    ASSERT_EQ(test.testFieldFixedInt32(), INT16_MAX);
+
+    test.deserialize(QByteArray::fromHex("0dffffff7f"));
+    ASSERT_EQ(test.testFieldFixedInt32(), INT32_MAX);
+
+    test.deserialize(QByteArray::fromHex("0d7fffffff"));
+    ASSERT_EQ(test.testFieldFixedInt32(), INT8_MIN - 1);
+
+    test.deserialize(QByteArray::fromHex("0dff7fffff"));
+    ASSERT_EQ(test.testFieldFixedInt32(), INT16_MIN - 1);
+
+    test.deserialize(QByteArray::fromHex("0d80ffffff"));
+    ASSERT_EQ(test.testFieldFixedInt32(), INT8_MIN);
+
+    test.deserialize(QByteArray::fromHex("0d0080ffff"));
+    ASSERT_EQ(test.testFieldFixedInt32(), INT16_MIN);
+
+    test.deserialize(QByteArray::fromHex("0d00000080"));
+    ASSERT_EQ(test.testFieldFixedInt32(), INT32_MIN);
+}
+
+TEST_F(DeserializationTest, SFixedInt64MessageDeserializeTest)
+{
+    SimpleSFixedInt64Message test;
+    test.deserialize(QByteArray::fromHex("090f00000000000000"));
+    ASSERT_EQ(test.testFieldFixedInt64(), 15);
+
+
+    test.deserialize(QByteArray::fromHex("092c01000000000000"));
+    ASSERT_EQ(test.testFieldFixedInt64(), 300);
+
+    test.deserialize(QByteArray::fromHex("090900010000000000"));
+    ASSERT_EQ(test.testFieldFixedInt64(), 65545);
+
+    test.deserialize(QByteArray::fromHex("090000000000000000"));
+    ASSERT_EQ(test.testFieldFixedInt64(), 0);
+
+    test.deserialize(QByteArray::fromHex("098000000000000000"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT8_MAX + 1);
+
+    test.deserialize(QByteArray::fromHex("090080000000000000"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT16_MAX + 1);
+
+    test.deserialize(QByteArray::fromHex("090000008000000000"));
+    ASSERT_EQ(test.testFieldFixedInt64(), (unsigned long long)(INT32_MAX) + 1);
+
+    test.deserialize(QByteArray::fromHex("097f00000000000000"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT8_MAX);
+
+    test.deserialize(QByteArray::fromHex("09ff7f000000000000"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT16_MAX);
+
+    test.deserialize(QByteArray::fromHex("09ffffff7f00000000"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT32_MAX);
+
+    test.deserialize(QByteArray::fromHex("09ffffffffffffff7f"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT64_MAX);
+
+    test.deserialize(QByteArray::fromHex("097fffffffffffffff"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT8_MIN - 1);
+
+    test.deserialize(QByteArray::fromHex("09ff7fffffffffffff"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT16_MIN - 1);
+
+    test.deserialize(QByteArray::fromHex("09ffffff7fffffffff"));
+    ASSERT_EQ(test.testFieldFixedInt64(), (qlonglong)INT32_MIN - 1);
+
+    test.deserialize(QByteArray::fromHex("0980ffffffffffffff"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT8_MIN);
+
+    test.deserialize(QByteArray::fromHex("090080ffffffffffff"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT16_MIN);
+
+    test.deserialize(QByteArray::fromHex("0900000080ffffffff"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT32_MIN);
+
+    test.deserialize(QByteArray::fromHex("090000000000000080"));
+    ASSERT_EQ(test.testFieldFixedInt64(), INT64_MIN);
+}
 
 TEST_F(DeserializationTest, FloatMessageDeserializeTest)
 {
