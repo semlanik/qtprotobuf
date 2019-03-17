@@ -9,12 +9,12 @@ elseif (UNIX)
     if (NOT GTest_FOUND)
         message(STATUS "Gtest not found. Start downloading...")
         include(../cmake/DownloadProject.cmake)
-        set(UPDATE_DISCONNECTED_IF_AVAILABLE "")
         download_project(PROJ                GTest
                          GIT_REPOSITORY      https://github.com/google/googletest.git
                          GIT_TAG             v1.8.x
-                         ${UPDATE_DISCONNECTED_IF_AVAILABLE}
         )
+        # uncomment if gmock is going to be needed
+        set(BUILD_GMOCK OFF CACHE BOOL "Disable gmock build functionality" FORCE)
         add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
     endif()
 endif()
