@@ -99,9 +99,13 @@ public:
         switch (static_cast<QMetaType::Type>(propertyValue.type())) {
         case QMetaType::Int:
             type = Varint;
-            if (typeName == "sint32"
-                    || typeName == "qtprotobuf::sint32") {
+            if (typeName == "qtprotobuf::sint32"
+                    || typeName == "sint32") {
                 result.append(serializeVarintZigZag(propertyValue.toInt()));
+            } else if (typeName == "qtprotobuf::sfint32"
+                       || typeName == "sfint32") {
+                type = Fixed32;
+                result.append(serializeFixed(propertyValue.toInt()));
             } else {
                 result.append(serializeVarint(propertyValue.toLongLong()));
             }
@@ -111,9 +115,13 @@ public:
             break;
         case QMetaType::LongLong:
             type = Varint;
-            if (typeName == "sint64"
-                    || typeName == "qtprotobuf::sint64") {
+            if (typeName == "qtprotobuf::sint64"
+                    || typeName == "sint64") {
                 result.append(serializeVarintZigZag(propertyValue.toLongLong()));
+            } else if (typeName == "qtprotobuf::sfint64"
+                       || typeName == "sfint64") {
+                type = Fixed64;
+                result.append(serializeFixed(propertyValue.toLongLong()));
             } else {
                 result.append(serializeVarint(propertyValue.toLongLong()));
             }
@@ -150,8 +158,8 @@ public:
             result.append(serializeUserType(propertyValue, fieldIndex));
             break;
         case QMetaType::UInt:
-            if (typeName == "fint32"
-                    || typeName == "qtprotobuf::fint32") {
+            if (typeName == "qtprotobuf::fint32"
+                    || typeName == "fint32") {
                 type = Fixed32;
                 result.append(serializeFixed(propertyValue.toUInt()));
             } else {
@@ -163,8 +171,8 @@ public:
             }
             break;
         case QMetaType::ULongLong:
-            if (typeName == "fint64"
-                    || typeName == "qtprotobuf::fint64") {
+            if (typeName == "qtprotobuf::fint64"
+                    || typeName == "fint64") {
                 type = Fixed64;
                 result.append(serializeFixed(propertyValue.toULongLong()));
             } else {
@@ -303,7 +311,9 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_floating_point<V>::value
                                         || std::is_same<V, unsigned int>::value
-                                        || std::is_same<V, qulonglong>::value, int> = 0>
+                                        || std::is_same<V, qulonglong>::value
+                                        || std::is_same<V, int>::value
+                                        || std::is_same<V, qlonglong>::value, int> = 0>
     QByteArray serializeFixed(V value) const {
         qProtoDebug() << __func__ << "value" << value;
         //Reserve required amount of bytes

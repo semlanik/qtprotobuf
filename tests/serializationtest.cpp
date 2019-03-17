@@ -33,6 +33,8 @@
 #include "simplesint64message.h"
 #include "simplefixedint32message.h"
 #include "simplefixedint64message.h"
+#include "simplesfixedint32message.h"
+#include "simplesfixedint64message.h"
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
 #include "simplestringmessage.h"
@@ -1055,6 +1057,171 @@ TEST_F(SerializationTest, FixedInt64MessageSerializeTest)
     result = test.serialize();
     ASSERT_EQ(result.size(), Fixed64MessageSize);
     ASSERT_TRUE(result == QByteArray::fromHex("09ffffffffffffffff"));
+}
+
+TEST_F(SerializationTest, SFixedInt32MessageSerializeTest)
+{
+    constexpr int Fixed32MessageSize = 5;
+    SimpleSFixedInt32Message test;
+    test.setTestFieldFixedInt32(15);
+    QByteArray result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d0f000000"));
+
+    test.setTestFieldFixedInt32(300);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d2c010000"));
+
+    test.setTestFieldFixedInt32(65545);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d09000100"));
+
+    test.setTestFieldFixedInt32(0);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d00000000"));
+
+    test.setTestFieldFixedInt32(INT8_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d80000000"));
+
+    test.setTestFieldFixedInt32(INT16_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d00800000"));
+
+    test.setTestFieldFixedInt32(INT8_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d7f000000"));
+
+    test.setTestFieldFixedInt32(INT16_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0dff7f0000"));
+
+    test.setTestFieldFixedInt32(INT8_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d7fffffff"));
+
+    test.setTestFieldFixedInt32(INT16_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0dff7fffff"));
+
+    test.setTestFieldFixedInt32(INT8_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d80ffffff"));
+
+    test.setTestFieldFixedInt32(INT16_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d0080ffff"));
+
+    test.setTestFieldFixedInt32(INT32_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed32MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0d00000080"));
+}
+
+TEST_F(SerializationTest, SFixedInt64MessageSerializeTest)
+{
+    constexpr int Fixed64MessageSize = 9;
+    SimpleSFixedInt64Message test;
+    test.setTestFieldFixedInt64(15);
+    QByteArray result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("090f00000000000000"));
+
+    test.setTestFieldFixedInt64(300);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("092c01000000000000"));
+
+    test.setTestFieldFixedInt64(65545);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("090900010000000000"));
+
+    test.setTestFieldFixedInt64(0);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("090000000000000000"));
+
+    test.setTestFieldFixedInt64(INT8_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("098000000000000000"));
+
+    test.setTestFieldFixedInt64(INT16_MAX + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("090080000000000000"));
+
+    test.setTestFieldFixedInt64((unsigned long long)(INT32_MAX) + 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("090000008000000000"));
+
+    test.setTestFieldFixedInt64(INT8_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("097f00000000000000"));
+
+    test.setTestFieldFixedInt64(INT16_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("09ff7f000000000000"));
+
+    test.setTestFieldFixedInt64(INT32_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("09ffffff7f00000000"));
+
+    test.setTestFieldFixedInt64(INT64_MAX);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("09ffffffffffffff7f"));
+
+    test.setTestFieldFixedInt64(INT8_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("097fffffffffffffff"));
+
+    test.setTestFieldFixedInt64(INT16_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("09ff7fffffffffffff"));
+
+    test.setTestFieldFixedInt64((qlonglong)INT32_MIN - 1);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("09ffffff7fffffffff"));
+
+    test.setTestFieldFixedInt64(INT8_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0980ffffffffffffff"));
+
+    test.setTestFieldFixedInt64(INT16_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("090080ffffffffffff"));
+
+    test.setTestFieldFixedInt64(INT32_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("0900000080ffffffff"));
+
+    test.setTestFieldFixedInt64(INT64_MIN);
+    result = test.serialize();
+    ASSERT_EQ(result.size(), Fixed64MessageSize);
+    ASSERT_TRUE(result == QByteArray::fromHex("090000000000000080"));
 }
 
 TEST_F(SerializationTest, FloatMessageSerializeTest)
