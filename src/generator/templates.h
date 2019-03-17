@@ -35,6 +35,7 @@ namespace generator {
 class Templates {
 public:
     static const char *DefaultProtobufIncludesTemplate;
+    static const char *EnumClassNameTemplate;
     static const char *PreambleTemplate;
     static const char *InternalIncludeTemplate;
     static const char *ExternalIncludeTemplate;
@@ -51,6 +52,7 @@ public:
     static const char *PropertyTemplate;
     static const char *MessagePropertyTemplate;
     static const char *MemberTemplate;
+    static const char *EnumMemberTemplate;
     static const char *PublicBlockTemplate;
     static const char *PrivateBlockTemplate;
     static const char *EnumDefinitionTemplate;

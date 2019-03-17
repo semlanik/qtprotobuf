@@ -14,6 +14,11 @@ message SimpleEnumMessage {
   repeated LocalEnum localEnumList = 2;
 }
 
+message SimpleFileEnumMessage {
+  TestEnum globalEnum = 1;
+  repeated TestEnum globalEnumList = 2;
+}
+
 message SimpleIntMessage {
     int32 testFieldInt = 1;
 }

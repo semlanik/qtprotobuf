@@ -155,7 +155,8 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
         packageList[file->package()].push_back(file);
     }
 
-    GlobalEnumsGenerator enumGen(packageList, std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
+    GlobalEnumsGenerator enumGen(packageList,
+                                 std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
     enumGen.run();
 
     return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);

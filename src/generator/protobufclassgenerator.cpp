@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -42,7 +42,6 @@ ProtobufClassGenerator::ProtobufClassGenerator(const Descriptor *message, std::u
     : ClassGeneratorBase(message->full_name(), std::move(out))
     , mMessage(message)
 {
-
 }
 
 void ProtobufClassGenerator::printCopyFunctionality()
@@ -223,6 +222,10 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
         }
     } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
         typeName = field->enum_type()->name();
+        if (!isLocalMessageEnum(field)) {
+            std::string globEnum(Templates::EnumClassNameTemplate);
+            typeName = globEnum.append("::").append(typeName);
+        }
         if (field->is_repeated()) {
             return typeName.append("List");
         }
@@ -367,6 +370,24 @@ void ProtobufClassGenerator::printFieldsOrderingDefinition()
     Indent();
     mPrinter.Print(Templates::FieldsOrderingDefinitionContainerTemplate);
     Outdent();
+}
+
+bool ProtobufClassGenerator::isLocalMessageEnum(const ::google::protobuf::FieldDescriptor *field)
+{
+    if (field == nullptr)
+    {
+        return false;
+    }
+    for (int i = 0; i < mMessage->enum_type_count(); i++) {
+        const auto enumDescr = mMessage->enum_type(i);
+        if (enumDescr == nullptr || field->enum_type() == nullptr) {
+            return false;
+        }
+        if (enumDescr->name().compare(field->enum_type()->name()) == 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void ProtobufClassGenerator::printClassMembers()

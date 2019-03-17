@@ -33,7 +33,7 @@ using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
 GlobalEnumsGenerator::GlobalEnumsGenerator(const PackagesList &packageList, std::unique_ptr<io::ZeroCopyOutputStream> out) :
-    ClassGeneratorBase("GlobalEnums", std::move(out))
+    ClassGeneratorBase(Templates::EnumClassNameTemplate, std::move(out))
   , mPackageList(packageList) {}
 
 void GlobalEnumsGenerator::startEnum(const std::vector<std::string>& namespaces) {

@@ -64,10 +64,12 @@ public:
     void printConstructor();
     void printListType();
 
+    bool isLocalMessageEnum(const ::google::protobuf::FieldDescriptor *field);
+
     std::set<std::string> extractModels() const;
 
-    static std::string getTypeName(const ::google::protobuf::FieldDescriptor *field);
-    static bool producePropertyMap(const ::google::protobuf::FieldDescriptor *field, PropertyMap &propertyMap);
+    std::string getTypeName(const ::google::protobuf::FieldDescriptor *field);
+    bool producePropertyMap(const ::google::protobuf::FieldDescriptor *field, PropertyMap &propertyMap);
     static bool isComplexType(const ::google::protobuf::FieldDescriptor *field);
     static bool isListType(const ::google::protobuf::FieldDescriptor *field);
 };
