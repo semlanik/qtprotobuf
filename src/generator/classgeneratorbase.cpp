@@ -91,6 +91,11 @@ void ClassGeneratorBase::printPublic()
     mPrinter.Print(Templates::PublicBlockTemplate);
 }
 
+void ClassGeneratorBase::printPrivate()
+{
+    mPrinter.Print(Templates::PrivateBlockTemplate);
+}
+
 void ClassGeneratorBase::printMetaTypeDeclaration()
 {
     std::string namespaces;

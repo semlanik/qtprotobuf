@@ -373,7 +373,8 @@ public:
 //####################################################
     void deserializeProperty(WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it)
     {
-        qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << metaProperty.typeName() << "currentByte:" << QString::number((*it), 16);
+        QLatin1Literal typeName(metaProperty.typeName());
+        qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << typeName << "currentByte:" << QString::number((*it), 16);
         QVariant newPropertyValue;
         int type = metaProperty.type();
         switch(type) {
@@ -381,14 +382,14 @@ public:
             if (wireType == Fixed32) {
                 newPropertyValue = deserializeFixed<fint32>(it);
             } else {
-                newPropertyValue = deserializeVarint<unsigned int>(it);
+                newPropertyValue = deserializeVarint<uint>(it);
             }
             break;
         case QMetaType::ULongLong:
             if (wireType == Fixed64) {
                 newPropertyValue = deserializeFixed<fint64>(it);
             } else {
-                //TODO: deserialize varint
+                newPropertyValue = deserializeVarint<uint64>(it);
             }
             break;
         case QMetaType::Float:
@@ -398,7 +399,20 @@ public:
             newPropertyValue = deserializeFixed<double>(it);
             break;
         case QMetaType::Int:
-            newPropertyValue = deserializeVarint<int>(it);
+            if (typeName == "sint32"
+                    || typeName == "qtprotobuf::sint32") {
+                newPropertyValue = deserializeVarintZigZag<sint32>(it);
+            } else {
+                newPropertyValue = deserializeVarint<int64>(it);
+            }
+            break;
+        case QMetaType::LongLong:
+            if (typeName == "sint64"
+                    || typeName == "qtprotobuf::sint64") {
+                newPropertyValue = deserializeVarintZigZag<sint64>(it);
+            } else {
+                newPropertyValue = deserializeVarint<int64>(it);
+            }
             break;
         case QMetaType::QString:
             newPropertyValue = QString::fromUtf8(deserializeLengthDelimited(it));
@@ -408,7 +422,7 @@ public:
             break;
         case QMetaType::User:
             newPropertyValue = metaProperty.read(this);
-            deserializeUserType(metaProperty.userType(), it, newPropertyValue);
+            deserializeUserType(metaProperty, it, newPropertyValue);
             break;
         case QMetaType::QByteArrayList: {
             QByteArrayList currentValue = metaProperty.read(this).value<QByteArrayList>();
@@ -448,11 +462,19 @@ public:
 
     template <typename V, typename UV = typename std::make_unsigned<V>::type,
               typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
-    QVariant deserializeVarint(QByteArray::const_iterator &it) {
+    QVariant deserializeVarintZigZag(QByteArray::const_iterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         UV unsignedValue = deserializeVarintCommon<UV>(it);
         V value = (unsignedValue >> 1) ^ (-(unsignedValue & 1));
+        return QVariant::fromValue(value);
+    }
 
+    template <typename V, typename UV = typename std::make_unsigned<V>::type,
+              typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
+    QVariant deserializeVarint(QByteArray::const_iterator &it) {
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
+        UV unsignedValue = deserializeVarintCommon<UV>(it);
+        V value = static_cast<V>(unsignedValue);
         return QVariant::fromValue(value);
     }
 
@@ -461,12 +483,15 @@ public:
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         V value = 0;
         int k = 0;
-        while((*it) & 0x80) {
-            value += ((*it) & 0x7f) << (7 * k);
-            ++k;
+        while(true) {
+            uint64_t byte = static_cast<uint64_t>(*it);
+            value += (byte & 0x7f) << k;
+            k += 7;
+            if(((*it) & 0x80) == 0) {
+                break;
+            }
             ++it;
         }
-        value += ((*it) & 0x7f) << (7 * k);
         ++it;
         return value;
     }
@@ -479,8 +504,10 @@ public:
         return result;
     }
 
-    void deserializeUserType(int userType, QByteArray::const_iterator& it, QVariant &newValue)
+    void deserializeUserType(const QMetaProperty &metaType, QByteArray::const_iterator& it, QVariant &newValue)
     {
+        int userType = metaType.userType();
+        QLatin1Literal typeName(metaType.typeName());
         qProtoDebug() << __func__ << "userType" << userType << "currentByte:" << QString::number((*it), 16);
 
         auto serializerIt = serializers.find(userType);
@@ -490,16 +517,38 @@ public:
         }
 
         if (userType == qMetaTypeId<int32List>()) {
-            newValue = deserializeVarintListType<int>(it);
+            if (typeName == "sint32List"
+                    || typeName == "qtprotobuf::sint32List") {
+                newValue = deserializeVarintListTypeZigZag<int32>(it);
+            } else {
+                newValue = deserializeVarintListType<int32>(it);
+            }
+        } else if (userType == qMetaTypeId<int64List>()) {
+            if (typeName == "sint64List"
+                    || typeName == "qtprotobuf::sint64List") {
+                newValue = deserializeVarintListTypeZigZag<int64>(it);
+            } else {
+                newValue = deserializeVarintListType<int64>(it);
+            }
+        } else if (userType == qMetaTypeId<uint32List>()) {
+            //TODO: Check if type is fixed
+            newValue = deserializeVarintListType<uint32>(it);
+        } else if (userType == qMetaTypeId<uint64List>()) {
+            //TODO: Check if type is fixed
+            newValue = deserializeVarintListType<uint64>(it);
         } else if(userType == qMetaTypeId<FloatList>()) {
             newValue = deserializeListType<float>(it);
         } else if(userType == qMetaTypeId<DoubleList>()) {
             newValue = deserializeListType<double>(it);
         } else {
-            auto value = reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType));
-            value->deserializePrivate(deserializeLengthDelimited(it));
-            newValue = QVariant(userType, value);
+            newValue = deserializeProtobufObjectType(userType, it);
         }
+    }
+
+    QVariant deserializeProtobufObjectType(int userType, QByteArray::const_iterator &it) {
+        auto value = reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType));
+        value->deserializePrivate(deserializeLengthDelimited(it));
+        return QVariant(userType, value);
     }
 
     template <typename V,
@@ -514,10 +563,7 @@ public:
               typename std::enable_if_t<std::is_base_of<ProtobufObjectPrivate, V>::value, int> = 0>
     QVariant deserializeListType(QByteArray::const_iterator& it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
-        int metaTypeId = qMetaTypeId<V>();
-        QVariant variant;
-        deserializeUserType(metaTypeId, it, variant);
-        return variant;
+        return deserializeProtobufObjectType(qMetaTypeId<V>(), it);
     }
 
     template <typename V,
@@ -535,8 +581,7 @@ public:
         return QVariant::fromValue(out);
     }
 
-    template <typename V,
-              typename std::enable_if_t<std::is_same<V, int>::value, int> = 0>
+    template <typename V>
     QVariant deserializeVarintListType(QByteArray::const_iterator& it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         QList<V> out;
@@ -544,6 +589,19 @@ public:
         QByteArray::const_iterator lastVarint = it + count;
         while (it != lastVarint) {
             QVariant variant = deserializeVarint<V>(it);
+            out.append(variant.value<V>());
+        }
+        return QVariant::fromValue(out);
+    }
+
+    template <typename V>
+    QVariant deserializeVarintListTypeZigZag(QByteArray::const_iterator& it) {
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
+        QList<V> out;
+        unsigned int count = deserializeVarint<unsigned int>(it).toUInt();
+        QByteArray::const_iterator lastVarint = it + count;
+        while (it != lastVarint) {
+            QVariant variant = deserializeVarintZigZag<V>(it);
             out.append(variant.value<V>());
         }
         return QVariant::fromValue(out);

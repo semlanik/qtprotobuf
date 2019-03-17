@@ -30,6 +30,8 @@
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
 #include "simpleintmessage.h"
+#include "simplesintmessage.h"
+#include "simpleuintmessage.h"
 #include "simplestringmessage.h"
 #include "complexmessage.h"
 #include "repeatedstringmessage.h"
@@ -162,58 +164,56 @@ TEST_F(DeserializationTest, DoubleMessageDeserializeTest)
 TEST_F(DeserializationTest, IntMessageDeserializeTest)
 {
     SimpleIntMessage test;
-    test.deserialize(QByteArray::fromHex("081e"));
+    test.deserialize(QByteArray::fromHex("080f"));
     ASSERT_EQ(15, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08d804"));
+    test.deserialize(QByteArray::fromHex("08ac02"));
     ASSERT_EQ(300, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08928008"));
+    test.deserialize(QByteArray::fromHex("08898004"));
     ASSERT_EQ(65545, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("0800"));
-    ASSERT_EQ(0, test.testFieldInt());
+    //FIXME: bug#68
+    //test.deserialize(QByteArray::fromHex(""));
+    //ASSERT_EQ(0, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("088002"));
+    test.deserialize(QByteArray::fromHex("088001"));
     ASSERT_EQ(INT8_MAX + 1, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08808004"));
+    test.deserialize(QByteArray::fromHex("08808002"));
     ASSERT_EQ(INT16_MAX + 1, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08fe01"));
+    test.deserialize(QByteArray::fromHex("087f"));
     ASSERT_EQ(INT8_MAX, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08feff03"));
+    test.deserialize(QByteArray::fromHex("08ffff01"));
     ASSERT_EQ(INT16_MAX, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08feffffff0f"));
+    test.deserialize(QByteArray::fromHex("08ffffffff07"));
     ASSERT_EQ(INT32_MAX, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("0801"));
+    test.deserialize(QByteArray::fromHex("08ffffffffffffffffff01"));
     ASSERT_EQ(-1, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("0801"));
-    ASSERT_EQ(-1, test.testFieldInt());
-
-    test.deserialize(QByteArray::fromHex("089b07"));
+    test.deserialize(QByteArray::fromHex("08b2fcffffffffffffff01"));
     ASSERT_EQ(-462, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08c1e107"));
+    test.deserialize(QByteArray::fromHex("089f8ffcffffffffffff01"));
     ASSERT_EQ(-63585, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08ff01"));
+    test.deserialize(QByteArray::fromHex("0880ffffffffffffffff01"));
     ASSERT_EQ(INT8_MIN, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08ffff03"));
+    test.deserialize(QByteArray::fromHex("088080feffffffffffff01"));
     ASSERT_EQ(INT16_MIN, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08ffffffff0f"));
+    test.deserialize(QByteArray::fromHex("0880808080f8ffffffff01"));
     ASSERT_EQ(INT32_MIN, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("088102"));
+    test.deserialize(QByteArray::fromHex("08fffeffffffffffffff01"));
     ASSERT_EQ(INT8_MIN - 1, test.testFieldInt());
 
-    test.deserialize(QByteArray::fromHex("08818004"));
+    test.deserialize(QByteArray::fromHex("08fffffdffffffffffff01"));
     ASSERT_EQ(INT16_MIN - 1, test.testFieldInt());
 }
 
@@ -233,19 +233,19 @@ TEST_F(DeserializationTest, ComplexTypeDeserializeTest)
 
     qRegisterMetaType<SimpleStringMessage>("SimpleStringMessage");
 
-    test.deserialize(QByteArray::fromHex("120832067177657274790859"));
+    test.deserialize(QByteArray::fromHex("1208320671776572747908d3ffffffffffffffff01"));
     ASSERT_EQ(-45, test.testFieldInt());
     ASSERT_TRUE(QString::fromUtf8("qwerty") == test.testComplexField().testFieldString());
 
-    test.deserialize(QByteArray::fromHex("085912083206717765727479"));
+    test.deserialize(QByteArray::fromHex("08d3ffffffffffffffff0112083206717765727479"));
     ASSERT_EQ(-45, test.testFieldInt());
     ASSERT_TRUE(QString::fromUtf8("qwerty") == test.testComplexField().testFieldString());
 
-    test.deserialize(QByteArray::fromHex("128404328104595652664a766a78716267764677533159764f5a5867746a356666474c533741694e487a396f5a496f4b626d377a3848373978427579506b70515876476f4f30394f5939785261777833654f417339786a6f544131784a68727732385441637131436562596c43395755665143366849616e74614e647948694b546f666669305a74376c613432535278585a53503447757862635a49703533704a6e79437766437931716446637a5430646d6e3768386670794164656d456176774665646134643050417047665355326a4c74333958386b595542784e4d325767414c524267486456646538377136506935553639546a684d6432385731534644314478796f67434372714f6374325a5049436f4c6e72716446334f644e7a6a52564c6665797651384c674c76524e4652395766574179417a37396e4b6742616d64384e746c7674344d6733354535675653326737415137726b6d37326342646e5739734345794761626558417548356a34475262754c543771425a574463464c463453734364533357664647644e48667761696a7a796b42796f3731507646566c54584832574a576f4676523546414c6a42546e37624364503070416953624c435938587a324d73633364426235466639474953506255704e6d557642644d5a4d485176714f6d544e584550704e306237344d444f4d5166574a53684f6f334e6b41764d6a730854"));
+    test.deserialize(QByteArray::fromHex("128404328104595652664a766a78716267764677533159764f5a5867746a356666474c533741694e487a396f5a496f4b626d377a3848373978427579506b70515876476f4f30394f5939785261777833654f417339786a6f544131784a68727732385441637131436562596c43395755665143366849616e74614e647948694b546f666669305a74376c613432535278585a53503447757862635a49703533704a6e79437766437931716446637a5430646d6e3768386670794164656d456176774665646134643050417047665355326a4c74333958386b595542784e4d325767414c524267486456646538377136506935553639546a684d6432385731534644314478796f67434372714f6374325a5049436f4c6e72716446334f644e7a6a52564c6665797651384c674c76524e4652395766574179417a37396e4b6742616d64384e746c7674344d6733354535675653326737415137726b6d37326342646e5739734345794761626558417548356a34475262754c543771425a574463464c463453734364533357664647644e48667761696a7a796b42796f3731507646566c54584832574a576f4676523546414c6a42546e37624364503070416953624c435938587a324d73633364426235466639474953506255704e6d557642644d5a4d485176714f6d544e584550704e306237344d444f4d5166574a53684f6f334e6b41764d6a73082a"));
     ASSERT_EQ(42, test.testFieldInt());
     ASSERT_TRUE(QString::fromUtf8("YVRfJvjxqbgvFwS1YvOZXgtj5ffGLS7AiNHz9oZIoKbm7z8H79xBuyPkpQXvGoO09OY9xRawx3eOAs9xjoTA1xJhrw28TAcq1CebYlC9WUfQC6hIantaNdyHiKToffi0Zt7la42SRxXZSP4GuxbcZIp53pJnyCwfCy1qdFczT0dmn7h8fpyAdemEavwFeda4d0PApGfSU2jLt39X8kYUBxNM2WgALRBgHdVde87q6Pi5U69TjhMd28W1SFD1DxyogCCrqOct2ZPICoLnrqdF3OdNzjRVLfeyvQ8LgLvRNFR9WfWAyAz79nKgBamd8Ntlvt4Mg35E5gVS2g7AQ7rkm72cBdnW9sCEyGabeXAuH5j4GRbuLT7qBZWDcFLF4SsCdS3WfFGdNHfwaijzykByo71PvFVlTXH2WJWoFvR5FALjBTn7bCdP0pAiSbLCY8Xz2Msc3dBb5Ff9GISPbUpNmUvBdMZMHQvqOmTNXEPpN0b74MDOMQfWJShOo3NkAvMjs") == test.testComplexField().testFieldString());
 
-    test.deserialize(QByteArray::fromHex("0854128404328104595652664a766a78716267764677533159764f5a5867746a356666474c533741694e487a396f5a496f4b626d377a3848373978427579506b70515876476f4f30394f5939785261777833654f417339786a6f544131784a68727732385441637131436562596c43395755665143366849616e74614e647948694b546f666669305a74376c613432535278585a53503447757862635a49703533704a6e79437766437931716446637a5430646d6e3768386670794164656d456176774665646134643050417047665355326a4c74333958386b595542784e4d325767414c524267486456646538377136506935553639546a684d6432385731534644314478796f67434372714f6374325a5049436f4c6e72716446334f644e7a6a52564c6665797651384c674c76524e4652395766574179417a37396e4b6742616d64384e746c7674344d6733354535675653326737415137726b6d37326342646e5739734345794761626558417548356a34475262754c543771425a574463464c463453734364533357664647644e48667761696a7a796b42796f3731507646566c54584832574a576f4676523546414c6a42546e37624364503070416953624c435938587a324d73633364426235466639474953506255704e6d557642644d5a4d485176714f6d544e584550704e306237344d444f4d5166574a53684f6f334e6b41764d6a73"));
+    test.deserialize(QByteArray::fromHex("082a128404328104595652664a766a78716267764677533159764f5a5867746a356666474c533741694e487a396f5a496f4b626d377a3848373978427579506b70515876476f4f30394f5939785261777833654f417339786a6f544131784a68727732385441637131436562596c43395755665143366849616e74614e647948694b546f666669305a74376c613432535278585a53503447757862635a49703533704a6e79437766437931716446637a5430646d6e3768386670794164656d456176774665646134643050417047665355326a4c74333958386b595542784e4d325767414c524267486456646538377136506935553639546a684d6432385731534644314478796f67434372714f6374325a5049436f4c6e72716446334f644e7a6a52564c6665797651384c674c76524e4652395766574179417a37396e4b6742616d64384e746c7674344d6733354535675653326737415137726b6d37326342646e5739734345794761626558417548356a34475262754c543771425a574463464c463453734364533357664647644e48667761696a7a796b42796f3731507646566c54584832574a576f4676523546414c6a42546e37624364503070416953624c435938587a324d73633364426235466639474953506255704e6d557642644d5a4d485176714f6d544e584550704e306237344d444f4d5166574a53684f6f334e6b41764d6a73"));
     ASSERT_EQ(42, test.testFieldInt());
     ASSERT_TRUE(QString::fromUtf8("YVRfJvjxqbgvFwS1YvOZXgtj5ffGLS7AiNHz9oZIoKbm7z8H79xBuyPkpQXvGoO09OY9xRawx3eOAs9xjoTA1xJhrw28TAcq1CebYlC9WUfQC6hIantaNdyHiKToffi0Zt7la42SRxXZSP4GuxbcZIp53pJnyCwfCy1qdFczT0dmn7h8fpyAdemEavwFeda4d0PApGfSU2jLt39X8kYUBxNM2WgALRBgHdVde87q6Pi5U69TjhMd28W1SFD1DxyogCCrqOct2ZPICoLnrqdF3OdNzjRVLfeyvQ8LgLvRNFR9WfWAyAz79nKgBamd8Ntlvt4Mg35E5gVS2g7AQ7rkm72cBdnW9sCEyGabeXAuH5j4GRbuLT7qBZWDcFLF4SsCdS3WfFGdNHfwaijzykByo71PvFVlTXH2WJWoFvR5FALjBTn7bCdP0pAiSbLCY8Xz2Msc3dBb5Ff9GISPbUpNmUvBdMZMHQvqOmTNXEPpN0b74MDOMQfWJShOo3NkAvMjs") == test.testComplexField().testFieldString());
 }
@@ -304,8 +304,9 @@ TEST_F(DeserializationTest, RepeatedIntMessageTest)
 
 TEST_F(DeserializationTest, RepeatedComplexMessageTest)
 {
+    ComplexMessage::registerTypes();
     RepeatedComplexMessage test;
-    test.deserialize(QByteArray::fromHex("0a0c0832120832067177657274790a0c0832120832067177657274790a0c083212083206717765727479"));
+    test.deserialize(QByteArray::fromHex("0a0c0819120832067177657274790a0c0819120832067177657274790a0c081912083206717765727479"));
     ASSERT_EQ(3, test.testRepeatedComplex().count());
     ASSERT_EQ(25, test.testRepeatedComplex().at(0).testFieldInt());
     ASSERT_TRUE(test.testRepeatedComplex().at(0).testComplexField().testFieldString() == QString("qwerty"));
@@ -314,8 +315,98 @@ TEST_F(DeserializationTest, RepeatedComplexMessageTest)
     ASSERT_EQ(25, test.testRepeatedComplex().at(2).testFieldInt());
     ASSERT_TRUE(test.testRepeatedComplex().at(2).testComplexField().testFieldString() == QString("qwerty"));
 
-    test.deserialize(QByteArray::fromHex("0a0c120832067177657274790832"));
+    //FIXME: This setter should not be called in this test. See bug#69
+    test.setTestRepeatedComplex({});
+    test.deserialize(QByteArray::fromHex("0a1508d3feffffffffffffff0112083206717765727479"));
     ASSERT_LT(0, test.testRepeatedComplex().count());
-    ASSERT_EQ(25, test.testRepeatedComplex().at(0).testFieldInt());
+    ASSERT_EQ(-173, test.testRepeatedComplex().at(0).testFieldInt());
     ASSERT_TRUE(test.testRepeatedComplex().at(0).testComplexField().testFieldString() == QString("qwerty"));
+}
+
+TEST_F(DeserializationTest, SIntMessageDeserializeTest)
+{
+    SimpleSIntMessage test;
+    test.deserialize(QByteArray::fromHex("081e"));
+    ASSERT_EQ(15, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08d804"));
+    ASSERT_EQ(300, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08928008"));
+    ASSERT_EQ(65545, test.testFieldInt());
+
+    //FIXME: bug#68
+    //test.deserialize(QByteArray::fromHex(""));
+    //ASSERT_EQ(0, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("088002"));
+    ASSERT_EQ(INT8_MAX + 1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08808004"));
+    ASSERT_EQ(INT16_MAX + 1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08fe01"));
+    ASSERT_EQ(INT8_MAX, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08feff03"));
+    ASSERT_EQ(INT16_MAX, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08feffffff0f"));
+    ASSERT_EQ(INT32_MAX, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("0801"));
+    ASSERT_EQ(-1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("089b07"));
+    ASSERT_EQ(-462, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08c1e107"));
+    ASSERT_EQ(-63585, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08ff01"));
+    ASSERT_EQ(INT8_MIN, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08ffff03"));
+    ASSERT_EQ(INT16_MIN, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08ffffffff0f"));
+    ASSERT_EQ(INT32_MIN, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("088102"));
+    ASSERT_EQ(INT8_MIN - 1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08818004"));
+    ASSERT_EQ(INT16_MIN - 1, test.testFieldInt());
+}
+
+TEST_F(DeserializationTest, UIntMessageDeserializeTest)
+{
+    SimpleUIntMessage test;
+    test.deserialize(QByteArray::fromHex("080f"));
+    ASSERT_EQ(15, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08ac02"));
+    ASSERT_EQ(300, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08898004"));
+    ASSERT_EQ(65545, test.testFieldInt());
+
+    //FIXME: bug#68
+    //test.deserialize(QByteArray::fromHex(""));
+    //ASSERT_EQ(0, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("088002"));
+    ASSERT_EQ(UINT8_MAX + 1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08808004"));
+    ASSERT_EQ(UINT16_MAX + 1, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08ff01"));
+    ASSERT_EQ(UINT8_MAX, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08ffff03"));
+    ASSERT_EQ(UINT16_MAX, test.testFieldInt());
+
+    test.deserialize(QByteArray::fromHex("08ffffffff0f"));
+    ASSERT_EQ(UINT32_MAX, test.testFieldInt());
 }

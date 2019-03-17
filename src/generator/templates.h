@@ -52,6 +52,7 @@ public:
     static const char *MessagePropertyTemplate;
     static const char *MemberTemplate;
     static const char *PublicBlockTemplate;
+    static const char *PrivateBlockTemplate;
     static const char *EnumDefinitionTemplate;
     static const char *EnumFieldTemplate;
     static const char *ConstructorTemplate;

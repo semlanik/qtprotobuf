@@ -59,6 +59,7 @@ protected:
     void printNamespaces(const std::vector<std::string> &namespaces);
     void printClassDeclaration();
     void printPublic();
+    void printPrivate();
     void encloseClass();
     void printMetaTypeDeclaration();
     void encloseNamespaces();

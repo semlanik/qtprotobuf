@@ -41,7 +41,7 @@ const char *Templates::ListModelsIncludeTemplate = "#include <QList>\n";
 const char *Templates::GlobalEnumIncludeTemplate = "#include <globalenums.h>\n";
 
 const char *Templates::UsingQtProtobufNamespaceTemplate = "\nusing namespace qtprotobuf;\n";
-const char *Templates::ComplexTypeRegistrationMethodTemplate = "\n    static void registerTypes();\n";
+const char *Templates::ComplexTypeRegistrationMethodTemplate = "static void registerTypes();\n";
 const char *Templates::ComplexTypeRegistrationTemplate = "void $classname$::registerTypes()\n{\n"
                                                          "    static bool registationDone = false;\n"
                                                          "    if (!registationDone) {\n\n"
@@ -68,6 +68,7 @@ const char *Templates::PropertyTemplate = "Q_PROPERTY($type$ $property_name$ REA
 const char *Templates::MessagePropertyTemplate = "Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
 const char *Templates::MemberTemplate = "$type$ m_$property_name$;\n";
 const char *Templates::PublicBlockTemplate = "\npublic:\n";
+const char *Templates::PrivateBlockTemplate = "\nprivate:\n";
 const char *Templates::EnumDefinitionTemplate = "enum $enum$ {\n";
 const char *Templates::EnumFieldTemplate = "$enumvalue$ = $value$,\n";
 const char *Templates::ConstructorTemplate = "$classname$(QObject *parent = nullptr) : ProtobufObject(parent)\n";

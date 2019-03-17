@@ -351,7 +351,9 @@ void ProtobufClassGenerator::printProperties()
 
 void ProtobufClassGenerator::printRegisterTypes()
 {
+    Indent();
     mPrinter.Print(Templates::ComplexTypeRegistrationMethodTemplate);
+    Outdent();
 }
 
 void ProtobufClassGenerator::printListType()
@@ -396,10 +398,11 @@ void ProtobufClassGenerator::run()
     printIncludes(extractModels());
     printNamespaces();
     printClassDeclaration();
-    printRegisterTypes();
     printProperties();
     printPublic();
+    printRegisterTypes();
     printFieldsOrderingDefinition();
+    printPrivate();
     printClassMembers();
     encloseClass();
     printListType();
