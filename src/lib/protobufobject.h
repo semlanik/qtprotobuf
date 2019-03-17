@@ -399,7 +399,7 @@ public:
             if (wireType == Fixed32) {
                 newPropertyValue = deserializeFixed<fint32>(it);
             } else {
-                newPropertyValue = deserializeVarint<uint>(it);
+                newPropertyValue = deserializeVarint<uint32>(it);
             }
             break;
         case QMetaType::ULongLong:
@@ -457,6 +457,9 @@ public:
             metaProperty.write(this, currentValue);
         }
             return;
+        case QMetaType::Bool:
+            newPropertyValue = deserializeVarint<uint32>(it);
+            break;
         default:
             break;
         }

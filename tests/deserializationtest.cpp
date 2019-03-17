@@ -25,6 +25,7 @@
 
 #include "deserializationtest.h"
 #include "qtprotobuf.h"
+#include "simpleboolmessage.h"
 #include "simplefixedint32message.h"
 #include "simplefixedint64message.h"
 #include "simplesfixedint32message.h"
@@ -518,4 +519,16 @@ TEST_F(DeserializationTest, UIntMessageDeserializeTest)
 
     test.deserialize(QByteArray::fromHex("08ffffffff0f"));
     ASSERT_EQ(UINT32_MAX, test.testFieldInt());
+}
+
+TEST_F(DeserializationTest, BoolDeserializeTest)
+{
+    SimpleBoolMessage test;
+    test.deserialize(QByteArray::fromHex("0801"));
+    ASSERT_EQ(test.testFieldBool(), true);
+
+    //FIXME: bug#68
+    //test.deserialize(QByteArray::fromHex(""));
+    test.deserialize(QByteArray::fromHex("0800"));
+    ASSERT_EQ(test.testFieldBool(), false);
 }
