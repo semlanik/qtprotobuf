@@ -37,12 +37,6 @@
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/descriptor.h>
 
-#include <algorithm>
-#include <unordered_map>
-#include <vector>
-#include <sstream>
-#include <string>
-#include <list>
 
 using namespace ::qtprotobuf::generator;
 using namespace ::google::protobuf;

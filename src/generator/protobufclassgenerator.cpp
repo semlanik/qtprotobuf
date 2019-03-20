@@ -26,6 +26,7 @@
 #include "protobufclassgenerator.h"
 #include "utils.h"
 
+#include <iostream>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 

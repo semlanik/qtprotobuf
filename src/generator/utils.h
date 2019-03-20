@@ -30,6 +30,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <list>
+#include <algorithm>
 
 namespace google { namespace protobuf {
 class FileDescriptor;
