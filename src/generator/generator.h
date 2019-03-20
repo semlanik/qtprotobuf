@@ -49,6 +49,7 @@ class QtGenerator : public ::google::protobuf::compiler::CodeGenerator
                              const std::string &parameter,
                              ::google::protobuf::compiler::GeneratorContext *generatorContext,
                              std::string *error) const override;
+      virtual bool HasGenerateAll() const override { return true; }
 };
 
 } //namespace generator

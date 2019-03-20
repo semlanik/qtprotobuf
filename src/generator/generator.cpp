@@ -37,7 +37,6 @@
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/descriptor.h>
 
-
 using namespace ::qtprotobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
@@ -153,6 +152,14 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
     enumGen.run();
 
+    // FIXME: not sure about the actual protobuf version where GenerateAll was actually implemented
+#if GOOGLE_PROTOBUF_VERSION < 3006000
+    CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
+    *error = "";
+    return true;
+#else
     return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
+#endif
+
 }
 
