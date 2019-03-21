@@ -1,7 +1,5 @@
 find_package(Qt5 COMPONENTS Core REQUIRED)
 
-include(../../cmake/ProjectDefinitions.cmake)
-
 set(SUPPORT_LIBRARY_TARGET qtprotobufsupport)
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
