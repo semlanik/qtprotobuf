@@ -1,22 +1,15 @@
-set(testtarget "qtprotobuf_test")
-
-if (WIN32)
-    find_package(GTest)
-elseif (UNIX)
-    find_package(GTest)
-    if (NOT GTest_FOUND)
-        include(../cmake/DownloadProject.cmake)
-        download_project(PROJ                GTest
-                         GIT_REPOSITORY      https://github.com/google/googletest.git
-                         GIT_TAG             v1.8.x
+find_package(GTest)
+if (UNIX AND NOT GTest_FOUND)
+    # FIXME: if protobuf was downloaded then the following include is not more needed
+    include(../cmake/DownloadProject.cmake)
+    download_project(PROJ                GTest
+        GIT_REPOSITORY      https://github.com/google/googletest.git
+        GIT_TAG             v1.8.x
         )
-        # uncomment if gmock is going to be needed
-        set(BUILD_GMOCK OFF CACHE BOOL "Disable gmock build functionality" FORCE)
-        add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
-    endif()
+    # uncomment if gmock is going to be needed
+    set(BUILD_GMOCK OFF CACHE BOOL "Disable gmock build functionality" FORCE)
+    add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
 endif()
-
-include(../cmake/ProjectDefinitions.cmake)
 
 find_package(Qt5 COMPONENTS Core REQUIRED)
 
@@ -56,6 +49,7 @@ file(GLOB SOURCES main.cpp
 
 file(GLOB PROTOS proto/*.proto)
 
+set(testtarget "qtprotobuf_test")
 add_executable(${testtarget} ${SOURCES} ${MOC_SOURCES} ${GENERATED_SOURCES} ${PROTOS})
 if(WIN32)
     target_link_libraries(${testtarget} "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" qtprotobufsupport Qt5::Core)
