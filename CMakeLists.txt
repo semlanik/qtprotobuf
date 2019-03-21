@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 project(qtprotobuf)
 
 find_package(Protobuf)
-if (NOT Protobuf_FOUND)
+if (NOT Protobuf_FOUND OR Protobuf_VERSION VERSION_LESS "3.0.0")
     include(cmake/DownloadProject.cmake)
     download_project(PROJ                Protobuf
                      GIT_REPOSITORY      https://github.com/protocolbuffers/protobuf.git
@@ -44,7 +44,7 @@ elseif(UNIX)
     if(NOT Protobuf_FOUND)
         target_link_libraries(${PROJECT_NAME} libprotoc)
     else()
-        target_link_libraries(${PROJECT_NAME} ${Protobuf_LIBRARIES} -lprotoc)
+        target_link_libraries(${PROJECT_NAME} ${Protobuf_LIBRARIES} ${Protobuf_PROTOC_LIBRARY})
     endif()
 endif()
 
@@ -68,7 +68,7 @@ if(MAKE_TESTS)
             )
     elseif(UNIX)
         add_custom_command(TARGET ${testgeneration} POST_BUILD
-            COMMAND protoc --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
+            COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
             ${PROTO_FILES}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             COMMENT "Generating test headers"
