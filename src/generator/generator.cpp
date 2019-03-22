@@ -27,8 +27,11 @@
 #include "templates.h"
 #include "classgeneratorbase.h"
 #include "protobufclassgenerator.h"
+#include "protobufsourcegenerator.h"
 #include "globalenumsgenerator.h"
 #include "servergenerator.h"
+#include "clientgenerator.h"
+#include "clientsourcegenerator.h"
 #include "utils.h"
 
 #include <google/protobuf/stubs/logging.h>
@@ -40,58 +43,6 @@
 using namespace ::qtprotobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
-
-class QtSourcesGenerator : public ClassGeneratorBase
-{
-    const Descriptor* mMessage;
-public:
-    QtSourcesGenerator(const Descriptor *message, std::unique_ptr<io::ZeroCopyOutputStream> out) :
-        ClassGeneratorBase(message->full_name(), std::move(out))
-      , mMessage(message) {}
-
-    void run() {
-        printClassHeaderInclude();
-        printNamespaces();
-        printFieldsOrdering();
-        printRegisterBody();
-        encloseNamespaces();
-    }
-
-    void printClassHeaderInclude() {
-        std::string includeFileName = mClassName;
-        utils::tolower(includeFileName);
-        mPrinter.Print({{"type_lower", includeFileName}}, Templates::InternalIncludeTemplate);
-    }
-
-    void printFieldsOrdering() {
-        mPrinter.Print({{"type", mClassName}}, Templates::FieldsOrderingContainerTemplate);
-        Indent();
-        for (int i = 0; i < mMessage->field_count(); i++) {
-            const FieldDescriptor* field = mMessage->field(i);
-            if (i != 0) {
-                mPrinter.Print("\n,");
-            }
-            //property_number is incremented by 1 because user properties stating from 1.
-            //Property with index 0 is "objectName"
-            mPrinter.Print({{"field_number", std::to_string(field->number())},
-                            {"property_number", std::to_string(i + 1)}}, Templates::FieldOrderTemplate);
-        }
-        Outdent();
-        mPrinter.Print(Templates::SemicolonBlockEnclosureTemplate);
-    }
-
-    void printRegisterBody()
-    {
-        std::string namespaces;
-        for(size_t i = 0; i < mNamespaces.size(); i++) {
-            if(i > 0) {
-                namespaces = namespaces.append("::");
-            }
-            namespaces = namespaces.append(mNamespaces[i]);
-        }
-        mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}}, Templates::ComplexTypeRegistrationTemplate);
-    }
-};
 
 bool QtGenerator::Generate(const FileDescriptor *file,
                            const std::string &/*parameter*/,
@@ -119,7 +70,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         extractedModels.insert(std::begin(models), std::end(models));
 
         std::string sourceFileName = baseFilename + ".cpp";
-        QtSourcesGenerator classSourceGen(message,
+        ProtobufSourceGenerator classSourceGen(message,
                                   std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(sourceFileName))));
         classSourceGen.run();
     }
@@ -129,12 +80,20 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         std::string baseFilename(service->name());
         utils::tolower(baseFilename);
 
-        std::string headeFilename = baseFilename + "server.h";
+        std::string fullFilename = baseFilename + "server.h";
         ServerGenerator serverGen(service,
-                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(headeFilename))));
+                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
         serverGen.run();
 
+        fullFilename = baseFilename + "client.h";
+        ClientGenerator clientGen(service,
+                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+        clientGen.run();
 
+        fullFilename = baseFilename + "client.cpp";
+        ClientSourceGenerator clientSrcGen(service,
+                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+        clientSrcGen.run();
     }
     return true;
 }

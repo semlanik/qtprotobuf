@@ -86,6 +86,15 @@ public:
     static const char *DeclareMetaTypeTemplate;
     static const char *DeclareComplexListTypeTemplate;
     static const char *QEnumTemplate;
+
+    //Service templates
+    static const char *ClientMethodDeclarationSyncTemplate;
+    static const char *ClientMethodDeclarationAsyncTemplate;
+    static const char *ServerMethodDeclarationTemplate;
+
+    static const char *ClientMethodDefinitionSyncTemplate;
+    static const char *ClientMethodDefinitionAsyncTemplate;
+
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
 };
 

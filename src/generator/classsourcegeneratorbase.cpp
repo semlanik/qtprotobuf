@@ -23,39 +23,28 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include "classsourcegeneratorbase.h"
 
-#include "servicegeneratorbase.h"
-#include <string>
-#include <memory>
-#include <google/protobuf/io/printer.h>
+#include <google/protobuf/io/zero_copy_stream.h>
 
-namespace google { namespace protobuf {
-class ServiceDescriptor;
-class Message;
-}}
+#include "templates.h"
+#include "utils.h"
 
-namespace qtprotobuf {
-namespace generator {
+using namespace qtprotobuf::generator;
+using namespace ::google::protobuf;
+using namespace ::google::protobuf::io;
+using namespace ::google::protobuf::compiler;
 
-class ServerGenerator : public ServiceGeneratorBase
+ClassSourceGeneratorBase::ClassSourceGeneratorBase(std::string fullClassName,
+                                                   std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out) :
+    ClassGeneratorBase(fullClassName, std::move(out))
 {
-    const google::protobuf::ServiceDescriptor *mService;
-public:
-    ServerGenerator(const google::protobuf::ServiceDescriptor *service, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
-    virtual ~ServerGenerator() = default;
 
-    void run() {
-        printPreamble();
-        printIncludes();
-        printNamespaces();
-        printClassName();
-        printPublic();
-        printMethodsDeclaration(Templates::ServerMethodDeclarationTemplate);
-        encloseClass();
-        encloseNamespaces();
-    }
-};
+}
 
-} //namespace generator
-} //namespace qtprotobuf
+void ClassSourceGeneratorBase::printClassHeaderInclude()
+{
+    std::string includeFileName = mClassName;
+    utils::tolower(includeFileName);
+    mPrinter.Print({{"type_lower", includeFileName}}, Templates::InternalIncludeTemplate);
+}

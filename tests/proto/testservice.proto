@@ -5,5 +5,5 @@ import "simpletest.proto";
 package qtprotobufnamespace.tests;
 
 service TestService {
-  rpc TestMethod (SimpleIntMessage) returns (SimpleIntMessage) {}
+  rpc testMethod (SimpleIntMessage) returns (SimpleIntMessage) {}
 } 

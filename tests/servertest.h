@@ -36,5 +36,5 @@ public:
     ServerTest();
 };
 
-}
-}
+} //namespace tests
+} //namespace qtprotobuf

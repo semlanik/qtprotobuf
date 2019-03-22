@@ -25,37 +25,27 @@
 
 #pragma once
 
-#include "servicegeneratorbase.h"
-#include <string>
-#include <memory>
-#include <google/protobuf/io/printer.h>
-
-namespace google { namespace protobuf {
-class ServiceDescriptor;
-class Message;
-}}
+#include "classsourcegeneratorbase.h"
 
 namespace qtprotobuf {
 namespace generator {
 
-class ServerGenerator : public ServiceGeneratorBase
+class ProtobufSourceGenerator : public ClassSourceGeneratorBase
 {
-    const google::protobuf::ServiceDescriptor *mService;
+    const google::protobuf::Descriptor* mMessage;
 public:
-    ServerGenerator(const google::protobuf::ServiceDescriptor *service, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
-    virtual ~ServerGenerator() = default;
+    ProtobufSourceGenerator(const google::protobuf::Descriptor *message, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
+    void printRegisterBody();
+    void printFieldsOrdering();
 
-    void run() {
-        printPreamble();
-        printIncludes();
+    void run() override {
+        printClassHeaderInclude();
         printNamespaces();
-        printClassName();
-        printPublic();
-        printMethodsDeclaration(Templates::ServerMethodDeclarationTemplate);
-        encloseClass();
+        printFieldsOrdering();
+        printRegisterBody();
         encloseNamespaces();
     }
 };
 
-} //namespace generator
 } //namespace qtprotobuf
+} //namespace generator

@@ -38,12 +38,12 @@ class Message;
 namespace qtprotobuf {
 namespace generator {
 
-class ServerGenerator : public ServiceGeneratorBase
+class ClientGenerator : public ServiceGeneratorBase
 {
-    const google::protobuf::ServiceDescriptor *mService;
 public:
-    ServerGenerator(const google::protobuf::ServiceDescriptor *service, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
-    virtual ~ServerGenerator() = default;
+    ClientGenerator(const ::google::protobuf::ServiceDescriptor* service,
+                    std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
+    ~ClientGenerator() = default;
 
     void run() {
         printPreamble();
@@ -51,11 +51,12 @@ public:
         printNamespaces();
         printClassName();
         printPublic();
-        printMethodsDeclaration(Templates::ServerMethodDeclarationTemplate);
+        printMethodsDeclaration(Templates::ClientMethodDeclarationSyncTemplate, Templates::ClientMethodDeclarationAsyncTemplate);
         encloseClass();
         encloseNamespaces();
     }
 };
+
 
 } //namespace generator
 } //namespace qtprotobuf

@@ -45,7 +45,8 @@ file(GLOB SOURCES main.cpp
     simpletest.cpp
     serializationtest.cpp
     deserializationtest.cpp
-    servertest.cpp)
+    servertest.cpp
+    clienttest.cpp)
 
 file(GLOB PROTOS proto/*.proto)
 

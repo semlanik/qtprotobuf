@@ -37,6 +37,10 @@ add_executable(${PROJECT_NAME}
     src/generator/globalenumsgenerator.cpp
     src/generator/servicegeneratorbase.cpp
     src/generator/templates.cpp
+    src/generator/clientgenerator.cpp
+    src/generator/classsourcegeneratorbase.cpp
+    src/generator/protobufsourcegenerator.cpp
+    src/generator/clientsourcegenerator.cpp
 )
 
 if(WIN32)

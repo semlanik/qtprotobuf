@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -25,37 +25,16 @@
 
 #pragma once
 
-#include "servicegeneratorbase.h"
-#include <string>
-#include <memory>
-#include <google/protobuf/io/printer.h>
-
-namespace google { namespace protobuf {
-class ServiceDescriptor;
-class Message;
-}}
+#include <gtest/gtest.h>
 
 namespace qtprotobuf {
-namespace generator {
+namespace tests {
 
-class ServerGenerator : public ServiceGeneratorBase
+class ClientTest : public ::testing::Test
 {
-    const google::protobuf::ServiceDescriptor *mService;
 public:
-    ServerGenerator(const google::protobuf::ServiceDescriptor *service, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
-    virtual ~ServerGenerator() = default;
-
-    void run() {
-        printPreamble();
-        printIncludes();
-        printNamespaces();
-        printClassName();
-        printPublic();
-        printMethodsDeclaration(Templates::ServerMethodDeclarationTemplate);
-        encloseClass();
-        encloseNamespaces();
-    }
+    ClientTest();
 };
 
-} //namespace generator
+} //namespace tests
 } //namespace qtprotobuf

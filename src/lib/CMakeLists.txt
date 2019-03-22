@@ -16,13 +16,15 @@ file(GLOB SOURCES universallistmodelbase.cpp
     universallistmodel.cpp
     protobufobject.cpp
     qtprotobuf.cpp
-    qtprotobuflogging.cpp)
+    qtprotobuflogging.cpp
+    asyncreply.cpp)
 
 file(GLOB HEADERS universallistmodelbase.h
     universallistmodel.h
     protobufobject.h
     qtprotobuftypes.h
-    qtprotobuf.h)
+    qtprotobuf.h
+    asyncreply.h)
 
 add_library(${SUPPORT_LIBRARY_TARGET} ${SOURCES})
 set_target_properties(${SUPPORT_LIBRARY_TARGET} PROPERTIES PUBLIC_HEADER "${HEADERS}")

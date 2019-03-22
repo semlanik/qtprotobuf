@@ -23,39 +23,25 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include "clientgenerator.h"
 
-#include "servicegeneratorbase.h"
-#include <string>
-#include <memory>
+#include <google/protobuf/stubs/logging.h>
+#include <google/protobuf/stubs/common.h>
 #include <google/protobuf/io/printer.h>
+#include <google/protobuf/io/zero_copy_stream.h>
+#include <google/protobuf/descriptor.h>
 
-namespace google { namespace protobuf {
-class ServiceDescriptor;
-class Message;
-}}
+#include <unordered_set>
 
-namespace qtprotobuf {
-namespace generator {
+#include "utils.h"
+#include "templates.h"
 
-class ServerGenerator : public ServiceGeneratorBase
+using namespace ::qtprotobuf::generator;
+using namespace ::google::protobuf;
+using namespace ::google::protobuf::compiler;
+
+ClientGenerator::ClientGenerator(const ServiceDescriptor *service, std::unique_ptr<io::ZeroCopyOutputStream> out) :
+    ServiceGeneratorBase(service, std::move(out))
 {
-    const google::protobuf::ServiceDescriptor *mService;
-public:
-    ServerGenerator(const google::protobuf::ServiceDescriptor *service, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
-    virtual ~ServerGenerator() = default;
-
-    void run() {
-        printPreamble();
-        printIncludes();
-        printNamespaces();
-        printClassName();
-        printPublic();
-        printMethodsDeclaration(Templates::ServerMethodDeclarationTemplate);
-        encloseClass();
-        encloseNamespaces();
-    }
-};
-
-} //namespace generator
-} //namespace qtprotobuf
+    mClassName += "Client";
+}

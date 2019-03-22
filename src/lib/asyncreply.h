@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -25,37 +25,44 @@
 
 #pragma once
 
-#include "servicegeneratorbase.h"
-#include <string>
-#include <memory>
-#include <google/protobuf/io/printer.h>
-
-namespace google { namespace protobuf {
-class ServiceDescriptor;
-class Message;
-}}
+#include <functional>
 
 namespace qtprotobuf {
-namespace generator {
 
-class ServerGenerator : public ServiceGeneratorBase
+template <typename M>
+class AsyncReply final
 {
-    const google::protobuf::ServiceDescriptor *mService;
+    AsyncReply();
 public:
-    ServerGenerator(const google::protobuf::ServiceDescriptor *service, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
-    virtual ~ServerGenerator() = default;
-
-    void run() {
-        printPreamble();
-        printIncludes();
-        printNamespaces();
-        printClassName();
-        printPublic();
-        printMethodsDeclaration(Templates::ServerMethodDeclarationTemplate);
-        encloseClass();
-        encloseNamespaces();
+    AsyncReply(const std::function<void(const M&)> &callback) : m_callback(callback) {}
+    AsyncReply(AsyncReply &&other) {
+        m_callback = std::move(other.m_callback);
     }
+
+    AsyncReply(const AsyncReply &other) {
+        m_callback = other.m_callback;
+    }
+
+    AsyncReply& operator=(AsyncReply &&other) {
+        m_callback = std::move(other.m_callback);
+        return *this;
+    }
+
+    AsyncReply& operator=(const AsyncReply &other) {
+        m_callback = other.m_callback;
+        return *this;
+    }
+
+    ~AsyncReply() {}
+
+    void operator()(const M& value) {
+        if (m_callback) {
+            m_callback(value);
+        }
+    }
+
+private:
+    std::function<void(const M&)> m_callback;
 };
 
-} //namespace generator
-} //namespace qtprotobuf
+}

@@ -23,58 +23,26 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "servicegeneratorbase.h"
+#include "clientsourcegenerator.h"
 
-#include <google/protobuf/stubs/logging.h>
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/io/printer.h>
 #include <google/protobuf/io/zero_copy_stream.h>
-#include <google/protobuf/descriptor.h>
-
-#include <unordered_set>
 
 #include "utils.h"
 #include "templates.h"
 
-using namespace ::qtprotobuf::generator;
+using namespace qtprotobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
-using namespace qtprotobuf::generator;
 
-ServiceGeneratorBase::ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor* service,
-                                           std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out) :
-    ClassGeneratorBase(service->full_name(), std::move(out))
+ClientSourceGenerator::ClientSourceGenerator(const google::protobuf::ServiceDescriptor *service,
+                                             std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out) :
+    ClassSourceGeneratorBase(service->full_name(), std::move(out))
   , mService(service)
 {
+    mClassName += "Client";
 }
 
-void ServiceGeneratorBase::printIncludes()
-{
-    std::unordered_set<std::string> includeSet;
-
-    includeSet.insert("asyncreply");
-
-    for(int i = 0; i < mService->method_count(); i++) {
-        const MethodDescriptor* method = mService->method(i);
-        std::string inputTypeName = method->input_type()->name();
-        std::string outputTypeName = method->output_type()->name();
-        utils::tolower(inputTypeName);
-        utils::tolower(outputTypeName);
-        includeSet.insert(inputTypeName);
-        includeSet.insert(outputTypeName);
-    }
-
-    for(auto type : includeSet) {
-        mPrinter.Print({{"type_lower", type}}, Templates::InternalIncludeTemplate);
-    }
-}
-
-void ServiceGeneratorBase::printClassName()
-{
-    mPrinter.Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
-}
-
-void ServiceGeneratorBase::printMethodsDeclaration(const char* methodTemplate, const char* methodAsyncTemplate)
+void ClientSourceGenerator::printMethods()
 {
     Indent();
     for(int i = 0; i < mService->method_count(); i++) {
@@ -83,14 +51,16 @@ void ServiceGeneratorBase::printMethodsDeclaration(const char* methodTemplate, c
         std::string outputTypeName = method->output_type()->full_name();
         utils::replace(inputTypeName, ".", "::");
         utils::replace(outputTypeName, ".", "::");
-        std::map<std::string, std::string> parameters = {{"return_type", outputTypeName},
+        std::map<std::string, std::string> parameters = {{"classname", mClassName},
+                                                         {"return_type", outputTypeName},
                                                          {"method_name", method->name()},
                                                          {"param_type", inputTypeName},
                                                          {"param_name", ""},
                                                          {"return_name", ""}
                                                         };
-        mPrinter.Print(parameters, methodTemplate);
-        mPrinter.Print(parameters, methodAsyncTemplate);
+        mPrinter.Print(parameters, Templates::ClientMethodDefinitionSyncTemplate);
+        mPrinter.Print(parameters, Templates::ClientMethodDefinitionAsyncTemplate);
     }
     Outdent();
 }
+

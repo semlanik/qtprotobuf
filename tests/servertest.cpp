@@ -32,11 +32,15 @@ using namespace qtprotobuf::tests;
 
 using namespace qtprotobuf;
 
+class TestServiceServerImpl : public TestServiceServer {
+    SimpleIntMessage testMethod(const SimpleIntMessage &) override { return SimpleIntMessage(); }
+};
+
 ServerTest::ServerTest()
 {
 }
 
 TEST_F(ServerTest, CheckMethodsGeneration)
 {
-    TestServiceServer testServer;
+    TestServiceServerImpl testServer;
 }

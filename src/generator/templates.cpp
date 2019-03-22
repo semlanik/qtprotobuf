@@ -129,6 +129,20 @@ const char *Templates::DeclareComplexListTypeTemplate = "Q_DECLARE_METATYPE($nam
 
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 
+const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$);\n";
+const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const qtprotobuf::AsyncReply<$return_type$> &reply);\n";
+const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
+
+
+const char *Templates::ClientMethodDefinitionAsyncTemplate = "void $classname$::$method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$)\n"
+                                                        "{\n"
+                                                        "    //TODO: call transport method to serialize this method\n"
+                                                        "}\n";
+const char *Templates::ClientMethodDefinitionSyncTemplate = "void $classname$::$method_name$(const $param_type$ &$param_name$, const qtprotobuf::AsyncReply<$return_type$> &reply)\n"
+                                                        "{\n"
+                                                        "    //TODO: call transport method to serialize this method\n"
+                                                        "}\n";
+
 const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> Templates::TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "double"},
     {::google::protobuf::FieldDescriptor::TYPE_FLOAT, "float"},

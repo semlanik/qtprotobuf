@@ -1500,3 +1500,12 @@ TEST_F(SerializationTest, BoolMessageSerializeTest)
     ASSERT_EQ(0, result.size());
     ASSERT_TRUE(result == QByteArray::fromHex(""));
 }
+
+//TEST_F(SerializationTest, DISABLE_BenchmarkTest)
+//{
+//    SimpleIntMessage msg;
+//    for(int i = INT16_MIN; i < INT16_MAX; i++) {
+//        msg.setTestFieldInt(i);
+//        msg.serialize();
+//    }
+//}
