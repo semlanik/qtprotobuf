@@ -10,6 +10,7 @@ if (NOT Protobuf_FOUND OR Protobuf_VERSION VERSION_LESS "3.0.0")
                      GIT_TAG             3.7.x
     )
     set(protobuf_BUILD_TESTS OFF CACHE BOOL "Disable protobuf tests build" FORCE)
+    set(Protobuf_PROTOC_EXECUTABLE protoc)
     add_subdirectory("${Protobuf_SOURCE_DIR}/cmake" ${Protobuf_BINARY_DIR})
 endif()
 
@@ -78,15 +79,15 @@ if(MAKE_TESTS)
             COMMENT "Generating test headers"
             )
     elseif(UNIX)
-        add_custom_command(TARGET ${testgeneration} POST_BUILD
+        add_custom_command(TARGET ${testgeneration}
             COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
             ${PROTO_FILES}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
+            DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
             COMMENT "Generating test headers"
             )
     endif()
 
-    add_dependencies(${testgeneration} ${PROJECT_NAME})
     add_subdirectory("tests")
 endif()
 
