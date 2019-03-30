@@ -27,6 +27,7 @@
 
 #include <google/protobuf/io/printer.h>
 #include <memory>
+#include <unordered_set>
 #include "classgeneratorbase.h"
 
 namespace qtprotobuf {
@@ -41,6 +42,8 @@ public:
 
 protected:
     void printClassHeaderInclude();
+    void printUsingNamespaces(const std::unordered_set<std::string> &namespaces);
+
 };
 
 } //namespace qtprotobuf

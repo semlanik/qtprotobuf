@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,35 +23,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "classsourcegeneratorbase.h"
+#include "abstractchannel.h"
 
-#include <google/protobuf/io/zero_copy_stream.h>
+using namespace qtprotobuf;
 
-#include "templates.h"
-#include "utils.h"
-
-using namespace qtprotobuf::generator;
-using namespace ::google::protobuf;
-using namespace ::google::protobuf::io;
-using namespace ::google::protobuf::compiler;
-
-ClassSourceGeneratorBase::ClassSourceGeneratorBase(std::string fullClassName,
-                                                   std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out) :
-    ClassGeneratorBase(fullClassName, std::move(out))
+AbstractChannel::AbstractChannel()
 {
 
-}
-
-void ClassSourceGeneratorBase::printClassHeaderInclude()
-{
-    std::string includeFileName = mClassName;
-    utils::tolower(includeFileName);
-    mPrinter.Print({{"type_lower", includeFileName}}, Templates::InternalIncludeTemplate);
-}
-
-void ClassSourceGeneratorBase::printUsingNamespaces(const std::unordered_set<std::string> &namespaces)
-{
-    for(auto ns : namespaces) {
-        mPrinter.Print({{"namespace", ns}}, Templates::UsingNamespaceTemplate);
-    }
 }

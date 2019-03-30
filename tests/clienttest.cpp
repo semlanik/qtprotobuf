@@ -24,8 +24,10 @@
  */
 
 #include "clienttest.h"
+#include <QCoreApplication>
 
 #include "testserviceclient.h"
+#include "http2channel.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf::tests;
@@ -39,5 +41,12 @@ ClientTest::ClientTest()
 
 TEST_F(ClientTest, CheckMethodsGeneration)
 {
+    int argc = 0;
+    QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("Hello beach!");
+    testClient.testMethod(request, result);
 }

@@ -45,3 +45,27 @@ ClientGenerator::ClientGenerator(const ServiceDescriptor *service, std::unique_p
 {
     mClassName += "Client";
 }
+
+void ClientGenerator::printClientClass()
+{
+    mPrinter.Print({{"classname", mClassName}, {"parent_class", "qtprotobuf::AbstractClient"}}, Templates::ClassDefinitionTemplate);
+}
+
+void ClientGenerator::printConstructor()
+{
+    Indent();
+    mPrinter.Print({{"classname", mClassName}}, Templates::ConstructorTemplate);
+    Outdent();
+}
+
+void ClientGenerator::printClientIncludes()
+{
+    printIncludes();
+
+    std::unordered_set<std::string> includeSet;
+    includeSet.insert("abstractclient");
+    includeSet.insert("asyncreply");
+    for(auto type : includeSet) {
+        mPrinter.Print({{"type_lower", type}}, Templates::InternalIncludeTemplate);
+    }
+}

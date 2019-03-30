@@ -300,7 +300,7 @@ bool ProtobufClassGenerator::isComplexType(const FieldDescriptor *field)
 
 void ProtobufClassGenerator::printConstructor()
 {
-    mPrinter.Print({{"classname", mClassName}}, Templates::ConstructorTemplate);
+    mPrinter.Print({{"classname", mClassName}}, Templates::ProtoConstructorTemplate);
     mPrinter.Print(Templates::ConstructorContentTemplate);
 }
 

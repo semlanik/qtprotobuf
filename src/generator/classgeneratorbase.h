@@ -53,6 +53,7 @@ protected:
     ::google::protobuf::io::Printer mPrinter;
     std::string mClassName;
     std::vector<std::string> mNamespaces;
+    std::string mNamespacesColonDelimited;
 
     void printPreamble();
     void printNamespaces();

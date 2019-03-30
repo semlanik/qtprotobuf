@@ -47,14 +47,19 @@ public:
 
     void run() {
         printPreamble();
-        printIncludes();
+        printClientIncludes();
         printNamespaces();
-        printClassName();
+        printClientClass();
         printPublic();
+        printConstructor();
         printMethodsDeclaration(Templates::ClientMethodDeclarationSyncTemplate, Templates::ClientMethodDeclarationAsyncTemplate);
         encloseClass();
         encloseNamespaces();
     }
+private:
+    void printClientClass();
+    void printConstructor();
+    void printClientIncludes();
 };
 
 

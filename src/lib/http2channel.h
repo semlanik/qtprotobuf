@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,35 +23,28 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "classsourcegeneratorbase.h"
+#pragma once
 
-#include <google/protobuf/io/zero_copy_stream.h>
+#include "abstractchannel.h"
 
-#include "templates.h"
-#include "utils.h"
+#include <QString>
+#include <QByteArray>
 
-using namespace qtprotobuf::generator;
-using namespace ::google::protobuf;
-using namespace ::google::protobuf::io;
-using namespace ::google::protobuf::compiler;
+namespace qtprotobuf {
 
-ClassSourceGeneratorBase::ClassSourceGeneratorBase(std::string fullClassName,
-                                                   std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out) :
-    ClassGeneratorBase(fullClassName, std::move(out))
+class Http2ChannelPrivate;
+
+class Http2Channel final : public AbstractChannel
 {
+public:
+    Http2Channel(const QString &addr, quint16 port);
+    ~Http2Channel();
 
-}
+    StatusCodes call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
 
-void ClassSourceGeneratorBase::printClassHeaderInclude()
-{
-    std::string includeFileName = mClassName;
-    utils::tolower(includeFileName);
-    mPrinter.Print({{"type_lower", includeFileName}}, Templates::InternalIncludeTemplate);
-}
+private:
+    Q_DISABLE_COPY(Http2Channel)
+    Http2ChannelPrivate *d;
+};
 
-void ClassSourceGeneratorBase::printUsingNamespaces(const std::unordered_set<std::string> &namespaces)
-{
-    for(auto ns : namespaces) {
-        mPrinter.Print({{"namespace", ns}}, Templates::UsingNamespaceTemplate);
-    }
 }

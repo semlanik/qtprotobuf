@@ -47,7 +47,9 @@ public:
     static const char *ComplexListTypeUsingTemplate;
     static const char *EnumTypeUsingTemplate;
     static const char *NamespaceTemplate;
+    static const char *UsingNamespaceTemplate;
     static const char *NonProtoClassDefinitionTemplate;
+    static const char *ProtoClassDefinitionTemplate;
     static const char *ClassDefinitionTemplate;
     static const char *PropertyTemplate;
     static const char *MessagePropertyTemplate;
@@ -57,6 +59,7 @@ public:
     static const char *PrivateBlockTemplate;
     static const char *EnumDefinitionTemplate;
     static const char *EnumFieldTemplate;
+    static const char *ProtoConstructorTemplate;
     static const char *ConstructorTemplate;
     static const char *CopyConstructorTemplate;
     static const char *MoveConstructorTemplate;
@@ -88,6 +91,8 @@ public:
     static const char *QEnumTemplate;
 
     //Service templates
+    static const char *ConstructorDefinitionSyncTemplate;
+
     static const char *ClientMethodDeclarationSyncTemplate;
     static const char *ClientMethodDeclarationAsyncTemplate;
     static const char *ServerMethodDeclarationTemplate;

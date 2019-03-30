@@ -43,14 +43,7 @@ ProtobufSourceGenerator::ProtobufSourceGenerator(const google::protobuf::Descrip
 
 void ProtobufSourceGenerator::printRegisterBody()
 {
-    std::string namespaces;
-    for(size_t i = 0; i < mNamespaces.size(); i++) {
-        if(i > 0) {
-            namespaces = namespaces.append("::");
-        }
-        namespaces = namespaces.append(mNamespaces[i]);
-    }
-    mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}}, Templates::ComplexTypeRegistrationTemplate);
+    mPrinter.Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}}, Templates::ComplexTypeRegistrationTemplate);
 }
 
 void ProtobufSourceGenerator::printFieldsOrdering() {

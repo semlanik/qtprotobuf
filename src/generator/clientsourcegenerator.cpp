@@ -44,7 +44,6 @@ ClientSourceGenerator::ClientSourceGenerator(const google::protobuf::ServiceDesc
 
 void ClientSourceGenerator::printMethods()
 {
-    Indent();
     for(int i = 0; i < mService->method_count(); i++) {
         const MethodDescriptor* method = mService->method(i);
         std::string inputTypeName = method->input_type()->full_name();
@@ -55,12 +54,17 @@ void ClientSourceGenerator::printMethods()
                                                          {"return_type", outputTypeName},
                                                          {"method_name", method->name()},
                                                          {"param_type", inputTypeName},
-                                                         {"param_name", ""},
-                                                         {"return_name", ""}
+                                                         {"param_name", "arg"},
+                                                         {"return_name", "ret"}
                                                         };
         mPrinter.Print(parameters, Templates::ClientMethodDefinitionSyncTemplate);
         mPrinter.Print(parameters, Templates::ClientMethodDefinitionAsyncTemplate);
     }
-    Outdent();
 }
 
+void ClientSourceGenerator::printConstructor()
+{
+    mPrinter.Print({ {"classname", mClassName},
+                     {"parent_class", "AbstractClient"},
+                     {"service_name", mService->name()} }, Templates::ConstructorDefinitionSyncTemplate);
+}

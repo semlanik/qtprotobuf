@@ -45,6 +45,12 @@ ClassGeneratorBase::ClassGeneratorBase(std::string fullClassName, std::unique_pt
     assert(mNamespaces.size() > 0);
     mClassName = mNamespaces.back();
     mNamespaces.erase(mNamespaces.end() - 1);
+    for (size_t i = 0; i < mNamespaces.size(); i++) {
+        if (i > 0) {
+            mNamespacesColonDelimited = mNamespacesColonDelimited.append("::");
+        }
+        mNamespacesColonDelimited = mNamespacesColonDelimited.append(mNamespaces[i]);
+    }
 }
 
 void ClassGeneratorBase::printPreamble()
@@ -66,7 +72,7 @@ void ClassGeneratorBase::printNamespaces(const std::vector<std::string> &namespa
 
 void ClassGeneratorBase::printClassDeclaration()
 {
-    mPrinter.Print({{"classname", mClassName}}, Templates::ClassDefinitionTemplate);
+    mPrinter.Print({{"classname", mClassName}}, Templates::ProtoClassDefinitionTemplate);
 }
 
 void ClassGeneratorBase::encloseClass()
@@ -98,16 +104,9 @@ void ClassGeneratorBase::printPrivate()
 
 void ClassGeneratorBase::printMetaTypeDeclaration()
 {
-    std::string namespaces;
-    for(size_t i = 0; i < mNamespaces.size(); i++) {
-        if(i > 0) {
-            namespaces = namespaces.append("::");
-        }
-        namespaces = namespaces.append(mNamespaces[i]);
-    }
-    mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}},
+    mPrinter.Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
                    Templates::DeclareMetaTypeTemplate);
-    mPrinter.Print({{"classname", mClassName}, {"namespaces", namespaces}},
+    mPrinter.Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
                    Templates::DeclareComplexListTypeTemplate);
 }
 

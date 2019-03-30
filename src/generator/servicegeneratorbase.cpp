@@ -52,8 +52,6 @@ void ServiceGeneratorBase::printIncludes()
 {
     std::unordered_set<std::string> includeSet;
 
-    includeSet.insert("asyncreply");
-
     for(int i = 0; i < mService->method_count(); i++) {
         const MethodDescriptor* method = mService->method(i);
         std::string inputTypeName = method->input_type()->name();

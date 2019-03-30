@@ -37,14 +37,14 @@ public:
                           std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
     void run() override {
         printClassHeaderInclude();
-        printNamespaces();
+        printUsingNamespaces({"qtprotobuf", mNamespacesColonDelimited});
+        printConstructor();
         printMethods();
-        encloseNamespaces();
     }
 
 protected:
     void printMethods();
-
+    void printConstructor();
     const ::google::protobuf::ServiceDescriptor* mService;
 };
 

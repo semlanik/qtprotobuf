@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,35 +23,49 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "classsourcegeneratorbase.h"
+#pragma once
 
-#include <google/protobuf/io/zero_copy_stream.h>
+#include <memory>
+#include <QObject>
+#include <QByteArray>
+#include <QDebug>
 
-#include "templates.h"
-#include "utils.h"
+#include "abstractchannel.h"
 
-using namespace qtprotobuf::generator;
-using namespace ::google::protobuf;
-using namespace ::google::protobuf::io;
-using namespace ::google::protobuf::compiler;
+namespace qtprotobuf {
 
-ClassSourceGeneratorBase::ClassSourceGeneratorBase(std::string fullClassName,
-                                                   std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out) :
-    ClassGeneratorBase(fullClassName, std::move(out))
+class AbstractChannel;
+
+class AbstractClient : public QObject //TODO: QObject is not really required yet
 {
+public:
+    void attachChannel(std::shared_ptr<AbstractChannel> channel);
 
-}
+protected:
+    AbstractClient(const QString &service, QObject *parent = nullptr);
 
-void ClassSourceGeneratorBase::printClassHeaderInclude()
-{
-    std::string includeFileName = mClassName;
-    utils::tolower(includeFileName);
-    mPrinter.Print({{"type_lower", includeFileName}}, Templates::InternalIncludeTemplate);
-}
+    template<typename A, typename R>
+    AbstractChannel::StatusCodes call(const QString &method, const A &arg, R &ret) {
+        if (!m_channel) {
+            return AbstractChannel::Unknown;
+        }
 
-void ClassSourceGeneratorBase::printUsingNamespaces(const std::unordered_set<std::string> &namespaces)
-{
-    for(auto ns : namespaces) {
-        mPrinter.Print({{"namespace", ns}}, Templates::UsingNamespaceTemplate);
+        QByteArray retData;
+        AbstractChannel::StatusCodes status = m_channel->call(method, m_service, QByteArray(), retData);
+        qCritical() << "Answer: " << retData << status;
+        if (status != AbstractChannel::Ok) {
+            return status;
+        }
+        qCritical() << "Answer: " << retData;
+        ret.deserialize(retData.mid(0, 5));
+        return status;
     }
+
+private:
+    Q_DISABLE_COPY(AbstractClient)
+
+    std::shared_ptr<AbstractChannel> m_channel;
+    QString m_service;
+};
+
 }
