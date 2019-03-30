@@ -76,6 +76,7 @@ if(MAKE_TESTS)
             COMMAND ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf.exe --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
             ${PROTO_FILES}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
+            DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
             COMMENT "Generating test headers"
             )
     elseif(UNIX)
@@ -88,6 +89,7 @@ if(MAKE_TESTS)
             )
     endif()
 
+    add_dependencies(${testgeneration} ${PROJECT_NAME})
     add_subdirectory("tests")
 endif()
 
