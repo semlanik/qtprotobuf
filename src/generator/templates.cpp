@@ -132,21 +132,22 @@ const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
-const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$);\n";
-const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const qtprotobuf::AsyncReply<$return_type$> &reply);\n";
+const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$);\n";
+const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, const qtprotobuf::AsyncReply<$return_type$> &reply);\n";
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
 
 const char *Templates::ConstructorDefinitionSyncTemplate = "$classname$::$classname$() : $parent_class$(\"$service_name$\")\n"
                                                            "{\n"
                                                            "}\n";
-const char *Templates::ClientMethodDefinitionSyncTemplate = "void $classname$::$method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$)\n"
+const char *Templates::ClientMethodDefinitionSyncTemplate = "bool $classname$::$method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$)\n"
                                                             "{\n"
-                                                            "    call(\"$method_name$\", $param_name$, $return_name$);\n"
+                                                            "    return call(\"$method_name$\", $param_name$, $return_name$);\n"
                                                             "}\n";
-const char *Templates::ClientMethodDefinitionAsyncTemplate = "void $classname$::$method_name$(const $param_type$ &$param_name$, const qtprotobuf::AsyncReply<$return_type$> &reply)\n"
+const char *Templates::ClientMethodDefinitionAsyncTemplate = "bool $classname$::$method_name$(const $param_type$ &$param_name$, const qtprotobuf::AsyncReply<$return_type$> &reply)\n"
                                                              "{\n"
                                                              "    //TODO: call transport method to serialize this method\n"
+                                                             "    return false;"
                                                              "}\n";
 
 const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> Templates::TypeReflection = {

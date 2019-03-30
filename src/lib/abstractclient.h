@@ -35,6 +35,7 @@
 namespace qtprotobuf {
 
 class AbstractChannel;
+class AbstractClientPrivate;
 
 class AbstractClient : public QObject //TODO: QObject is not really required yet
 {
@@ -45,25 +46,21 @@ protected:
     AbstractClient(const QString &service, QObject *parent = nullptr);
 
     template<typename A, typename R>
-    AbstractChannel::StatusCodes call(const QString &method, const A &arg, R &ret) {
-        if (!m_channel) {
-            return AbstractChannel::Unknown;
-        }
-
+    bool call(const QString &method, const A &arg, R &ret) {
         QByteArray retData;
-        AbstractChannel::StatusCodes status = m_channel->call(method, m_service, arg.serialize(), retData);
-        if (status != AbstractChannel::Ok) {
-            return status;
+        if (call(method, arg.serialize(), retData)) {
+            ret.deserialize(retData.mid(5));
+            return true;
         }
-        ret.deserialize(retData.mid(5));
-        return status;
+        return false;
     }
 
 private:
+    bool call(const QString &method, const QByteArray& arg, QByteArray& ret);
+
     Q_DISABLE_COPY(AbstractClient)
 
-    std::shared_ptr<AbstractChannel> m_channel;
-    QString m_service;
+    AbstractClientPrivate *d;
 };
 
 }

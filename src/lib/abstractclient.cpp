@@ -25,15 +25,36 @@
 
 #include "abstractclient.h"
 
+namespace qtprotobuf {
+struct AbstractClientPrivate final {
+    AbstractClientPrivate(const QString &service) : service(service) {}
+
+    std::shared_ptr<AbstractChannel> channel;
+    const QString service;
+    AbstractChannel::StatusCodes lastError;
+};
+}
+
 using namespace qtprotobuf;
 
 AbstractClient::AbstractClient(const QString &service, QObject *parent) : QObject(parent)
-  , m_service(service)
+  , d(new AbstractClientPrivate(service))
 {
 
 }
 
 void AbstractClient::attachChannel(std::shared_ptr<AbstractChannel> channel)
 {
-    m_channel = channel;
+    d->channel = channel;
+}
+
+bool AbstractClient::call(const QString &method, const QByteArray& arg, QByteArray& ret)
+{
+    if (!d->channel) {
+        d->lastError = AbstractChannel::Unknown;
+        return false;
+    }
+
+    d->lastError = d->channel->call(method, d->service, arg, ret);
+    return d->lastError != AbstractChannel::Ok;
 }

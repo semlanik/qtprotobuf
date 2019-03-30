@@ -58,6 +58,6 @@ TEST_F(ClientTest, StringEchoTest)
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
-    testClient.testMethod(request, result);
-    ASSERT_TRUE(result.testFieldString() == "Hello beach!");
+    ASSERT_TRUE(testClient.testMethod(request, result));
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Hello beach!");
 }
