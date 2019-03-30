@@ -66,5 +66,5 @@ void ClientSourceGenerator::printConstructor()
 {
     mPrinter.Print({ {"classname", mClassName},
                      {"parent_class", "AbstractClient"},
-                     {"service_name", mService->name()} }, Templates::ConstructorDefinitionSyncTemplate);
+                     {"service_name", mService->full_name()} }, Templates::ConstructorDefinitionSyncTemplate);
 }

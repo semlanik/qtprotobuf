@@ -41,6 +41,16 @@ ClientTest::ClientTest()
 
 TEST_F(ClientTest, CheckMethodsGeneration)
 {
+    //Dummy compile time check of functions generation
+    TestServiceClient testClient;
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    testClient.testMethod(result, request);
+    testClient.testMethod(result, std::function<void(const SimpleStringMessage&)>([](const SimpleStringMessage&){}));
+}
+
+TEST_F(ClientTest, StringEchoTest)
+{
     int argc = 0;
     QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
@@ -49,4 +59,5 @@ TEST_F(ClientTest, CheckMethodsGeneration)
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
     testClient.testMethod(request, result);
+    ASSERT_TRUE(result.testFieldString() == "Hello beach!");
 }

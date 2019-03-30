@@ -34,8 +34,11 @@
 #include <QNetworkRequest>
 #include <QEventLoop>
 #include <QTimer>
+#include <QtEndian>
 
 #include <unordered_map>
+
+#include "qtprotobuflogging.h"
 
 using namespace qtprotobuf;
 
@@ -93,7 +96,6 @@ Http2Channel::Http2Channel(const QString &addr, quint16 port) : AbstractChannel(
   , d(new Http2ChannelPrivate)
 {
     d->url.setScheme("http");
-    qCritical() << "Authority: " << (addr + ":" + QString::number(port));
     d->url.setHost(addr, QUrl::StrictMode);
     d->url.setPort(port);
 }
@@ -108,16 +110,20 @@ AbstractChannel::StatusCodes Http2Channel::call(const QString &method, const QSt
     QUrl callUrl = d->url;
     callUrl.setPath("/" + service + "/" + method);
 
-    qCritical() << "url: " << callUrl;
+    qProtoDebug() << "Service call url: " << callUrl;
     QNetworkRequest request(callUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/grpc");
-    request.setRawHeader(GrpcAcceptEncodingHeader, "deflate, gzip");
-    request.setRawHeader(AcceptEncodingHeader, "deflate, gzip");
+    request.setRawHeader(GrpcAcceptEncodingHeader, "identity,deflate,gzip");
+    request.setRawHeader(AcceptEncodingHeader, "identity,gzip");
     request.setRawHeader(TEHeader, "trailers");
 
     request.setAttribute(QNetworkRequest::Http2DirectAttribute, true);
 
-    QNetworkReply *reply = d->nm.post(request, QByteArray(5, '\0') + args);
+    QByteArray msg(5, '\0');
+    *(unsigned int*)(msg.data() + 1) = qToBigEndian(args.size());
+    msg += args;
+    qProtoDebug() << "SEND: " << msg.toHex();
+    QNetworkReply *reply = d->nm.post(request, msg);
     QEventLoop loop;
     QTimer timer;
     loop.connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
@@ -151,5 +157,6 @@ AbstractChannel::StatusCodes Http2Channel::call(const QString &method, const QSt
     }
 
     ret = reply->readAll();
+    qProtoDebug() << "RECV: " << ret.toHex();
     return StatusCodes::Ok;
 }

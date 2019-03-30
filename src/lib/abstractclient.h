@@ -51,13 +51,11 @@ protected:
         }
 
         QByteArray retData;
-        AbstractChannel::StatusCodes status = m_channel->call(method, m_service, QByteArray(), retData);
-        qCritical() << "Answer: " << retData << status;
+        AbstractChannel::StatusCodes status = m_channel->call(method, m_service, arg.serialize(), retData);
         if (status != AbstractChannel::Ok) {
             return status;
         }
-        qCritical() << "Answer: " << retData;
-        ret.deserialize(retData.mid(0, 5));
+        ret.deserialize(retData.mid(5));
         return status;
     }
 
