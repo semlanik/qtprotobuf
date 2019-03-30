@@ -68,18 +68,17 @@ if(MAKE_TESTS)
     file(MAKE_DIRECTORY ${TESTS_OUT_DIR})
     add_custom_target(${testgeneration})
 
-    file(GLOB PROTO_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/*.proto)
-
     if(WIN32)
-        include_directories("src/lib")
+        file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/*.proto)
         add_custom_command(TARGET ${testgeneration} POST_BUILD
-            COMMAND ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf.exe --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
+            COMMAND ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf.exe --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests -I=${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             ${PROTO_FILES}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
             COMMENT "Generating test headers"
             )
     elseif(UNIX)
+        file(GLOB PROTO_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/*.proto)
         add_custom_command(TARGET ${testgeneration}
             COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
             ${PROTO_FILES}
