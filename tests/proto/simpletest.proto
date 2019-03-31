@@ -19,6 +19,11 @@ message SimpleFileEnumMessage {
   repeated TestEnum globalEnumList = 2;
 }
 
+//message StepChildEnumMessage {
+//  SimpleEnumMessage.LocalEnum localStepChildEnum = 1;
+//  repeated SimpleEnumMessage.LocalEnum localStepChildList = 2;
+//}
+
 message SimpleBoolMessage {
     bool testFieldBool = 1;
 }

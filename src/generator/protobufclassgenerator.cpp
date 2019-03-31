@@ -150,7 +150,7 @@ void ProtobufClassGenerator::printComparisonOperators()
     mPrinter.Print({{"type", mClassName}}, Templates::NotEqualOperatorTemplate);
 }
 
-void ProtobufClassGenerator::printIncludes(std::set<std::string> listModel)
+void ProtobufClassGenerator::printIncludes()
 {
     assert(mMessage != nullptr);
 
@@ -163,42 +163,43 @@ void ProtobufClassGenerator::printIncludes(std::set<std::string> listModel)
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
         if (producePropertyMap(field, properties)) {
-            if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
+            switch (field->type()) {
+            case FieldDescriptor::TYPE_MESSAGE:
+                if (field->is_repeated()) {
+                    //Repeated field includes are similar to non-repeated
+                    properties["type_lower"] = properties["type_nonlist_lower"];
+                }
                 newInclude = properties["type_lower"];
                 includeTemplate = Templates::InternalIncludeTemplate;
-            } else if (field->type() == FieldDescriptor::TYPE_STRING) {
+                break;
+            case FieldDescriptor::TYPE_BYTES:
+            case FieldDescriptor::TYPE_STRING:
                 includeTemplate = Templates::ExternalIncludeTemplate;
-            } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
-                includeTemplate = Templates::GlobalEnumIncludeTemplate;
-            } else {
+                break;
+            case FieldDescriptor::TYPE_ENUM: {
+                EnumVisibility enumVisibily = getEnumVisibility(field);
+                if (enumVisibily == GLOBAL_ENUM) {
+                    includeTemplate = Templates::GlobalEnumIncludeTemplate;
+                } else {
+                    includeTemplate = Templates::InternalIncludeTemplate;
+                    std::string fullEnumName = field->enum_type()->full_name();
+                    std::vector<std::string> fullEnumNameParts;
+                    utils::split(fullEnumName, fullEnumNameParts, '.');
+                    std::string enumTypeOwner = fullEnumNameParts.at(fullEnumNameParts.size() - 2);
+                    utils::tolower(enumTypeOwner);
+                    properties["type_lower"] = enumTypeOwner;
+                }
+            }
+                break;
+            default:
                 continue;
             }
 
-            if (!field->is_repeated()) {
-                if (existingIncludes.find(newInclude) == std::end(existingIncludes)) {
-                    mPrinter.Print(properties, includeTemplate);
-                    existingIncludes.insert(newInclude);
-                }
-            } else {
-                std::string stringInclude = properties["type"];
-                if (stringInclude == VariantList
-                        && existingIncludes.find(stringInclude) == std::end(existingIncludes)) {
-                    mPrinter.Print(properties, Templates::ExternalIncludeTemplate);
-                    existingIncludes.insert(stringInclude);
-                }
+            if (existingIncludes.find(newInclude) == std::end(existingIncludes)) {
+                mPrinter.Print(properties, includeTemplate);
+                existingIncludes.insert(newInclude);
             }
         }
-    }
-
-    // Print List model class name
-    if (listModel.size() > 0) {
-        mPrinter.Print(Templates::ListModelsIncludeTemplate);
-    }
-
-    for(auto modelTypeName : listModel) {
-        std::string modelTypeNameLower(modelTypeName);
-        utils::tolower(modelTypeNameLower);
-        mPrinter.Print({{"type_lower", modelTypeNameLower}}, Templates::InternalIncludeTemplate);
     }
 }
 
@@ -223,7 +224,7 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
         }
     } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
         typeName = field->enum_type()->name();
-        if (!isLocalMessageEnum(field)) {
+        if (getEnumVisibility(field) == GLOBAL_ENUM) {
             std::string globEnum(Templates::EnumClassNameTemplate);
             typeName = globEnum.append("::").append(typeName);
         }
@@ -276,8 +277,18 @@ bool ProtobufClassGenerator::producePropertyMap(const FieldDescriptor *field, Pr
     std::string capProperty = field->camelcase_name();
     capProperty[0] = ::toupper(capProperty[0]);
 
+    std::string typeNameNonList = typeName;
+    if (field->is_repeated()) {
+        auto pos = typeNameNonList.rfind("List");
+        typeNameNonList = typeNameNonList.erase(pos, 4);
+    }
+    std::string typeNameNonListLower(typeNameNonList);
+    utils::tolower(typeNameNonListLower);
+
     propertyMap = {{"type", typeName},
+                   {"type_nonlist", typeNameNonList},
                    {"type_lower", typeNameLower},
+                   {"type_nonlist_lower", typeNameNonListLower},
                    {"property_name", field->camelcase_name()},
                    {"property_name_cap", capProperty}};
     return true;
@@ -373,18 +384,32 @@ void ProtobufClassGenerator::printFieldsOrderingDefinition()
     Outdent();
 }
 
+ProtobufClassGenerator::EnumVisibility ProtobufClassGenerator::getEnumVisibility(const FieldDescriptor *field)
+{
+    assert(field->enum_type() != nullptr);
+
+    if (isLocalMessageEnum(field)) {
+        return LOCAL_ENUM;
+    }
+
+    const EnumDescriptor *enumType = field->enum_type();
+    const FileDescriptor *enumFile = field->enum_type()->file();
+
+    for (int i = 0; i < enumFile->enum_type_count(); i++) {
+        if (enumType->full_name() == enumFile->enum_type(i)->full_name()) {
+            return GLOBAL_ENUM;
+        }
+    }
+
+    return NEIGHBOUR_ENUM;
+}
+
 bool ProtobufClassGenerator::isLocalMessageEnum(const ::google::protobuf::FieldDescriptor *field)
 {
-    if (field == nullptr)
-    {
-        return false;
-    }
+    assert(field->enum_type() != nullptr);
     for (int i = 0; i < mMessage->enum_type_count(); i++) {
         const auto enumDescr = mMessage->enum_type(i);
-        if (enumDescr == nullptr || field->enum_type() == nullptr) {
-            return false;
-        }
-        if (enumDescr->name().compare(field->enum_type()->name()) == 0) {
+        if (enumDescr->full_name() == field->enum_type()->full_name()) {
             return true;
         }
     }
@@ -417,7 +442,7 @@ std::set<std::string> ProtobufClassGenerator::extractModels() const
 void ProtobufClassGenerator::run()
 {
     printPreamble();
-    printIncludes(extractModels());
+    printIncludes();
     printNamespaces();
     printClassDeclaration();
     printProperties();

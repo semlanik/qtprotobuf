@@ -46,13 +46,18 @@ using PropertyMap = std::map<std::string, std::string>;
 class ProtobufClassGenerator : public ClassGeneratorBase
 {
     const ::google::protobuf::Descriptor* mMessage;
+    enum EnumVisibility {
+        GLOBAL_ENUM,
+        LOCAL_ENUM,
+        NEIGHBOUR_ENUM
+    };
 public:
     ProtobufClassGenerator(const ::google::protobuf::Descriptor* message, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);
     virtual ~ProtobufClassGenerator() = default;
 
     void run() override;
 
-    void printIncludes(std::set<std::string> listModel);
+    void printIncludes();
     void printCopyFunctionality();
     void printMoveSemantic();
     void printComparisonOperators();
@@ -64,9 +69,12 @@ public:
     void printConstructor();
     void printListType();
 
-    bool isLocalMessageEnum(const ::google::protobuf::FieldDescriptor *field);
-
     std::set<std::string> extractModels() const;
+
+private:
+    bool isLocalMessageEnum(const ::google::protobuf::FieldDescriptor *field);
+    EnumVisibility getEnumVisibility(const ::google::protobuf::FieldDescriptor *field);
+
 
     std::string getTypeName(const ::google::protobuf::FieldDescriptor *field);
     bool producePropertyMap(const ::google::protobuf::FieldDescriptor *field, PropertyMap &propertyMap);

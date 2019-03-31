@@ -25,6 +25,7 @@
 
 #include "simpletest.h"
 
+//#include "stepchildenummessage.h"
 #include "simpleboolmessage.h"
 #include "simpleintmessage.h"
 #include "simplesintmessage.h"
@@ -41,8 +42,8 @@
 #include "simpledoublemessage.h"
 #include "simpleenummessage.h"
 #include "complexmessage.h"
-#include "repeatedintmessage.h"
 #include "simplebytesmessage.h"
+#include "repeatedintmessage.h"
 #include "globalenums.h"
 #include "qtprotobuf.h"
 #include <QVariantList>
@@ -314,3 +315,9 @@ TEST_F(SimpleTest, RepeatedIntMessageTest)
     ASSERT_TRUE(test.property(propertyName).value<sint32List>() == sint32List({1, 2, 3, 4, 5}));
     ASSERT_TRUE(test.testRepeatedInt() == sint32List({1, 2, 3, 4, 5}));
 }
+
+//Enable this test once required change will be done for EnumMessages generation
+//TEST_F(SimpleTest, StepChildEnumMessageTest)
+//{
+//    StepChildEnumMessage  message;
+//}

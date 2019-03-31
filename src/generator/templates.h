@@ -39,7 +39,6 @@ public:
     static const char *PreambleTemplate;
     static const char *InternalIncludeTemplate;
     static const char *ExternalIncludeTemplate;
-    static const char *ListModelsIncludeTemplate;
     static const char *GlobalEnumIncludeTemplate;
     static const char *UsingQtProtobufNamespaceTemplate;
     static const char *ComplexTypeRegistrationMethodTemplate;
