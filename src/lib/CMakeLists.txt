@@ -1,4 +1,7 @@
 find_package(Qt5 COMPONENTS Core Network REQUIRED)
+if (Qt5Core_VERSION VERSION_LESS "5.12.0")
+    message(FATAL_ERROR "Required Qt version is 5.12+")
+endif()
 
 set(SUPPORT_LIBRARY_TARGET qtprotobufsupport)
 
