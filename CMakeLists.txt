@@ -29,38 +29,10 @@ elseif(NOT DEFINED MAKE_TESTS)
     set(MAKE_TESTS ON)
 endif()
 
-add_executable(${PROJECT_NAME}
-    src/generator/main.cpp
-    src/generator/generator.cpp
-    src/generator/classgeneratorbase.cpp
-    src/generator/servergenerator.cpp
-    src/generator/protobufclassgenerator.cpp
-    src/generator/globalenumsgenerator.cpp
-    src/generator/servicegeneratorbase.cpp
-    src/generator/templates.cpp
-    src/generator/clientgenerator.cpp
-    src/generator/classsourcegeneratorbase.cpp
-    src/generator/protobufsourcegenerator.cpp
-    src/generator/clientsourcegenerator.cpp
-)
-
-if(WIN32)
-    #Needs to set path to protobuf libraries
-    set(PROTOBUF_INSTALATION_PATH "")
-    include_directories(${PROTOBUF_INSTALATION_PATH}/include)
-
-    set(PROTOBUF_LIBRARIES_PATH ${PROTOBUF_INSTALATION_PATH}/lib)
-    target_link_libraries(${PROJECT_NAME} "${PROTOBUF_LIBRARIES_PATH}/libprotobuf.lib")
-    target_link_libraries(${PROJECT_NAME} "${PROTOBUF_LIBRARIES_PATH}/libprotoc.lib")
-elseif(UNIX)
-    if(NOT Protobuf_FOUND)
-        target_link_libraries(${PROJECT_NAME} libprotoc)
-    else()
-        target_link_libraries(${PROJECT_NAME} ${Protobuf_LIBRARIES} ${Protobuf_PROTOC_LIBRARY})
-    endif()
-endif()
-
 add_subdirectory("src/lib")
+add_subdirectory("src/generator")
+
+message(STATUS "QTPROTOBUF_GENERATOR_EXEC_PATH: ${QTPROTOBUF_GENERATOR_EXEC_PATH}")
 
 if(MAKE_TESTS)
     set(testgeneration "test_generation")
@@ -71,7 +43,7 @@ if(MAKE_TESTS)
     if(WIN32)
         file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/*.proto)
         add_custom_command(TARGET ${testgeneration} POST_BUILD
-            COMMAND ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf.exe --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests -I=${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
+            COMMAND ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe --plugin=protoc-gen-${PROJECT_NAME}=${QTPROTOBUF_GENERATOR_EXEC_PATH} --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests -I=${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             ${PROTO_FILES}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
@@ -80,7 +52,7 @@ if(MAKE_TESTS)
     elseif(UNIX)
         file(GLOB PROTO_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/*.proto)
         add_custom_command(TARGET ${testgeneration}
-            COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=${CMAKE_BINARY_DIR}/qtprotobuf --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
+            COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=${QTPROTOBUF_GENERATOR_EXEC_PATH} --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
             ${PROTO_FILES}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
@@ -91,6 +63,3 @@ if(MAKE_TESTS)
     add_dependencies(${testgeneration} ${PROJECT_NAME})
     add_subdirectory("tests")
 endif()
-
-install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin)
