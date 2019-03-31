@@ -41,6 +41,8 @@
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
 #include "simpleenummessage.h"
+#include "simpleexternalenummessage.h"
+#include "externalcomplexmessage.h"
 #include "complexmessage.h"
 #include "simplebytesmessage.h"
 #include "repeatedintmessage.h"
@@ -261,6 +263,31 @@ TEST_F(SimpleTest, SimpleLocalEnumsTest)
     ASSERT_EQ(simpleEnum.value(3), 3);
 }
 
+TEST_F(SimpleTest, SimpleExternalEnumMessage)
+{
+    ASSERT_GT(SimpleExternalEnumMessage::staticMetaObject.enumeratorCount(), 0);
+    QMetaEnum simpleExternalEnum;
+    for (int i = 0; i < SimpleExternalEnumMessage::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = SimpleExternalEnumMessage::staticMetaObject.enumerator(i);
+        if (QString(tmp.name()) == QString("ExternalTestEnum")) {
+            simpleExternalEnum = tmp;
+            break;
+        }
+    }
+    ASSERT_TRUE(simpleExternalEnum.isValid());
+    ASSERT_STREQ(simpleExternalEnum.key(0), "EXTERNAL_TEST_ENUM_VALUE0");
+    ASSERT_STREQ(simpleExternalEnum.key(1), "EXTERNAL_TEST_ENUM_VALUE1");
+    ASSERT_STREQ(simpleExternalEnum.key(2), "EXTERNAL_TEST_ENUM_VALUE2");
+    ASSERT_STREQ(simpleExternalEnum.key(3), "EXTERNAL_TEST_ENUM_VALUE3");
+    ASSERT_STREQ(simpleExternalEnum.key(4), "EXTERNAL_TEST_ENUM_VALUE4");
+
+    ASSERT_EQ(simpleExternalEnum.value(0), 0);
+    ASSERT_EQ(simpleExternalEnum.value(1), 1);
+    ASSERT_EQ(simpleExternalEnum.value(2), 2);
+    ASSERT_EQ(simpleExternalEnum.value(3), 3);
+    ASSERT_EQ(simpleExternalEnum.value(4), 4);
+}
+
 TEST_F(SimpleTest, SimpleEnumsTest)
 {
     ASSERT_GT(GlobalEnums::staticMetaObject.enumeratorCount(), 0);
@@ -301,6 +328,19 @@ TEST_F(SimpleTest, SimpleBytesMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<QByteArray>("\x01\x02\x03\x04\x05")));
     ASSERT_TRUE(test.property(propertyName).toByteArray() == QByteArray("\x01\x02\x03\x04\x05"));
     ASSERT_TRUE(test.testFieldBytes() == QByteArray("\x01\x02\x03\x04\x05"));
+}
+
+TEST_F(SimpleTest, SimpleExternalComplexMessageTest)
+{
+    const char* propertyName = "localList";
+    qtprotobufnamespace1::externaltests::SimpleExternalMessage test;
+    int propertyNumber = qtprotobufnamespace1::externaltests::SimpleExternalMessage::propertyOrdering.at(1);
+    ASSERT_STREQ(qtprotobufnamespace1::externaltests::SimpleExternalMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::int32List");
+    ASSERT_EQ(qtprotobufnamespace1::externaltests::SimpleExternalMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<qtprotobuf::int32List>());
+    ASSERT_STREQ(qtprotobufnamespace1::externaltests::SimpleExternalMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int32List>({1, 2, 3, 4, 5})));
+    ASSERT_TRUE(test.property(propertyName).value<int32List>() == int32List({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.localList() == int32List({1, 2, 3, 4, 5}));
 }
 
 TEST_F(SimpleTest, RepeatedIntMessageTest)

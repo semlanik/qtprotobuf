@@ -212,21 +212,61 @@ void ProtobufClassGenerator::printField(const FieldDescriptor *field, const char
     }
 }
 
+template<typename T>
+std::string ProtobufClassGenerator::getNamespacesList(const T *message, std::vector<std::string> &container)
+{
+    std::string result;
+    utils::split(std::string(message->full_name()), container, '.');
+
+    if (container.size() > 1) {
+        //delete type name -> only namespace stays
+        container.pop_back();
+
+        for (size_t i = 0; i < container.size(); i++) {
+            if (i > 0) {
+                result = result.append("::");
+            }
+            result = result.append(container[i]);
+        }
+    }
+
+    if (container.size() > 0
+            && mNamespacesColonDelimited != result) {
+        result = result.append("::");
+    } else {
+        result.clear();
+    }
+
+    return result;
+}
+
 std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
 {
     assert(field != nullptr);
     std::string typeName;
-    std::string namespaceDefinition("qtprotobuf::");
+    std::string namespaceQtProtoDefinition("qtprotobuf::");
+
+    std::string namespaceTypeName;
+    std::vector<std::string> typeNamespace;
+
     if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
-        typeName = field->message_type()->name();
+        namespaceTypeName = getNamespacesList(field->message_type(), typeNamespace);
+    } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
+        namespaceTypeName = getNamespacesList(field->enum_type(), typeNamespace);
+    }
+
+    if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
+        typeName = namespaceTypeName.append(field->message_type()->name());
+
         if (field->is_repeated()) {
-            return typeName.append("List");
+            return namespaceTypeName.append("List");
         }
     } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
-        typeName = field->enum_type()->name();
         if (getEnumVisibility(field) == GLOBAL_ENUM) {
             std::string globEnum(Templates::EnumClassNameTemplate);
-            typeName = globEnum.append("::").append(typeName);
+            typeName = namespaceTypeName.append(globEnum.append("::").append(field->enum_type()->name()));
+        } else {
+            typeName = typeName.append(field->enum_type()->name());
         }
         if (field->is_repeated()) {
             return typeName.append("List");
@@ -239,15 +279,15 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
                     && field->type() != FieldDescriptor::TYPE_BOOL
                     && field->type() != FieldDescriptor::TYPE_FLOAT
                     && field->type() != FieldDescriptor::TYPE_DOUBLE) {
-                typeName = namespaceDefinition.append(it->second);
+                typeName = typeName.append(namespaceQtProtoDefinition.append(it->second));
             } else {
-                typeName = it->second;
+                typeName = typeName.append(it->second);
             }
             if (field->is_repeated()) {
                 if(field->type() == FieldDescriptor::TYPE_FLOAT
                         || field->type() == FieldDescriptor::TYPE_DOUBLE) {
                     typeName[0] = ::toupper(typeName[0]);
-                    typeName = namespaceDefinition.append(typeName);
+                    typeName = namespaceQtProtoDefinition.append(typeName);
                 }
                 typeName.append("List");
             }

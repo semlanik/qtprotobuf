@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "extrenalpackagetest.proto";
+
 package qtprotobufnamespace.tests;
 
 message SimpleEnumMessage {
@@ -23,6 +25,10 @@ message SimpleFileEnumMessage {
 //  SimpleEnumMessage.LocalEnum localStepChildEnum = 1;
 //  repeated SimpleEnumMessage.LocalEnum localStepChildList = 2;
 //}
+
+message SimpleExternalEnumMessage {
+    qtprotobufnamespace1.externaltests.ExternalTestEnum externalEnum = 1;
+}
 
 message SimpleBoolMessage {
     bool testFieldBool = 1;
@@ -112,6 +118,11 @@ message RepeatedFloatMessage {
 message RepeatedComplexMessage {
     repeated ComplexMessage testRepeatedComplex = 1;
 }
+
+message RepeatedExternalComplexMessage {
+    repeated qtprotobufnamespace1.externaltests.ExternalComplexMessage testExternalComplex = 1;
+}
+
 
 enum TestEnum {
     TEST_ENUM_VALUE0 = 0;

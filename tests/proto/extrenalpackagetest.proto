@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package qtprotobufnamespace1.externaltests;
+
+message SimpleExternalMessage {
+    repeated int32 localList = 1;
+}
+
+message ExternalComplexMessage {
+    SimpleExternalMessage testFieldInt = 1;
+}
+
+enum ExternalTestEnum {
+    EXTERNAL_TEST_ENUM_VALUE0 = 0;
+    EXTERNAL_TEST_ENUM_VALUE1 = 1;
+    EXTERNAL_TEST_ENUM_VALUE2 = 2;
+    EXTERNAL_TEST_ENUM_VALUE3 = 3;
+    EXTERNAL_TEST_ENUM_VALUE4 = 4;
+}
