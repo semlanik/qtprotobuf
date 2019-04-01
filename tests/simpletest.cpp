@@ -41,12 +41,18 @@
 #include "simplefloatmessage.h"
 #include "simpledoublemessage.h"
 #include "simpleenummessage.h"
+#include "simplefileenummessage.h"
 #include "simpleexternalenummessage.h"
 #include "externalcomplexmessage.h"
 #include "complexmessage.h"
 #include "simplebytesmessage.h"
 #include "repeatedintmessage.h"
+#include "repeatedbytesmessage.h"
+#include "repeateddoublemessage.h"
+#include "repeatedcomplexmessage.h"
+#include "repeatedfloatmessage.h"
 #include "repeatedsintmessage.h"
+#include "repeatedstringmessage.h"
 #include "repeateduintmessage.h"
 #include "repeatedint64message.h"
 #include "repeatedsint64message.h"
@@ -55,6 +61,7 @@
 #include "repeatedsfixedintmessage.h"
 #include "repeatedfixedint64message.h"
 #include "repeatedsfixedint64message.h"
+#include "repeatedexternalcomplexmessage.h"
 #include "globalenums.h"
 #include "qtprotobuf.h"
 #include <QVariantList>
@@ -286,9 +293,9 @@ TEST_F(SimpleTest, SimpleLocalEnumsTest)
                                                                                                                                             SimpleEnumMessage::LOCAL_ENUM_VALUE1,
                                                                                                                                             SimpleEnumMessage::LOCAL_ENUM_VALUE3}));
     ASSERT_TRUE(test.localEnumList() == SimpleEnumMessage::LocalEnumList({SimpleEnumMessage::LOCAL_ENUM_VALUE2,
-                                                                                SimpleEnumMessage::LOCAL_ENUM_VALUE2,
-                                                                                SimpleEnumMessage::LOCAL_ENUM_VALUE1,
-                                                                                SimpleEnumMessage::LOCAL_ENUM_VALUE3}));
+                                                                          SimpleEnumMessage::LOCAL_ENUM_VALUE2,
+                                                                          SimpleEnumMessage::LOCAL_ENUM_VALUE1,
+                                                                          SimpleEnumMessage::LOCAL_ENUM_VALUE3}));
 }
 
 TEST_F(SimpleTest, SimpleExternalEnumMessageTest)
@@ -330,6 +337,32 @@ TEST_F(SimpleTest, SimpleEnumsTest)
     ASSERT_EQ(simpleEnum.value(4), 3);
 }
 
+TEST_F(SimpleTest, SimpleFileEnumsTest)
+{
+    const char* propertyName = "globalEnumList";
+    SimpleFileEnumMessage test;
+    int propertyNumber = SimpleFileEnumMessage::propertyOrdering.at(2); //See simpletest.proto
+    ASSERT_STREQ(SimpleFileEnumMessage::staticMetaObject.property(propertyNumber).typeName(), "GlobalEnums::TestEnumList");
+    ASSERT_EQ(SimpleFileEnumMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<GlobalEnums::TestEnumList>());
+    ASSERT_STREQ(SimpleFileEnumMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<GlobalEnums::TestEnumList>({GlobalEnums::TEST_ENUM_VALUE1,
+                                                                                               GlobalEnums::TEST_ENUM_VALUE3,
+                                                                                               GlobalEnums::TEST_ENUM_VALUE4,
+                                                                                               GlobalEnums::TEST_ENUM_VALUE2,
+                                                                                               GlobalEnums::TEST_ENUM_VALUE1})));
+
+    ASSERT_TRUE(test.property(propertyName).value<GlobalEnums::TestEnum>() == QVariant::fromValue<GlobalEnums::TestEnumList>({GlobalEnums::TEST_ENUM_VALUE1,
+                                                                                                                              GlobalEnums::TEST_ENUM_VALUE3,
+                                                                                                                              GlobalEnums::TEST_ENUM_VALUE4,
+                                                                                                                              GlobalEnums::TEST_ENUM_VALUE2,
+                                                                                                                              GlobalEnums::TEST_ENUM_VALUE1}));
+    ASSERT_TRUE(test.globalEnumList() == GlobalEnums::TestEnumList({GlobalEnums::TEST_ENUM_VALUE1,
+                                                                    GlobalEnums::TEST_ENUM_VALUE3,
+                                                                    GlobalEnums::TEST_ENUM_VALUE4,
+                                                                    GlobalEnums::TEST_ENUM_VALUE2,
+                                                                    GlobalEnums::TEST_ENUM_VALUE1}));
+}
+
 TEST_F(SimpleTest, ComplexMessageTest)
 {
     ComplexMessage msg;
@@ -360,6 +393,42 @@ TEST_F(SimpleTest, SimpleExternalComplexMessageTest)
     ASSERT_TRUE(test.localList() == int32List({1, 2, 3, 4, 5}));
 }
 
+TEST_F(SimpleTest, RepeatedExternalComplexMessageTest)
+{
+    const char* propertyName = "testExternalComplex";
+    RepeatedExternalComplexMessage test;
+    int propertyNumber = RepeatedExternalComplexMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(RepeatedExternalComplexMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobufnamespace1::externaltests::ExternalComplexMessageList");
+    ASSERT_EQ(RepeatedExternalComplexMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<qtprotobufnamespace1::externaltests::ExternalComplexMessageList>());
+    ASSERT_STREQ(RepeatedExternalComplexMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+
+    qtprotobufnamespace1::externaltests::SimpleExternalMessage complexMessage;
+    complexMessage.setLocalList({1, 2, 3, 4, 5});
+
+    qtprotobufnamespace1::externaltests::ExternalComplexMessage externalMessage;
+    externalMessage.setTestFieldInt(complexMessage);
+
+    qtprotobufnamespace1::externaltests::ExternalComplexMessageList complexMessageList;
+    complexMessageList << externalMessage;
+
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(complexMessageList)));
+    ASSERT_TRUE(test.property(propertyName).value<qtprotobufnamespace1::externaltests::ExternalComplexMessageList>() == complexMessageList);
+    ASSERT_TRUE(test.testExternalComplex() == complexMessageList);
+}
+
+TEST_F(SimpleTest, RepeatedStringMessageTest)
+{
+    const char* propertyName = "testRepeatedString";
+    RepeatedStringMessage test;
+    int propertyNumber = RepeatedStringMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(RepeatedStringMessage::staticMetaObject.property(propertyNumber).typeName(), "QStringList");
+    ASSERT_EQ(RepeatedStringMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<QStringList>());
+    ASSERT_STREQ(RepeatedStringMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<QStringList>({"Text", "tryam"})));
+    ASSERT_TRUE(test.property(propertyName).value<QStringList>() == QStringList({"Text", "tryam"}));
+    ASSERT_TRUE(test.testRepeatedString() == QStringList({"Text", "tryam"}));
+}
+
 TEST_F(SimpleTest, RepeatedIntMessageTest)
 {
     const char* propertyName = "testRepeatedInt";
@@ -371,6 +440,49 @@ TEST_F(SimpleTest, RepeatedIntMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int32List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<int32List>() == int32List({1, 2, 3, 4, 5}));
     ASSERT_TRUE(test.testRepeatedInt() == int32List({1, 2, 3, 4, 5}));
+}
+
+TEST_F(SimpleTest, RepeatedDoubleMessageTest)
+{
+    const char* propertyName = "testRepeatedDouble";
+    RepeatedDoubleMessage test;
+    int propertyNumber = RepeatedDoubleMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(RepeatedDoubleMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::DoubleList");
+    ASSERT_EQ(RepeatedDoubleMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<qtprotobuf::DoubleList>());
+    ASSERT_STREQ(RepeatedDoubleMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobuf::DoubleList>({1.0, 2.3, 3, 4.7, 5.9})));
+    ASSERT_TRUE(test.property(propertyName).value<qtprotobuf::DoubleList>() == qtprotobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
+    ASSERT_TRUE(test.testRepeatedDouble() == qtprotobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
+}
+
+TEST_F(SimpleTest, RepeatedFloatMessageTest)
+{
+    const char* propertyName = "testRepeatedFloat";
+    RepeatedFloatMessage test;
+    int propertyNumber = RepeatedFloatMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(RepeatedFloatMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::FloatList");
+    ASSERT_EQ(RepeatedFloatMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<qtprotobuf::FloatList>());
+    ASSERT_STREQ(RepeatedFloatMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobuf::FloatList>({1.0f, 2.3f, 3, 4.7f, 5.9f})));
+    ASSERT_TRUE(test.property(propertyName).value<qtprotobuf::FloatList>() == qtprotobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
+    ASSERT_TRUE(test.testRepeatedFloat() == qtprotobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
+}
+
+TEST_F(SimpleTest, RepeatedBytesMessageTest)
+{
+    const char* propertyName = "testRepeatedBytes";
+    RepeatedBytesMessage test;
+    int propertyNumber = RepeatedBytesMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(RepeatedBytesMessage::staticMetaObject.property(propertyNumber).typeName(), "QByteArrayList");
+    ASSERT_EQ(RepeatedBytesMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<QByteArrayList>());
+    ASSERT_STREQ(RepeatedBytesMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    QByteArrayList bList;
+    bList << "\x01\x02\x03\x04\x05";
+    bList << "\x01\x05\x03\x04\x03";
+
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<QByteArrayList>(bList)));
+    ASSERT_TRUE(test.property(propertyName).value<QByteArrayList>() == bList);
+    ASSERT_TRUE(test.testRepeatedBytes() == bList);
 }
 
 TEST_F(SimpleTest, RepeatedSIntMessageTest)
@@ -509,18 +621,18 @@ TEST_F(SimpleTest, StepChildEnumListMessageTest)
     StepChildEnumMessage test;
     int propertyNumber = StepChildEnumMessage::propertyOrdering.at(2); //See simpletest.proto
     ASSERT_STREQ(StepChildEnumMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnumList");
-    ASSERT_EQ(StepChildEnumMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<SimpleEnumMessage::LocalEnumList>());
+    ASSERT_EQ(StepChildEnumMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnumList>());
     ASSERT_STREQ(StepChildEnumMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<SimpleEnumMessage::LocalEnumList>({SimpleEnumMessage::LOCAL_ENUM_VALUE2,
-                                                                                                      SimpleEnumMessage::LOCAL_ENUM_VALUE2,
-                                                                                                      SimpleEnumMessage::LOCAL_ENUM_VALUE1,
-                                                                                                      SimpleEnumMessage::LOCAL_ENUM_VALUE3})));
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnumList>({SimpleEnumMessage::LOCAL_ENUM_VALUE2,
+                                                                                                                                  SimpleEnumMessage::LOCAL_ENUM_VALUE2,
+                                                                                                                                  SimpleEnumMessage::LOCAL_ENUM_VALUE1,
+                                                                                                                                  SimpleEnumMessage::LOCAL_ENUM_VALUE3})));
     ASSERT_TRUE(test.property(propertyName).value<SimpleEnumMessage::LocalEnum>() == QVariant::fromValue<SimpleEnumMessage::LocalEnumList>({SimpleEnumMessage::LOCAL_ENUM_VALUE2,
                                                                                                                                             SimpleEnumMessage::LOCAL_ENUM_VALUE2,
                                                                                                                                             SimpleEnumMessage::LOCAL_ENUM_VALUE1,
                                                                                                                                             SimpleEnumMessage::LOCAL_ENUM_VALUE3}));
     ASSERT_TRUE(test.localStepChildList() == SimpleEnumMessage::LocalEnumList({SimpleEnumMessage::LOCAL_ENUM_VALUE2,
-                                                                                SimpleEnumMessage::LOCAL_ENUM_VALUE2,
-                                                                                SimpleEnumMessage::LOCAL_ENUM_VALUE1,
-                                                                                SimpleEnumMessage::LOCAL_ENUM_VALUE3}));
+                                                                               SimpleEnumMessage::LOCAL_ENUM_VALUE2,
+                                                                               SimpleEnumMessage::LOCAL_ENUM_VALUE1,
+                                                                               SimpleEnumMessage::LOCAL_ENUM_VALUE3}));
 }
