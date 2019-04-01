@@ -56,7 +56,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 
     std::set<std::string> extractedModels;
 
-    for(int i = 0; i < file->message_type_count(); i++) {
+    for (int i = 0; i < file->message_type_count(); i++) {
         const Descriptor *message = file->message_type(i);
         std::string baseFilename(message->name());
         utils::tolower(baseFilename);
@@ -75,7 +75,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         classSourceGen.run();
     }
 
-    for(int i = 0; i < file->service_count(); i++) {
+    for (int i = 0; i < file->service_count(); i++) {
         const ServiceDescriptor* service = file->service(i);
         std::string baseFilename(service->name());
         utils::tolower(baseFilename);

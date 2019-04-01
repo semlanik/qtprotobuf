@@ -51,8 +51,9 @@ public:
 
     QByteArray serialize() const {
         qProtoDebug() << T::staticMetaObject.className() << "serialize";
+
         QByteArray result;
-        const T *instance = dynamic_cast<const T *>(this);
+        const QObject *instance = static_cast<const QObject *>(this);
         for (auto field : T::propertyOrdering) {
             int propertyIndex = field.second;
             int fieldIndex = field.first;
@@ -60,8 +61,6 @@ public:
             QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
             const char *propertyName = metaProperty.name();
             const QVariant &propertyValue = instance->property(propertyName);
-            //TODO: flag isFixed looks ugly. Need to define more effective strategy
-            //for type detection.
             result.append(serializeValue(propertyValue, fieldIndex, QLatin1Literal(metaProperty.typeName())));
         }
 
@@ -70,7 +69,6 @@ public:
 
     void deserialize(const QByteArray &array) {
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
-        //T *instance = dynamic_cast<T *>(this);
 
         for (QByteArray::const_iterator it = array.begin(); it != array.end();) {
             //Each iteration we expect iterator is setup to beginning of next chunk
@@ -121,12 +119,12 @@ private:
 //        return value->serialize();
 //    }
 
-    static QByteArray serializeComplexListType(const ProtobufObjectPrivate* serializer, const QVariant &listValue, int &outFieldIndex) {
+    static QByteArray serializeComplexListType(const ProtobufObjectPrivate *serializer, const QVariant &listValue, int &outFieldIndex) {
         QList<T> list = listValue.value<QList<T>>();
         return serializer->serializeListType(list, outFieldIndex);
     }
 
-    static void deserializeComplexListType(ProtobufObjectPrivate* deserializer, QByteArray::const_iterator &it, QVariant &previous) {
+    static void deserializeComplexListType(ProtobufObjectPrivate *deserializer, QByteArray::const_iterator &it, QVariant &previous) {
         QList<T> previousList = previous.value<QList<T>>();
         QVariant newMember = deserializer->deserializeListType<T>(it);
         previousList.append(newMember.value<T>());

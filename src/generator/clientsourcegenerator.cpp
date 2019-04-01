@@ -44,7 +44,7 @@ ClientSourceGenerator::ClientSourceGenerator(const google::protobuf::ServiceDesc
 
 void ClientSourceGenerator::printMethods()
 {
-    for(int i = 0; i < mService->method_count(); i++) {
+    for (int i = 0; i < mService->method_count(); i++) {
         const MethodDescriptor* method = mService->method(i);
         std::string inputTypeName = method->input_type()->full_name();
         std::string outputTypeName = method->output_type()->full_name();

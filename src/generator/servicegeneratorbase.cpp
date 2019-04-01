@@ -52,7 +52,7 @@ void ServiceGeneratorBase::printIncludes()
 {
     std::unordered_set<std::string> includeSet;
 
-    for(int i = 0; i < mService->method_count(); i++) {
+    for (int i = 0; i < mService->method_count(); i++) {
         const MethodDescriptor* method = mService->method(i);
         std::string inputTypeName = method->input_type()->name();
         std::string outputTypeName = method->output_type()->name();
@@ -62,7 +62,7 @@ void ServiceGeneratorBase::printIncludes()
         includeSet.insert(outputTypeName);
     }
 
-    for(auto type : includeSet) {
+    for (auto type : includeSet) {
         mPrinter.Print({{"include", type}}, Templates::InternalIncludeTemplate);
     }
 }
@@ -75,7 +75,7 @@ void ServiceGeneratorBase::printClassName()
 void ServiceGeneratorBase::printMethodsDeclaration(const char* methodTemplate, const char* methodAsyncTemplate)
 {
     Indent();
-    for(int i = 0; i < mService->method_count(); i++) {
+    for (int i = 0; i < mService->method_count(); i++) {
         const MethodDescriptor* method = mService->method(i);
         std::string inputTypeName = method->input_type()->full_name();
         std::string outputTypeName = method->output_type()->full_name();

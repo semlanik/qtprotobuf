@@ -51,7 +51,7 @@ void ClassSourceGeneratorBase::printClassHeaderInclude()
 
 void ClassSourceGeneratorBase::printUsingNamespaces(const std::unordered_set<std::string> &namespaces)
 {
-    for(auto ns : namespaces) {
+    for (auto ns : namespaces) {
         mPrinter.Print({{"namespace", ns}}, Templates::UsingNamespaceTemplate);
     }
 }

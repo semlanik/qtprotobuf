@@ -29,8 +29,8 @@ using namespace qtprotobuf;
 
 ProtobufObjectPrivate::SerializerRegistry ProtobufObjectPrivate::serializers = {};
 
-
-QByteArray ProtobufObjectPrivate::serializeValue(const QVariant& propertyValue, int fieldIndex, const QLatin1Literal& typeName) const {
+QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, int fieldIndex, const QLatin1Literal &typeName) const
+{
     qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex << "typeName" << typeName;
     QByteArray result;
     WireTypes type = UnknownWireType;
@@ -139,7 +139,8 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant& propertyValue, 
     return result;
 }
 
-QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValue, int &fieldIndex) const {
+QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValue, int &fieldIndex) const
+{
     qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex;
     int userType = propertyValue.userType();
 
@@ -154,11 +155,11 @@ QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValu
         return serializeListType(propertyValue.value<int32List>(), fieldIndex);
     }
 
-    if(userType == qMetaTypeId<FloatList>()) {
+    if (userType == qMetaTypeId<FloatList>()) {
         return serializeListType(propertyValue.value<FloatList>(), fieldIndex);
     }
 
-    if(userType == qMetaTypeId<DoubleList>()) {
+    if (userType == qMetaTypeId<DoubleList>()) {
         return serializeListType(propertyValue.value<DoubleList>(), fieldIndex);
     }
 
@@ -176,7 +177,7 @@ void ProtobufObjectPrivate::deserializeProperty(WireTypes wireType, const QMetaP
     qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << typeName << "currentByte:" << QString::number((*it), 16);
     QVariant newPropertyValue;
     int type = metaProperty.type();
-    switch(type) {
+    switch (type) {
     case QMetaType::UInt:
         if (wireType == Fixed32) {
             newPropertyValue = deserializeFixed<fint32>(it);
@@ -280,9 +281,9 @@ void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaType, Q
     } else if (userType == qMetaTypeId<uint64List>()) {
         //TODO: Check if type is fixed
         newValue = deserializeVarintListType<uint64>(it);
-    } else if(userType == qMetaTypeId<FloatList>()) {
+    } else if (userType == qMetaTypeId<FloatList>()) {
         newValue = deserializeListType<float>(it);
-    } else if(userType == qMetaTypeId<DoubleList>()) {
+    } else if (userType == qMetaTypeId<DoubleList>()) {
         newValue = deserializeListType<double>(it);
     } else {
         newValue = deserializeProtobufObjectType(userType, it);

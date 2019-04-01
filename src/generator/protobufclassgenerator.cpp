@@ -265,7 +265,7 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
         EnumVisibility visibility = getEnumVisibility(field);
         if (visibility == LOCAL_ENUM) {
             typeName = typeName.append(enumType->name());
-        } else if(visibility == GLOBAL_ENUM) {
+        } else if (visibility == GLOBAL_ENUM) {
             typeName = namespaceTypeName.append(Templates::GlobalEnumClassNameTemplate)
                     .append("::").append(enumType->name());
         } else {
@@ -287,7 +287,7 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
                 typeName = typeName.append(it->second);
             }
             if (field->is_repeated()) {
-                if(field->type() == FieldDescriptor::TYPE_FLOAT
+                if (field->type() == FieldDescriptor::TYPE_FLOAT
                         || field->type() == FieldDescriptor::TYPE_DOUBLE) {
                     typeName[0] = ::toupper(typeName[0]);
                     typeName = namespaceQtProtoDefinition.append(typeName);
@@ -430,7 +430,7 @@ ProtobufClassGenerator::EnumVisibility ProtobufClassGenerator::getEnumVisibility
 
     for (int i = 0; i < enumFile->message_type_count(); i++) {
         const Descriptor* msg = enumFile->message_type(i);
-        for(int j = 0; j < msg->enum_type_count(); j++) {
+        for (int j = 0; j < msg->enum_type_count(); j++) {
             if (enumType->full_name() == msg->enum_type(j)->full_name()) {
                 return NEIGHBOUR_ENUM;
             }

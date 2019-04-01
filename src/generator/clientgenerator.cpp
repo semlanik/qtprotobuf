@@ -65,7 +65,7 @@ void ClientGenerator::printClientIncludes()
     std::unordered_set<std::string> includeSet;
     includeSet.insert("abstractclient");
     includeSet.insert("asyncreply");
-    for(auto type : includeSet) {
+    for (auto type : includeSet) {
         mPrinter.Print({{"include", type}}, Templates::InternalIncludeTemplate);
     }
 }

@@ -1504,7 +1504,7 @@ TEST_F(SerializationTest, BoolMessageSerializeTest)
 //TEST_F(SerializationTest, DISABLE_BenchmarkTest)
 //{
 //    SimpleIntMessage msg;
-//    for(int i = INT16_MIN; i < INT16_MAX; i++) {
+//    for (int i = INT16_MIN; i < INT16_MAX; i++) {
 //        msg.setTestFieldInt(i);
 //        msg.serialize();
 //    }
