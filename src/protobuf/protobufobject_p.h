@@ -56,11 +56,11 @@ constexpr int NotUsedFieldIndex = -1;
 class ProtobufObjectPrivate : public QObject
 {
 protected:
-    using ListSerializer = std::function<QByteArray(const ProtobufObjectPrivate *, const QVariant &, int &)>;
-    using ListDeserializer = std::function<void(ProtobufObjectPrivate *, QByteArray::const_iterator &, QVariant &)>;
+    using Serializer = std::function<QByteArray(const ProtobufObjectPrivate *, const QVariant &, int &)>;
+    using Deserializer = std::function<void(ProtobufObjectPrivate *, QByteArray::const_iterator &, QVariant &)>;
     struct SerializationHandlers {
-        ListSerializer serializer;
-        ListDeserializer deserializer;
+        Serializer serializer;
+        Deserializer deserializer;
     };
 
     using SerializerRegistry = std::unordered_map<int/*metatypeid*/, SerializationHandlers>;
@@ -68,9 +68,6 @@ protected:
 
 public:
     explicit ProtobufObjectPrivate(QObject *parent = nullptr) : QObject(parent) {}
-
-    virtual QByteArray serializePrivate() const = 0;
-    virtual void deserializePrivate(const QByteArray &data) = 0;
 
     inline static unsigned char encodeHeaderByte(int fieldIndex, WireTypes wireType);
     inline static bool decodeHeaderByte(unsigned char typeByte, int &fieldIndex, WireTypes &wireType);
@@ -364,12 +361,6 @@ public:
         return result;
     }
 
-    QVariant deserializeProtobufObjectType(int userType, QByteArray::const_iterator &it) {
-        auto value = reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType));
-        value->deserializePrivate(deserializeLengthDelimited(it));
-        return QVariant(userType, value);
-    }
-
     template <typename V,
               typename std::enable_if_t<std::is_same<V, QString>::value
                                         || std::is_same<V, QByteArray>::value, int> = 0>
@@ -383,8 +374,9 @@ public:
               typename std::enable_if_t<std::is_base_of<ProtobufObjectPrivate, V>::value, int> = 0>
     QVariant deserializeListType(QByteArray::const_iterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
-
-        return deserializeProtobufObjectType(qMetaTypeId<V>(), it);
+        QVariant newValue;
+        serializers[qMetaTypeId<V>()].deserializer(this, it, newValue);
+        return newValue;
     }
 
     template <typename V,

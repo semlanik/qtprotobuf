@@ -98,26 +98,23 @@ public:
     }
 
 protected:
-    static void registerSerializers(int /*metaTypeId*/, int listMetaTypeId) {
-        serializers[listMetaTypeId] = {ListSerializer(serializeComplexListType), ListDeserializer(deserializeComplexListType)};
+    static void registerSerializers(int metaTypeId, int listMetaTypeId) {
+        serializers[listMetaTypeId] = {Serializer(serializeComplexListType), Deserializer(deserializeComplexListType)};
+        serializers[metaTypeId] = {Serializer(serializeComplexType), Deserializer(deserializeComplexType)};
     }
 
 private:
-    QByteArray serializePrivate() const override {
-        qProtoDebug() << T::staticMetaObject.className() << "serializePrivate";
-        return serialize();
+
+    static QByteArray serializeComplexType(const ProtobufObjectPrivate *serializer, const QVariant &variantValue, int &/*outFieldIndex*/) {
+        T value = variantValue.value<T>();
+        return serializer->serializeLengthDelimited(value.serialize());
     }
 
-    void deserializePrivate(const QByteArray &data) override {
-        qProtoDebug() << T::staticMetaObject.className() << "deserializePrivate";
-        deserialize(data);
+    static void deserializeComplexType(ProtobufObjectPrivate *deserializer, QByteArray::const_iterator &it, QVariant &previous) {
+        T value;
+        value.deserialize(deserializer->deserializeLengthDelimited(it));
+        previous = QVariant::fromValue(value);
     }
-
-//TODO: migrate to this function for complex types serialization
-//    static QByteArray serializeSelf(const QVariant &variantValue) {
-//        T value = variantValue.value<T>();
-//        return value->serialize();
-//    }
 
     static QByteArray serializeComplexListType(const ProtobufObjectPrivate *serializer, const QVariant &listValue, int &outFieldIndex) {
         QList<T> list = listValue.value<QList<T>>();

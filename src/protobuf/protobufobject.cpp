@@ -237,12 +237,7 @@ QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValu
         return serializeFixedListType(propertyValue.value<DoubleList>(), fieldIndex);
     }
 
-    //Otherwise it's user type
-    const void *src = propertyValue.constData();
-    //TODO: each time huge objects will make own copies
-    //Probably generate fields reflection is better solution
-    auto value = std::unique_ptr<ProtobufObjectPrivate>(reinterpret_cast<ProtobufObjectPrivate *>(QMetaType::create(userType, src)));
-    return serializeLengthDelimited(value->serializePrivate());
+    return serializers[userType].serializer(this, propertyValue, fieldIndex);
 }
 
 void ProtobufObjectPrivate::deserializeProperty(WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it)
@@ -373,7 +368,5 @@ void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaType, Q
         newValue = deserializeListType<float>(it);
     } else if (userType == qMetaTypeId<DoubleList>()) {
         newValue = deserializeListType<double>(it);
-    } else {
-        newValue = deserializeProtobufObjectType(userType, it);
     }
 }
