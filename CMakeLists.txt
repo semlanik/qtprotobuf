@@ -29,7 +29,8 @@ elseif(NOT DEFINED MAKE_TESTS)
     set(MAKE_TESTS ON)
 endif()
 
-add_subdirectory("src/lib")
+add_subdirectory("src/protobuf")
+add_subdirectory("src/grpc")
 add_subdirectory("src/generator")
 
 message(STATUS "QTPROTOBUF_GENERATOR_EXEC_PATH: ${QTPROTOBUF_GENERATOR_EXEC_PATH}")

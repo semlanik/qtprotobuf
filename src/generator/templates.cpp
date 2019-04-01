@@ -137,17 +137,17 @@ const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE bool 
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
 
-const char *Templates::ConstructorDefinitionSyncTemplate = "$classname$::$classname$() : $parent_class$(\"$service_name$\")\n"
+const char *Templates::ConstructorDefinitionSyncTemplate = "\n$classname$::$classname$() : $parent_class$(\"$service_name$\")\n"
                                                            "{\n"
                                                            "}\n";
-const char *Templates::ClientMethodDefinitionSyncTemplate = "bool $classname$::$method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$)\n"
+const char *Templates::ClientMethodDefinitionSyncTemplate = "\nbool $classname$::$method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$)\n"
                                                             "{\n"
                                                             "    return call(\"$method_name$\", $param_name$, $return_name$);\n"
                                                             "}\n";
-const char *Templates::ClientMethodDefinitionAsyncTemplate = "bool $classname$::$method_name$(const $param_type$ &$param_name$, const qtprotobuf::AsyncReply<$return_type$> &reply)\n"
+const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nbool $classname$::$method_name$(const $param_type$ &$param_name$, const qtprotobuf::AsyncReply<$return_type$> &reply)\n"
                                                              "{\n"
                                                              "    //TODO: call transport method to serialize this method\n"
-                                                             "    return false;"
+                                                             "    return false;\n"
                                                              "}\n";
 
 const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> Templates::TypeReflection = {

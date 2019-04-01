@@ -26,11 +26,12 @@
 #pragma once
 
 #include <qtprotobuftypes.h>
+#include <qtprotobuflogging.h>
 #include <QDebug>
 
 //registerProtobufType Not a part of API
-#define registerProtobufType(X) qDebug() << # X << "Type Id: " << qRegisterMetaType<X>(# X);\
-                              qDebug() << # X << "Type Id: " << qRegisterMetaType<X>("qtprotobuf::"# X);
+#define registerProtobufType(X) qRegisterMetaType<X>(# X);\
+                                qRegisterMetaType<X>("qtprotobuf::"# X);
 
 namespace qtprotobuf {
 
@@ -38,7 +39,7 @@ class QtProtobuf {
 public:
     static void init() {
         static bool registationDone = false;
-        Q_ASSERT_X(!registationDone, "QtProtobuf", "Protobuf registation is already done");
+        Q_ASSERT_X(!registationDone, "QtProtobuf", "Protobuf registration is already done");
         if (!registationDone) {
             registerProtobufType(int32);
             registerProtobufType(int64);

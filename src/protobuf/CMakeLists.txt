@@ -1,6 +1,6 @@
-find_package(Qt5 COMPONENTS Core Network REQUIRED)
-if (Qt5Core_VERSION VERSION_LESS "5.12.0")
-    message(FATAL_ERROR "Required Qt version is 5.12+")
+find_package(Qt5 COMPONENTS Core REQUIRED)
+if (Qt5Core_VERSION VERSION_LESS "5.8.0")
+    message(FATAL_ERROR "Required Qt version is 5.8+")
 endif()
 
 set(SUPPORT_LIBRARY_TARGET qtprotobufsupport)
@@ -19,25 +19,17 @@ file(GLOB SOURCES universallistmodelbase.cpp
     universallistmodel.cpp
     protobufobject.cpp
     qtprotobuf.cpp
-    qtprotobuflogging.cpp
-    asyncreply.cpp
-    abstractchannel.cpp
-    http2channel.cpp
-    abstractclient.cpp)
+    qtprotobuflogging.cpp)
 
 file(GLOB HEADERS universallistmodelbase.h
     universallistmodel.h
     protobufobject.h
     qtprotobuftypes.h
-    qtprotobuf.h
-    asyncreply.h
-    abstractchannel.h
-    http2channel.h
-    abstractclient.h)
+    qtprotobuf.h)
 
 add_library(${SUPPORT_LIBRARY_TARGET} ${SOURCES})
 set_target_properties(${SUPPORT_LIBRARY_TARGET} PROPERTIES PUBLIC_HEADER "${HEADERS}")
-target_link_libraries(${SUPPORT_LIBRARY_TARGET} Qt5::Core Qt5::Network)
+target_link_libraries(${SUPPORT_LIBRARY_TARGET} Qt5::Core)
 
 install(TARGETS ${SUPPORT_LIBRARY_TARGET}
     ARCHIVE DESTINATION lib
