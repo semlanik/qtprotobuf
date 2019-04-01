@@ -37,27 +37,18 @@ if(MAKE_TESTS)
     set(testgeneration "test_generation")
     set(TESTS_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/tests)
     file(MAKE_DIRECTORY ${TESTS_OUT_DIR})
-    add_custom_target(${testgeneration})
-
+    file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/*.proto)
     if(WIN32)
-        file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/*.proto)
-        add_custom_command(TARGET ${testgeneration} POST_BUILD
-            COMMAND ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe --plugin=protoc-gen-${PROJECT_NAME}=$<TARGET_FILE:${PROJECT_NAME}> --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests -I=${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
-            ${PROTO_FILES}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
-            DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
-            COMMENT "Generating test headers"
-            )
-    elseif(UNIX)
-        file(GLOB PROTO_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/*.proto)
-        add_custom_command(TARGET ${testgeneration}
-            COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=$<TARGET_FILE:${PROJECT_NAME}> --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
-            ${PROTO_FILES}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
-            DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
-            COMMENT "Generating test headers"
-            )
+        set(Protobuf_PROTOC_EXECUTABLE ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe)
     endif()
+
+    add_custom_target(${testgeneration})
+    add_custom_command(TARGET ${testgeneration}
+            COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=$<TARGET_FILE:${PROJECT_NAME}> --qtprotobuf_out=${TESTS_OUT_DIR} -I=${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/ ${PROTO_FILES}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
+            DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
+            COMMENT "Generating test headers"
+            )
 
     add_dependencies(${testgeneration} ${PROJECT_NAME})
     add_subdirectory("tests")
