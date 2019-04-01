@@ -46,7 +46,7 @@ void ClassSourceGeneratorBase::printClassHeaderInclude()
 {
     std::string includeFileName = mClassName;
     utils::tolower(includeFileName);
-    mPrinter.Print({{"type_lower", includeFileName}}, Templates::InternalIncludeTemplate);
+    mPrinter.Print({{"include", includeFileName}}, Templates::InternalIncludeTemplate);
 }
 
 void ClassSourceGeneratorBase::printUsingNamespaces(const std::unordered_set<std::string> &namespaces)

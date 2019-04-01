@@ -81,7 +81,6 @@ private:
     static bool isComplexType(const ::google::protobuf::FieldDescriptor *field);
     static bool isListType(const ::google::protobuf::FieldDescriptor *field);
 
-private:
     template<typename T>
     std::string getNamespacesList(const T *message, std::vector<std::string> &container);
 };

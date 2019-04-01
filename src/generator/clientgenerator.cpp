@@ -66,6 +66,6 @@ void ClientGenerator::printClientIncludes()
     includeSet.insert("abstractclient");
     includeSet.insert("asyncreply");
     for(auto type : includeSet) {
-        mPrinter.Print({{"type_lower", type}}, Templates::InternalIncludeTemplate);
+        mPrinter.Print({{"include", type}}, Templates::InternalIncludeTemplate);
     }
 }

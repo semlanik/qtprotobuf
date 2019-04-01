@@ -21,10 +21,10 @@ message SimpleFileEnumMessage {
   repeated TestEnum globalEnumList = 2;
 }
 
-//message StepChildEnumMessage {
-//  SimpleEnumMessage.LocalEnum localStepChildEnum = 1;
-//  repeated SimpleEnumMessage.LocalEnum localStepChildList = 2;
-//}
+message StepChildEnumMessage {
+  SimpleEnumMessage.LocalEnum localStepChildEnum = 1;
+  repeated SimpleEnumMessage.LocalEnum localStepChildList = 2;
+}
 
 message SimpleExternalEnumMessage {
     qtprotobufnamespace1.externaltests.ExternalTestEnum externalEnum = 1;
