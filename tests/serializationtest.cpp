@@ -40,6 +40,15 @@
 #include "simplestringmessage.h"
 #include "complexmessage.h"
 #include "repeatedintmessage.h"
+#include "repeatedsintmessage.h"
+#include "repeateduintmessage.h"
+#include "repeatedint64message.h"
+#include "repeatedsint64message.h"
+#include "repeateduint64message.h"
+#include "repeatedfixedintmessage.h"
+#include "repeatedsfixedintmessage.h"
+#include "repeatedfixedint64message.h"
+#include "repeatedsfixedint64message.h"
 #include "repeatedstringmessage.h"
 #include "repeateddoublemessage.h"
 #include "repeatedbytesmessage.h"
@@ -1395,12 +1404,128 @@ TEST_F(SerializationTest, ComplexTypeSerializeTest)
 TEST_F(SerializationTest, RepeatedIntMessageTest)
 {
     RepeatedIntMessage test;
-    test.setTestRepeatedInt({1, 400, 3, 4, 5, 6});
+    test.setTestRepeatedInt({1, 321, -65999, 123245, -3, 3});
+    QByteArray result = test.serialize();
+    //qDebug() << "RepeatedIntMessage result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a1101c102b1fcfbff0fedc207fdffffff0f03"));
+    test.setTestRepeatedInt(int32List());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedSIntMessageTest)
+{
+    RepeatedSIntMessage test;
+    test.setTestRepeatedInt({1, 321, -65999, 123245, -3, 3});
+    QByteArray result = test.serialize();
+    //qDebug() << "RepeatedSIntMessage result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a0b0282059d8708da850f0506"));
+
+    test.setTestRepeatedInt(sint32List());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedUIntMessageTest)
+{
+    RepeatedUIntMessage test;
+    test.setTestRepeatedInt({1, 321, 65999, 123245, 3});
     QByteArray result = test.serialize();
     //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a0702a00606080a0c"));
+    ASSERT_TRUE(result == QByteArray::fromHex("0a0a01c102cf8304edc20703"));
 
-    test.setTestRepeatedInt(int32List());
+    test.setTestRepeatedInt(uint32List());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedInt64MessageTest)
+{
+    RepeatedInt64Message test;
+    test.setTestRepeatedInt({1, 321, -65999, 12324523123123, -3, 3});
+    QByteArray result = test.serialize();
+    //qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a1f01c102b1fcfbffffffffffff01b3c3cab6d8e602fdffffffffffffffff0103"));
+
+    test.setTestRepeatedInt(int64List());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedSInt64MessageTest)
+{
+    RepeatedSInt64Message test;
+    test.setTestRepeatedInt({1, 321, -65999, 12324523123123, -3, 3});
+    QByteArray result = test.serialize();
+    //qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a0f0282059d8708e68695edb0cd050506"));
+
+    test.setTestRepeatedInt(sint64List());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedUInt64MessageTest)
+{
+    RepeatedUInt64Message test;
+    test.setTestRepeatedInt({1, 321, 65999, 123245, 123245324235425234, 3});
+    QByteArray result = test.serialize();
+    //qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a1301c102cf8304edc207d28b9fda82dff6da0103"));
+
+    test.setTestRepeatedInt(uint64List());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedFixedIntMessageTest)
+{
+    RepeatedFixedIntMessage test;
+    test.setTestRepeatedInt({1, 321, 65999, 12324523, 3, 3});
+    QByteArray result = test.serialize();
+    //qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a180100000041010000cf010100ab0ebc000300000003000000"));
+
+    test.setTestRepeatedInt(fint32List());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedSFixedIntMessageTest)
+{
+    RepeatedSFixedIntMessage test;
+    test.setTestRepeatedInt({1, 321, -65999, 12324523, -3, 3});
+    QByteArray result = test.serialize();
+    //qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a18010000004101000031fefeffab0ebc00fdffffff03000000"));
+
+    test.setTestRepeatedInt(sfint32List());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedFixedInt64MessageTest)
+{
+    RepeatedFixedInt64Message test;
+    test.setTestRepeatedInt({1, 321, 65999, 123245324235425234, 3, 3});
+    QByteArray result = test.serialize();
+    //qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a3001000000000000004101000000000000cf01010000000000d2c5472bf8dab50103000000000000000300000000000000"));
+
+    test.setTestRepeatedInt(fint64List());
+    result = test.serialize();
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, RepeatedSFixedInt64MessageTest)
+{
+    RepeatedSFixedInt64Message test;
+    test.setTestRepeatedInt({1, 321, -65999, 123245324235425234, -3, 3});
+    QByteArray result = test.serialize();
+    //qDebug() << "result " << result.toHex();
+    ASSERT_TRUE(result == QByteArray::fromHex("0a300100000000000000410100000000000031fefeffffffffffd2c5472bf8dab501fdffffffffffffff0300000000000000"));
+
+    test.setTestRepeatedInt(sfint64List());
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
 }

@@ -39,7 +39,6 @@ class QtProtobuf {
 public:
     static void init() {
         static bool registationDone = false;
-        Q_ASSERT_X(!registationDone, "QtProtobuf", "Protobuf registration is already done");
         if (!registationDone) {
             registerProtobufType(int32);
             registerProtobufType(int64);

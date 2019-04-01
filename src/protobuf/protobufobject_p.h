@@ -76,7 +76,7 @@ public:
     inline static bool decodeHeaderByte(unsigned char typeByte, int &fieldIndex, WireTypes &wireType);
 
     QByteArray serializeValue(const QVariant &propertyValue, int fieldIndex, const QLatin1Literal &typeName) const;
-    QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex) const;
+    QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex, const QLatin1Literal &typeName) const;
 
     void deserializeProperty(WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it);
     void deserializeUserType(const QMetaProperty &metaType, QByteArray::const_iterator &it, QVariant &newValue);
@@ -94,8 +94,27 @@ public:
     }
 
     template<typename V,
-             typename std::enable_if_t<std::is_integral<V>::value, int> = 0>
+             typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
     QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) const {
+        qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
+
+        if (listValue.count() <= 0) {
+            outFieldIndex = NotUsedFieldIndex;
+            return QByteArray();
+        }
+
+        QByteArray serializedList;
+        for (auto &value : listValue) {
+            serializedList.append(serializeVarint(value));
+        }
+        //If internal field type is not LengthDelimited, exact amount of fields to be specified
+        serializedList.prepend(serializeVarintZero(static_cast<unsigned int>(serializedList.size())));
+        return serializedList;
+    }
+
+    template<typename V,
+             typename std::enable_if_t<std::is_signed<V>::value, int> = 0>
+    QByteArray serializeListTypeZigZag(const QList<V> &listValue, int &outFieldIndex) const {
         qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
 
         if (listValue.count() <= 0) {
@@ -113,8 +132,31 @@ public:
     }
 
     template<typename V,
-             typename std::enable_if_t<std::is_floating_point<V>::value, int> = 0>
+             typename std::enable_if_t<std::is_unsigned<V>::value, int> = 0>
     QByteArray serializeListType(const QList<V> &listValue, int &outFieldIndex) const {
+        qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
+
+        if (listValue.count() <= 0) {
+            outFieldIndex = NotUsedFieldIndex;
+            return QByteArray();
+        }
+
+        QByteArray serializedList;
+        for (auto &value : listValue) {
+            serializedList.append(serializeVarint(value));
+        }
+        //If internal field type is not LengthDelimited, exact amount of fields to be specified
+        serializedList.prepend(serializeVarintZero(static_cast<unsigned int>(serializedList.size())));
+        return serializedList;
+    }
+
+    template<typename V,
+             typename std::enable_if_t<std::is_floating_point<V>::value
+                                       || std::is_same<V, unsigned int>::value
+                                       || std::is_same<V, qulonglong>::value
+                                       || std::is_same<V, int>::value
+                                       || std::is_same<V, qlonglong>::value, int> = 0>
+    QByteArray serializeFixedListType(const QList<V> &listValue, int &outFieldIndex) const {
         qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
 
         if (listValue.count() <= 0) {
@@ -348,7 +390,9 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_floating_point<V>::value
                                         || std::is_same<V, unsigned int>::value
-                                        || std::is_same<V, qulonglong>::value, int> = 0>
+                                        || std::is_same<V, qulonglong>::value
+                                        || std::is_same<V, int>::value
+                                        || std::is_same<V, qlonglong>::value, int> = 0>
     QVariant deserializeListType(QByteArray::const_iterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 

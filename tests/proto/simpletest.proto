@@ -95,10 +95,6 @@ message ComplexMessage {
     SimpleStringMessage testComplexField = 2;
 }
 
-message RepeatedIntMessage {
-    repeated sint32 testRepeatedInt = 1;
-}
-
 message RepeatedStringMessage {
     repeated string testRepeatedString = 1;
 }
@@ -123,6 +119,45 @@ message RepeatedExternalComplexMessage {
     repeated qtprotobufnamespace1.externaltests.ExternalComplexMessage testExternalComplex = 1;
 }
 
+message RepeatedSIntMessage {
+    repeated sint32 testRepeatedInt = 1;
+}
+
+message RepeatedIntMessage {
+    repeated int32 testRepeatedInt = 1;
+}
+
+message RepeatedUIntMessage {
+    repeated uint32 testRepeatedInt = 1;
+}
+
+message RepeatedSInt64Message {
+    repeated sint64 testRepeatedInt = 1;
+}
+
+message RepeatedInt64Message {
+    repeated int64 testRepeatedInt = 1;
+}
+
+message RepeatedUInt64Message {
+    repeated uint64 testRepeatedInt = 1;
+}
+
+message RepeatedFixedIntMessage {
+    repeated fixed32 testRepeatedInt = 1;
+}
+
+message RepeatedSFixedIntMessage {
+    repeated sfixed32 testRepeatedInt = 1;
+}
+
+message RepeatedFixedInt64Message {
+    repeated fixed64 testRepeatedInt = 1;
+}
+
+message RepeatedSFixedInt64Message {
+    repeated sfixed64 testRepeatedInt = 1;
+}
 
 enum TestEnum {
     TEST_ENUM_VALUE0 = 0;
