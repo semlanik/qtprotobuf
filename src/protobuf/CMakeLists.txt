@@ -29,7 +29,7 @@ file(GLOB HEADERS universallistmodelbase.h
 
 add_library(${SUPPORT_LIBRARY_TARGET} ${SOURCES})
 set_target_properties(${SUPPORT_LIBRARY_TARGET} PROPERTIES PUBLIC_HEADER "${HEADERS}")
-target_link_libraries(${SUPPORT_LIBRARY_TARGET} Qt5::Core)
+target_link_libraries(${SUPPORT_LIBRARY_TARGET} PUBLIC Qt5::Core)
 
 install(TARGETS ${SUPPORT_LIBRARY_TARGET}
     ARCHIVE DESTINATION lib

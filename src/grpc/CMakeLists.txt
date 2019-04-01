@@ -27,7 +27,7 @@ file(GLOB HEADERS asyncreply.h
 
 add_library(${GRPC_SUPPORT_LIBRARY_TARGET} ${SOURCES})
 set_target_properties(${GRPC_SUPPORT_LIBRARY_TARGET} PROPERTIES PUBLIC_HEADER "${HEADERS}")
-target_link_libraries(${GRPC_SUPPORT_LIBRARY_TARGET} qtprotobufsupport Qt5::Core Qt5::Network)
+target_link_libraries(${GRPC_SUPPORT_LIBRARY_TARGET} PRIVATE qtprotobufsupport PUBLIC Qt5::Network)
 
 install(TARGETS ${GRPC_SUPPORT_LIBRARY_TARGET}
     ARCHIVE DESTINATION lib
