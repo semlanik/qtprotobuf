@@ -29,9 +29,5 @@ elseif(UNIX)
     endif()
 endif()
 
-# executable is called from parent CMakeLists.txt to generate test code
-# this sets variable to access the generator exectable
-set(QTPROTOBUF_GENERATOR_EXEC_PATH ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME} PARENT_SCOPE)
-
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin)

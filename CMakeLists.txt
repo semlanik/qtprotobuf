@@ -33,8 +33,6 @@ add_subdirectory("src/protobuf")
 add_subdirectory("src/grpc")
 add_subdirectory("src/generator")
 
-message(STATUS "QTPROTOBUF_GENERATOR_EXEC_PATH: ${QTPROTOBUF_GENERATOR_EXEC_PATH}")
-
 if(MAKE_TESTS)
     set(testgeneration "test_generation")
     set(TESTS_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/tests)
@@ -44,7 +42,7 @@ if(MAKE_TESTS)
     if(WIN32)
         file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/*.proto)
         add_custom_command(TARGET ${testgeneration} POST_BUILD
-            COMMAND ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe --plugin=protoc-gen-${PROJECT_NAME}=${QTPROTOBUF_GENERATOR_EXEC_PATH} --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests -I=${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
+            COMMAND ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe --plugin=protoc-gen-${PROJECT_NAME}=$<TARGET_FILE:${PROJECT_NAME}> --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests -I=${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             ${PROTO_FILES}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
@@ -53,7 +51,7 @@ if(MAKE_TESTS)
     elseif(UNIX)
         file(GLOB PROTO_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/*.proto)
         add_custom_command(TARGET ${testgeneration}
-            COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=${QTPROTOBUF_GENERATOR_EXEC_PATH} --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
+            COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=$<TARGET_FILE:${PROJECT_NAME}> --qtprotobuf_out=${CMAKE_CURRENT_BINARY_DIR}/tests
             ${PROTO_FILES}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/proto/
             DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
