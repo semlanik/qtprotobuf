@@ -15,7 +15,6 @@ if(Qt5_POSITION_INDEPENDENT_CODE)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-
 file(GLOB SOURCES asyncreply.cpp
     abstractchannel.cpp
     http2channel.cpp

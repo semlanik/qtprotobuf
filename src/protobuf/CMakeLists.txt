@@ -1,6 +1,6 @@
 find_package(Qt5 COMPONENTS Core REQUIRED)
-if (Qt5Core_VERSION VERSION_LESS "5.8.0")
-    message(FATAL_ERROR "Required Qt version is 5.8+")
+if (Qt5Core_VERSION VERSION_LESS "5.11.0")
+    message(FATAL_ERROR "Required Qt version is 5.11+")
 endif()
 
 set(SUPPORT_LIBRARY_TARGET qtprotobufsupport)
