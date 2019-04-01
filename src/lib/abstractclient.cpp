@@ -56,5 +56,5 @@ bool AbstractClient::call(const QString &method, const QByteArray& arg, QByteArr
     }
 
     d->lastError = d->channel->call(method, d->service, arg, ret);
-    return d->lastError != AbstractChannel::Ok;
+    return d->lastError == AbstractChannel::Ok;
 }
