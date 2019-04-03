@@ -22,11 +22,7 @@ if(WIN32)
     target_link_libraries(${PROJECT_NAME} "${PROTOBUF_LIBRARIES_PATH}/libprotobuf.lib")
     target_link_libraries(${PROJECT_NAME} "${PROTOBUF_LIBRARIES_PATH}/libprotoc.lib")
 elseif(UNIX)
-    if(NOT Protobuf_FOUND)
-        target_link_libraries(${PROJECT_NAME} libprotoc)
-    else()
-        target_link_libraries(${PROJECT_NAME} ${Protobuf_LIBRARIES} ${Protobuf_PROTOC_LIBRARY})
-    endif()
+    target_link_libraries(${PROJECT_NAME} ${Protobuf_LIBRARIES} ${Protobuf_PROTOC_LIBRARY})
 endif()
 
 install(TARGETS ${PROJECT_NAME}

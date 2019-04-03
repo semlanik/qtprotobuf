@@ -11,6 +11,8 @@ if (NOT Protobuf_FOUND OR Protobuf_VERSION VERSION_LESS "3.0.0")
     )
     set(protobuf_BUILD_TESTS OFF CACHE BOOL "Disable protobuf tests build" FORCE)
     set(Protobuf_PROTOC_EXECUTABLE protoc)
+    set(Protobuf_PROTOC_LIBRARY libprotoc)
+    set(Protobuf_LIBRARIES "")
     add_subdirectory("${Protobuf_SOURCE_DIR}/cmake" ${Protobuf_BINARY_DIR})
 endif()
 
