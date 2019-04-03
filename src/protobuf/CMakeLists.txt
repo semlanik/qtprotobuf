@@ -1,6 +1,5 @@
 set(SUPPORT_LIBRARY_TARGET qtprotobufsupport)
 
-include_directories(${Qt5Core_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS})
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)

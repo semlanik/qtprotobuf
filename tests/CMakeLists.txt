@@ -11,7 +11,6 @@ if (UNIX AND NOT GTest_FOUND)
     add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
 endif()
 
-include_directories(${Qt5Core_INCLUDE_DIRS})
 set(CMAKE_INCLUDE_CURRENT_DIR OFF)
 set(CMAKE_AUTOMOC OFF)
 set(CMAKE_AUTORCC ON)
@@ -34,11 +33,8 @@ if(WIN32)
     set(GTEST_BOTH_LIBRARIES "")
     #Set  path to GTest include directory
     include_directories(${GTEST_INCLUDE_PATHS} "/")
-elseif(UNIX)
-    include_directories(${GTEST_INCLUDE_DIRS})
 endif()
 
-file(GLOB HEADERS ${TESTS_OUT_DIR}/*.h)
 file(GLOB SOURCES main.cpp
     simpletest.cpp
     serializationtest.cpp
@@ -46,10 +42,8 @@ file(GLOB SOURCES main.cpp
     servertest.cpp
     clienttest.cpp)
 
-file(GLOB PROTOS proto/*.proto)
-
 set(testtarget "qtprotobuf_test")
-add_executable(${testtarget} ${SOURCES} ${MOC_SOURCES} ${GENERATED_SOURCES} ${PROTOS})
+add_executable(${testtarget} ${SOURCES} ${MOC_SOURCES} ${GENERATED_SOURCES})
 if(WIN32)
     target_link_libraries(${testtarget} "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" qtprotobufsupport qtgrpc Qt5::Core)
 elseif(UNIX)
