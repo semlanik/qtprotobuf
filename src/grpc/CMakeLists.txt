@@ -1,8 +1,3 @@
-find_package(Qt5 COMPONENTS Core Network REQUIRED)
-if (Qt5Core_VERSION VERSION_LESS "5.8.0")
-    message(FATAL_ERROR "Required Qt version is 5.8+")
-endif()
-
 set(GRPC_SUPPORT_LIBRARY_TARGET qtgrpc)
 
 include_directories(${Qt5Core_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/src/protobuf)

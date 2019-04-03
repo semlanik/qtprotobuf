@@ -11,8 +11,6 @@ if (UNIX AND NOT GTest_FOUND)
     add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
 endif()
 
-find_package(Qt5 COMPONENTS Core REQUIRED)
-
 include_directories(${Qt5Core_INCLUDE_DIRS})
 set(CMAKE_INCLUDE_CURRENT_DIR OFF)
 set(CMAKE_AUTOMOC OFF)
