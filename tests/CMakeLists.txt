@@ -1,16 +1,22 @@
-find_package(GTest)
-if (UNIX AND NOT GTest_FOUND)
-    # FIXME: if protobuf was downloaded then the following include is not more needed
-    include(../cmake/DownloadProject.cmake)
-    download_project(PROJ                GTest
-        GIT_REPOSITORY      https://github.com/google/googletest.git
-        GIT_TAG             v1.8.x
-        )
-    # uncomment if gmock is going to be needed
-    set(BUILD_GMOCK OFF CACHE BOOL "Disable gmock build functionality" FORCE)
-    add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
+set(testgeneration "test_generation")
+set(TESTS_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+file(MAKE_DIRECTORY ${TESTS_OUT_DIR})
+file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto)
+# test sources generation
+if(WIN32)
+    set(Protobuf_PROTOC_EXECUTABLE ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe)
 endif()
 
+add_custom_target(${testgeneration})
+add_custom_command(TARGET ${testgeneration}
+        COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=$<TARGET_FILE:${PROJECT_NAME}> --qtprotobuf_out=${TESTS_OUT_DIR} -I=${CMAKE_CURRENT_SOURCE_DIR}/proto/ ${PROTO_FILES}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/proto/
+        DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
+        COMMENT "Generating test headers"
+)
+add_dependencies(${testgeneration} ${PROJECT_NAME})
+
+# test sources build
 set(CMAKE_INCLUDE_CURRENT_DIR OFF)
 set(CMAKE_AUTOMOC OFF)
 set(CMAKE_AUTORCC ON)
