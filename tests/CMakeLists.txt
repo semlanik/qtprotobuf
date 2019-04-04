@@ -2,7 +2,7 @@ set(testgeneration "test_generation")
 set(TESTS_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
 file(MAKE_DIRECTORY ${TESTS_OUT_DIR})
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto)
-# test sources generation
+## test sources generation
 if(WIN32)
     set(Protobuf_PROTOC_EXECUTABLE ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe)
 endif()
@@ -16,21 +16,82 @@ add_custom_command(TARGET ${testgeneration}
 )
 add_dependencies(${testgeneration} ${PROJECT_NAME})
 
-# test sources build
-set(CMAKE_INCLUDE_CURRENT_DIR OFF)
-set(CMAKE_AUTOMOC OFF)
+## test sources build
+# policy enables automoc for generated files
+cmake_policy(SET CMP0071 NEW)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 if(Qt5_POSITION_INDEPENDENT_CODE)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-file(GLOB GENERATED_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/*.h)
-file(GLOB GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/*.cpp)
+set(EXPECTED_GENERATED_HEADERS 
+    complexmessage.h
+    externalcomplexmessage.h
+    globalenums.h
+    repeatedbytesmessage.h
+    repeatedcomplexmessage.h
+    repeateddoublemessage.h
+    repeatedexternalcomplexmessage.h
+    repeatedfixedint64message.h
+    repeatedfixedintmessage.h
+    repeatedfloatmessage.h
+    repeatedint64message.h
+    repeatedintmessage.h
+    repeatedsfixedint64message.h
+    repeatedsfixedintmessage.h
+    repeatedsint64message.h
+    repeatedsintmessage.h
+    repeatedstringmessage.h
+    repeateduint64message.h
+    repeateduintmessage.h
+    simpleboolmessage.h
+    simplebytesmessage.h
+    simpledoublemessage.h
+    simpleenummessage.h
+    simpleexternalenummessage.h
+    simpleexternalmessage.h
+    simplefileenummessage.h
+    simplefixedint32message.h
+    simplefixedint64message.h
+    simplefloatmessage.h
+    simpleint64message.h
+    simpleintmessage.h
+    simplesfixedint32message.h
+    simplesfixedint64message.h
+    simplesint64message.h
+    simplesintmessage.h
+    simplestringmessage.h
+    simpleuint64message.h
+    simpleuintmessage.h
+    stepchildenummessage.h
+    testserviceclient.h
+    testserviceserver.h
+)
 
-#Manual moc_ files generation for qt
-list(FILTER GENERATED_SOURCES EXCLUDE REGEX "moc_.*cpp")
-QT5_WRAP_CPP(MOC_SOURCES ${GENERATED_HEADERS})
+foreach(EXPECTED_GENERATED_HEADER ${EXPECTED_GENERATED_HEADERS})
+   get_filename_component(GENERATED_HEADER_BASENAME ${EXPECTED_GENERATED_HEADER} NAME_WE)
+
+   list(APPEND GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_HEADER_BASENAME}.cpp)
+   list(APPEND GENERATED_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_HEADER_BASENAME}.h)
+endforeach(EXPECTED_GENERATED_HEADER)
+
+# TODO: so far the following cpp files are not generated 
+list(REMOVE_ITEM GENERATED_SOURCES 
+    ${CMAKE_CURRENT_BINARY_DIR}/testserviceserver.cpp 
+    ${CMAKE_CURRENT_BINARY_DIR}/globalenums.cpp
+)
+set_source_files_properties(${GENERATED_SOURCES} PROPERTIES GENERATED TRUE)
+
+# TODO: but their headers should be included in sources for executable to be processed by moc
+list(APPEND GENERATED_SOURCES 
+    ${CMAKE_CURRENT_BINARY_DIR}/testserviceserver.h
+    ${CMAKE_CURRENT_BINARY_DIR}/globalenums.h
+)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/globalenums.h PROPERTIES GENERATED TRUE)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/testserviceserver.h PROPERTIES GENERATED TRUE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/protobuf ${CMAKE_SOURCE_DIR}/src/grpc)
 
@@ -49,7 +110,7 @@ file(GLOB SOURCES main.cpp
     clienttest.cpp)
 
 set(testtarget "qtprotobuf_test")
-add_executable(${testtarget} ${SOURCES} ${MOC_SOURCES} ${GENERATED_SOURCES})
+add_executable(${testtarget} ${SOURCES} ${GENERATED_SOURCES})
 if(WIN32)
     target_link_libraries(${testtarget} "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" qtprotobufsupport qtgrpc Qt5::Core)
 elseif(UNIX)
