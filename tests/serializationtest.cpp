@@ -55,6 +55,7 @@
 #include "repeatedfloatmessage.h"
 #include "repeatedcomplexmessage.h"
 #include "simpleboolmessage.h"
+#include "simpleenummessage.h"
 #include "qtprotobuf.h"
 
 using namespace qtprotobufnamespace::tests;
@@ -1624,6 +1625,15 @@ TEST_F(SerializationTest, BoolMessageSerializeTest)
     result = test.serialize();
     ASSERT_EQ(0, result.size());
     ASSERT_TRUE(result == QByteArray::fromHex(""));
+}
+
+TEST_F(SerializationTest, SimpleEnumMessageTest)
+{
+    SimpleEnumMessage test;
+    test.setLocalEnum(SimpleEnumMessage::LOCAL_ENUM_VALUE0);
+    QByteArray result = test.serialize();
+    ASSERT_EQ(2, result.size());
+    ASSERT_TRUE(result == QByteArray::fromHex("0801"));
 }
 
 //TEST_F(SerializationTest, DISABLE_BenchmarkTest)

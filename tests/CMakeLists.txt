@@ -72,6 +72,7 @@ set(EXPECTED_GENERATED_HEADERS
     stepchildenummessage.h
     testserviceclient.h
     testserviceserver.h
+    simpleenumlistmessage.h
 )
 
 foreach(EXPECTED_GENERATED_HEADER ${EXPECTED_GENERATED_HEADERS})

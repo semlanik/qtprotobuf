@@ -13,6 +13,16 @@ message SimpleEnumMessage {
   }
 
   LocalEnum localEnum = 1;
+}
+
+message SimpleEnumListMessage {
+  enum LocalEnum {
+    LOCAL_ENUM_VALUE0 = 0;
+    LOCAL_ENUM_VALUE1 = 1;
+    LOCAL_ENUM_VALUE2 = 2;
+    LOCAL_ENUM_VALUE3 = 3;
+  }
+
   repeated LocalEnum localEnumList = 2;
 }
 
