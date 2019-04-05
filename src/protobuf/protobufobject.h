@@ -61,7 +61,7 @@ public:
             QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
             const char *propertyName = metaProperty.name();
             const QVariant &propertyValue = instance->property(propertyName);
-            result.append(serializeValue(propertyValue, fieldIndex, QLatin1Literal(metaProperty.typeName())));
+            result.append(serializeValue(propertyValue, fieldIndex, metaProperty));
         }
 
         return result;

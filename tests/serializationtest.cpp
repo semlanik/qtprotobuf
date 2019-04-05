@@ -1627,13 +1627,13 @@ TEST_F(SerializationTest, BoolMessageSerializeTest)
     ASSERT_TRUE(result == QByteArray::fromHex(""));
 }
 
-TEST_F(SerializationTest, SimpleEnumMessageTest)
+TEST_F(SerializationTest, SimpleEnumMessageSerializeTest)
 {
     SimpleEnumMessage test;
-    test.setLocalEnum(SimpleEnumMessage::LOCAL_ENUM_VALUE0);
+    test.setLocalEnum(SimpleEnumMessage::LOCAL_ENUM_VALUE2);
     QByteArray result = test.serialize();
     ASSERT_EQ(2, result.size());
-    ASSERT_TRUE(result == QByteArray::fromHex("0801"));
+    ASSERT_TRUE(result == QByteArray::fromHex("0802"));
 }
 
 //TEST_F(SerializationTest, DISABLE_BenchmarkTest)

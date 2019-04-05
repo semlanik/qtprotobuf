@@ -43,6 +43,11 @@ AbstractClient::AbstractClient(const QString &service, QObject *parent) : QObjec
 
 }
 
+AbstractClient::~AbstractClient()
+{
+    delete d;
+}
+
 void AbstractClient::attachChannel(std::shared_ptr<AbstractChannel> channel)
 {
     d->channel = channel;

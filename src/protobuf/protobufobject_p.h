@@ -72,7 +72,7 @@ public:
     inline static unsigned char encodeHeaderByte(int fieldIndex, WireTypes wireType);
     inline static bool decodeHeaderByte(unsigned char typeByte, int &fieldIndex, WireTypes &wireType);
 
-    QByteArray serializeValue(const QVariant &propertyValue, int fieldIndex, const QLatin1Literal &typeName) const;
+    QByteArray serializeValue(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) const;
     QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex, const QLatin1Literal &typeName) const;
 
     void deserializeProperty(WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it);
@@ -81,6 +81,11 @@ public:
     //###########################################################################
     //                           Serialization helpers
     //###########################################################################
+    QByteArray serializeLengthDelimited(const QString &data) const {
+        qProtoDebug() << __func__ << "data.size" << data.size() << "data" << data;
+        return serializeLengthDelimited(data.toUtf8());
+    }
+
     QByteArray serializeLengthDelimited(const QByteArray &data) const {
         qProtoDebug() << __func__ << "data.size" << data.size() << "data" << data.toHex();
 
@@ -183,7 +188,8 @@ public:
 
         QByteArray serializedList;
         for (auto &value : listValue) {
-            serializedList.append(serializeValue(value, outFieldIndex, QLatin1Literal()));
+            serializedList.append(encodeHeaderByte(outFieldIndex, LengthDelimited));
+            serializedList.append(serializeLengthDelimited(value));
         }
 
         outFieldIndex = NotUsedFieldIndex;

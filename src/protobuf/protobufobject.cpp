@@ -67,12 +67,14 @@ namespace {
     static const char *sfint64ListTypeName = "sfint64List";
 }
 
-QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, int fieldIndex, const QLatin1Literal &typeName) const
+QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) const
 {
-    qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex << "typeName" << typeName;
+    QLatin1Literal typeName(metaProperty.typeName());
     QByteArray result;
     WireTypes type = UnknownWireType;
-    int resultSize = result.size();
+    qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex << "typeName"
+                  << typeName << static_cast<QMetaType::Type>(propertyValue.type());
+
     switch (static_cast<QMetaType::Type>(propertyValue.type())) {
     case QMetaType::Int:
         type = Varint;
@@ -86,7 +88,7 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
         } else {
             result.append(serializeVarint(propertyValue.toLongLong()));
         }
-        if (resultSize == result.size()) {
+        if (0 == result.size()) {
             fieldIndex = NotUsedFieldIndex;
         }
         break;
@@ -102,7 +104,7 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
         } else {
             result.append(serializeVarint(propertyValue.toLongLong()));
         }
-        if (resultSize == result.size()) {
+        if (0 == result.size()) {
             fieldIndex = NotUsedFieldIndex;
         }
         break;
@@ -116,7 +118,7 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
         break;
     case QMetaType::QString:
         type = LengthDelimited;
-        result.append(serializeLengthDelimited(propertyValue.toString().toUtf8()));
+        result.append(serializeLengthDelimited(propertyValue.toString()));
         break;
     case QMetaType::QByteArray:
         type = LengthDelimited;
@@ -131,8 +133,13 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
         result.append(serializeListType(propertyValue.value<QByteArrayList>(), fieldIndex));
         break;
     case QMetaType::User:
-        type = LengthDelimited;
-        result.append(serializeUserType(propertyValue, fieldIndex, typeName));
+        if(metaProperty.isEnumType()) {
+            type = Varint;
+            result.append(serializeVarint(propertyValue.toLongLong()));
+        } else {
+            type = LengthDelimited;
+            result.append(serializeUserType(propertyValue, fieldIndex, typeName));
+        }
         break;
     case QMetaType::UInt:
         if (typeName == fint32TypeNameP
@@ -143,7 +150,7 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
             type = Varint;
             result.append(serializeVarint(propertyValue.toUInt()));
         }
-        if (resultSize == result.size()) {
+        if (0 == result.size()) {
             fieldIndex = NotUsedFieldIndex;
         }
         break;
@@ -156,14 +163,14 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
             type = Varint;
             result.append(serializeVarint(propertyValue.toULongLong()));
         }
-        if (resultSize == result.size()) {
+        if (0 == result.size()) {
             fieldIndex = NotUsedFieldIndex;
         }
         break;
     case QMetaType::Bool:
         type = Varint;
         result.append(serializeVarint(propertyValue.toUInt()));
-        if (resultSize == result.size()) {
+        if (0 == result.size()) {
             fieldIndex = NotUsedFieldIndex;
         }
         break;

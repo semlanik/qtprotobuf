@@ -11,7 +11,7 @@ add_custom_target(${testgeneration})
 add_custom_command(TARGET ${testgeneration}
         COMMAND ${Protobuf_PROTOC_EXECUTABLE} --plugin=protoc-gen-${PROJECT_NAME}=$<TARGET_FILE:${PROJECT_NAME}> --qtprotobuf_out=${TESTS_OUT_DIR} -I=${CMAKE_CURRENT_SOURCE_DIR}/proto/ ${PROTO_FILES}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/proto/
-        DEPENDS ${PROJECT_NAME} ${PROTO_FILES}
+        DEPENDS ${PROTO_FILES}
         COMMENT "Generating test headers"
 )
 add_dependencies(${testgeneration} ${PROJECT_NAME})

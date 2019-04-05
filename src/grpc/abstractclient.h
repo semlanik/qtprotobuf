@@ -44,6 +44,7 @@ public:
 
 protected:
     AbstractClient(const QString &service, QObject *parent = nullptr);
+    virtual ~AbstractClient();
 
     template<typename A, typename R>
     bool call(const QString &method, const A &arg, R &ret) {
