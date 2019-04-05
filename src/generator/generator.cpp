@@ -83,13 +83,16 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 
     for (int i = 0; i < file->message_type_count(); i++) {
         const Descriptor *message = file->message_type(i);
+        if (message->nested_type_count() > 0) {
+            std::cerr << file->name() << ":" << (message->index() + 1) << ": " << " Error: Meta object features not supported for nested classes in " << message->full_name() << std::endl;
+            continue;
+        }
         std::string baseFilename(message->name());
         utils::tolower(baseFilename);
         stat(message->file()->name().c_str(), &protoFileStat);
 
         std::string filename = baseFilename + ".h";
         if (checkFileModification(&protoFileStat, outDir + filename)) {
-            std::cerr << "Regen" << filename << std::endl;
             ProtobufClassGenerator classGen(message,
                                       std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
             classGen.run();
@@ -97,7 +100,6 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 
         filename = baseFilename + ".cpp";
         if (checkFileModification(&protoFileStat, outDir + filename)) {
-            std::cerr << "Regen" << filename << std::endl;
             ProtobufSourceGenerator classSourceGen(message,
                                       std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
             classSourceGen.run();
