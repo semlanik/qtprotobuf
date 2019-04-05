@@ -43,6 +43,14 @@ if(DEFINED $ENV{MAKE_TESTS})
 elseif(NOT DEFINED MAKE_TESTS)
     set(MAKE_TESTS ON)
 endif()
+
+if(DEFINED $ENV{MAKE_EXAMPLES})
+    set(MAKE_EXAMPLES ${MAKE_EXAMPLES})
+elseif(NOT DEFINED MAKE_EXAMPLES)
+    set(MAKE_EXAMPLES ON)
+endif()
+
+
 if(MAKE_TESTS)
     find_package(GTest)
     if (UNIX AND NOT GTest_FOUND)
@@ -60,4 +68,8 @@ if(MAKE_TESTS)
     endif()
 
     add_subdirectory("tests")
+endif()
+
+if(MAKE_EXAMPLES)
+    add_subdirectory("examples/addressbook")
 endif()
