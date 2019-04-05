@@ -6,7 +6,7 @@ Protobuf plugin to generate Qt classes
 ```bash
 mkdir build
 cd build
-cmake [-DCMAKE_PREFIX_PATH=<PATH_TO_Qt5Config.cmake_OR_qt5-config.cmake>] ..
+cmake [-DCMAKE_PREFIX_PATH=<path/to/Qt5Config.cmake|path/to/qt5-config.cmake>] ..
 make -j<N>
 ```
 
@@ -20,5 +20,5 @@ cmake --build . --target qtprotobuf --config RELEASE
 
 ## Usage
 ```bash
-protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin>/qtprotobuf --qtprotobuf_out=<output_dir> <protofile>.proto
+protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin>/qtprotobuf --qtprotobuf_out=<output_dir> <protofile>.proto [--qtprotobuf_opt=out=<output_dir>]
 ```
