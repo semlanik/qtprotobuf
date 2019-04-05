@@ -51,6 +51,7 @@
 #include "repeatedsfixedintmessage.h"
 #include "repeatedfixedint64message.h"
 #include "repeatedsfixedint64message.h"
+#include "simpleenummessage.h"
 #include "repeatedcomplexmessage.h"
 
 using namespace qtprotobufnamespace::tests;
@@ -617,4 +618,11 @@ TEST_F(DeserializationTest, BoolDeserializeTest)
     //test.deserialize(QByteArray::fromHex(""));
     test.deserialize(QByteArray::fromHex("0800"));
     ASSERT_EQ(test.testFieldBool(), false);
+}
+
+TEST_F(DeserializationTest, SimpleEnumMessageDeserializeTest)
+{
+    SimpleEnumMessage test;
+    test.deserialize(QByteArray::fromHex("0803"));
+    ASSERT_EQ(test.localEnum(), SimpleEnumMessage::LOCAL_ENUM_VALUE3);
 }

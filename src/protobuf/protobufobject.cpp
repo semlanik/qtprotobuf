@@ -301,8 +301,12 @@ void ProtobufObjectPrivate::deserializeProperty(WireTypes wireType, const QMetaP
         newPropertyValue = deserializeLengthDelimited(it);
         break;
     case QMetaType::User:
-        newPropertyValue = metaProperty.read(this);
-        deserializeUserType(metaProperty, it, newPropertyValue);
+        if (metaProperty.isEnumType()) {
+            newPropertyValue = deserializeVarint<int32>(it);
+        } else {
+            newPropertyValue = metaProperty.read(this);
+            deserializeUserType(metaProperty, it, newPropertyValue);
+        }
         break;
     case QMetaType::QByteArrayList: {
         QByteArrayList currentValue = metaProperty.read(this).value<QByteArrayList>();
