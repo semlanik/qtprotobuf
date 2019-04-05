@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package qtprotobufnamespace.tests.nested;
+
+message NestedSimpleIntMessage {
+    sint32 testFieldInt = 1;
+    message SimpleIntMessage {
+        sint32 testFieldInt = 1;
+    }
+}
+
