@@ -34,6 +34,9 @@
 #include "clientsourcegenerator.h"
 #include "utils.h"
 
+#include <sys/stat.h>
+#include <time.h>
+
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/io/printer.h>
@@ -44,36 +47,64 @@ using namespace ::qtprotobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 
+namespace {
+#ifdef _WIN32
+    const char separator = '\\';
+#else
+    const char separator = '/';
+#endif
+
+bool checkFileModification(struct stat *protoFileStat, std::string filename) {
+    struct stat genFileStat;
+    return stat(filename.c_str(), &genFileStat) != 0 || difftime(protoFileStat->st_mtim.tv_sec, genFileStat.st_mtim.tv_sec) >= 0;
+}
+}
+
 bool QtGenerator::Generate(const FileDescriptor *file,
-                           const std::string &/*parameter*/,
+                           const std::string &parameter,
                            GeneratorContext *generatorContext,
                            std::string *error) const
 {
+    struct stat protoFileStat;
+    std::vector<std::pair<std::string, std::string> > parammap;
+    ParseGeneratorParameter(parameter, &parammap);
+    std::string outDir;
+
+    for(auto param : parammap) {
+        if (param.first == "out") {
+            outDir = param.second + separator;
+        }
+    }
+
     if (file->syntax() != FileDescriptor::SYNTAX_PROTO3) {
         *error = "Invalid proto used. This plugin only supports 'proto3' syntax";
         return false;
     }
 
-    std::set<std::string> extractedModels;
-
     for (int i = 0; i < file->message_type_count(); i++) {
         const Descriptor *message = file->message_type(i);
         std::string baseFilename(message->name());
         utils::tolower(baseFilename);
+        stat(message->file()->name().c_str(), &protoFileStat);
 
         std::string filename = baseFilename + ".h";
-        ProtobufClassGenerator classGen(message,
-                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
-        classGen.run();
+        if (checkFileModification(&protoFileStat, outDir + filename)) {
+            std::cerr << "Regen" << filename << std::endl;
+            ProtobufClassGenerator classGen(message,
+                                      std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
+            classGen.run();
+        }
 
-        std::set<std::string> models = classGen.extractModels();
-        extractedModels.insert(std::begin(models), std::end(models));
-
-        std::string sourceFileName = baseFilename + ".cpp";
-        ProtobufSourceGenerator classSourceGen(message,
-                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(sourceFileName))));
-        classSourceGen.run();
+        filename = baseFilename + ".cpp";
+        if (checkFileModification(&protoFileStat, outDir + filename)) {
+            std::cerr << "Regen" << filename << std::endl;
+            ProtobufSourceGenerator classSourceGen(message,
+                                      std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
+            classSourceGen.run();
+        }
     }
+
+    stat(file->name().c_str(), &protoFileStat);
 
     for (int i = 0; i < file->service_count(); i++) {
         const ServiceDescriptor* service = file->service(i);
@@ -81,19 +112,25 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         utils::tolower(baseFilename);
 
         std::string fullFilename = baseFilename + "server.h";
-        ServerGenerator serverGen(service,
-                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
-        serverGen.run();
+        if (checkFileModification(&protoFileStat, outDir + fullFilename)) {
+            ServerGenerator serverGen(service,
+                                      std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+            serverGen.run();
+        }
 
         fullFilename = baseFilename + "client.h";
-        ClientGenerator clientGen(service,
-                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
-        clientGen.run();
+        if (checkFileModification(&protoFileStat, outDir + fullFilename)) {
+            ClientGenerator clientGen(service,
+                                      std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+            clientGen.run();
+        }
 
         fullFilename = baseFilename + "client.cpp";
-        ClientSourceGenerator clientSrcGen(service,
-                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
-        clientSrcGen.run();
+        if (checkFileModification(&protoFileStat, outDir + fullFilename)) {
+            ClientSourceGenerator clientSrcGen(service,
+                                               std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+            clientSrcGen.run();
+        }
     }
     return true;
 }
