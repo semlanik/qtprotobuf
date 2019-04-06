@@ -8,15 +8,12 @@ if(Qt5_POSITION_INDEPENDENT_CODE)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-
-file(GLOB SOURCES universallistmodelbase.cpp
-    universallistmodel.cpp
+file(GLOB SOURCES
     protobufobject.cpp
     qtprotobuf.cpp
     qtprotobuflogging.cpp)
 
-file(GLOB HEADERS universallistmodelbase.h
-    universallistmodel.h
+file(GLOB HEADERS
     protobufobject.h
     qtprotobuftypes.h
     qtprotobuf.h)

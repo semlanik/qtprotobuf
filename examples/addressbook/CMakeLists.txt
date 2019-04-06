@@ -4,6 +4,8 @@ file(MAKE_DIRECTORY ${ADDRESSBOOK_OUT_DIR})
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/addressbook.proto)
 ## test sources generation
 if(WIN32)
+    #Needs to set path to protobuf libraries
+    set(PROTOBUF_INSTALATION_PATH "")
     set(Protobuf_PROTOC_EXECUTABLE ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe)
 endif()
 
@@ -65,9 +67,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/protobuf
 
 if(WIN32)
     #Set  path to GTest build libraries
-    set(GTEST_BOTH_LIBRARIES "")
+    set(GTEST_BOTH_LIBRARIES "D:/QtPro/Win32-Release")
     #Set  path to GTest include directory
-    include_directories(${GTEST_INCLUDE_PATHS} "/")
+    include_directories(${GTEST_INCLUDE_PATHS} "D:/QtPro/Win32-Release/googletest/include")
 endif()
 
 file(GLOB SOURCES main.cpp)
@@ -75,7 +77,7 @@ file(GLOB SOURCES main.cpp)
 set(addressbook "addressbook_example")
 add_executable(${addressbook} ${SOURCES} ${GENERATED_SOURCES})
 if(WIN32)
-    target_link_libraries(${addressbook} qtprotobufsupport qtgrpc Qt5::Core)
+    target_link_libraries(${addressbook} qtgrpc Qt5::Quick)
 elseif(UNIX)
     target_link_libraries(${addressbook} qtgrpc Qt5::Quick)
 endif()

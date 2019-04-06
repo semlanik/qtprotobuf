@@ -4,6 +4,8 @@ file(MAKE_DIRECTORY ${TESTS_OUT_DIR})
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto)
 ## test sources generation
 if(WIN32)
+    #Needs to set path to protobuf libraries
+    set(PROTOBUF_INSTALATION_PATH "")
     set(Protobuf_PROTOC_EXECUTABLE ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe)
 endif()
 
@@ -14,6 +16,7 @@ add_custom_command(TARGET ${testgeneration}
         DEPENDS ${PROTO_FILES}
         COMMENT "Generating test headers"
 )
+
 add_dependencies(${testgeneration} ${PROJECT_NAME})
 
 ## test sources build
@@ -80,6 +83,7 @@ foreach(EXPECTED_GENERATED_HEADER ${EXPECTED_GENERATED_HEADERS})
 
     list(APPEND GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_HEADER_BASENAME}.cpp)
     list(APPEND GENERATED_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_HEADER_BASENAME}.h)
+
     set_property(SOURCE ${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_HEADER_BASENAME}.cpp PROPERTY SKIP_AUTOMOC ON)
 endforeach(EXPECTED_GENERATED_HEADER)
 
@@ -89,17 +93,18 @@ if(${CMAKE_VERSION} VERSION_LESS "3.10.0")
 endif()
 
 # TODO: so far the following cpp files are not generated 
-list(REMOVE_ITEM GENERATED_SOURCES 
-    ${CMAKE_CURRENT_BINARY_DIR}/testserviceserver.cpp 
+list(REMOVE_ITEM GENERATED_SOURCES
+    ${CMAKE_CURRENT_BINARY_DIR}/testserviceserver.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/globalenums.cpp
 )
 set_source_files_properties(${GENERATED_SOURCES} PROPERTIES GENERATED TRUE)
 
 # TODO: but their headers should be included in sources for executable to be processed by moc
-list(APPEND GENERATED_SOURCES 
+list(APPEND GENERATED_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/testserviceserver.h
     ${CMAKE_CURRENT_BINARY_DIR}/globalenums.h
 )
+
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/globalenums.h PROPERTIES GENERATED TRUE)
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/testserviceserver.h PROPERTIES GENERATED TRUE)
 
@@ -107,9 +112,11 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/protobuf
 
 if(WIN32)
     #Set  path to GTest build libraries
-    set(GTEST_BOTH_LIBRARIES "")
+    set(GTEST_BOTH_LIBRARIES "D:/QtPro/Win32-Release")
+
     #Set  path to GTest include directory
-    include_directories(${GTEST_INCLUDE_PATHS} "/")
+    include_directories(${GTEST_INCLUDE_PATHS} "D:/QtPro/Win32-Release/googletest/include")
+    find_package(Qt5 COMPONENTS Core Quick Network REQUIRED)
 endif()
 
 file(GLOB SOURCES main.cpp
@@ -121,8 +128,9 @@ file(GLOB SOURCES main.cpp
 
 set(testtarget "qtprotobuf_test")
 add_executable(${testtarget} ${SOURCES} ${GENERATED_SOURCES})
+
 if(WIN32)
-    target_link_libraries(${testtarget} "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" qtprotobufsupport qtgrpc Qt5::Core)
+    target_link_libraries(${testtarget} qtprotobufsupport "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" Qt5::Quick Qt5::Core Qt5::Network)
 elseif(UNIX)
     target_link_libraries(${testtarget} gtest qtgrpc)
 endif()

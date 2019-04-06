@@ -56,7 +56,11 @@ namespace {
 
 bool checkFileModification(struct stat *protoFileStat, std::string filename) {
     struct stat genFileStat;
+#ifdef _WIN32
+    return stat(filename.c_str(), &genFileStat) != 0 || difftime(protoFileStat->st_mtime, genFileStat.st_mtime) >= 0;
+#else
     return stat(filename.c_str(), &genFileStat) != 0 || difftime(protoFileStat->st_mtim.tv_sec, genFileStat.st_mtim.tv_sec) >= 0;
+#endif
 }
 }
 

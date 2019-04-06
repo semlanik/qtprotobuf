@@ -32,7 +32,7 @@
 
 namespace qtprotobuf {
 
-class Http2ChannelPrivate;
+struct Http2ChannelPrivate;
 
 class Http2Channel final : public AbstractChannel
 {
