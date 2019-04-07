@@ -87,10 +87,8 @@ foreach(EXPECTED_GENERATED_HEADER ${EXPECTED_GENERATED_HEADERS})
     set_property(SOURCE ${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_HEADER_BASENAME}.cpp PROPERTY SKIP_AUTOMOC ON)
 endforeach(EXPECTED_GENERATED_HEADER)
 
-if(${CMAKE_VERSION} VERSION_LESS "3.10.0")
-    qt5_wrap_cpp(MOC_SOURCES ${GENERATED_HEADERS})
-    list(APPEND GENERATED_SOURCES ${MOC_SOURCES})
-endif()
+qt5_wrap_cpp(MOC_SOURCES ${GENERATED_HEADERS})
+list(APPEND GENERATED_SOURCES ${MOC_SOURCES})
 
 # TODO: so far the following cpp files are not generated 
 list(REMOVE_ITEM GENERATED_SOURCES
@@ -112,10 +110,10 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/protobuf
 
 if(WIN32)
     #Set  path to GTest build libraries
-    set(GTEST_BOTH_LIBRARIES "D:/QtPro/Win32-Release")
+    set(GTEST_BOTH_LIBRARIES "")
 
     #Set  path to GTest include directory
-    include_directories(${GTEST_INCLUDE_PATHS} "D:/QtPro/Win32-Release/googletest/include")
+    include_directories(${GTEST_INCLUDE_PATHS} "/")
     find_package(Qt5 COMPONENTS Core Quick Network REQUIRED)
 endif()
 
@@ -130,7 +128,7 @@ set(testtarget "qtprotobuf_test")
 add_executable(${testtarget} ${SOURCES} ${GENERATED_SOURCES})
 
 if(WIN32)
-    target_link_libraries(${testtarget} qtprotobufsupport "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" Qt5::Quick Qt5::Core Qt5::Network)
+    target_link_libraries(${testtarget} qtgrpc qtprotobufsupport "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" Qt5::Quick Qt5::Core Qt5::Network)
 elseif(UNIX)
     target_link_libraries(${testtarget} gtest qtgrpc)
 endif()

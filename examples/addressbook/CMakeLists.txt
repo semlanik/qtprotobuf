@@ -67,9 +67,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/protobuf
 
 if(WIN32)
     #Set  path to GTest build libraries
-    set(GTEST_BOTH_LIBRARIES "D:/QtPro/Win32-Release")
+    set(GTEST_BOTH_LIBRARIES "")
     #Set  path to GTest include directory
-    include_directories(${GTEST_INCLUDE_PATHS} "D:/QtPro/Win32-Release/googletest/include")
+    include_directories(${GTEST_INCLUDE_PATHS} "/")
 endif()
 
 file(GLOB SOURCES main.cpp)
