@@ -29,7 +29,7 @@
 #include <QList>
 #include <QMetaType>
 
-template<typename T>
+template<typename T, int = 0>
 struct transparent {
     transparent(T t = T()) : _t(t){}
     T _t;
@@ -38,16 +38,16 @@ struct transparent {
 };
 
 namespace qtprotobuf {
-using int32 = int;
-using int64 = qlonglong;
-using uint32 = unsigned int;
-using uint64 = qulonglong;
-using sint32 = int;
-using sint64 = qlonglong;
-using fint32 = transparent<uint32_t>;
-using fint64 = transparent<uint64_t>;
-using sfint32 = transparent<int32_t>;
-using sfint64 = transparent<int64_t>;
+using int32 = int32_t;
+using int64 = int64_t;
+using uint32 = uint32_t;
+using uint64 = uint64_t;
+using sint32 = transparent<int32_t>;
+using sint64 = transparent<int64_t>;
+using fint32 = transparent<uint32_t, 1>;
+using fint64 = transparent<uint64_t, 1>;
+using sfint32 = transparent<int32_t, 1>;
+using sfint64 = transparent<int64_t, 1>;
 
 using int32List = QList<int32>;
 using int64List = QList<int64>;
@@ -66,6 +66,8 @@ using DoubleList = QList<double>;
 
 Q_DECLARE_METATYPE(qtprotobuf::int32)
 Q_DECLARE_METATYPE(qtprotobuf::int64)
+Q_DECLARE_METATYPE(qtprotobuf::sint32)
+Q_DECLARE_METATYPE(qtprotobuf::sint64)
 Q_DECLARE_METATYPE(qtprotobuf::uint32)
 Q_DECLARE_METATYPE(qtprotobuf::uint64)
 Q_DECLARE_METATYPE(qtprotobuf::fint32)
@@ -75,6 +77,8 @@ Q_DECLARE_METATYPE(qtprotobuf::sfint64)
 
 Q_DECLARE_METATYPE(qtprotobuf::int32List)
 Q_DECLARE_METATYPE(qtprotobuf::int64List)
+Q_DECLARE_METATYPE(qtprotobuf::sint32List)
+Q_DECLARE_METATYPE(qtprotobuf::sint64List)
 Q_DECLARE_METATYPE(qtprotobuf::uint32List)
 Q_DECLARE_METATYPE(qtprotobuf::uint64List)
 Q_DECLARE_METATYPE(qtprotobuf::fint32List)

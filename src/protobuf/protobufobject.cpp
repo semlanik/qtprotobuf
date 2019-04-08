@@ -29,20 +29,6 @@ using namespace qtprotobuf;
 
 ProtobufObjectPrivate::SerializerRegistry ProtobufObjectPrivate::serializers = {};
 
-namespace {
-    static const char *sint32TypeNameP = "qtprotobuf::sint32";
-    static const char *sint32TypeName = "sint32";
-
-    static const char *sint64TypeNameP = "qtprotobuf::sint64";
-    static const char *sint64TypeName = "sint64";
-
-    static const char *sint32ListTypeNameP = "qtprotobuf::sint32List";
-    static const char *sint32ListTypeName = "sint32List";
-
-    static const char *sint64ListTypeNameP = "qtprotobuf::sint64List";
-    static const char *sint64ListTypeName = "sint64List";
-}
-
 QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty)
 {
     QLatin1Literal typeName(metaProperty.typeName());
@@ -52,26 +38,34 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
                   << typeName << static_cast<QMetaType::Type>(propertyValue.type());
 
     switch (static_cast<QMetaType::Type>(propertyValue.type())) {
+    case QMetaType::Long:
     case QMetaType::Int:
         type = Varint;
-        if (typeName == sint32TypeNameP
-                || typeName == sint32TypeName) {
-            result.append(serializeVarintZigZag(propertyValue.toInt()));
-        } else {
-            result.append(serializeVarint(propertyValue.toLongLong()));
-        }
+        //FIXME:
+        //Serialize to int64_t bacause of issue in reference implementation
+        result.append(serializeVarint(propertyValue.value<int64_t>()));
         if (0 == result.size()) {
             fieldIndex = NotUsedFieldIndex;
         }
         break;
     case QMetaType::LongLong:
         type = Varint;
-        if (typeName == sint64TypeNameP
-                || typeName == sint64TypeName) {
-            result.append(serializeVarintZigZag(propertyValue.toLongLong()));
-        } else {
-            result.append(serializeVarint(propertyValue.toLongLong()));
+        result.append(serializeVarint(propertyValue.value<int64_t>()));
+        if (0 == result.size()) {
+            fieldIndex = NotUsedFieldIndex;
         }
+        break;
+    case QMetaType::ULong:
+    case QMetaType::UInt:
+        type = Varint;
+        result.append(serializeVarint(propertyValue.value<uint32_t>()));
+        if (0 == result.size()) {
+            fieldIndex = NotUsedFieldIndex;
+        }
+        break;
+    case QMetaType::ULongLong:
+        type = Varint;
+        result.append(serializeVarint(propertyValue.value<uint64_t>()));
         if (0 == result.size()) {
             fieldIndex = NotUsedFieldIndex;
         }
@@ -108,20 +102,6 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
             result.append(serializeUserType(propertyValue, fieldIndex, typeName, type));
         }
         break;
-    case QMetaType::UInt:
-        type = Varint;
-        result.append(serializeVarint(propertyValue.toUInt()));
-        if (0 == result.size()) {
-            fieldIndex = NotUsedFieldIndex;
-        }
-        break;
-    case QMetaType::ULongLong:
-        type = Varint;
-        result.append(serializeVarint(propertyValue.toULongLong()));
-        if (0 == result.size()) {
-            fieldIndex = NotUsedFieldIndex;
-        }
-        break;
     case QMetaType::Bool:
         type = Varint;
         result.append(serializeVarint(propertyValue.toUInt()));
@@ -153,6 +133,14 @@ QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValu
     }
 
     //Check if it's special type
+    if (userType == qMetaTypeId<sint32>()) {
+        type = Varint;
+        return serializeVarintZigZag(propertyValue.value<sint32>());
+    }
+    if (userType == qMetaTypeId<sint64>()) {
+        type = Varint;
+        return serializeVarintZigZag(propertyValue.value<sint64>());
+    }
     if (userType == qMetaTypeId<fint32>()) {
         type = Fixed32;
         return serializeFixed(propertyValue.value<fint32>());
@@ -181,35 +169,27 @@ QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValu
     if (userType == qMetaTypeId<sfint64List>()) {
         return serializeListType(propertyValue.value<sfint64List>(), fieldIndex);
     }
-
     if (userType == qMetaTypeId<int32List>()) {
-        if (typeName == sint32ListTypeNameP
-                || typeName == sint32ListTypeName) {
-            return serializeListTypeZigZag(propertyValue.value<sint32List>(), fieldIndex);
-        }
         return serializeListType(propertyValue.value<int32List>(), fieldIndex);
     }
-
+    if (userType == qMetaTypeId<int64List>()) {
+        return serializeListType(propertyValue.value<int64List>(), fieldIndex);
+    }
+    if (userType == qMetaTypeId<sint32List>()) {
+        return serializeListTypeZigZag(propertyValue.value<sint32List>(), fieldIndex);
+    }
+    if (userType == qMetaTypeId<sint64List>()) {
+        return serializeListTypeZigZag(propertyValue.value<sint64List>(), fieldIndex);
+    }
     if (userType == qMetaTypeId<uint32List>()) {
         return serializeListType(propertyValue.value<uint32List>(), fieldIndex);
     }
-
-    if (userType == qMetaTypeId<int64List>()) {
-        if (typeName == sint64ListTypeNameP
-                || typeName == sint64ListTypeName) {
-            return serializeListTypeZigZag(propertyValue.value<sint64List>(), fieldIndex);
-        }
-        return serializeListType(propertyValue.value<int64List>(), fieldIndex);
-    }
-
     if (userType == qMetaTypeId<uint64List>()) {
         return serializeListType(propertyValue.value<uint64List>(), fieldIndex);
     }
-
     if (userType == qMetaTypeId<FloatList>()) {
         return serializeListType(propertyValue.value<FloatList>(), fieldIndex);
     }
-
     if (userType == qMetaTypeId<DoubleList>()) {
         return serializeListType(propertyValue.value<DoubleList>(), fieldIndex);
     }
@@ -237,22 +217,10 @@ void ProtobufObjectPrivate::deserializeProperty(WireTypes wireType, const QMetaP
         newPropertyValue = deserializeFixed<double>(it);
         break;
     case QMetaType::Int:
-        if (typeName == sint32TypeNameP
-                   || typeName == sint32TypeName) {
-            newPropertyValue = deserializeVarintZigZag<sint32>(it);
-        } else {
-            newPropertyValue = deserializeVarint<int64>(it);
-        }
+        newPropertyValue = deserializeVarint<int64>(it);
         break;
     case QMetaType::LongLong:
-        if (wireType == Fixed64) {
-            newPropertyValue = deserializeFixed<sfint64>(it);
-        } else if (typeName == sint64TypeNameP
-                   || typeName == sint64TypeName) {
-            newPropertyValue = deserializeVarintZigZag<sint64>(it);
-        } else {
-            newPropertyValue = deserializeVarint<int64>(it);
-        }
+        newPropertyValue = deserializeVarint<int64>(it);
         break;
     case QMetaType::QString:
         newPropertyValue = QString::fromUtf8(deserializeLengthDelimited(it));
@@ -302,6 +270,8 @@ void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaType, Q
     }
 
     if (userType == qMetaTypeId<fint32>()) {
+        newValue = deserializeVarintZigZag<sint32>(it);
+    } else if (userType == qMetaTypeId<fint32>()) {
         newValue = deserializeFixed<fint32>(it);
     } else if (userType == qMetaTypeId<fint64>()) {
         newValue = deserializeFixed<fint64>(it);
@@ -318,19 +288,13 @@ void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaType, Q
     } else if(userType == qMetaTypeId<sfint64List>()) {
         newValue = deserializeListType<sfint64>(it);
     } else if (userType == qMetaTypeId<int32List>()) {
-        if (typeName == sint32ListTypeNameP
-                || typeName == sint32ListTypeName) {
-            newValue = deserializeVarintListTypeZigZag<int32>(it);
-        } else {
-            newValue = deserializeVarintListType<int32>(it);
-        }
+        newValue = deserializeVarintListType<int32>(it);
     } else if (userType == qMetaTypeId<int64List>()) {
-        if (typeName == sint64ListTypeNameP
-                || typeName == sint64ListTypeName) {
-            newValue = deserializeVarintListTypeZigZag<int64>(it);
-        } else {
-            newValue = deserializeVarintListType<int64>(it);
-        }
+        newValue = deserializeVarintListType<int64>(it);
+    } else if (userType == qMetaTypeId<sint32List>()) {
+        newValue = deserializeVarintListTypeZigZag<sint32>(it);
+    } else if (userType == qMetaTypeId<sint64List>()) {
+        newValue = deserializeVarintListTypeZigZag<sint64>(it);
     } else if (userType == qMetaTypeId<uint32List>()) {
         newValue = deserializeVarintListType<uint32>(it);
     } else if (userType == qMetaTypeId<uint64List>()) {

@@ -170,7 +170,7 @@ message RepeatedSFixedInt64Message {
 }
 
 message SimpleSInt32MapMessage {
-    map<sint32, SimpleStringMessage> mapField = 1;
+    map<fixed32, SimpleStringMessage> mapField = 1;
 }
 
 message SimpleStringMapMessage {
