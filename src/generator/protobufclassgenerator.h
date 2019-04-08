@@ -71,11 +71,11 @@ public:
     void printInclude(const google::protobuf::FieldDescriptor *field, std::set<std::string> &existingIncludes);
     void printMaps();
     void printMapsMetaTypesDeclaration();
+    void printLocalEmumsMetaTypesDeclaration();
 
     std::set<std::string> extractModels() const;
 
 private:
-    bool isLocalMessageEnum(const ::google::protobuf::FieldDescriptor *field);
     EnumVisibility getEnumVisibility(const ::google::protobuf::FieldDescriptor *field);
 
 

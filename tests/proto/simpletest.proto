@@ -23,7 +23,7 @@ message SimpleEnumListMessage {
     LOCAL_ENUM_VALUE3 = 3;
   }
 
-  repeated LocalEnum localEnumList = 2;
+  repeated LocalEnum localEnumList = 1;
 }
 
 message SimpleFileEnumMessage {

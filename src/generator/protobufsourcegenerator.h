@@ -32,7 +32,7 @@ namespace generator {
 
 class ProtobufSourceGenerator : public ClassSourceGeneratorBase
 {
-    const google::protobuf::Descriptor* mMessage;
+    const google::protobuf::Descriptor *mMessage;
 public:
     ProtobufSourceGenerator(const google::protobuf::Descriptor *message, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
     void printRegisterBody();

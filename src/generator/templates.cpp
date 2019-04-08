@@ -128,6 +128,7 @@ const char *Templates::ConstructorContentTemplate = "\n{\n    registerTypes();\n
 
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n";
 const char *Templates::DeclareComplexListTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$List)\n";
+const char *Templates::RegisterMetaTypeDefaultTemplate = "        qRegisterMetaType<$namespaces$::$classname$>();\n";
 const char *Templates::RegisterMetaTypeTemplateNoNamespace = "        qRegisterMetaType<$namespaces$::$classname$>(\"$classname$\");\n";
 const char *Templates::RegisterMetaTypeTemplate = "        qRegisterMetaType<$namespaces$::$classname$>(\"$namespaces$::$classname$\");\n";
 

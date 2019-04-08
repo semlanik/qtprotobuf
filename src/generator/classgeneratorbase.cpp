@@ -110,3 +110,15 @@ void ClassGeneratorBase::printMetaTypeDeclaration()
                    Templates::DeclareComplexListTypeTemplate);
 }
 
+bool ClassGeneratorBase::isLocalMessageEnum(const google::protobuf::Descriptor *message,
+                                            const ::google::protobuf::FieldDescriptor *field)
+{
+    assert(field->enum_type() != nullptr);
+    for (int i = 0; i < message->enum_type_count(); i++) {
+        const auto enumDescr = message->enum_type(i);
+        if (enumDescr && enumDescr->full_name() == field->enum_type()->full_name()) {
+            return true;
+        }
+    }
+    return false;
+}

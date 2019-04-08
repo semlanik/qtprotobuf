@@ -89,6 +89,7 @@ public:
     static const char *ConstructorContentTemplate;
     static const char *DeclareMetaTypeTemplate;
     static const char *DeclareComplexListTypeTemplate;
+    static const char *RegisterMetaTypeDefaultTemplate;
     static const char *RegisterMetaTypeTemplate;
     static const char *RegisterMetaTypeTemplateNoNamespace;
     static const char *QEnumTemplate;

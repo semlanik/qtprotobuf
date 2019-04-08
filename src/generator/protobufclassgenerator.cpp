@@ -280,7 +280,11 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
         namespaceTypeName = getNamespacesList(enumType, typeNamespace);
         EnumVisibility visibility = getEnumVisibility(field);
         if (visibility == LOCAL_ENUM) {
-            typeName = typeName.append(enumType->name());
+            if(field->is_repeated()) {
+                typeName = typeName.append(mClassName + "::" + enumType->name());
+            } else {
+                typeName = typeName.append(enumType->name());
+            }
         } else if (visibility == GLOBAL_ENUM) {
             typeName = namespaceTypeName.append(Templates::GlobalEnumClassNameTemplate)
                     .append("::").append(enumType->name());
@@ -407,6 +411,21 @@ void ProtobufClassGenerator::printMaps()
     Outdent();
 }
 
+void ProtobufClassGenerator::printLocalEmumsMetaTypesDeclaration()
+{
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        const FieldDescriptor* field = mMessage->field(i);
+        if (field == nullptr || field->enum_type() == nullptr)
+            continue;
+
+        if (field->type() == FieldDescriptor::TYPE_ENUM
+                && isLocalMessageEnum(mMessage, field)) {
+             mPrinter.Print({{"classname", mClassName + "::" + field->enum_type()->name() + "List"},
+                             {"namespaces", mNamespacesColonDelimited}}, Templates::DeclareMetaTypeTemplate);
+        }
+    }
+}
+
 void ProtobufClassGenerator::printMapsMetaTypesDeclaration()
 {
     for (int i = 0; i < mMessage->field_count(); i++) {
@@ -492,7 +511,7 @@ ProtobufClassGenerator::EnumVisibility ProtobufClassGenerator::getEnumVisibility
 {
     assert(field->enum_type() != nullptr);
 
-    if (isLocalMessageEnum(field)) {
+    if (isLocalMessageEnum(mMessage, field)) {
         return LOCAL_ENUM;
     }
 
@@ -509,18 +528,6 @@ ProtobufClassGenerator::EnumVisibility ProtobufClassGenerator::getEnumVisibility
     }
 
     return GLOBAL_ENUM;
-}
-
-bool ProtobufClassGenerator::isLocalMessageEnum(const ::google::protobuf::FieldDescriptor *field)
-{
-    assert(field->enum_type() != nullptr);
-    for (int i = 0; i < mMessage->enum_type_count(); i++) {
-        const auto enumDescr = mMessage->enum_type(i);
-        if (enumDescr->full_name() == field->enum_type()->full_name()) {
-            return true;
-        }
-    }
-    return false;
 }
 
 void ProtobufClassGenerator::printClassMembers()
@@ -563,4 +570,5 @@ void ProtobufClassGenerator::run()
     encloseNamespaces();
     printMetaTypeDeclaration();
     printMapsMetaTypesDeclaration();
+    printLocalEmumsMetaTypesDeclaration();
 }

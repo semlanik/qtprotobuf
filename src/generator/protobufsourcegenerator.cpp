@@ -38,7 +38,6 @@ ProtobufSourceGenerator::ProtobufSourceGenerator(const google::protobuf::Descrip
     ClassSourceGeneratorBase(message->full_name(), std::move(out))
   , mMessage(message)
 {
-
 }
 
 void ProtobufSourceGenerator::printRegisterBody()
@@ -48,7 +47,15 @@ void ProtobufSourceGenerator::printRegisterBody()
 
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
-        if (field->is_map()) {
+        if (field->type() == FieldDescriptor::TYPE_ENUM
+                && isLocalMessageEnum(mMessage, field)) {
+            mPrinter.Print({{"classname", mClassName + "::" + field->enum_type()->name() + "List"},
+                            {"namespaces", mNamespacesColonDelimited}},
+                           Templates::RegisterMetaTypeTemplateNoNamespace);
+            mPrinter.Print({{"classname", mClassName+ "::" + field->enum_type()->name() + "List"},
+                            {"namespaces", mNamespacesColonDelimited}},
+                           Templates::RegisterMetaTypeTemplate);
+        } else if (field->is_map()) {
             mPrinter.Print({{"classname", field->message_type()->name()},
                             {"namespaces", mClassName}},
                            Templates::RegisterMetaTypeTemplate);

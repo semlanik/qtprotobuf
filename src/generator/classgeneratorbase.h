@@ -65,7 +65,8 @@ protected:
     void printMetaTypeDeclaration();
     void encloseNamespaces();
     void encloseNamespaces(int count);
-
+    bool isLocalMessageEnum(const google::protobuf::Descriptor *message,
+                            const ::google::protobuf::FieldDescriptor *field);
 
     template<typename T>
     void printQEnums(const T *message) {
