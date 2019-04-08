@@ -105,9 +105,9 @@ protected:
 
 private:
 
-    static QByteArray serializeComplexType(const ProtobufObjectPrivate *serializer, const QVariant &variantValue, int &/*outFieldIndex*/) {
+    static QByteArray serializeComplexType(const QVariant &variantValue, int &/*outFieldIndex*/) {
         T value = variantValue.value<T>();
-        return serializer->serializeLengthDelimited(value.serialize());
+        return serializeLengthDelimited(value.serialize());
     }
 
     static void deserializeComplexType(ProtobufObjectPrivate *deserializer, QByteArray::const_iterator &it, QVariant &previous) {
@@ -116,9 +116,9 @@ private:
         previous = QVariant::fromValue(value);
     }
 
-    static QByteArray serializeComplexListType(const ProtobufObjectPrivate *serializer, const QVariant &listValue, int &outFieldIndex) {
+    static QByteArray serializeComplexListType(const QVariant &listValue, int &outFieldIndex) {
         QList<T> list = listValue.value<QList<T>>();
-        return serializer->serializeListType(list, outFieldIndex);
+        return serializeListType(list, outFieldIndex);
     }
 
     static void deserializeComplexListType(ProtobufObjectPrivate *deserializer, QByteArray::const_iterator &it, QVariant &previous) {

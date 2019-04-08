@@ -67,7 +67,7 @@ namespace {
     static const char *sfint64ListTypeName = "sfint64List";
 }
 
-QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) const
+QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty)
 {
     QLatin1Literal typeName(metaProperty.typeName());
     QByteArray result;
@@ -184,7 +184,7 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
     return result;
 }
 
-QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValue, int &fieldIndex, const QLatin1Literal &typeName) const
+QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValue, int &fieldIndex, const QLatin1Literal &typeName)
 {
     qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex;
     int userType = propertyValue.userType();
@@ -192,7 +192,7 @@ QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValu
     //First looking type serializer in registred serializers
     auto it = serializers.find(userType);
     if (it != std::end(serializers)) {
-        return (it->second).serializer(this, propertyValue, fieldIndex);
+        return (it->second).serializer(propertyValue, fieldIndex);
     }
 
     //Check if it's special list
@@ -237,14 +237,14 @@ QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValu
     }
 
     if (userType == qMetaTypeId<FloatList>()) {
-        return serializeFixedListType(propertyValue.value<FloatList>(), fieldIndex);
+        return serializeListType(propertyValue.value<FloatList>(), fieldIndex);
     }
 
     if (userType == qMetaTypeId<DoubleList>()) {
-        return serializeFixedListType(propertyValue.value<DoubleList>(), fieldIndex);
+        return serializeListType(propertyValue.value<DoubleList>(), fieldIndex);
     }
 
-    return serializers[userType].serializer(this, propertyValue, fieldIndex);
+    return serializers[userType].serializer(propertyValue, fieldIndex);
 }
 
 void ProtobufObjectPrivate::deserializeProperty(WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it)
