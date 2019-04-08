@@ -650,20 +650,36 @@ TEST_F(SimpleTest, SimpleSInt32MapMessage)
 {
     const char* propertyName = "mapField";
     SimpleSInt32MapMessage::registerTypes();
+    SimpleSInt32MapMessage test;
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleSInt32MapMessage::MapFieldEntry>()));
     int propertyNumber = SimpleSInt32MapMessage::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_STREQ(SimpleSInt32MapMessage::staticMetaObject.property(propertyNumber).typeName(), "MapFieldEntry");
+    ASSERT_STREQ(SimpleSInt32MapMessage::staticMetaObject.property(propertyNumber).typeName(), "SimpleSInt32MapMessage::MapFieldEntry");
     ASSERT_EQ(SimpleSInt32MapMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<SimpleSInt32MapMessage::MapFieldEntry>());
     ASSERT_STREQ(SimpleSInt32MapMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    SimpleSInt32MapMessage::MapFieldEntry testMap = {{10, {"Some 10"}}, {0, {"Some 0"}}, {44, {"Some 44"}}};
+    test.setMapField(testMap);
+    ASSERT_TRUE(test.property(propertyName).value<SimpleSInt32MapMessage::MapFieldEntry>() == testMap);
+    ASSERT_TRUE(test.mapField() == testMap);
+    ASSERT_STREQ(test.mapField()[10].testFieldString().toStdString().c_str(), "Some 10");
+    ASSERT_STREQ(test.mapField()[0].testFieldString().toStdString().c_str(), "Some 0");
+    ASSERT_STREQ(test.mapField()[44].testFieldString().toStdString().c_str(), "Some 44");
 }
 
 TEST_F(SimpleTest, SimpleStringMapMessage)
 {
     const char* propertyName = "mapField";
     SimpleStringMapMessage::registerTypes();
+    SimpleStringMapMessage test;
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleStringMapMessage::MapFieldEntry>()));
     int propertyNumber = SimpleStringMapMessage::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_STREQ(SimpleStringMapMessage::staticMetaObject.property(propertyNumber).typeName(), "MapFieldEntry");
+    ASSERT_STREQ(SimpleStringMapMessage::staticMetaObject.property(propertyNumber).typeName(), "SimpleStringMapMessage::MapFieldEntry");
     ASSERT_EQ(SimpleStringMapMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<SimpleStringMapMessage::MapFieldEntry>());
     ASSERT_STREQ(SimpleStringMapMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+    SimpleStringMapMessage::MapFieldEntry testMap = {{"key 10", {"Some 10", nullptr}}, {"key 0", {"Some 0", nullptr}}, {"key 44", {"Some 44", nullptr}}};
+    test.setMapField(testMap);
+    ASSERT_TRUE(test.property(propertyName).value<SimpleStringMapMessage::MapFieldEntry>() == testMap);
+    ASSERT_TRUE(test.mapField() == testMap);
+    ASSERT_STREQ(test.mapField()["key 10"].testFieldString().toStdString().c_str(), "Some 10");
+    ASSERT_STREQ(test.mapField()["key 0"].testFieldString().toStdString().c_str(), "Some 0");
+    ASSERT_STREQ(test.mapField()["key 44"].testFieldString().toStdString().c_str(), "Some 44");
 }

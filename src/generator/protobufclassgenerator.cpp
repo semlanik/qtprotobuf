@@ -269,8 +269,8 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
         namespaceTypeName = getNamespacesList(msg, typeNamespace);
         typeName = namespaceTypeName.append(msg->name());
 
-        if ( field->is_map() ) {
-            return field->message_type()->name();
+        if (field->is_map()) {
+            return mClassName + "::" + field->message_type()->name();
         }
         if (field->is_repeated()) {
             return namespaceTypeName.append("List");
@@ -360,7 +360,33 @@ bool ProtobufClassGenerator::isComplexType(const FieldDescriptor *field)
 
 void ProtobufClassGenerator::printConstructor()
 {
-    mPrinter.Print({{"classname", mClassName}}, Templates::ProtoConstructorTemplate);
+    std::string parameterList;
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        const FieldDescriptor* field = mMessage->field(i);
+        std::string fieldTypeName = getTypeName(field);
+        std::string fieldName = field->name();
+        fieldName[0] = ::tolower(fieldName[0]);
+        switch (field->type()) {
+        case FieldDescriptor::TYPE_BYTES:
+        case FieldDescriptor::TYPE_STRING:
+        case FieldDescriptor::TYPE_MESSAGE:
+            parameterList += "const " + fieldTypeName + " &" + fieldName + " = " + fieldTypeName + "()";
+            break;
+        default:
+            parameterList += fieldTypeName + " " + fieldName + " = " + "{}";
+            break;
+        }
+        parameterList += ", ";
+    }
+    mPrinter.Print({{"classname", mClassName},
+                    {"parameter_list", parameterList}}, Templates::ProtoConstructorTemplate);
+
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        const FieldDescriptor* field = mMessage->field(i);
+        std::string fieldName = field->name();
+        fieldName[0] = ::tolower(fieldName[0]);
+        mPrinter.Print({{"property_name", fieldName}}, Templates::PropertyInitializerTemplate);
+    }
     mPrinter.Print(Templates::ConstructorContentTemplate);
 }
 
@@ -369,6 +395,7 @@ void ProtobufClassGenerator::printMaps()
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
+
         if (field->is_map()) {
             std::string keyType = getTypeName(field->message_type()->field(0));
             std::string valueType = getTypeName(field->message_type()->field(1));

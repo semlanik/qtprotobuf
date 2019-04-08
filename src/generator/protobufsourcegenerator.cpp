@@ -50,6 +50,9 @@ void ProtobufSourceGenerator::printRegisterBody()
         const FieldDescriptor* field = mMessage->field(i);
         if (field->is_map()) {
             mPrinter.Print({{"classname", field->message_type()->name()},
+                            {"namespaces", mClassName}},
+                           Templates::RegisterMetaTypeTemplate);
+            mPrinter.Print({{"classname", field->message_type()->name()},
                             {"namespaces", mNamespacesColonDelimited + "::" + mClassName}},
                            Templates::RegisterMetaTypeTemplate);
         }

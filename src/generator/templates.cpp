@@ -74,7 +74,7 @@ const char *Templates::PublicBlockTemplate = "\npublic:\n";
 const char *Templates::PrivateBlockTemplate = "\nprivate:\n";
 const char *Templates::EnumDefinitionTemplate = "enum $enum$ {\n";
 const char *Templates::EnumFieldTemplate = "$enumvalue$ = $value$,\n";
-const char *Templates::ProtoConstructorTemplate = "$classname$(QObject *parent = nullptr) : ProtobufObject(parent)\n";
+const char *Templates::ProtoConstructorTemplate = "$classname$($parameter_list$QObject *parent = nullptr) : ProtobufObject(parent)";
 const char *Templates::ConstructorTemplate = "$classname$();\n";
 const char *Templates::CopyConstructorTemplate = "$classname$(const $classname$ &other) : ProtobufObject() {\n";
 const char *Templates::MoveConstructorTemplate = "$classname$($classname$ &&other) : ProtobufObject() {\n";
@@ -123,10 +123,12 @@ const char *Templates::EnumTemplate = "$type$";
 const char *Templates::SimpleBlockEnclosureTemplate = "}\n\n";
 const char *Templates::SemicolonBlockEnclosureTemplate = "};\n";
 const char *Templates::EmptyBlockTemplate = "{}\n\n";
-const char *Templates::ConstructorContentTemplate = "{\n    registerTypes();\n}\n";
+const char *Templates::PropertyInitializerTemplate = "\n    ,m_$property_name$($property_name$)";
+const char *Templates::ConstructorContentTemplate = "\n{\n    registerTypes();\n}\n";
 
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n";
 const char *Templates::DeclareComplexListTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$List)\n";
+const char *Templates::RegisterMetaTypeTemplateNoNamespace = "        qRegisterMetaType<$namespaces$::$classname$>(\"$classname$\");\n";
 const char *Templates::RegisterMetaTypeTemplate = "        qRegisterMetaType<$namespaces$::$classname$>(\"$namespaces$::$classname$\");\n";
 
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";

@@ -36,8 +36,8 @@ message Address {
     uint64 zipCode = 1;
     string streetAddress1 = 2;
     string streetAddress2 = 3;
-    string State = 4;
-    uint32 Country = 5;
+    string state = 4;
+    uint32 country = 5;
 }
 
 message Job {

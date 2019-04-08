@@ -85,10 +85,12 @@ public:
     static const char *SimpleBlockEnclosureTemplate;
     static const char *SemicolonBlockEnclosureTemplate;
     static const char *EmptyBlockTemplate;
+    static const char *PropertyInitializerTemplate;
     static const char *ConstructorContentTemplate;
     static const char *DeclareMetaTypeTemplate;
     static const char *DeclareComplexListTypeTemplate;
     static const char *RegisterMetaTypeTemplate;
+    static const char *RegisterMetaTypeTemplateNoNamespace;
     static const char *QEnumTemplate;
 
     //Service templates
