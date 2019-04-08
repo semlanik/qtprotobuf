@@ -177,10 +177,10 @@ TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
     const char* propertyName = "testFieldFixedInt32";
     SimpleFixedInt32Message test;
     int propertyNumber = SimpleFixedInt32Message::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_EQ(SimpleFixedInt32Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<fint32>());
+    ASSERT_EQ(SimpleFixedInt32Message::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<fint32>());
     ASSERT_STREQ(SimpleFixedInt32Message::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::fint32");
     ASSERT_STREQ(SimpleFixedInt32Message::staticMetaObject.property(propertyNumber).name(), propertyName);
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<fint32>(1)));
     ASSERT_EQ(test.property(propertyName).value<fint32>(), 1);
     ASSERT_EQ(test.testFieldFixedInt32(), 1);
 }
@@ -190,10 +190,10 @@ TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
     const char* propertyName = "testFieldFixedInt64";
     SimpleFixedInt64Message test;
     int propertyNumber = SimpleFixedInt64Message::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_EQ(SimpleFixedInt64Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<fint64>());
+    ASSERT_EQ(SimpleFixedInt64Message::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<fint64>());
     ASSERT_STREQ(SimpleFixedInt64Message::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::fint64");
     ASSERT_STREQ(SimpleFixedInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<fint64>(1)));
     ASSERT_EQ(test.property(propertyName).value<fint64>(), 1);
     ASSERT_EQ(test.testFieldFixedInt64(), 1);
 }
@@ -203,11 +203,11 @@ TEST_F(SimpleTest, SimpleSFixedInt32MessageTest)
     const char* propertyName = "testFieldFixedInt32";
     SimpleSFixedInt32Message test;
     int propertyNumber = SimpleSFixedInt32Message::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_EQ(SimpleSFixedInt32Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<sfint32>());
+    ASSERT_EQ(SimpleSFixedInt32Message::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<sfint32>());
     ASSERT_STREQ(SimpleSFixedInt32Message::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::sfint32");
     ASSERT_STREQ(SimpleSFixedInt32Message::staticMetaObject.property(propertyNumber).name(), propertyName);
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
-    ASSERT_EQ(test.property(propertyName).value<fint32>(), 1);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sfint32>(1)));
+    ASSERT_EQ(test.property(propertyName).value<sfint32>(), 1);
     ASSERT_EQ(test.testFieldFixedInt32(), 1);
 }
 
@@ -216,11 +216,11 @@ TEST_F(SimpleTest, SimpleSFixedInt64MessageTest)
     const char* propertyName = "testFieldFixedInt64";
     SimpleSFixedInt64Message test;
     int propertyNumber = SimpleSFixedInt64Message::propertyOrdering.at(1); //See simpletest.proto
-    ASSERT_EQ(SimpleSFixedInt64Message::staticMetaObject.property(propertyNumber).type(), qMetaTypeId<sfint64>());
+    ASSERT_EQ(SimpleSFixedInt64Message::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<sfint64>());
     ASSERT_STREQ(SimpleSFixedInt64Message::staticMetaObject.property(propertyNumber).typeName(), "qtprotobuf::sfint64");
     ASSERT_STREQ(SimpleSFixedInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(1)));
-    ASSERT_EQ(test.property(propertyName).value<fint64>(), 1);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sfint64>(1)));
+    ASSERT_EQ(test.property(propertyName).value<sfint64>(), 1);
     ASSERT_EQ(test.testFieldFixedInt64(), 1);
 }
 
