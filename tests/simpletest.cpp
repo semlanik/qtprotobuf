@@ -63,6 +63,9 @@
 #include "repeatedfixedint64message.h"
 #include "repeatedsfixedint64message.h"
 #include "repeatedexternalcomplexmessage.h"
+#include "simplestringmapmessage.h"
+#include "simplesint32mapmessage.h"
+
 #include "globalenums.h"
 #include "qtprotobuf.h"
 #include <QVariantList>
@@ -640,4 +643,27 @@ TEST_F(SimpleTest, StepChildEnumListMessageTest)
                                                                                SimpleEnumMessage::LOCAL_ENUM_VALUE2,
                                                                                SimpleEnumMessage::LOCAL_ENUM_VALUE1,
                                                                                SimpleEnumMessage::LOCAL_ENUM_VALUE3}));
+}
+
+
+TEST_F(SimpleTest, SimpleSInt32MapMessage)
+{
+    const char* propertyName = "mapField";
+    SimpleSInt32MapMessage::registerTypes();
+    ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleSInt32MapMessage::MapFieldEntry>()));
+    int propertyNumber = SimpleSInt32MapMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(SimpleSInt32MapMessage::staticMetaObject.property(propertyNumber).typeName(), "MapFieldEntry");
+    ASSERT_EQ(SimpleSInt32MapMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<SimpleSInt32MapMessage::MapFieldEntry>());
+    ASSERT_STREQ(SimpleSInt32MapMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
+}
+
+TEST_F(SimpleTest, SimpleStringMapMessage)
+{
+    const char* propertyName = "mapField";
+    SimpleStringMapMessage::registerTypes();
+    ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleStringMapMessage::MapFieldEntry>()));
+    int propertyNumber = SimpleStringMapMessage::propertyOrdering.at(1); //See simpletest.proto
+    ASSERT_STREQ(SimpleStringMapMessage::staticMetaObject.property(propertyNumber).typeName(), "MapFieldEntry");
+    ASSERT_EQ(SimpleStringMapMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<SimpleStringMapMessage::MapFieldEntry>());
+    ASSERT_STREQ(SimpleStringMapMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
 }

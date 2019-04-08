@@ -68,6 +68,9 @@ public:
     void printRegisterTypes();
     void printConstructor();
     void printListType();
+    void printInclude(const google::protobuf::FieldDescriptor *field, std::set<std::string> &existingIncludes);
+    void printMaps();
+    void printMapsMetaTypesDeclaration();
 
     std::set<std::string> extractModels() const;
 

@@ -169,6 +169,14 @@ message RepeatedSFixedInt64Message {
     repeated sfixed64 testRepeatedInt = 1;
 }
 
+message SimpleSInt32MapMessage {
+    map<sint32, SimpleStringMessage> mapField = 1;
+}
+
+message SimpleStringMapMessage {
+    map<string, SimpleStringMessage> mapField = 1;
+}
+
 enum TestEnum {
     TEST_ENUM_VALUE0 = 0;
     TEST_ENUM_VALUE1 = 1;

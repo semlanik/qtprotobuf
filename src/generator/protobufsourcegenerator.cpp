@@ -43,7 +43,20 @@ ProtobufSourceGenerator::ProtobufSourceGenerator(const google::protobuf::Descrip
 
 void ProtobufSourceGenerator::printRegisterBody()
 {
-    mPrinter.Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}}, Templates::ComplexTypeRegistrationTemplate);
+    mPrinter.Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
+                   Templates::ComplexTypeRegistrationTemplate);
+
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        const FieldDescriptor* field = mMessage->field(i);
+        if (field->is_map()) {
+            mPrinter.Print({{"classname", field->message_type()->name()},
+                            {"namespaces", mNamespacesColonDelimited + "::" + mClassName}},
+                           Templates::RegisterMetaTypeTemplate);
+        }
+    }
+
+    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
 }
 
 void ProtobufSourceGenerator::printFieldsOrdering() {

@@ -56,7 +56,7 @@ message Contact {
     string firstName = 1;
     string lastName = 2;
     string middleName = 3;
-
+    map<int32, PhoneNumber> phones = 4;
     Address address = 5;
     Job job = 6;
 }

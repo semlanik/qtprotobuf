@@ -76,6 +76,8 @@ set(EXPECTED_GENERATED_HEADERS
     testserviceclient.h
     testserviceserver.h
     simpleenumlistmessage.h
+    simplesint32mapmessage.h
+    simplestringmapmessage.h
 )
 
 foreach(EXPECTED_GENERATED_HEADER ${EXPECTED_GENERATED_HEADERS})

@@ -51,9 +51,9 @@ const char *Templates::ComplexTypeRegistrationTemplate = "void $classname$::regi
                                                          "        int listMetaTypeId = qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
                                                          "        qRegisterMetaType<$namespaces$::$classname$>(\"$namespaces$::$classname$\");\n"
                                                          "        qRegisterMetaType<$namespaces$::$classname$List>(\"$namespaces$::$classname$List\");\n"
-                                                         "        registerSerializers(metaTypeId, listMetaTypeId);\n"
-                                                         "    }\n}\n";
+                                                         "        registerSerializers(metaTypeId, listMetaTypeId);\n";
 const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<$classname$>;\n";
+const char *Templates::MapTypeUsingTemplate = "using $classname$ = QMap<$key$, $value$>;\n";
 
 const char *Templates::EnumTypeUsingTemplate = "using $enum$List = QList<$enum$>;\n";
 
@@ -127,6 +127,7 @@ const char *Templates::ConstructorContentTemplate = "{\n    registerTypes();\n}\
 
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n";
 const char *Templates::DeclareComplexListTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$List)\n";
+const char *Templates::RegisterMetaTypeTemplate = "        qRegisterMetaType<$namespaces$::$classname$>(\"$namespaces$::$classname$\");\n";
 
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 

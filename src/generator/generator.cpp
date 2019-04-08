@@ -87,7 +87,18 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 
     for (int i = 0; i < file->message_type_count(); i++) {
         const Descriptor *message = file->message_type(i);
-        if (message->nested_type_count() > 0) {
+
+        //Detect nested fields and filter maps fields
+        int mapsFieldsCount = 0;
+        for (int j = 0; j < message->nested_type_count(); j++) {
+            for (int k = 0; k < message->field_count(); k++) {
+                if (message->field(k)->is_map() && message->field(k)->message_type() == message->nested_type(j)) {
+                    ++mapsFieldsCount;
+                }
+            }
+        }
+
+        if (message->nested_type_count() > 0 && message->nested_type_count() > mapsFieldsCount) {
             std::cerr << file->name() << ":" << (message->index() + 1) << ": " << " Error: Meta object features not supported for nested classes in " << message->full_name() << std::endl;
             continue;
         }

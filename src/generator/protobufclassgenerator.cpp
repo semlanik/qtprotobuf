@@ -157,51 +157,64 @@ void ProtobufClassGenerator::printIncludes()
     mPrinter.Print(Templates::DefaultProtobufIncludesTemplate);
 
     std::set<std::string> existingIncludes;
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        printInclude(mMessage->field(i), existingIncludes);
+    }
+}
+
+void ProtobufClassGenerator::printInclude(const FieldDescriptor *field, std::set<std::string> &existingIncludes)
+{
+    assert(field != nullptr);
     std::string newInclude;
     const char* includeTemplate;
-    for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
-        switch (field->type()) {
-        case FieldDescriptor::TYPE_MESSAGE: {
+    switch (field->type()) {
+    case FieldDescriptor::TYPE_MESSAGE:
+        if ( field->is_map() ) {
+            newInclude = "QMap";
+            assert(field->message_type() != nullptr);
+            assert(field->message_type()->field_count() == 2);
+            printInclude(field->message_type()->field(0), existingIncludes);
+            printInclude(field->message_type()->field(1), existingIncludes);
+            includeTemplate = Templates::ExternalIncludeTemplate;
+        } else {
             std::string typeName = field->message_type()->name();
             utils::tolower(typeName);
             newInclude = typeName;
             includeTemplate = Templates::InternalIncludeTemplate;
         }
-            break;
-        case FieldDescriptor::TYPE_BYTES:
-            newInclude = "QByteArray";
-            includeTemplate = Templates::ExternalIncludeTemplate;
-            break;
-        case FieldDescriptor::TYPE_STRING:
-            newInclude = "QString";
-            includeTemplate = Templates::ExternalIncludeTemplate;
-            break;
-        case FieldDescriptor::TYPE_ENUM: {
-            EnumVisibility enumVisibily = getEnumVisibility(field);
-            if (enumVisibily == GLOBAL_ENUM) {
-                includeTemplate = Templates::GlobalEnumIncludeTemplate;
-            } else if (enumVisibily == NEIGHBOUR_ENUM){
-                includeTemplate = Templates::InternalIncludeTemplate;
-                std::string fullEnumName = field->enum_type()->full_name();
-                std::vector<std::string> fullEnumNameParts;
-                utils::split(fullEnumName, fullEnumNameParts, '.');
-                std::string enumTypeOwner = fullEnumNameParts.at(fullEnumNameParts.size() - 2);
-                utils::tolower(enumTypeOwner);
-                newInclude = enumTypeOwner;
-            } else {
-                continue;
-            }
+        break;
+    case FieldDescriptor::TYPE_BYTES:
+        newInclude = "QByteArray";
+        includeTemplate = Templates::ExternalIncludeTemplate;
+        break;
+    case FieldDescriptor::TYPE_STRING:
+        newInclude = "QString";
+        includeTemplate = Templates::ExternalIncludeTemplate;
+        break;
+    case FieldDescriptor::TYPE_ENUM: {
+        EnumVisibility enumVisibily = getEnumVisibility(field);
+        if (enumVisibily == GLOBAL_ENUM) {
+            includeTemplate = Templates::GlobalEnumIncludeTemplate;
+        } else if (enumVisibily == NEIGHBOUR_ENUM){
+            includeTemplate = Templates::InternalIncludeTemplate;
+            std::string fullEnumName = field->enum_type()->full_name();
+            std::vector<std::string> fullEnumNameParts;
+            utils::split(fullEnumName, fullEnumNameParts, '.');
+            std::string enumTypeOwner = fullEnumNameParts.at(fullEnumNameParts.size() - 2);
+            utils::tolower(enumTypeOwner);
+            newInclude = enumTypeOwner;
+        } else {
+            return;
         }
-            break;
-        default:
-            continue;
-        }
+    }
+        break;
+    default:
+        return;
+    }
 
-        if (existingIncludes.find(newInclude) == std::end(existingIncludes)) {
-            mPrinter.Print({{"include", newInclude}}, includeTemplate);
-            existingIncludes.insert(newInclude);
-        }
+    if (existingIncludes.find(newInclude) == std::end(existingIncludes)) {
+        mPrinter.Print({{"include", newInclude}}, includeTemplate);
+        existingIncludes.insert(newInclude);
     }
 }
 
@@ -256,6 +269,9 @@ std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
         namespaceTypeName = getNamespacesList(msg, typeNamespace);
         typeName = namespaceTypeName.append(msg->name());
 
+        if ( field->is_map() ) {
+            return field->message_type()->name();
+        }
         if (field->is_repeated()) {
             return namespaceTypeName.append("List");
         }
@@ -348,6 +364,33 @@ void ProtobufClassGenerator::printConstructor()
     mPrinter.Print(Templates::ConstructorContentTemplate);
 }
 
+void ProtobufClassGenerator::printMaps()
+{
+    Indent();
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        const FieldDescriptor* field = mMessage->field(i);
+        if (field->is_map()) {
+            std::string keyType = getTypeName(field->message_type()->field(0));
+            std::string valueType = getTypeName(field->message_type()->field(1));
+             mPrinter.Print({{"classname",field->message_type()->name()},
+                             {"key", keyType},
+                             {"value", valueType}}, Templates::MapTypeUsingTemplate);
+        }
+    }
+    Outdent();
+}
+
+void ProtobufClassGenerator::printMapsMetaTypesDeclaration()
+{
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        const FieldDescriptor* field = mMessage->field(i);
+        if (field->is_map()) {
+             mPrinter.Print({{"classname", field->message_type()->name()},
+                             {"namespaces", mNamespacesColonDelimited + "::" + mClassName}}, Templates::DeclareMetaTypeTemplate);
+        }
+    }
+}
+
 void ProtobufClassGenerator::printProperties()
 {
     assert(mMessage != nullptr);
@@ -366,6 +409,7 @@ void ProtobufClassGenerator::printProperties()
 
     //public section
     printPublic();
+    printMaps();
 
     //Body
     Indent();
@@ -491,4 +535,5 @@ void ProtobufClassGenerator::run()
     printListType();
     encloseNamespaces();
     printMetaTypeDeclaration();
+    printMapsMetaTypesDeclaration();
 }

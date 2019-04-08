@@ -44,6 +44,7 @@ public:
     static const char *ComplexTypeRegistrationMethodTemplate;
     static const char *ComplexTypeRegistrationTemplate;
     static const char *ComplexListTypeUsingTemplate;
+    static const char *MapTypeUsingTemplate;
     static const char *EnumTypeUsingTemplate;
     static const char *NamespaceTemplate;
     static const char *UsingNamespaceTemplate;
@@ -87,6 +88,7 @@ public:
     static const char *ConstructorContentTemplate;
     static const char *DeclareMetaTypeTemplate;
     static const char *DeclareComplexListTypeTemplate;
+    static const char *RegisterMetaTypeTemplate;
     static const char *QEnumTemplate;
 
     //Service templates
