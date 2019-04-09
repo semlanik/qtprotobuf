@@ -47,11 +47,11 @@ const char *Templates::ComplexTypeRegistrationMethodTemplate = "static void regi
 const char *Templates::ComplexTypeRegistrationTemplate = "void $classname$::registerTypes()\n{\n"
                                                          "    static bool registationDone = false;\n"
                                                          "    if (!registationDone) {\n\n"
-                                                         "        int metaTypeId = qRegisterMetaType<$classname$>(\"$classname$\");\n"
-                                                         "        int listMetaTypeId = qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
-                                                         "        qRegisterMetaType<$namespaces$::$classname$>(\"$namespaces$::$classname$\");\n"
-                                                         "        qRegisterMetaType<$namespaces$::$classname$List>(\"$namespaces$::$classname$List\");\n"
-                                                         "        registerSerializers(metaTypeId, listMetaTypeId);\n";
+                                                         "        qRegisterMetaType<$classname$>(\"$classname$\");\n"
+                                                         "        qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
+                                                         "        qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
+                                                         "        qRegisterMetaType<$classname$List>(\"$namespaces$::$classname$List\");\n"
+                                                         "        registerSerializers();\n";
 const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<$classname$>;\n";
 const char *Templates::MapTypeUsingTemplate = "using $classname$ = QMap<$key$, $value$>;\n";
 

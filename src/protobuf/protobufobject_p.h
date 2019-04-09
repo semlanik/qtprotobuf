@@ -52,22 +52,39 @@ struct make_unsigned<sint64> { typedef typename std::make_unsigned<decltype(sint
 class ProtobufObjectPrivate
 {
 public:
-    static unsigned char encodeHeaderByte(int fieldIndex, WireTypes wireType);
-    static bool decodeHeaderByte(unsigned char typeByte, int &fieldIndex, WireTypes &wireType);
-
     using Serializer = std::function<QByteArray(const QVariant &, int &)>;
     using Deserializer = std::function<void(QByteArray::const_iterator &, QVariant &)>;
     struct SerializationHandlers {
         Serializer serializer;
         Deserializer deserializer;
+        WireTypes type;
     };
-
     using SerializerRegistry = std::unordered_map<int/*metatypeid*/, SerializationHandlers>;
     static SerializerRegistry serializers;
 
     ProtobufObjectPrivate() {}
 
-    static QByteArray serializeValue(const QObject *object, const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty);
+    static void registerSerializers();
+
+    template <typename T>
+    static void wrapSerializer(std::function<QByteArray(const T &, int &)> s, std::function<QVariant(QByteArray::const_iterator &)> d, WireTypes type)
+    {
+        serializers[qMetaTypeId<T>()] = {
+            [s](const QVariant &value, int &fieldIndex) {
+                return s(value.value<T>(), fieldIndex);
+            },
+            [d](QByteArray::const_iterator &it, QVariant & value){
+                value = d(it);
+            },
+            type
+        };
+    }
+
+
+    static unsigned char encodeHeaderByte(int fieldIndex, WireTypes wireType);
+    static bool decodeHeaderByte(unsigned char typeByte, int &fieldIndex, WireTypes &wireType);
+
+    static QByteArray serializeValue(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty);
     static QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex, WireTypes &type);
 
     static void deserializeProperty(QObject *object, WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it);

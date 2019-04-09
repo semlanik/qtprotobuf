@@ -41,11 +41,11 @@ public:
     void deserialize(const QByteArray &array);
 
 protected:
-    static void registerSerializers(int metaTypeId, int listMetaTypeId);
+    static void registerSerializers();
 
 private:
-    static QByteArray serializeComplexType(const QVariant &variantValue, int &outFieldIndex);
-    static void deserializeComplexType(QByteArray::const_iterator &it, QVariant &previous);
+    static QByteArray serializeComplexType(const T &variantValue, int &outFieldIndex);
+    static QVariant deserializeComplexType(QByteArray::const_iterator &it);
     static QByteArray serializeComplexListType(const QVariant &listValue, int &outFieldIndex);
     static void deserializeComplexListType(QByteArray::const_iterator &it, QVariant &previous);
 };

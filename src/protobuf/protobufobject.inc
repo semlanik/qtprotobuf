@@ -50,7 +50,7 @@ QByteArray ProtobufObject<T>::serialize() const {
         QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
         const QVariant &propertyValue = instance->property(propertyName);
-        result.append(ProtobufObjectPrivate::serializeValue(this, propertyValue, fieldIndex, metaProperty));
+        result.append(ProtobufObjectPrivate::serializeValue(propertyValue, fieldIndex, metaProperty));
     }
 
     return result;
@@ -88,22 +88,22 @@ void ProtobufObject<T>::deserialize(const QByteArray &array) {
 }
 
 template<typename T>
-void ProtobufObject<T>::registerSerializers(int metaTypeId, int listMetaTypeId) {
-    ProtobufObjectPrivate::serializers[listMetaTypeId] = {ProtobufObjectPrivate::Serializer(serializeComplexListType), ProtobufObjectPrivate::Deserializer(deserializeComplexListType)};
-    ProtobufObjectPrivate::serializers[metaTypeId] = {ProtobufObjectPrivate::Serializer(serializeComplexType), ProtobufObjectPrivate::Deserializer(deserializeComplexType)};
+void ProtobufObject<T>::registerSerializers() {
+    ProtobufObjectPrivate::wrapSerializer<T>(serializeComplexType, deserializeComplexType, LengthDelimited);
+    ProtobufObjectPrivate::serializers[qMetaTypeId<QList<T>>()] = {ProtobufObjectPrivate::Serializer(serializeComplexListType),
+            ProtobufObjectPrivate::Deserializer(deserializeComplexListType), LengthDelimited};
 }
 
 template<typename T>
-QByteArray ProtobufObject<T>::serializeComplexType(const QVariant &variantValue, int &/*outFieldIndex*/) {
-    T value = variantValue.value<T>();
+QByteArray ProtobufObject<T>::serializeComplexType(const T &value, int &/*outFieldIndex*/) {
     return ProtobufObjectPrivate::serializeLengthDelimited(value.serialize());
 }
 
 template<typename T>
-void ProtobufObject<T>::deserializeComplexType(QByteArray::const_iterator &it, QVariant &previous) {
+QVariant ProtobufObject<T>::deserializeComplexType(QByteArray::const_iterator &it) {
     T value;
     value.deserialize(ProtobufObjectPrivate::deserializeLengthDelimited(it));
-    previous = QVariant::fromValue(value);
+    return QVariant::fromValue<T>(value);
 }
 
 template<typename T>

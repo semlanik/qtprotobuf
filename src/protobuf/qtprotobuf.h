@@ -26,6 +26,7 @@
 #pragma once
 
 #include <qtprotobuftypes.h>
+#include <protobufobject.h>
 #include <qtprotobuflogging.h>
 #include <QDebug>
 
@@ -64,6 +65,7 @@ public:
 
             registerProtobufType(DoubleList);
             registerProtobufType(FloatList);
+            ProtobufObjectPrivate::registerSerializers();
             registationDone = true;
         }
     }
