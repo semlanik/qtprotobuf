@@ -29,6 +29,18 @@
 #include <QList>
 #include <QMetaType>
 
+namespace qtprotobuf {
+
+enum WireTypes {
+    UnknownWireType = -1,
+    Varint = 0,
+    Fixed64 = 1,
+    LengthDelimited = 2,
+    Fixed32 = 5
+};
+
+constexpr int NotUsedFieldIndex = -1;
+
 template<typename T, int = 0>
 struct transparent {
     transparent(T t = T()) : _t(t){}
@@ -37,7 +49,6 @@ struct transparent {
     operator T() const { return _t; }
 };
 
-namespace qtprotobuf {
 using int32 = int32_t;
 using int64 = int64_t;
 using uint32 = uint32_t;

@@ -9,11 +9,13 @@ if(Qt5_POSITION_INDEPENDENT_CODE)
 endif()
 
 file(GLOB SOURCES
-    protobufobject.cpp
+    protobufobject_p.cpp
     qtprotobuf.cpp
     qtprotobuflogging.cpp)
 
 file(GLOB HEADERS
+    protobufobject_p.inc
+    protobufobject_p.h
     protobufobject.h
     qtprotobuftypes.h
     qtprotobuf.h)

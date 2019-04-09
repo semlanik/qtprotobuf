@@ -739,7 +739,7 @@ TEST_F(SerializationTest, UInt64MessageSerializeTest)
     ASSERT_EQ(result.at(2), '\x80');
     ASSERT_EQ(result.at(3), '\x04');
 
-    test.setTestFieldInt((qulonglong)UINT32_MAX + 1);
+    test.setTestFieldInt(((uint64_t)UINT32_MAX) + 1);
     result = test.serialize();
     ASSERT_EQ(result.size(), 6);
     ASSERT_EQ(result.at(0), 0x08);
@@ -1486,7 +1486,6 @@ TEST_F(SerializationTest, RepeatedFixedIntMessageTest)
     QByteArray result = test.serialize();
     //qDebug() << "result " << result.toHex();
     ASSERT_TRUE(result == QByteArray::fromHex("0a180100000041010000cf010100ab0ebc000300000003000000"));
-
     test.setTestRepeatedInt(fint32List());
     result = test.serialize();
     ASSERT_TRUE(result.isEmpty());
