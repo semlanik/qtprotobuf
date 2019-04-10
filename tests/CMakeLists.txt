@@ -56,28 +56,83 @@ set(EXPECTED_GENERATED_HEADERS
     simpleboolmessage.h
     simplebytesmessage.h
     simpledoublemessage.h
+    simpleenumlistmessage.h
     simpleenummessage.h
     simpleexternalenummessage.h
     simpleexternalmessage.h
     simplefileenummessage.h
+    simplefixed32complexmessagemapmessage.h
+    simplefixed32sint32mapmessage.h
+    simplefixed32sint64mapmessage.h
+    simplefixed32stringmapmessage.h
+    simplefixed32suint32mapmessage.h
+    simplefixed64complexmessagemapmessage.h
+    simplefixed64sint32mapmessage.h
+    simplefixed64sint64mapmessage.h
+    simplefixed64stringmapmessage.h
+    simplefixed64suint32mapmessage.h
     simplefixedint32message.h
     simplefixedint64message.h
     simplefloatmessage.h
+    simpleint32complexmessagemapmessage.h
+    simpleint32sint32mapmessage.h
+    simpleint32sint64mapmessage.h
+    simpleint32stringmapmessage.h
+    simpleint32suint32mapmessage.h
+    simpleint64complexmessagemapmessage.h
     simpleint64message.h
+    simpleint64sint32mapmessage.h
+    simpleint64sint64mapmessage.h
+    simpleint64stringmapmessage.h
+    simpleint64suint32mapmessage.h
     simpleintmessage.h
+    simplesfixed32complexmessagemapmessage.h
+    simplesfixed32sint32mapmessage.h
+    simplesfixed32sint64mapmessage.h
+    simplesfixed32stringmapmessage.h
+    simplesfixed32suint32mapmessage.h
+    simplesfixed64complexmessagemapmessage.h
+    simplesfixed64sint32mapmessage.h
+    simplesfixed64sint64mapmessage.h
+    simplesfixed64stringmapmessage.h
+    simplesfixed64suint32mapmessage.h
     simplesfixedint32message.h
     simplesfixedint64message.h
+    simplesint32complexmessagemapmessage.h
+    simplesint32mapmessage.h
+    simplesint32sint32mapmessage.h
+    simplesint32sint64mapmessage.h
+    simplesint32stringmapmessage.h
+    simplesint32suint32mapmessage.h
+    simplesint64complexmessagemapmessage.h
     simplesint64message.h
+    simplesint64sint32mapmessage.h
+    simplesint64sint64mapmessage.h
+    simplesint64stringmapmessage.h
+    simplesint64suint32mapmessage.h
     simplesintmessage.h
+    simplestringcomplexmessagemapmessage.h
+    simplestringmapmessage.h
     simplestringmessage.h
+    simplestringsint32mapmessage.h
+    simplestringsint64mapmessage.h
+    simplestringstringmapmessage.h
+    simplestringsuint32mapmessage.h
+    simpleuint32complexmessagemapmessage.h
+    simpleuint32sint32mapmessage.h
+    simpleuint32sint64mapmessage.h
+    simpleuint32stringmapmessage.h
+    simpleuint32suint32mapmessage.h
+    simpleuint64complexmessagemapmessage.h
     simpleuint64message.h
+    simpleuint64sint32mapmessage.h
+    simpleuint64sint64mapmessage.h
+    simpleuint64stringmapmessage.h
+    simpleuint64suint32mapmessage.h
     simpleuintmessage.h
     stepchildenummessage.h
     testserviceclient.h
     testserviceserver.h
-    simpleenumlistmessage.h
-    simplesint32mapmessage.h
-    simplestringmapmessage.h
 )
 
 foreach(EXPECTED_GENERATED_HEADER ${EXPECTED_GENERATED_HEADERS})

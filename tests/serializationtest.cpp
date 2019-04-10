@@ -56,7 +56,21 @@
 #include "repeatedcomplexmessage.h"
 #include "simpleboolmessage.h"
 #include "simpleenummessage.h"
-#include "simplesint32mapmessage.h"
+
+#include "simplefixed32stringmapmessage.h"
+#include "simplesfixed32stringmapmessage.h"
+#include "simpleint32stringmapmessage.h"
+#include "simplesint32stringmapmessage.h"
+#include "simpleuint32stringmapmessage.h"
+
+#include "simplefixed64stringmapmessage.h"
+#include "simplesfixed64stringmapmessage.h"
+#include "simpleint64stringmapmessage.h"
+#include "simplesint64stringmapmessage.h"
+#include "simpleuint64stringmapmessage.h"
+
+#include "simplestringstringmapmessage.h"
+
 #include "qtprotobuf.h"
 
 using namespace qtprotobufnamespace::tests;
@@ -1636,14 +1650,114 @@ TEST_F(SerializationTest, SimpleEnumMessageSerializeTest)
     ASSERT_TRUE(result == QByteArray::fromHex("0802"));
 }
 
-TEST_F(SerializationTest, SimpleSInt32MapSerializeTest)
+TEST_F(SerializationTest, SimpleFixed32StringMapSerializeTest)
 {
-    SimpleSInt32MapMessage test;
+    SimpleFixed32StringMapMessage test;
     test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "0a0c0d0a0000001205320374656e0a100d0f000000120932076669667465656e0a130d2a000000120c320a666f757274792074776f");
+                "3a0a0d0a000000120374656e3a0e0d0f00000012076669667465656e3a110d2a000000120a666f757274792074776f");
+}
+
+TEST_F(SerializationTest, SimpleSFixed32StringMapSerializeTest)
+{
+    SimpleSFixed32StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize();
+
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "4a170dd6ffffff12106d696e757320666f757274792074776f4a0a0d0a000000120374656e4a0e0d0f00000012076669667465656e");
+}
+
+
+TEST_F(SerializationTest, SimpleInt32StringMapSerializeTest)
+{
+    SimpleInt32StringMapMessage test;
+    test.setMapField({{-10, {"minus ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize();
+
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "1a1608f6ffffffffffffffff0112096d696e75732074656e1a0b080f12076669667465656e1a0e082a120a666f757274792074776f");
+}
+
+TEST_F(SerializationTest, SimpleSInt32StringMapSerializeTest)
+{
+    SimpleSInt32StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize();
+
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "0a14085312106d696e757320666f757274792074776f0a070814120374656e0a0b081e12076669667465656e");
+}
+
+TEST_F(SerializationTest, SimpleUInt32StringMapSerializeTest)
+{
+    SimpleUInt32StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize();
+
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "2a07080a120374656e2a0b080f12076669667465656e2a0e082a120a666f757274792074776f");
+}
+
+TEST_F(SerializationTest, SimpleFixed64StringMapSerializeTest)
+{
+    SimpleFixed64StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize();
+
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "420e090a00000000000000120374656e4212090f0000000000000012076669667465656e4215092a00000000000000120a666f757274792074776f");
+}
+
+TEST_F(SerializationTest, SimpleSFixed64StringMapSerializeTest)
+{
+    SimpleSFixed64StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize();
+
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "521b09d6ffffffffffffff12106d696e757320666f757274792074776f520e090a00000000000000120374656e5212090f0000000000000012076669667465656e");
+}
+
+TEST_F(SerializationTest, SimpleInt64StringMapSerializeTest)
+{
+    SimpleInt64StringMapMessage test;
+    test.setMapField({{-10, {"minus ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize();
+
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "221608f6ffffffffffffffff0112096d696e75732074656e220b080f12076669667465656e220e082a120a666f757274792074776f");
+}
+
+TEST_F(SerializationTest, SimpleSInt64StringMapSerializeTest)
+{
+    SimpleSInt64StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize();
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "1214085312106d696e757320666f757274792074776f12070814120374656e120b081e12076669667465656e");
+}
+
+TEST_F(SerializationTest, SimpleUInt64StringMapSerializeTest)
+{
+    SimpleUInt64StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize();
+
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "3207080a120374656e320b080f12076669667465656e320e082a120a666f757274792074776f");
+}
+
+TEST_F(SerializationTest, SimpleStringStringMapSerializeTest)
+{
+    SimpleStringStringMapMessage test;
+    test.setMapField({{"ben", "ten"}, {"what is the answer?", "fourty two"}, {"sweet", "fifteen"}});
+    QByteArray result = test.serialize();
+
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "6a0a0a0362656e120374656e6a100a05737765657412076669667465656e6a210a13776861742069732074686520616e737765723f120a666f757274792074776f");
 }
 
 //TEST_F(SerializationTest, DISABLE_BenchmarkTest)
