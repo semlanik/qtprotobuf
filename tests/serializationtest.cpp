@@ -56,6 +56,7 @@
 #include "repeatedcomplexmessage.h"
 #include "simpleboolmessage.h"
 #include "simpleenummessage.h"
+#include "simplesint32mapmessage.h"
 #include "qtprotobuf.h"
 
 using namespace qtprotobufnamespace::tests;
@@ -1633,6 +1634,16 @@ TEST_F(SerializationTest, SimpleEnumMessageSerializeTest)
     QByteArray result = test.serialize();
     ASSERT_EQ(2, result.size());
     ASSERT_TRUE(result == QByteArray::fromHex("0802"));
+}
+
+TEST_F(SerializationTest, SimpleSInt32MapSerializeTest)
+{
+    SimpleSInt32MapMessage test;
+    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize();
+
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                "0a0c0d0a0000001205320374656e0a100d0f000000120932076669667465656e0a130d2a000000120c320a666f757274792074776f");
 }
 
 //TEST_F(SerializationTest, DISABLE_BenchmarkTest)

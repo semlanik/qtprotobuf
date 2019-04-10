@@ -45,27 +45,34 @@ void ProtobufSourceGenerator::printRegisterBody()
     mPrinter.Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
                    Templates::ComplexTypeRegistrationTemplate);
 
+    Indent();
+    Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_ENUM
                 && isLocalMessageEnum(mMessage, field)) {
-            mPrinter.Print({{"classname", mClassName + "::" + field->enum_type()->name() + "List"},
+            mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name() + "List"},
                             {"namespaces", mNamespacesColonDelimited}},
                            Templates::RegisterMetaTypeTemplateNoNamespace);
-            mPrinter.Print({{"classname", mClassName+ "::" + field->enum_type()->name() + "List"},
+            mPrinter.Print({{"type", mClassName+ "::" + field->enum_type()->name() + "List"},
                             {"namespaces", mNamespacesColonDelimited}},
                            Templates::RegisterMetaTypeTemplate);
         } else if (field->is_map()) {
-            mPrinter.Print({{"classname", field->message_type()->name()},
+            mPrinter.Print({{"type", field->message_type()->name()},
                             {"namespaces", mClassName}},
                            Templates::RegisterMetaTypeTemplate);
-            mPrinter.Print({{"classname", field->message_type()->name()},
+            mPrinter.Print({{"type", field->message_type()->name()},
                             {"namespaces", mNamespacesColonDelimited + "::" + mClassName}},
                            Templates::RegisterMetaTypeTemplate);
+            mPrinter.Print({{"classname", mClassName},
+                            {"type", field->message_type()->name()}},
+                             Templates::MapSerializationRegisterTemplate);
         }
     }
 
+    Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+    Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
 }
 

@@ -111,7 +111,7 @@ public:
                                         || std::is_same<V, fint64>::value
                                         || std::is_same<V, sfint32>::value
                                         || std::is_same<V, sfint64>::value, int> = 0>
-    static QByteArray serializeBasic(V value, int &) {
+    static QByteArray serializeBasic(V value, int &/*outFieldIndex*/) {
         qProtoDebug() << __func__ << "value" << value;
 
         //Reserve required amount of bytes
@@ -252,6 +252,37 @@ public:
         outFieldIndex = NotUsedFieldIndex;
 
         return serializedList;
+    }
+
+    //-------------------------Serialize maps of any type------------------------
+
+    template<typename K, typename V>
+    static QByteArray serializeMap(const QMap<K,V> &mapValue, int &outFieldIndex) {
+        using ItType = typename QMap<K,V>::const_iterator;
+        QByteArray mapResult;
+        auto kSerializer = serializers[qMetaTypeId<K>()];
+        auto vSerializer = serializers[qMetaTypeId<V>()];
+
+        for ( ItType it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
+            QByteArray result;
+            result = mapSerializeHelper<K, 1>(it.key(), kSerializer) + mapSerializeHelper<V, 2>(it.value(), vSerializer);
+            prependLengthDelimitedSize(result);
+            result.prepend(encodeHeaderByte(outFieldIndex, LengthDelimited));
+            mapResult.append(result);
+        }
+        outFieldIndex = NotUsedFieldIndex;
+        return mapResult;
+    }
+
+    template <typename V, int num>
+    static QByteArray mapSerializeHelper(const V &value, const SerializationHandlers &handlers) {
+        int mapIndex = num;
+        QByteArray result = handlers.serializer(QVariant::fromValue<V>(value), mapIndex);
+        if (mapIndex != NotUsedFieldIndex
+                && handlers.type != UnknownWireType) {
+            result.prepend(encodeHeaderByte(mapIndex, handlers.type));
+        }
+        return result;
     }
 
     //###########################################################################
