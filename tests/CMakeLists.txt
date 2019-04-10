@@ -62,73 +62,117 @@ set(EXPECTED_GENERATED_HEADERS
     simpleexternalmessage.h
     simplefileenummessage.h
     simplefixed32complexmessagemapmessage.h
+    simplefixed32int32mapmessage.h
+    simplefixed32int64mapmessage.h
     simplefixed32sint32mapmessage.h
     simplefixed32sint64mapmessage.h
     simplefixed32stringmapmessage.h
     simplefixed32suint32mapmessage.h
+    simplefixed32uint32mapmessage.h
+    simplefixed32uint64mapmessage.h
     simplefixed64complexmessagemapmessage.h
+    simplefixed64int32mapmessage.h
+    simplefixed64int64mapmessage.h
     simplefixed64sint32mapmessage.h
     simplefixed64sint64mapmessage.h
     simplefixed64stringmapmessage.h
     simplefixed64suint32mapmessage.h
+    simplefixed64uint32mapmessage.h
+    simplefixed64uint64mapmessage.h
     simplefixedint32message.h
     simplefixedint64message.h
     simplefloatmessage.h
     simpleint32complexmessagemapmessage.h
+    simpleint32int32mapmessage.h
+    simpleint32int64mapmessage.h
     simpleint32sint32mapmessage.h
     simpleint32sint64mapmessage.h
     simpleint32stringmapmessage.h
     simpleint32suint32mapmessage.h
+    simpleint32uint32mapmessage.h
+    simpleint32uint64mapmessage.h
     simpleint64complexmessagemapmessage.h
+    simpleint64int32mapmessage.h
+    simpleint64int64mapmessage.h
     simpleint64message.h
     simpleint64sint32mapmessage.h
     simpleint64sint64mapmessage.h
     simpleint64stringmapmessage.h
     simpleint64suint32mapmessage.h
+    simpleint64uint32mapmessage.h
+    simpleint64uint64mapmessage.h
     simpleintmessage.h
     simplesfixed32complexmessagemapmessage.h
+    simplesfixed32int32mapmessage.h
+    simplesfixed32int64mapmessage.h
     simplesfixed32sint32mapmessage.h
     simplesfixed32sint64mapmessage.h
     simplesfixed32stringmapmessage.h
     simplesfixed32suint32mapmessage.h
+    simplesfixed32uint32mapmessage.h
+    simplesfixed32uint64mapmessage.h
     simplesfixed64complexmessagemapmessage.h
+    simplesfixed64int32mapmessage.h
+    simplesfixed64int64mapmessage.h
     simplesfixed64sint32mapmessage.h
     simplesfixed64sint64mapmessage.h
     simplesfixed64stringmapmessage.h
     simplesfixed64suint32mapmessage.h
+    simplesfixed64uint32mapmessage.h
+    simplesfixed64uint64mapmessage.h
     simplesfixedint32message.h
     simplesfixedint64message.h
     simplesint32complexmessagemapmessage.h
+    simplesint32int32mapmessage.h
+    simplesint32int64mapmessage.h
     simplesint32mapmessage.h
     simplesint32sint32mapmessage.h
     simplesint32sint64mapmessage.h
     simplesint32stringmapmessage.h
     simplesint32suint32mapmessage.h
+    simplesint32uint32mapmessage.h
+    simplesint32uint64mapmessage.h
     simplesint64complexmessagemapmessage.h
+    simplesint64int32mapmessage.h
+    simplesint64int64mapmessage.h
     simplesint64message.h
     simplesint64sint32mapmessage.h
     simplesint64sint64mapmessage.h
     simplesint64stringmapmessage.h
     simplesint64suint32mapmessage.h
+    simplesint64uint32mapmessage.h
+    simplesint64uint64mapmessage.h
     simplesintmessage.h
     simplestringcomplexmessagemapmessage.h
+    simplestringint32mapmessage.h
+    simplestringint64mapmessage.h
     simplestringmapmessage.h
     simplestringmessage.h
     simplestringsint32mapmessage.h
     simplestringsint64mapmessage.h
     simplestringstringmapmessage.h
     simplestringsuint32mapmessage.h
+    simplestringuint32mapmessage.h
+    simplestringuint64mapmessage.h
     simpleuint32complexmessagemapmessage.h
+    simpleuint32int32mapmessage.h
+    simpleuint32int64mapmessage.h
     simpleuint32sint32mapmessage.h
     simpleuint32sint64mapmessage.h
     simpleuint32stringmapmessage.h
     simpleuint32suint32mapmessage.h
+    simpleuint32uint32mapmessage.h
+    simpleuint32uint64mapmessage.h
     simpleuint64complexmessagemapmessage.h
+    simpleuint64int32mapmessage.h
+    simpleuint64int64mapmessage.h
     simpleuint64message.h
     simpleuint64sint32mapmessage.h
     simpleuint64sint64mapmessage.h
     simpleuint64stringmapmessage.h
     simpleuint64suint32mapmessage.h
+    simpleuint64uint32mapmessage.h
+    simpleuint64uint64mapmessage.h
     simpleuintmessage.h
     stepchildenummessage.h
     testserviceclient.h
