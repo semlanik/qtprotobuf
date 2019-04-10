@@ -1670,7 +1670,6 @@ TEST_F(SerializationTest, SimpleSFixed32StringMapSerializeTest)
                 "4a170dd6ffffff12106d696e757320666f757274792074776f4a0a0d0a000000120374656e4a0e0d0f00000012076669667465656e");
 }
 
-
 TEST_F(SerializationTest, SimpleInt32StringMapSerializeTest)
 {
     SimpleInt32StringMapMessage test;

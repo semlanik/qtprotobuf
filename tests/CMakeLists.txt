@@ -179,7 +179,8 @@ file(GLOB SOURCES main.cpp
     serializationtest.cpp
     deserializationtest.cpp
     servertest.cpp
-    clienttest.cpp)
+    clienttest.cpp
+    serializationcomplexmessagemap.cpp)
 
 set(testtarget "qtprotobuf_test")
 add_executable(${testtarget} ${SOURCES} ${GENERATED_SOURCES})
