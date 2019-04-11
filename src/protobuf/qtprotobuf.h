@@ -45,10 +45,10 @@ public:
             registerProtobufType(uint64);
             registerProtobufType(sint32);
             registerProtobufType(sint64);
-            registerProtobufType(fint32);
-            registerProtobufType(fint64);
-            registerProtobufType(sfint32);
-            registerProtobufType(sfint64);
+            registerProtobufType(fixed32);
+            registerProtobufType(fixed64);
+            registerProtobufType(sfixed32);
+            registerProtobufType(sfixed64);
 
             registerProtobufType(int32List);
             registerProtobufType(int64List);
@@ -56,10 +56,10 @@ public:
             registerProtobufType(uint64List);
             registerProtobufType(sint32List);
             registerProtobufType(sint64List);
-            registerProtobufType(fint32List);
-            registerProtobufType(fint64List);
-            registerProtobufType(sfint32List);
-            registerProtobufType(sfint64List);
+            registerProtobufType(fixed32List);
+            registerProtobufType(fixed64List);
+            registerProtobufType(sfixed32List);
+            registerProtobufType(sfixed64List);
 
             registerProtobufType(DoubleList);
             registerProtobufType(FloatList);

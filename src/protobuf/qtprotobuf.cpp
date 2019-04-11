@@ -23,4 +23,4 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <qtprotobuf.h>
+#include "qtprotobuf.h"

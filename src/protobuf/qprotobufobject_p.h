@@ -118,10 +118,10 @@ public:
     //----------------Serialize basic integral and floating point----------------
     template <typename V,
               typename std::enable_if_t<std::is_floating_point<V>::value
-                                        || std::is_same<V, fint32>::value
-                                        || std::is_same<V, fint64>::value
-                                        || std::is_same<V, sfint32>::value
-                                        || std::is_same<V, sfint64>::value, int> = 0>
+                                        || std::is_same<V, fixed32>::value
+                                        || std::is_same<V, fixed64>::value
+                                        || std::is_same<V, sfixed32>::value
+                                        || std::is_same<V, sfixed64>::value, int> = 0>
     static QByteArray serializeBasic(V value, int &/*outFieldIndex*/) {
         qProtoDebug() << __func__ << "value" << value;
 
@@ -300,10 +300,10 @@ public:
     //###########################################################################
     template <typename V,
               typename std::enable_if_t<std::is_floating_point<V>::value
-                                        || std::is_same<V, sfint32>::value
-                                        || std::is_same<V, sfint64>::value
-                                        || std::is_same<V, fint32>::value
-                                        || std::is_same<V, fint64>::value, int> = 0>
+                                        || std::is_same<V, sfixed32>::value
+                                        || std::is_same<V, sfixed64>::value
+                                        || std::is_same<V, fixed32>::value
+                                        || std::is_same<V, fixed64>::value, int> = 0>
     static uint32 getRepeatedFieldCount(QByteArray::const_iterator &it) {
         return deserializeBasic<uint32>(it).value<uint32>() / sizeof(V);
     }
@@ -319,10 +319,10 @@ public:
     //---------------Deserialize basic integral and floating point---------------
     template <typename V,
               typename std::enable_if_t<std::is_floating_point<V>::value
-                                        || std::is_same<V, fint32>::value
-                                        || std::is_same<V, fint64>::value
-                                        || std::is_same<V, sfint32>::value
-                                        || std::is_same<V, sfint64>::value, int> = 0>
+                                        || std::is_same<V, fixed32>::value
+                                        || std::is_same<V, fixed64>::value
+                                        || std::is_same<V, sfixed32>::value
+                                        || std::is_same<V, sfixed64>::value, int> = 0>
     static QVariant deserializeBasic(QByteArray::const_iterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 

@@ -54,10 +54,10 @@ using uint32 = uint32_t;
 using uint64 = uint64_t;
 using sint32 = transparent<int32_t>;
 using sint64 = transparent<int64_t>;
-using fint32 = transparent<uint32_t, 1>;
-using fint64 = transparent<uint64_t, 1>;
-using sfint32 = transparent<int32_t, 1>;
-using sfint64 = transparent<int64_t, 1>;
+using fixed32 = transparent<uint32_t, 1>;
+using fixed64 = transparent<uint64_t, 1>;
+using sfixed32 = transparent<int32_t, 1>;
+using sfixed64 = transparent<int64_t, 1>;
 
 using int32List = QList<int32>;
 using int64List = QList<int64>;
@@ -65,10 +65,10 @@ using uint32List = QList<uint32>;
 using uint64List = QList<uint64>;
 using sint32List = QList<sint32>;
 using sint64List = QList<sint64>;
-using fint32List = QList<fint32>;
-using fint64List = QList<fint64>;
-using sfint32List = QList<sfint32>;
-using sfint64List = QList<sfint64>;
+using fixed32List = QList<fixed32>;
+using fixed64List = QList<fixed64>;
+using sfixed32List = QList<sfixed32>;
+using sfixed64List = QList<sfixed64>;
 
 using FloatList = QList<float>;
 using DoubleList = QList<double>;
@@ -80,10 +80,10 @@ Q_DECLARE_METATYPE(qtprotobuf::sint32)
 Q_DECLARE_METATYPE(qtprotobuf::sint64)
 Q_DECLARE_METATYPE(qtprotobuf::uint32)
 Q_DECLARE_METATYPE(qtprotobuf::uint64)
-Q_DECLARE_METATYPE(qtprotobuf::fint32)
-Q_DECLARE_METATYPE(qtprotobuf::fint64)
-Q_DECLARE_METATYPE(qtprotobuf::sfint32)
-Q_DECLARE_METATYPE(qtprotobuf::sfint64)
+Q_DECLARE_METATYPE(qtprotobuf::fixed32)
+Q_DECLARE_METATYPE(qtprotobuf::fixed64)
+Q_DECLARE_METATYPE(qtprotobuf::sfixed32)
+Q_DECLARE_METATYPE(qtprotobuf::sfixed64)
 
 Q_DECLARE_METATYPE(qtprotobuf::int32List)
 Q_DECLARE_METATYPE(qtprotobuf::int64List)
@@ -91,10 +91,10 @@ Q_DECLARE_METATYPE(qtprotobuf::sint32List)
 Q_DECLARE_METATYPE(qtprotobuf::sint64List)
 Q_DECLARE_METATYPE(qtprotobuf::uint32List)
 Q_DECLARE_METATYPE(qtprotobuf::uint64List)
-Q_DECLARE_METATYPE(qtprotobuf::fint32List)
-Q_DECLARE_METATYPE(qtprotobuf::fint64List)
-Q_DECLARE_METATYPE(qtprotobuf::sfint32List)
-Q_DECLARE_METATYPE(qtprotobuf::sfint64List)
+Q_DECLARE_METATYPE(qtprotobuf::fixed32List)
+Q_DECLARE_METATYPE(qtprotobuf::fixed64List)
+Q_DECLARE_METATYPE(qtprotobuf::sfixed32List)
+Q_DECLARE_METATYPE(qtprotobuf::sfixed64List)
 
 Q_DECLARE_METATYPE(qtprotobuf::FloatList)
 Q_DECLARE_METATYPE(qtprotobuf::DoubleList)
