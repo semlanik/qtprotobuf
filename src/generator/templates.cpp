@@ -158,8 +158,7 @@ const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nbool $classname$
                                                              "    //TODO: call transport method to serialize this method\n"
                                                              "    return false;\n"
                                                              "}\n";
-const char *Templates::SerializersTemplate = "QByteArray serialize() const { return qtprotobuf::ProtobufObjectPrivate::serialize<$classname$>(this); }\n"
-                                     "void deserialize(const QByteArray &array) { qtprotobuf::ProtobufObjectPrivate::deserialize<$classname$>(this, array); }";
+const char *Templates::SerializersTemplate = "Q_DECLARE_PROTOBUF_SERIALIZERS($classname$)\n";
 const char *Templates::RegisterSerializersTemplate = "qtprotobuf::ProtobufObjectPrivate::registerSerializers<$classname$>();";
 
 const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> Templates::TypeReflection = {

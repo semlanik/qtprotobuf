@@ -651,13 +651,13 @@ TEST_F(SimpleTest, SimpleSInt32StringMapMessageTest)
     ASSERT_STREQ(test.mapField()[44].toStdString().c_str(), "Some 44");
 }
 
-TEST_F(SimpleTest, SimpleStringStringMapMessage)
+TEST_F(SimpleTest, SimpleStringStringMapMessageTest)
 {
     const char* propertyName = "mapField";
     SimpleStringStringMapMessage::registerTypes();
     SimpleStringStringMapMessage test;
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleStringStringMapMessage::MapFieldEntry>()));
-    int propertyNumber = SimpleStringStringMapMessage::propertyOrdering.at(1); //See simpletest.proto
+    int propertyNumber = SimpleStringStringMapMessage::propertyOrdering.at(13); //See simpletest.proto
     ASSERT_STREQ(SimpleStringStringMapMessage::staticMetaObject.property(propertyNumber).typeName(), "SimpleStringStringMapMessage::MapFieldEntry");
     ASSERT_EQ(SimpleStringStringMapMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<SimpleStringStringMapMessage::MapFieldEntry>());
     ASSERT_STREQ(SimpleStringStringMapMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
