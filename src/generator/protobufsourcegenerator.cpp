@@ -69,7 +69,7 @@ void ProtobufSourceGenerator::printRegisterBody()
                              Templates::MapSerializationRegisterTemplate);
         }
     }
-
+    mPrinter.Print({{"classname", mClassName}}, Templates::RegisterSerializersTemplate);
     Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
     Outdent();

@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "protobufobject_p.h"
+#include "qprotobufobject_p.h"
 
 using namespace qtprotobuf;
 

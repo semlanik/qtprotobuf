@@ -72,6 +72,7 @@ public:
     void printMaps();
     void printMapsMetaTypesDeclaration();
     void printLocalEmumsMetaTypesDeclaration();
+    void printSerializers();
 
     std::set<std::string> extractModels() const;
 

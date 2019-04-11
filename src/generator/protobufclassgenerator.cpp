@@ -69,7 +69,6 @@ void ProtobufClassGenerator::printCopyFunctionality()
     Outdent();
 
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
-
 }
 
 void ProtobufClassGenerator::printMoveSemantic()
@@ -570,6 +569,13 @@ std::set<std::string> ProtobufClassGenerator::extractModels() const
     return std::move(extractedModels);
 }
 
+void ProtobufClassGenerator::printSerializers()
+{
+    Indent();
+    mPrinter.Print({{"classname", mClassName}}, Templates::SerializersTemplate);
+    Outdent();
+}
+
 void ProtobufClassGenerator::run()
 {
     printPreamble();
@@ -580,6 +586,7 @@ void ProtobufClassGenerator::run()
     printPublic();
     printRegisterTypes();
     printFieldsOrderingDefinition();
+    printSerializers();
     printPrivate();
     printClassMembers();
     encloseClass();

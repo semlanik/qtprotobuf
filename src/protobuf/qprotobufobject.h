@@ -25,30 +25,4 @@
 
 #pragma once
 
-#include <QObject>
-#include <QByteArray>
-#include <QVariant>
-
-namespace qtprotobuf {
-
-template <typename T>
-class ProtobufObject : public QObject
-{
-public:
-    explicit ProtobufObject(QObject *parent = nullptr) {}
-
-    QByteArray serialize() const;
-    void deserialize(const QByteArray &array);
-
-protected:
-    static void registerSerializers();
-
-private:
-    static QByteArray serializeComplexType(const T &variantValue, int &outFieldIndex);
-    static QVariant deserializeComplexType(QByteArray::const_iterator &it);
-    static QByteArray serializeComplexListType(const QVariant &listValue, int &outFieldIndex);
-    static void deserializeComplexListType(QByteArray::const_iterator &it, QVariant &previous);
-};
-
-}
-#include "protobufobject.inc"
+#include "qprotobufobject_p.h"

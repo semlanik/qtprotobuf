@@ -38,6 +38,8 @@
 #include <qtprotobuftypes.h>
 #include <qtprotobuflogging.h>
 
+#define ASSERT_FIELD_NUMBER(X) Q_ASSERT_X(X < 128 && X > 0, T::staticMetaObject.className(), "fieldIndex is out of range")
+
 namespace qtprotobuf {
 
 template<typename V>
@@ -464,6 +466,88 @@ public:
         QVariant value;
         serializer.deserializer(it, value);
         return value.value<T>();
+    }
+    //-----------------------Functions to work with objects------------------------
+    template<typename T>
+    static void registerSerializers() {
+        ProtobufObjectPrivate::wrapSerializer<T>(serializeComplexType<T>, deserializeComplexType<T>, LengthDelimited);
+        ProtobufObjectPrivate::serializers[qMetaTypeId<QList<T>>()] = {ProtobufObjectPrivate::Serializer(serializeComplexListType<T>),
+                ProtobufObjectPrivate::Deserializer(deserializeComplexListType<T>), LengthDelimited};
+    }
+
+    template<typename T>
+    static QByteArray serializeComplexType(const T &value, int &/*outFieldIndex*/) {
+        return ProtobufObjectPrivate::serializeLengthDelimited(value.serialize());
+    }
+
+    template<typename T>
+    static QVariant deserializeComplexType(QByteArray::const_iterator &it) {
+        T value;
+        value.deserialize(ProtobufObjectPrivate::deserializeLengthDelimited(it));
+        return QVariant::fromValue<T>(value);
+    }
+
+    template<typename T>
+    static QByteArray serializeComplexListType(const QVariant &listValue, int &outFieldIndex) {
+        QList<T> list = listValue.value<QList<T>>();
+        return ProtobufObjectPrivate::serializeListType(list, outFieldIndex);
+    }
+
+    template<typename T>
+    static void deserializeComplexListType(QByteArray::const_iterator &it, QVariant &previous) {
+        QList<T> previousList = previous.value<QList<T>>();
+        QVariant newMember = ProtobufObjectPrivate::deserializeList<T>(it);
+        previousList.append(newMember.value<T>());
+        previous.setValue(previousList);
+    }
+
+    template<typename T>
+    static QByteArray serialize(const QObject *object) {
+        qProtoDebug() << T::staticMetaObject.className() << "serialize";
+
+        QByteArray result;
+        for (auto field : T::propertyOrdering) {
+            int propertyIndex = field.second;
+            int fieldIndex = field.first;
+            ASSERT_FIELD_NUMBER(fieldIndex);
+            QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
+            const char *propertyName = metaProperty.name();
+            const QVariant &propertyValue = object->property(propertyName);
+            result.append(ProtobufObjectPrivate::serializeValue(propertyValue, fieldIndex, metaProperty));
+        }
+
+        return result;
+    }
+
+    template<typename T>
+    static void deserialize(QObject* object, const QByteArray &array) {
+        qProtoDebug() << T::staticMetaObject.className() << "deserialize";
+
+        for (QByteArray::const_iterator it = array.begin(); it != array.end();) {
+            //Each iteration we expect iterator is setup to beginning of next chunk
+            int fieldNumber = NotUsedFieldIndex;
+            WireTypes wireType = UnknownWireType;
+            if (!ProtobufObjectPrivate::decodeHeaderByte(*it, fieldNumber, wireType)) {
+                qProtoCritical() << "Message received doesn't contains valid header byte. "
+                               "Trying next, but seems stream is broken" << QString::number((*it), 16);
+                ++it;
+                continue;
+            }
+
+            auto propertyNumberIt = T::propertyOrdering.find(fieldNumber);
+            if (propertyNumberIt == std::end(T::propertyOrdering)) {
+                ++it;
+                qProtoCritical() << "Message received contains invalid field number. "
+                               "Trying next, but seems stream is broken";
+                continue;
+            }
+
+            int propertyIndex = propertyNumberIt->second;
+            QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
+
+            ++it;
+            ProtobufObjectPrivate::deserializeProperty(object, wireType, metaProperty, it);
+        }
     }
 };
 

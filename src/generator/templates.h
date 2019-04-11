@@ -94,7 +94,8 @@ public:
     static const char *RegisterMetaTypeTemplateNoNamespace;
     static const char *QEnumTemplate;
     static const char *MapSerializationRegisterTemplate;
-
+    static const char *SerializersTemplate;
+    static const char *RegisterSerializersTemplate;
     //Service templates
     static const char *ConstructorDefinitionSyncTemplate;
 

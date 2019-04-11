@@ -29,7 +29,7 @@ using namespace qtprotobuf::generator;
 
 const char *Templates::DefaultProtobufIncludesTemplate = "#include <QMetaType>\n"
                                                          "#include <QList>\n"
-                                                         "#include <protobufobject.h>\n"
+                                                         "#include <qprotobufobject.h>\n"
                                                          "#include <unordered_map>\n\n";
 
 const char *Templates::GlobalEnumClassNameTemplate = "GlobalEnums";
@@ -51,7 +51,7 @@ const char *Templates::ComplexTypeRegistrationTemplate = "void $classname$::regi
                                                          "        qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
                                                          "        qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
                                                          "        qRegisterMetaType<$classname$List>(\"$namespaces$::$classname$List\");\n"
-                                                         "        registerSerializers();\n";
+                                                         "";
 const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<$classname$>;\n";
 const char *Templates::MapTypeUsingTemplate = "using $classname$ = QMap<$key$, $value$>;\n";
 
@@ -62,7 +62,7 @@ const char *Templates::UsingNamespaceTemplate = "using namespace $namespace$;\n"
 const char *Templates::NonProtoClassDefinitionTemplate = "\nclass $classname$ : public QObject\n"
                                                          "{\n"
                                                          "    Q_OBJECT\n";
-const char *Templates::ProtoClassDefinitionTemplate = "\nclass $classname$ final : public qtprotobuf::ProtobufObject<$classname$>\n"
+const char *Templates::ProtoClassDefinitionTemplate = "\nclass $classname$ final : public QObject\n"
                                                  "{\n"
                                                  "    Q_OBJECT\n";
 
@@ -74,10 +74,10 @@ const char *Templates::PublicBlockTemplate = "\npublic:\n";
 const char *Templates::PrivateBlockTemplate = "\nprivate:\n";
 const char *Templates::EnumDefinitionTemplate = "enum $enum$ {\n";
 const char *Templates::EnumFieldTemplate = "$enumvalue$ = $value$,\n";
-const char *Templates::ProtoConstructorTemplate = "$classname$($parameter_list$QObject *parent = nullptr) : ProtobufObject(parent)";
+const char *Templates::ProtoConstructorTemplate = "$classname$($parameter_list$QObject *parent = nullptr) : QObject(parent)";
 const char *Templates::ConstructorTemplate = "$classname$();\n";
-const char *Templates::CopyConstructorTemplate = "$classname$(const $classname$ &other) : ProtobufObject() {\n";
-const char *Templates::MoveConstructorTemplate = "$classname$($classname$ &&other) : ProtobufObject() {\n";
+const char *Templates::CopyConstructorTemplate = "$classname$(const $classname$ &other) : QObject() {\n";
+const char *Templates::MoveConstructorTemplate = "$classname$($classname$ &&other) : QObject() {\n";
 const char *Templates::CopyFieldTemplate = "m_$property_name$ = other.m_$property_name$;\n";
 const char *Templates::MoveComplexFieldTemplate = "m_$property_name$ = std::move(other.m_$property_name$);\n";
 const char *Templates::MoveFieldTemplate = "m_$property_name$ = std::exchange(other.m_$property_name$, 0);\n";
@@ -158,6 +158,9 @@ const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nbool $classname$
                                                              "    //TODO: call transport method to serialize this method\n"
                                                              "    return false;\n"
                                                              "}\n";
+const char *Templates::SerializersTemplate = "QByteArray serialize() const { return qtprotobuf::ProtobufObjectPrivate::serialize<$classname$>(this); }\n"
+                                     "void deserialize(const QByteArray &array) { qtprotobuf::ProtobufObjectPrivate::deserialize<$classname$>(this, array); }";
+const char *Templates::RegisterSerializersTemplate = "qtprotobuf::ProtobufObjectPrivate::registerSerializers<$classname$>();";
 
 const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> Templates::TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "double"},

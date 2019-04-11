@@ -26,7 +26,7 @@
 #pragma once
 
 #include <qtprotobuftypes.h>
-#include <protobufobject.h>
+#include <qprotobufobject.h>
 #include <qtprotobuflogging.h>
 #include <QDebug>
 
