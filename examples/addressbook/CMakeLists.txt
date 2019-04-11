@@ -35,6 +35,16 @@ endif()
 find_package(Qt5 COMPONENTS Core Quick Network REQUIRED)
 
 set(EXPECTED_GENERATED_HEADERS 
+    addressbookclient.h
+#    addressbookserver.h
+    address.h
+    contact.h
+    contacts.h
+    globalenums.h
+    job.h
+    listframe.h
+    phonenumber.h
+    simpleresult.h
     globalenums.h
 )
 
@@ -72,10 +82,10 @@ if(WIN32)
     include_directories(${GTEST_INCLUDE_PATHS} "/")
 endif()
 
-file(GLOB SOURCES main.cpp)
+file(GLOB SOURCES main.cpp addressbookengine.cpp universallistmodel.cpp universallistmodelbase.cpp testnesting.cpp nestedobject.cpp)
 
 set(addressbook "addressbook_example")
-add_executable(${addressbook} ${SOURCES} ${GENERATED_SOURCES})
+add_executable(${addressbook} ${SOURCES} ${GENERATED_SOURCES} resources.qrc)
 if(WIN32)
     target_link_libraries(${addressbook} qtgrpc Qt5::Quick)
 elseif(UNIX)

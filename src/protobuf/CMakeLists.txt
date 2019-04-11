@@ -10,6 +10,8 @@ if(Qt5_POSITION_INDEPENDENT_CODE)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
+find_package(Qt5 COMPONENTS Core Qml REQUIRED)
+
 file(GLOB SOURCES
     qprotobufobject_p.cpp
     qtprotobuf.cpp

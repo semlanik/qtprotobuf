@@ -23,61 +23,21 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-syntax="proto3";
+#include "addressbookengine.h"
+#include "addressbookclient.h"
+#include <http2channel.h>
 
-package qtprotobuf.examples;
+#include <QDebug>
 
-message PhoneNumber {
-    uint32 countryCode = 1;
-    repeated uint64 number = 2;
-}
+using namespace qtprotobuf::examples;
 
-message Address {
-    uint64 zipCode = 1;
-    string streetAddress1 = 2;
-    string streetAddress2 = 3;
-    string state = 4;
-    uint32 country = 5;
-}
-
-message Job {
-    string title = 1;
-    Address officeAddress = 2;
-}
-
-message Contact {
-    enum PhoneType {
-        Home = 0;
-        Work = 1;
-        Mobile = 2;
-        Other = 3;
-    };
-
-    string firstName = 1;
-    string lastName = 2;
-    string middleName = 3;
-    map<int32, PhoneNumber> phones = 4;
-    Address address = 5;
-    Job job = 6;
-}
-
-message Contacts {
-    repeated Contact list = 1;
-}
-
-message SimpleResult {
-    bool ok = 1;
-}
-
-message ListFrame {
-    sint32 start = 1;
-    sint32 end = 2;
-}
-
-service AddressBook {
-    rpc addContact(Contact) returns (Contacts) {}
-    rpc removeContact(Contact) returns (Contacts) {}
-    rpc getContacts(ListFrame) returns (Contacts) {}
-    rpc makeCall(Contact) returns (SimpleResult) {}
-    rpc navigateTo(Address) returns (SimpleResult) {}
+AddressBookEngine::AddressBookEngine() : QObject()
+  , m_client(new AddressBookClient)
+  , m_contacts(new ContactsListModel(this))
+{
+    Contacts tmp;
+    std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel("localhost", 65001));
+    m_client->attachChannel(channel);
+    m_client->getContacts(ListFrame(), tmp);
+    m_contacts->reset(tmp.list());
 }

@@ -23,61 +23,49 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-syntax="proto3";
+import QtQuick 2.9
+import QtQuick.Controls 2.9
+import QtQuick.Controls.Material 2.9
+import qtprotobuf.examples.addressbook 1.0
+import examples.addressbook 1.0
 
-package qtprotobuf.examples;
+ApplicationWindow {
+    Material.theme: Material.Light
+    Material.accent: Material.Blue
+    visible: true
+    width: 640
+    height: 480
+    title: qsTr("QtProtobuf Address Book Example")
+    Rectangle {
+        anchors.fill: parent
+        color: "#81D4FA"
+    }
 
-message PhoneNumber {
-    uint32 countryCode = 1;
-    repeated uint64 number = 2;
+    TestNesting {
+        id: test
+        nested: NestedObject {
+            title: "qqq"
+        }
+        Component.onCompleted: {
+            console.log("test.nested " + test.nested.title)
+        }
+    }
+
+//    NestedObject {
+//        id: nested
+//        title: "qqq"
+//        Component.onCompleted: {
+//            console.log("test.nested " + nested.title)
+//        }
+//    }
+
+    ContactList {
+        model: abEngine.contacts
+        Component.onCompleted: {
+            console.log("abEngine.contacts.list.length " + abEngine.contacts.count)
+        }
+    }
 }
 
-message Address {
-    uint64 zipCode = 1;
-    string streetAddress1 = 2;
-    string streetAddress2 = 3;
-    string state = 4;
-    uint32 country = 5;
-}
 
-message Job {
-    string title = 1;
-    Address officeAddress = 2;
-}
 
-message Contact {
-    enum PhoneType {
-        Home = 0;
-        Work = 1;
-        Mobile = 2;
-        Other = 3;
-    };
-
-    string firstName = 1;
-    string lastName = 2;
-    string middleName = 3;
-    map<int32, PhoneNumber> phones = 4;
-    Address address = 5;
-    Job job = 6;
-}
-
-message Contacts {
-    repeated Contact list = 1;
-}
-
-message SimpleResult {
-    bool ok = 1;
-}
-
-message ListFrame {
-    sint32 start = 1;
-    sint32 end = 2;
-}
-
-service AddressBook {
-    rpc addContact(Contact) returns (Contacts) {}
-    rpc removeContact(Contact) returns (Contacts) {}
-    rpc getContacts(ListFrame) returns (Contacts) {}
-    rpc makeCall(Contact) returns (SimpleResult) {}
-    rpc navigateTo(Address) returns (SimpleResult) {}
-}
