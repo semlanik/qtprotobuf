@@ -369,32 +369,36 @@ void ProtobufClassGenerator::printConstructor()
         std::string fieldTypeName = getTypeName(field);
         std::string fieldName = field->name();
         fieldName[0] = ::tolower(fieldName[0]);
-        switch (field->type()) {
-        case FieldDescriptor::TYPE_DOUBLE:
-        case FieldDescriptor::TYPE_FLOAT:
-            parameterList += fieldTypeName + " " + fieldName + " = " + "{0.0}";
-            break;
-        case FieldDescriptor::TYPE_FIXED32:
-        case FieldDescriptor::TYPE_FIXED64:
-        case FieldDescriptor::TYPE_INT32:
-        case FieldDescriptor::TYPE_INT64:
-        case FieldDescriptor::TYPE_SINT32:
-        case FieldDescriptor::TYPE_SINT64:
-        case FieldDescriptor::TYPE_UINT32:
-        case FieldDescriptor::TYPE_UINT64:
-            parameterList += fieldTypeName + " " + fieldName + " = " + "{0}";
-            break;
-        case FieldDescriptor::TYPE_BOOL:
-            parameterList += fieldTypeName + " " + fieldName + " = " + "{false}";
-            break;
-        case FieldDescriptor::TYPE_BYTES:
-        case FieldDescriptor::TYPE_STRING:
-        case FieldDescriptor::TYPE_MESSAGE:
+        if (field->is_repeated() || field->is_map()) {
             parameterList += "const " + fieldTypeName + " &" + fieldName + " = {}";
-            break;
-        default:
-            parameterList += fieldTypeName + " " + fieldName + " = " + "{}";
-            break;
+        } else {
+            switch (field->type()) {
+            case FieldDescriptor::TYPE_DOUBLE:
+            case FieldDescriptor::TYPE_FLOAT:
+                parameterList += fieldTypeName + " " + fieldName + " = " + "0.0";
+                break;
+            case FieldDescriptor::TYPE_FIXED32:
+            case FieldDescriptor::TYPE_FIXED64:
+            case FieldDescriptor::TYPE_INT32:
+            case FieldDescriptor::TYPE_INT64:
+            case FieldDescriptor::TYPE_SINT32:
+            case FieldDescriptor::TYPE_SINT64:
+            case FieldDescriptor::TYPE_UINT32:
+            case FieldDescriptor::TYPE_UINT64:
+                parameterList += fieldTypeName + " " + fieldName + " = " + "0";
+                break;
+            case FieldDescriptor::TYPE_BOOL:
+                parameterList += fieldTypeName + " " + fieldName + " = " + "false";
+                break;
+            case FieldDescriptor::TYPE_BYTES:
+            case FieldDescriptor::TYPE_STRING:
+            case FieldDescriptor::TYPE_MESSAGE:
+                parameterList += "const " + fieldTypeName + " &" + fieldName + " = {}";
+                break;
+            default:
+                parameterList += fieldTypeName + " " + fieldName + " = " + "{}";
+                break;
+            }
         }
         parameterList += ", ";
     }
