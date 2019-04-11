@@ -26,17 +26,15 @@
 #pragma once
 
 #include <QObject>
-#include <QMetaObject>
 #include <QMetaProperty>
-#include <QBitArray>
 
 #include <unordered_map>
 #include <memory>
 #include <type_traits>
 #include <functional>
 
-#include <qtprotobuftypes.h>
-#include <qtprotobuflogging.h>
+#include "qtprotobuftypes.h"
+#include "qtprotobuflogging.h"
 
 #define ASSERT_FIELD_NUMBER(X) Q_ASSERT_X(X < 128 && X > 0, T::staticMetaObject.className(), "fieldIndex is out of range")
 

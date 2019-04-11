@@ -25,10 +25,8 @@
 
 #pragma once
 
-#include <qtprotobuftypes.h>
-#include <qprotobufobject.h>
-#include <qtprotobuflogging.h>
-#include <QDebug>
+#include "qtprotobuftypes.h"
+#include "qprotobufobject.h"
 
 //registerProtobufType Not a part of API
 #define registerProtobufType(X) qRegisterMetaType<X>(# X);\

@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <qglobal.h>
 #include <QList>
 #include <QMetaType>
 
