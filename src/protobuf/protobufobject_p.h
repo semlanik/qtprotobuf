@@ -80,6 +80,17 @@ public:
         };
     }
 
+    template <typename T>
+    static void wrapSerializer(std::function<QByteArray(const T &, int &)> s, std::function<void(QByteArray::const_iterator &it, QVariant & value)> d, WireTypes type)
+    {
+        serializers[qMetaTypeId<T>()] = {
+            [s](const QVariant &value, int &fieldIndex) {
+                return s(value.value<T>(), fieldIndex);
+            },
+            d,
+            type
+        };
+    }
 
     static unsigned char encodeHeaderByte(int fieldIndex, WireTypes wireType);
     static bool decodeHeaderByte(unsigned char typeByte, int &fieldIndex, WireTypes &wireType);
@@ -255,7 +266,6 @@ public:
     }
 
     //-------------------------Serialize maps of any type------------------------
-
     template<typename K, typename V>
     static QByteArray serializeMap(const QMap<K,V> &mapValue, int &outFieldIndex) {
         using ItType = typename QMap<K,V>::const_iterator;
@@ -387,15 +397,15 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_same<V, QString>::value
                                         || std::is_same<V, QByteArray>::value, int> = 0>
-    static QByteArray deserializeListType(QByteArray::const_iterator &it) {
+    static QVariant deserializeList(QByteArray::const_iterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
-        return deserializeLengthDelimited(it);
+        return QVariant::fromValue(deserializeLengthDelimited(it));
     }
 
     template <typename V,
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
-    static QVariant deserializeListType(QByteArray::const_iterator &it) {
+    static QVariant deserializeList(QByteArray::const_iterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         QVariant newValue;
         serializers[qMetaTypeId<V>()].deserializer(it, newValue);
@@ -406,7 +416,7 @@ public:
               typename std::enable_if_t<!(std::is_same<V, QString>::value
                                         || std::is_same<V, QByteArray>::value
                                         || std::is_base_of<QObject, V>::value), int> = 0>
-    static QVariant deserializeListType(QByteArray::const_iterator &it) {
+    static QVariant deserializeList(QByteArray::const_iterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         QList<V> out;
@@ -417,6 +427,43 @@ public:
             out.append(variant.value<V>());
         }
         return QVariant::fromValue(out);
+    }
+
+    //-----------------------Deserialize maps of any type------------------------
+    template <typename K, typename V>
+    static void deserializeMap(QByteArray::const_iterator &it, QVariant &previous) {
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
+        QMap<K,V> out = previous.value<QMap<K,V>>();
+
+        int mapIndex = 0;
+        WireTypes type = WireTypes::UnknownWireType;
+
+        K key;
+        V value;
+
+        unsigned int count = deserializeBasic<uint32>(it).toUInt();
+        qProtoDebug() << __func__ << "count:" << count;
+        QByteArray::const_iterator last = it + count;
+        while (it != last) {
+            decodeHeaderByte(*it, mapIndex, type);
+            ++it;
+            if(mapIndex == 1) {
+                key = deserializeMapHelper<K>(it);
+            } else {
+                value = deserializeMapHelper<V>(it);
+            }
+        }
+
+        out[key] = value;
+        previous = QVariant::fromValue<QMap<K,V>>(out);
+    }
+
+    template <typename T>
+    static T deserializeMapHelper(QByteArray::const_iterator &it) {
+        auto serializer = serializers[qMetaTypeId<T>()];
+        QVariant value;
+        serializer.deserializer(it, value);
+        return value.value<T>();
     }
 };
 

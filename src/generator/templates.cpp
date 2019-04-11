@@ -134,8 +134,10 @@ const char *Templates::RegisterMetaTypeTemplate = "qRegisterMetaType<$namespaces
 
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 
-const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::ProtobufObjectPrivate::wrapSerializer<$classname$::$type$>(qtprotobuf::ProtobufObjectPrivate::serializeMap<$classname$::$type$::key_type, $classname$::$type$::mapped_type>,\n"
-                                                                             "std::function<QVariant(QByteArray::const_iterator &)>(), qtprotobuf::LengthDelimited);\n";
+const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::ProtobufObjectPrivate::wrapSerializer<$classname$::$type$>(\n"
+                                                          "qtprotobuf::ProtobufObjectPrivate::serializeMap<$classname$::$type$::key_type, $classname$::$type$::mapped_type>,\n"
+                                                          "qtprotobuf::ProtobufObjectPrivate::deserializeMap<$classname$::$type$::key_type, $classname$::$type$::mapped_type>\n"
+                                                          ", qtprotobuf::LengthDelimited);\n";
 
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";

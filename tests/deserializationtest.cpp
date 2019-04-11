@@ -54,6 +54,33 @@
 #include "simpleenummessage.h"
 #include "repeatedcomplexmessage.h"
 
+#include "simplefixed32stringmapmessage.h"
+#include "simplesfixed32stringmapmessage.h"
+#include "simpleint32stringmapmessage.h"
+#include "simplesint32stringmapmessage.h"
+#include "simpleuint32stringmapmessage.h"
+
+#include "simplefixed64stringmapmessage.h"
+#include "simplesfixed64stringmapmessage.h"
+#include "simpleint64stringmapmessage.h"
+#include "simplesint64stringmapmessage.h"
+#include "simpleuint64stringmapmessage.h"
+
+#include "simplestringstringmapmessage.h"
+
+#include "simplefixed32complexmessagemapmessage.h"
+#include "simplesfixed32complexmessagemapmessage.h"
+#include "simpleint32complexmessagemapmessage.h"
+#include "simplesint32complexmessagemapmessage.h"
+#include "simpleuint32complexmessagemapmessage.h"
+
+#include "simplefixed64complexmessagemapmessage.h"
+#include "simplesfixed64complexmessagemapmessage.h"
+#include "simpleint64complexmessagemapmessage.h"
+#include "simplesint64complexmessagemapmessage.h"
+#include "simpleuint64complexmessagemapmessage.h"
+
+#include "simplestringcomplexmessagemapmessage.h"
 using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf::tests;
 using namespace qtprotobuf;
@@ -625,4 +652,159 @@ TEST_F(DeserializationTest, SimpleEnumMessageDeserializeTest)
     SimpleEnumMessage test;
     test.deserialize(QByteArray::fromHex("0803"));
     ASSERT_EQ(test.localEnum(), SimpleEnumMessage::LOCAL_ENUM_VALUE3);
+}
+
+TEST_F(DeserializationTest, SimpleFixed32StringMapDeserializeTest)
+{
+    SimpleFixed32StringMapMessage test;
+    test.deserialize(QByteArray::fromHex("3a0a0d0a000000120374656e3a0e0d0f00000012076669667465656e3a110d2a000000120a666f757274792074776f"));
+    ASSERT_TRUE(test.mapField() == SimpleFixed32StringMapMessage::MapFieldEntry({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}}));
+}
+
+TEST_F(DeserializationTest, SimpleSFixed32StringMapDeserializeTest)
+{
+    SimpleSFixed32StringMapMessage test;
+    test.deserialize(QByteArray::fromHex("4a170dd6ffffff12106d696e757320666f757274792074776f4a0a0d0a000000120374656e4a0e0d0f00000012076669667465656e"));
+    ASSERT_TRUE(test.mapField() == SimpleSFixed32StringMapMessage::MapFieldEntry({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}}));
+}
+
+TEST_F(DeserializationTest, SimpleInt32StringMapDeserializeTest)
+{
+    SimpleInt32StringMapMessage test;
+    test.deserialize(QByteArray::fromHex("1a1608f6ffffffffffffffff0112096d696e75732074656e1a0b080f12076669667465656e1a0e082a120a666f757274792074776f"));
+    ASSERT_TRUE(test.mapField() == SimpleInt32StringMapMessage::MapFieldEntry({{-10, {"minus ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}}));
+}
+
+TEST_F(DeserializationTest, SimpleSInt32StringMapDeserializeTest)
+{
+    SimpleSInt32StringMapMessage test;
+    test.deserialize(QByteArray::fromHex("0a14085312106d696e757320666f757274792074776f0a070814120374656e0a0b081e12076669667465656e"));
+    ASSERT_TRUE(test.mapField() == SimpleSInt32StringMapMessage::MapFieldEntry({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}}));
+}
+
+TEST_F(DeserializationTest, SimpleUInt32StringMapDeserializeTest)
+{
+    SimpleUInt32StringMapMessage test;
+    test.deserialize(QByteArray::fromHex("2a07080a120374656e2a0b080f12076669667465656e2a0e082a120a666f757274792074776f"));
+    ASSERT_TRUE(test.mapField() == SimpleUInt32StringMapMessage::MapFieldEntry({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}}));
+}
+
+TEST_F(DeserializationTest, SimpleFixed64StringMapDeserializeTest)
+{
+    SimpleFixed64StringMapMessage test;
+    test.deserialize(QByteArray::fromHex("420e090a00000000000000120374656e4212090f0000000000000012076669667465656e4215092a00000000000000120a666f757274792074776f"));
+    ASSERT_TRUE(test.mapField() == SimpleFixed64StringMapMessage::MapFieldEntry({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}}));
+}
+
+TEST_F(DeserializationTest, SimpleSFixed64StringMapDeserializeTest)
+{
+    SimpleSFixed64StringMapMessage test;
+    test.deserialize(QByteArray::fromHex("521b09d6ffffffffffffff12106d696e757320666f757274792074776f520e090a00000000000000120374656e5212090f0000000000000012076669667465656e"));
+    ASSERT_TRUE(test.mapField() == SimpleSFixed64StringMapMessage::MapFieldEntry({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}}));
+}
+
+TEST_F(DeserializationTest, SimpleInt64StringMapDeserializeTest)
+{
+    SimpleInt64StringMapMessage test;
+    test.deserialize(QByteArray::fromHex("221608f6ffffffffffffffff0112096d696e75732074656e220b080f12076669667465656e220e082a120a666f757274792074776f"));
+    ASSERT_TRUE(test.mapField() == SimpleInt64StringMapMessage::MapFieldEntry({{-10, {"minus ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}}));
+}
+
+TEST_F(DeserializationTest, SimpleSInt64StringMapDeserializeTest)
+{
+    SimpleSInt64StringMapMessage test;
+    test.deserialize(QByteArray::fromHex("1214085312106d696e757320666f757274792074776f12070814120374656e120b081e12076669667465656e"));
+    ASSERT_TRUE(test.mapField() == SimpleSInt64StringMapMessage::MapFieldEntry({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}}));
+}
+
+TEST_F(DeserializationTest, SimpleUInt64StringMapDeserializeTest)
+{
+    SimpleUInt64StringMapMessage test;
+    test.deserialize(QByteArray::fromHex("3207080a120374656e320b080f12076669667465656e320e082a120a666f757274792074776f"));
+    ASSERT_TRUE(test.mapField() == SimpleUInt64StringMapMessage::MapFieldEntry({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}}));
+}
+
+TEST_F(DeserializationTest, SimpleStringStringMapDeserializeTest)
+{
+    SimpleStringStringMapMessage test;
+    test.deserialize(QByteArray::fromHex("6a0a0a0362656e120374656e6a100a05737765657412076669667465656e6a210a13776861742069732074686520616e737765723f120a666f757274792074776f"));
+    ASSERT_TRUE(test.mapField() == SimpleStringStringMapMessage::MapFieldEntry({{"ben", "ten"}, {"what is the answer?", "fourty two"}, {"sweet", "fifteen"}}));
+}
+
+//Complex map
+TEST_F(DeserializationTest, SimpleFixed32ComplexMapDeserializeTest)
+{
+    SimpleFixed32ComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("3a180d0a0000001211120d320b74656e207369787465656e08103a230d2a000000121c12183216666f757274792074776f2074656e207369787465656e080a3a110d13000100120a120632045755543f080a"));
+    ASSERT_TRUE(test.mapField() == SimpleFixed32ComplexMessageMapMessage::MapFieldEntry({{10, {16, {"ten sixteen"}}}, {42, {10, {"fourty two ten sixteen"}}}, {65555, {10, {"WUT?"}}}}));
+}
+
+TEST_F(DeserializationTest, SimpleSFixed32ComplexMapDeserializeTest)
+{
+    SimpleSFixed32ComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("4a290dd6ffffff1222121e321c6d696e757320666f757274792074776f2074656e207369787465656e080a4a180d0a0000001211120d320b74656e207369787465656e08104a110d13000100120a120632045755543f080a"));
+    ASSERT_TRUE(test.mapField() == SimpleSFixed32ComplexMessageMapMessage::MapFieldEntry({{10, {16 , {"ten sixteen"}}}, {-42, {10 , {"minus fourty two ten sixteen"}}}, {65555, {10 , {"WUT?"}}}}));
+}
+
+TEST_F(DeserializationTest, SimpleInt32ComplexMapDeserializeTest)
+{
+    SimpleInt32ComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("1a2f08d6ffffffffffffffff011222121e321c6d696e757320666f757274792074776f2074656e207369787465656e080a1a15080a1211120d320b74656e207369787465656e08101a1008938004120a120632045755543f080a"));
+    ASSERT_TRUE(test.mapField() == SimpleInt32ComplexMessageMapMessage::MapFieldEntry({{10, {16 , {"ten sixteen"}}}, {-42, {10 , {"minus fourty two ten sixteen"}}}, {65555, {10 , {"WUT?"}}}}));
+}
+
+TEST_F(DeserializationTest, SimpleSInt32ComplexMapDeserializeTest)
+{
+    SimpleSInt32ComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("0a1608a580081210120c320a6d696e7573205755543f080a0a1508141211120d320b74656e207369787465656e08100a200854121c12183216666f757274792074776f2074656e207369787465656e080a"));
+    ASSERT_TRUE(test.mapField() == SimpleSInt32ComplexMessageMapMessage::MapFieldEntry({{10, {16 , {"ten sixteen"}}}, {42, {10 , {"fourty two ten sixteen"}}}, {-65555, {10 , {"minus WUT?"}}}}));
+}
+
+TEST_F(DeserializationTest, SimpleUInt32ComplexMapDeserializeTest)
+{
+    SimpleUInt32ComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("2a15080a1211120d320b74656e207369787465656e08102a20082a121c12183216666f757274792074776f2074656e207369787465656e080a2a1008938004120a120632045755543f080a"));
+    ASSERT_TRUE(test.mapField() == SimpleUInt32ComplexMessageMapMessage::MapFieldEntry({{10, {16 , {"ten sixteen"}}}, {42, {10 , {"fourty two ten sixteen"}}}, {65555, {10 , {"WUT?"}}}}));
+}
+
+TEST_F(DeserializationTest, SimpleFixed64ComplexMapDeserializeTest)
+{
+    SimpleFixed64ComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("421c090a000000000000001211120d320b74656e207369787465656e08104215091300010000000000120a120632045755543f080a422b09ffffffffffffffff1220121c321a6d696e757320666f757274792074776f2074656e204d41414158082a"));
+    ASSERT_TRUE(test.mapField() == SimpleFixed64ComplexMessageMapMessage::MapFieldEntry({{10, {16 , {"ten sixteen"}}}, {UINT64_MAX, {42 , {"minus fourty two ten MAAAX"}}}, {65555, {10 , {"WUT?"}}}}));
+}
+
+TEST_F(DeserializationTest, SimpleSFixed64ComplexMapDeserializeTest)
+{
+    SimpleSFixed64ComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("522d09d6ffffffffffffff1222121e321c6d696e757320666f757274792074776f2074656e207369787465656e080a521c090a000000000000001211120d320b74656e207369787465656e08105215091300010000000000120a120632045755543f080a"));
+    ASSERT_TRUE(test.mapField() == SimpleSFixed64ComplexMessageMapMessage::MapFieldEntry({{10, {16 , {"ten sixteen"}}}, {-42, {10 , {"minus fourty two ten sixteen"}}}, {65555, {10 , {"WUT?"}}}}));
+}
+
+TEST_F(DeserializationTest, SimpleInt64ComplexMapDeserializeTest)
+{
+    SimpleInt64ComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("222f08d6ffffffffffffffff011222121e321c6d696e757320666f757274792074776f2074656e207369787465656e080a2215080a1211120d320b74656e207369787465656e0810221008938004120a120632045755543f080a"));
+    ASSERT_TRUE(test.mapField() == SimpleInt64ComplexMessageMapMessage::MapFieldEntry({{10, {16 , {"ten sixteen"}}}, {-42, {10 , {"minus fourty two ten sixteen"}}}, {65555, {10 , {"WUT?"}}}}));
+}
+
+TEST_F(DeserializationTest, SimpleSInt64ComplexMapDeserializeTest)
+{
+    SimpleSInt64ComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("122608531222121e321c6d696e757320666f757274792074776f2074656e207369787465656e080a121508141211120d320b74656e207369787465656e0810121008a68008120a120632045755543f080a"));
+    ASSERT_TRUE(test.mapField() == SimpleSInt64ComplexMessageMapMessage::MapFieldEntry({{10, {16 , {"ten sixteen"}}}, {-42, {10 , {"minus fourty two ten sixteen"}}}, {65555, {10 , {"WUT?"}}}}));
+}
+
+TEST_F(DeserializationTest, SimpleUInt64ComplexMapDeserializeTest)
+{
+    SimpleUInt64ComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("3214080a1210120c320a74656e20656c6576656e080b3220082a121c12183216666f757274792074776f2074656e207369787465656e080a321008938004120a120632045755543f080a"));
+    ASSERT_TRUE(test.mapField() == SimpleUInt64ComplexMessageMapMessage::MapFieldEntry({{10, {11 , {"ten eleven"}}}, {42, {10 , {"fourty two ten sixteen"}}}, {65555, {10 , {"WUT?"}}}}));
+}
+
+TEST_F(DeserializationTest, SimpleStringComplexMapDeserializeTest)
+{
+    SimpleStringComplexMessageMapMessage test;
+    test.deserialize(QByteArray::fromHex("6a140a055755543f3f120b120732053f5755543f080a6a170a0362656e1210120c320a74656e20656c6576656e080b6a350a157768657265206973206d792063617220647564653f121c12183216666f757274792074776f2074656e207369787465656e080a"));
+    ASSERT_TRUE(test.mapField() == SimpleStringComplexMessageMapMessage::MapFieldEntry({{"ben", {11 , {"ten eleven"}}}, {"where is my car dude?", {10 , {"fourty two ten sixteen"}}}, {"WUT??", {10 , {"?WUT?"}}}}));
 }

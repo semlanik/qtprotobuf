@@ -65,9 +65,9 @@ void ProtobufObject<T>::deserialize(const QByteArray &array) {
         int fieldNumber = NotUsedFieldIndex;
         WireTypes wireType = UnknownWireType;
         if (!ProtobufObjectPrivate::decodeHeaderByte(*it, fieldNumber, wireType)) {
-            ++it;
             qProtoCritical() << "Message received doesn't contains valid header byte. "
-                           "Trying next, but seems stream is broken";
+                           "Trying next, but seems stream is broken" << QString::number((*it), 16);
+            ++it;
             continue;
         }
 
@@ -115,7 +115,7 @@ QByteArray ProtobufObject<T>::serializeComplexListType(const QVariant &listValue
 template<typename T>
 void ProtobufObject<T>::deserializeComplexListType(QByteArray::const_iterator &it, QVariant &previous) {
     QList<T> previousList = previous.value<QList<T>>();
-    QVariant newMember = ProtobufObjectPrivate::deserializeListType<T>(it);
+    QVariant newMember = ProtobufObjectPrivate::deserializeList<T>(it);
     previousList.append(newMember.value<T>());
     previous.setValue(previousList);
 }
