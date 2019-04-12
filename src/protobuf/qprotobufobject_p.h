@@ -44,10 +44,10 @@ template<typename V>
 struct make_unsigned { typedef typename std::make_unsigned<V>::type type; };
 
 template<>
-struct make_unsigned<sint32> { typedef typename std::make_unsigned<decltype(sint32::_t)>::type type; };
+struct make_unsigned<int32> { typedef typename std::make_unsigned<decltype(int32::_t)>::type type; };
 
 template<>
-struct make_unsigned<sint64> { typedef typename std::make_unsigned<decltype(sint64::_t)>::type type; };
+struct make_unsigned<int64> { typedef typename std::make_unsigned<decltype(int64::_t)>::type type; };
 
 class ProtobufObjectPrivate
 {
@@ -132,8 +132,8 @@ public:
     }
 
     template <typename V,
-              typename std::enable_if_t<std::is_same<V, sint32>::value
-                                        || std::is_same<V, sint64>::value, int> = 0>
+              typename std::enable_if_t<std::is_integral<V>::value
+                                        && std::is_signed<V>::value, int> = 0>
     static QByteArray serializeBasic(V value, int &outFieldIndex) {
         qProtoDebug() << __func__ << "value" << value;
         using UV = typename qtprotobuf::make_unsigned<V>::type;
@@ -146,8 +146,8 @@ public:
     }
 
     template <typename V,
-              typename std::enable_if_t<std::is_integral<V>::value
-                                        && std::is_signed<V>::value, int> = 0>
+              typename std::enable_if_t<std::is_same<V, int32>::value
+                                        || std::is_same<V, int64>::value, int> = 0>
     static QByteArray serializeBasic(V value, int &outFieldIndex) {
         qProtoDebug() << __func__ << "value" << value;
         using UV = typename qtprotobuf::make_unsigned<V>::type;
@@ -341,8 +341,8 @@ public:
     }
 
     template <typename V,
-              typename std::enable_if_t<std::is_same<sint32, V>::value
-                                        || std::is_same<sint64, V>::value,int> = 0>
+              typename std::enable_if_t<std::is_integral<V>::value
+                                        && std::is_signed<V>::value,int> = 0>
     static QVariant deserializeBasic(QByteArray::const_iterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         using  UV = typename qtprotobuf::make_unsigned<V>::type;
@@ -352,8 +352,8 @@ public:
     }
 
     template <typename V,
-              typename std::enable_if_t<std::is_integral<V>::value
-                                        && std::is_signed<V>::value, int> = 0>
+              typename std::enable_if_t<std::is_same<int32, V>::value
+                                        || std::is_same<int64, V>::value, int> = 0>
     static QVariant deserializeBasic(QByteArray::const_iterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         using  UV = typename qtprotobuf::make_unsigned<V>::type;

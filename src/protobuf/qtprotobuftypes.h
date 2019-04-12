@@ -48,12 +48,12 @@ struct transparent {
     operator T() const { return _t; }
 };
 
-using int32 = int32_t;
-using int64 = int64_t;
+using int32 = transparent<int32_t>;
+using int64 = transparent<int64_t>;
 using uint32 = uint32_t;
 using uint64 = uint64_t;
-using sint32 = transparent<int32_t>;
-using sint64 = transparent<int64_t>;
+using sint32 = int32_t;
+using sint64 = int64_t;
 using fixed32 = transparent<uint32_t, 1>;
 using fixed64 = transparent<uint64_t, 1>;
 using sfixed32 = transparent<int32_t, 1>;
@@ -98,3 +98,4 @@ Q_DECLARE_METATYPE(qtprotobuf::sfixed64List)
 
 Q_DECLARE_METATYPE(qtprotobuf::FloatList)
 Q_DECLARE_METATYPE(qtprotobuf::DoubleList)
+

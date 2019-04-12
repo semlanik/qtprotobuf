@@ -151,123 +151,35 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
 
     test.setTestFieldInt(-1);
     result = test.serialize();
-    ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffff0f");
 
     test.setTestFieldInt(-462);
     result = test.serialize();
-    ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xb2');
-    ASSERT_EQ(result.at(2), '\xfc');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08b2fcffff0f");
 
     test.setTestFieldInt(-63585);
     result = test.serialize();
-    ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x9f');
-    ASSERT_EQ(result.at(2), '\x8f');
-    ASSERT_EQ(result.at(3), '\xfc');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "089f8ffcff0f");
 
     test.setTestFieldInt(INT8_MIN);
     result = test.serialize();
-    ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0880ffffff0f");
 
     test.setTestFieldInt(INT16_MIN);
     result = test.serialize();
-    ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\xfe');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088080feff0f");
 
     test.setTestFieldInt(INT32_MIN);
     result = test.serialize();
-    ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x80');
-    ASSERT_EQ(result.at(4), '\x80');
-    ASSERT_EQ(result.at(5), '\xf8');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088080808008");
 
     test.setTestFieldInt(INT8_MIN - 1);
     result = test.serialize();
-    ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xfe');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08fffeffff0f");
 
     test.setTestFieldInt(INT16_MIN - 1);
     result = test.serialize();
-    ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xfd');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08fffffdff0f");
 }
 
 TEST_F(SerializationTest, UIntMessageSerializeTest)
@@ -1411,10 +1323,10 @@ TEST_F(SerializationTest, ComplexTypeSerializeTest)
     test.setTestComplexField(stringMsg);
 
     result = test.serialize();
-    //qDebug() << "result" << result.toHex();
+//    qDebug() << "result" << result.toHex();
 
-    ASSERT_TRUE(result == QByteArray::fromHex("1208320671776572747908d3ffffffffffffffff01")
-                || result == QByteArray::fromHex("08d3ffffffffffffffff0112083206717765727479"));
+    ASSERT_TRUE(result == QByteArray::fromHex("1208320671776572747908d3ffffff0f")
+                || result == QByteArray::fromHex("08d3ffffff0f12083206717765727479"));
 }
 
 TEST_F(SerializationTest, RepeatedIntMessageTest)
@@ -1647,7 +1559,7 @@ TEST_F(SerializationTest, SimpleEnumMessageSerializeTest)
     test.setLocalEnum(SimpleEnumMessage::LOCAL_ENUM_VALUE2);
     QByteArray result = test.serialize();
     ASSERT_EQ(2, result.size());
-    ASSERT_TRUE(result == QByteArray::fromHex("0802"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0802");
 }
 
 TEST_F(SerializationTest, SimpleFixed32StringMapSerializeTest)
@@ -1677,7 +1589,7 @@ TEST_F(SerializationTest, SimpleInt32StringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "1a1608f6ffffffffffffffff0112096d696e75732074656e1a0b080f12076669667465656e1a0e082a120a666f757274792074776f");
+                "1a1108f6ffffff0f12096d696e75732074656e1a0b080f12076669667465656e1a0e082a120a666f757274792074776f");
 }
 
 TEST_F(SerializationTest, SimpleSInt32StringMapSerializeTest)

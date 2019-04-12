@@ -33,7 +33,7 @@ void ProtobufObjectPrivate::registerSerializers()
 {
     wrapSerializer<float>(ProtobufObjectPrivate::serializeBasic<float>, ProtobufObjectPrivate::deserializeBasic<float>, Fixed32);
     wrapSerializer<double>(ProtobufObjectPrivate::serializeBasic<double>, ProtobufObjectPrivate::deserializeBasic<double>, Fixed64);
-    wrapSerializer<int32>(ProtobufObjectPrivate::serializeBasic<int64>, ProtobufObjectPrivate::deserializeBasic<int64>, Varint);
+    wrapSerializer<int32>(ProtobufObjectPrivate::serializeBasic<int32>, ProtobufObjectPrivate::deserializeBasic<int32>, Varint);
     wrapSerializer<int64>(ProtobufObjectPrivate::serializeBasic<int64>, ProtobufObjectPrivate::deserializeBasic<int64>, Varint);
     wrapSerializer<uint32>(ProtobufObjectPrivate::serializeBasic<uint32>, ProtobufObjectPrivate::deserializeBasic<uint32>, Varint);
     wrapSerializer<uint64>(ProtobufObjectPrivate::serializeBasic<uint64>, ProtobufObjectPrivate::deserializeBasic<uint64>, Varint);
@@ -81,7 +81,7 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
 
     if (metaProperty.isEnumType()) {
         type = Varint;
-        result.append(serializeBasic(propertyValue.toLongLong(), fieldIndex));
+        result.append(serializeBasic(int64(propertyValue.value<int32_t>()), fieldIndex));
     } else {
         result.append(serializeUserType(propertyValue, fieldIndex, type));
     }
@@ -127,7 +127,7 @@ void ProtobufObjectPrivate::deserializeProperty(QObject *object, WireTypes wireT
         return;
     default:
         if (metaProperty.isEnumType()) {
-            newPropertyValue = deserializeBasic<int32>(it);
+            newPropertyValue = QVariant::fromValue(int32_t(deserializeBasic<int64>(it).value<int64>()._t));
         } else {
             newPropertyValue = metaProperty.read(object);
             deserializeUserType(metaProperty, it, newPropertyValue);
