@@ -41,6 +41,7 @@ class AddressBookEngine : public QObject
     Q_PROPERTY(ContactsListModel *contacts READ contacts NOTIFY contactsChanged)
 public:
     AddressBookEngine();
+    virtual ~AddressBookEngine();
 
     ContactsListModel *contacts() const
     {

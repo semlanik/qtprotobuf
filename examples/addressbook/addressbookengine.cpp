@@ -41,3 +41,8 @@ AddressBookEngine::AddressBookEngine() : QObject()
     m_client->getContacts(ListFrame(), tmp);
     m_contacts->reset(tmp.list());
 }
+
+AddressBookEngine::~AddressBookEngine()
+{
+    delete m_client;
+}

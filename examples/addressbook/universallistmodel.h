@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QList>
 #include <QHash>
-#include <QPointer>
+#include <QSharedPointer>
 #include <QMetaProperty>
 #include <QMetaObject>
 
@@ -76,7 +76,7 @@ public:
             return -1;
         }
         beginInsertRows(QModelIndex(), m_container.count(), m_container.count());
-        m_container.append(QPointer<T>(value));
+        m_container.append(QSharedPointer<T>(value));
         emit countChanged();
         endInsertRows();
         return m_container.count() - 1;
@@ -97,7 +97,7 @@ public:
             return -1;
         }
         beginInsertRows(QModelIndex(), 0, 0);
-        m_container.prepend(QPointer<T>(value));
+        m_container.prepend(QSharedPointer<T>(value));
         emit countChanged();
         endInsertRows();
         return 0;
@@ -126,10 +126,10 @@ public:
 
     /*!
      * \brief Resets container with new container passed as parameter
-     * \param container a data for model. Should contain QPointer's to objects.
+     * \param container a data for model. Should contain QSharedPointer's to objects.
      * Passing empty container makes model empty. This method should be used to cleanup model.
      */
-    void reset(const QList<QPointer<T> >& container) {
+    void reset(const QList<QSharedPointer<T> >& container) {
         beginResetModel();
         clear();
         m_container = container;
@@ -162,22 +162,22 @@ public:
      * \param value property of corresponded type inside QVariant container
      * \return
      */
-    QPointer<T> findByProperty(const char* propertyName, const QVariant& value) const {
-        auto iter = std::find_if(m_container.begin(), m_container.end(), [=](const QPointer<T> &item) -> bool {
+    QSharedPointer<T> findByProperty(const char* propertyName, const QVariant& value) const {
+        auto iter = std::find_if(m_container.begin(), m_container.end(), [=](const QSharedPointer<T> &item) -> bool {
             return item->property(propertyName) == value;
         });
 
         if(iter != m_container.end()) {
             return *iter;
         }
-        return QPointer<T>();
+        return QSharedPointer<T>();
     }
 
     /*!
      * \brief container returns internal container
      * \return
      */
-    QList<QPointer<T> > container() const {
+    QList<QSharedPointer<T> > container() const {
         return m_container;
     }
 
@@ -187,7 +187,7 @@ protected:
         emit countChanged();
     }
 
-    QList<QPointer<T> > m_container;
+    QList<QSharedPointer<T> > m_container;
     static QHash<int, QByteArray> s_roleNames;
 
 
