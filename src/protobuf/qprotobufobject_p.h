@@ -26,7 +26,7 @@
 #pragma once
 
 #include <QObject>
-#include <QPointer>
+#include <QSharedPointer>
 #include <QMetaProperty>
 
 #include <unordered_map>
@@ -276,7 +276,7 @@ public:
 
     template<typename V,
              typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
-    static QByteArray serializeListType(const QList<QPointer<V>> &listValue, int &outFieldIndex) {
+    static QByteArray serializeListType(const QList<QSharedPointer<V>> &listValue, int &outFieldIndex) {
         qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
 
         if (listValue.count() <= 0) {
@@ -318,8 +318,8 @@ public:
 
     template<typename K, typename V,
              typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
-    static QByteArray serializeMap(const QMap<K, QPointer<V>> &mapValue, int &outFieldIndex) {
-        using ItType = typename QMap<K, QPointer<V>>::const_iterator;
+    static QByteArray serializeMap(const QMap<K, QSharedPointer<V>> &mapValue, int &outFieldIndex) {
+        using ItType = typename QMap<K, QSharedPointer<V>>::const_iterator;
         QByteArray mapResult;
         auto kSerializer = serializers[qMetaTypeId<K>()];
         auto vSerializer = serializers[qMetaTypeId<V*>()];
@@ -531,7 +531,7 @@ public:
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static void deserializeMap(QByteArray::const_iterator &it, QVariant &previous) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
-        auto out = previous.value<QMap<K, QPointer<V>>>();
+        auto out = previous.value<QMap<K, QSharedPointer<V>>>();
 
         int mapIndex = 0;
         WireTypes type = WireTypes::UnknownWireType;
@@ -552,8 +552,8 @@ public:
             }
         }
 
-        out[key] = value;
-        previous = QVariant::fromValue<QMap<K,QPointer<V>>>(out);
+        out[key] = QSharedPointer<V>(value);
+        previous = QVariant::fromValue<QMap<K,QSharedPointer<V>>>(out);
     }
 
     template <typename T,
@@ -578,7 +578,7 @@ public:
     template<typename T>
     static void registerSerializers() {
         ProtobufObjectPrivate::wrapSerializer<T>(serializeComplexType<T>, deserializeComplexType<T>, LengthDelimited);
-        ProtobufObjectPrivate::serializers[qMetaTypeId<QList<QPointer<T>>>()] = {ProtobufObjectPrivate::Serializer(serializeComplexListType<T>),
+        ProtobufObjectPrivate::serializers[qMetaTypeId<QList<QSharedPointer<T>>>()] = {ProtobufObjectPrivate::Serializer(serializeComplexListType<T>),
                 ProtobufObjectPrivate::Deserializer(deserializeComplexListType<T>), LengthDelimited};
     }
 
@@ -599,16 +599,16 @@ public:
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static QByteArray serializeComplexListType(const QVariant &listValue, int &outFieldIndex) {
-        QList<QPointer<T>> list = listValue.value<QList<QPointer<T>>>();
+        QList<QSharedPointer<T>> list = listValue.value<QList<QSharedPointer<T>>>();
         return ProtobufObjectPrivate::serializeListType(list, outFieldIndex);
     }
 
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static void deserializeComplexListType(QByteArray::const_iterator &it, QVariant &previous) {
-        QList<QPointer<T>> previousList = previous.value<QList<QPointer<T>>>();
+        QList<QSharedPointer<T>> previousList = previous.value<QList<QSharedPointer<T>>>();
         QVariant newMember = ProtobufObjectPrivate::deserializeList<T>(it);
-        previousList.append(newMember.value<T*>());
+        previousList.append(QSharedPointer<T>(newMember.value<T*>()));
         previous.setValue(previousList);
     }
 

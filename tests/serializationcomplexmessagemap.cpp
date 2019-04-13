@@ -47,7 +47,7 @@ using namespace qtprotobuf;
 TEST_F(SerializationTest, SimpleFixed32ComplexMapSerializeTest)
 {
     SimpleFixed32ComplexMessageMapMessage test;
-    test.setMapField({{10, new ComplexMessage{16, {"ten sixteen"}}}, {42, new ComplexMessage{10, {"fourty two ten sixteen"}}}, {65555, new ComplexMessage{10, {"WUT?"}}}});
+    test.setMapField({{10, QSharedPointer<ComplexMessage>(new ComplexMessage{16, {"ten sixteen"}})}, {42, QSharedPointer<ComplexMessage>(new ComplexMessage{10, {"fourty two ten sixteen"}})}, {65555, QSharedPointer<ComplexMessage>(new ComplexMessage{10, {"WUT?"}})}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
@@ -57,7 +57,7 @@ TEST_F(SerializationTest, SimpleFixed32ComplexMapSerializeTest)
 TEST_F(SerializationTest, SimpleSFixed32ComplexMapSerializeTest)
 {
     SimpleSFixed32ComplexMessageMapMessage test;
-    test.setMapField({{10, new ComplexMessage{16 , {"ten sixteen"}}}, {-42, new ComplexMessage{10 , {"minus fourty two ten sixteen"}}}, {65555, new ComplexMessage{10 , {"WUT?"}}}});
+    test.setMapField({{10, QSharedPointer<ComplexMessage>(new ComplexMessage{16 , {"ten sixteen"}})}, {-42, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"minus fourty two ten sixteen"}})}, {65555, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"WUT?"}})}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
@@ -67,7 +67,7 @@ TEST_F(SerializationTest, SimpleSFixed32ComplexMapSerializeTest)
 TEST_F(SerializationTest, SimpleInt32ComplexMapSerializeTest)
 {
     SimpleInt32ComplexMessageMapMessage test;
-    test.setMapField({{10, new ComplexMessage{16 , {"ten sixteen"}}}, {-42, new ComplexMessage{10 , {"minus fourty two ten sixteen"}}}, {65555, new ComplexMessage{10 , {"WUT?"}}}});
+    test.setMapField({{10, QSharedPointer<ComplexMessage>(new ComplexMessage{16 , {"ten sixteen"}})}, {-42, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"minus fourty two ten sixteen"}})}, {65555, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"WUT?"}})}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
@@ -77,7 +77,7 @@ TEST_F(SerializationTest, SimpleInt32ComplexMapSerializeTest)
 TEST_F(SerializationTest, SimpleSInt32ComplexMapSerializeTest)
 {
     SimpleSInt32ComplexMessageMapMessage test;
-    test.setMapField({{10, new ComplexMessage{16 , {"ten sixteen"}}}, {42, new ComplexMessage{10 , {"fourty two ten sixteen"}}}, {-65555, new ComplexMessage{10 , {"minus WUT?"}}}});
+    test.setMapField({{10, QSharedPointer<ComplexMessage>(new ComplexMessage{16 , {"ten sixteen"}})}, {42, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"fourty two ten sixteen"}})}, {-65555, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"minus WUT?"}})}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
@@ -87,7 +87,7 @@ TEST_F(SerializationTest, SimpleSInt32ComplexMapSerializeTest)
 TEST_F(SerializationTest, SimpleUInt32ComplexMapSerializeTest)
 {
     SimpleUInt32ComplexMessageMapMessage test;
-    test.setMapField({{10, new ComplexMessage{16 , {"ten sixteen"}}}, {42, new ComplexMessage{10 , {"fourty two ten sixteen"}}}, {65555, new ComplexMessage{10 , {"WUT?"}}}});
+    test.setMapField({{10, QSharedPointer<ComplexMessage>(new ComplexMessage{16 , {"ten sixteen"}})}, {42, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"fourty two ten sixteen"}})}, {65555, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"WUT?"}})}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
@@ -97,7 +97,7 @@ TEST_F(SerializationTest, SimpleUInt32ComplexMapSerializeTest)
 TEST_F(SerializationTest, SimpleFixed64ComplexMapSerializeTest)
 {
     SimpleFixed64ComplexMessageMapMessage test;
-    test.setMapField({{10, new ComplexMessage{16 , {"ten sixteen"}}}, {UINT64_MAX, new ComplexMessage{42 , {"minus fourty two ten MAAAX"}}}, {65555, new ComplexMessage{10 , {"WUT?"}}}});
+    test.setMapField({{10, QSharedPointer<ComplexMessage>(new ComplexMessage{16 , {"ten sixteen"}})}, {UINT64_MAX, QSharedPointer<ComplexMessage>(new ComplexMessage{42 , {"minus fourty two ten MAAAX"}})}, {65555, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"WUT?"}})}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
@@ -107,7 +107,7 @@ TEST_F(SerializationTest, SimpleFixed64ComplexMapSerializeTest)
 TEST_F(SerializationTest, SimpleSFixed64ComplexMapSerializeTest)
 {
     SimpleSFixed64ComplexMessageMapMessage test;
-    test.setMapField({{10, new ComplexMessage{16 , {"ten sixteen"}}}, {-42, new ComplexMessage{10 , {"minus fourty two ten sixteen"}}}, {65555, new ComplexMessage{10 , {"WUT?"}}}});
+    test.setMapField({{10, QSharedPointer<ComplexMessage>(new ComplexMessage{16 , {"ten sixteen"}})}, {-42, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"minus fourty two ten sixteen"}})}, {65555, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"WUT?"}})}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
@@ -117,7 +117,7 @@ TEST_F(SerializationTest, SimpleSFixed64ComplexMapSerializeTest)
 TEST_F(SerializationTest, SimpleInt64ComplexMapSerializeTest)
 {
     SimpleInt64ComplexMessageMapMessage test;
-    test.setMapField({{10, new ComplexMessage{16 , {"ten sixteen"}}}, {-42, new ComplexMessage{10 , {"minus fourty two ten sixteen"}}}, {65555, new ComplexMessage{10 , {"WUT?"}}}});
+    test.setMapField({{10, QSharedPointer<ComplexMessage>(new ComplexMessage{16 , {"ten sixteen"}})}, {-42, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"minus fourty two ten sixteen"}})}, {65555, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"WUT?"}})}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
@@ -127,7 +127,7 @@ TEST_F(SerializationTest, SimpleInt64ComplexMapSerializeTest)
 TEST_F(SerializationTest, SimpleSInt64ComplexMapSerializeTest)
 {
     SimpleSInt64ComplexMessageMapMessage test;
-    test.setMapField({{10, new ComplexMessage{16 , {"ten sixteen"}}}, {-42, new ComplexMessage{10 , {"minus fourty two ten sixteen"}}}, {65555, new ComplexMessage{10 , {"WUT?"}}}});
+    test.setMapField({{10, QSharedPointer<ComplexMessage>(new ComplexMessage{16 , {"ten sixteen"}})}, {-42, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"minus fourty two ten sixteen"}})}, {65555, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"WUT?"}})}});
     QByteArray result = test.serialize();
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
                 "122608531222121e321c6d696e757320666f757274792074776f2074656e207369787465656e080a121508141211120d320b74656e207369787465656e0810121008a68008120a120632045755543f080a");
@@ -136,7 +136,7 @@ TEST_F(SerializationTest, SimpleSInt64ComplexMapSerializeTest)
 TEST_F(SerializationTest, SimpleUInt64ComplexMapSerializeTest)
 {
     SimpleUInt64ComplexMessageMapMessage test;
-    test.setMapField({{10, new ComplexMessage{11 , {"ten eleven"}}}, {42, new ComplexMessage{10 , {"fourty two ten sixteen"}}}, {65555, new ComplexMessage{10 , {"WUT?"}}}});
+    test.setMapField({{10, QSharedPointer<ComplexMessage>(new ComplexMessage{11 , {"ten eleven"}})}, {42, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"fourty two ten sixteen"}})}, {65555, QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"WUT?"}})}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
@@ -146,7 +146,7 @@ TEST_F(SerializationTest, SimpleUInt64ComplexMapSerializeTest)
 TEST_F(SerializationTest, SimpleStringComplexMapSerializeTest)
 {
     SimpleStringComplexMessageMapMessage test;
-    test.setMapField({{"ben", new ComplexMessage{11 , {"ten eleven"}}}, {"where is my car dude?", new ComplexMessage{10 , {"fourty two ten sixteen"}}}, {"WUT??", new ComplexMessage{10 , {"?WUT?"}}}});
+    test.setMapField({{"ben", QSharedPointer<ComplexMessage>(new ComplexMessage{11 , {"ten eleven"}})}, {"where is my car dude?", QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"fourty two ten sixteen"}})}, {"WUT??", QSharedPointer<ComplexMessage>(new ComplexMessage{10 , {"?WUT?"}})}});
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),

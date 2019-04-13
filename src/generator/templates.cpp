@@ -31,7 +31,7 @@ const char *Templates::DefaultProtobufIncludesTemplate = "#include <QMetaType>\n
                                                          "#include <QList>\n"
                                                          "#include <qprotobufobject.h>\n"
                                                          "#include <unordered_map>\n"
-                                                         "#include <QPointer>\n\n";
+                                                         "#include <QSharedPointer>\n\n";
 
 const char *Templates::GlobalEnumClassNameTemplate = "GlobalEnums";
 
@@ -53,9 +53,9 @@ const char *Templates::ComplexTypeRegistrationTemplate = "void $classname$::regi
                                                          "        qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
                                                          "        qRegisterMetaType<$classname$List>(\"$namespaces$::$classname$List\");\n"
                                                          "";
-const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<QPointer<$classname$>>;\n";
+const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<QSharedPointer<$classname$>>;\n";
 const char *Templates::MapTypeUsingTemplate = "using $classname$ = QMap<$key$, $value$>;\n";
-const char *Templates::MessageMapTypeUsingTemplate = "using $classname$ = QMap<$key$, QPointer<$value$>>;\n";
+const char *Templates::MessageMapTypeUsingTemplate = "using $classname$ = QMap<$key$, QSharedPointer<$value$>>;\n";
 
 const char *Templates::EnumTypeUsingTemplate = "using $enum$List = QList<$enum$>;\n";
 
@@ -110,6 +110,8 @@ const char *Templates::SetterTemplateMessageType = "void set$property_name_cap$_
                                                    "        m_$property_name$ = *$property_name$;\n"
                                                    "        $property_name$Changed();\n"
                                                    "    }\n"
+                                                   "    //NOTE: take ownership of value\n"
+                                                   "    delete $property_name$;\n"
                                                    "}\n\n";
 
 const char *Templates::SetterTemplateComplexType = "void set$property_name_cap$(const $type$ &$property_name$) {\n"

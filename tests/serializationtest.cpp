@@ -1523,11 +1523,11 @@ TEST_F(SerializationTest, RepeatedComplexMessageTest)
 {
     SimpleStringMessage stringMsg;
     stringMsg.setTestFieldString("qwerty");
-    ComplexMessage msg;
-    msg.setTestFieldInt(25);
-    msg.setTestComplexField(stringMsg);
+    QSharedPointer<ComplexMessage> msg(new ComplexMessage);
+    msg->setTestFieldInt(25);
+    msg->setTestComplexField(stringMsg);
     RepeatedComplexMessage test;
-    test.setTestRepeatedComplex({&msg, &msg, &msg});
+    test.setTestRepeatedComplex({msg, msg, msg});
     QByteArray result = test.serialize();
     //qDebug() << "result " << result.toHex();
 
