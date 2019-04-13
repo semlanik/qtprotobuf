@@ -41,24 +41,6 @@ ApplicationWindow {
         color: "#81D4FA"
     }
 
-    TestNesting {
-        id: test
-        nested: NestedObject {
-            title: "qqq"
-        }
-        Component.onCompleted: {
-            console.log("test.nested " + test.nested.title)
-        }
-    }
-
-//    NestedObject {
-//        id: nested
-//        title: "qqq"
-//        Component.onCompleted: {
-//            console.log("test.nested " + nested.title)
-//        }
-//    }
-
     ContactList {
         model: abEngine.contacts
         Component.onCompleted: {

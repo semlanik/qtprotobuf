@@ -34,6 +34,7 @@ class AddressBookClient;
 } }
 
 using ContactsListModel = UniversalListModel<qtprotobuf::examples::Contact>;
+using PhoneNumbersListModel = UniversalListModel<qtprotobuf::examples::PhoneNumber>;
 
 class AddressBookEngine : public QObject
 {

@@ -312,7 +312,7 @@ void AddDescriptorsImpl() {
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\021addressbook.proto\022\023qtprotobuf.examples"
       "\"2\n\013PhoneNumber\022\023\n\013countryCode\030\001 \001(\r\022\016\n\006"
-      "number\030\002 \003(\004\"j\n\007Address\022\017\n\007zipCode\030\001 \001(\004"
+      "number\030\002 \001(\004\"j\n\007Address\022\017\n\007zipCode\030\001 \001(\004"
       "\022\026\n\016streetAddress1\030\002 \001(\t\022\026\n\016streetAddres"
       "s2\030\003 \001(\t\022\r\n\005state\030\004 \001(\t\022\017\n\007country\030\005 \001(\r"
       "\"I\n\003Job\022\r\n\005title\030\001 \001(\t\0223\n\rofficeAddress\030"
@@ -404,15 +404,18 @@ PhoneNumber::PhoneNumber()
 }
 PhoneNumber::PhoneNumber(const PhoneNumber& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL),
-      number_(from.number_) {
+      _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  countrycode_ = from.countrycode_;
+  ::memcpy(&number_, &from.number_,
+    static_cast<size_t>(reinterpret_cast<char*>(&countrycode_) -
+    reinterpret_cast<char*>(&number_)) + sizeof(countrycode_));
   // @@protoc_insertion_point(copy_constructor:qtprotobuf.examples.PhoneNumber)
 }
 
 void PhoneNumber::SharedCtor() {
-  countrycode_ = 0u;
+  ::memset(&number_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&countrycode_) -
+      reinterpret_cast<char*>(&number_)) + sizeof(countrycode_));
 }
 
 PhoneNumber::~PhoneNumber() {
@@ -443,8 +446,9 @@ void PhoneNumber::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  number_.Clear();
-  countrycode_ = 0u;
+  ::memset(&number_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&countrycode_) -
+      reinterpret_cast<char*>(&number_)) + sizeof(countrycode_));
   _internal_metadata_.Clear();
 }
 
@@ -472,19 +476,14 @@ bool PhoneNumber::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated uint64 number = 2;
+      // uint64 number = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 input, this->mutable_number())));
-        } else if (
-            static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitiveNoInline<
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 1, 18u, input, this->mutable_number())));
+                 input, &number_)));
         } else {
           goto handle_unusual;
         }
@@ -522,15 +521,9 @@ void PhoneNumber::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->countrycode(), output);
   }
 
-  // repeated uint64 number = 2;
-  if (this->number_size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteTag(2, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
-    output->WriteVarint32(static_cast< ::google::protobuf::uint32>(
-        _number_cached_byte_size_));
-  }
-  for (int i = 0, n = this->number_size(); i < n; i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64NoTag(
-      this->number(i), output);
+  // uint64 number = 2;
+  if (this->number() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(2, this->number(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -552,17 +545,9 @@ void PhoneNumber::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->countrycode(), target);
   }
 
-  // repeated uint64 number = 2;
-  if (this->number_size() > 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteTagToArray(
-      2,
-      ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
-      target);
-    target = ::google::protobuf::io::CodedOutputStream::WriteVarint32ToArray(
-        static_cast< ::google::protobuf::int32>(
-            _number_cached_byte_size_), target);
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteUInt64NoTagToArray(this->number_, target);
+  // uint64 number = 2;
+  if (this->number() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(2, this->number(), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -582,20 +567,11 @@ size_t PhoneNumber::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // repeated uint64 number = 2;
-  {
-    size_t data_size = ::google::protobuf::internal::WireFormatLite::
-      UInt64Size(this->number_);
-    if (data_size > 0) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
-            static_cast< ::google::protobuf::int32>(data_size));
-    }
-    int cached_size = ::google::protobuf::internal::ToCachedSize(data_size);
-    GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-    _number_cached_byte_size_ = cached_size;
-    GOOGLE_SAFE_CONCURRENT_WRITES_END();
-    total_size += data_size;
+  // uint64 number = 2;
+  if (this->number() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
+        this->number());
   }
 
   // uint32 countryCode = 1;
@@ -632,7 +608,9 @@ void PhoneNumber::MergeFrom(const PhoneNumber& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  number_.MergeFrom(from.number_);
+  if (from.number() != 0) {
+    set_number(from.number());
+  }
   if (from.countrycode() != 0) {
     set_countrycode(from.countrycode());
   }
@@ -662,7 +640,7 @@ void PhoneNumber::Swap(PhoneNumber* other) {
 }
 void PhoneNumber::InternalSwap(PhoneNumber* other) {
   using std::swap;
-  number_.InternalSwap(&other->number_);
+  swap(number_, other->number_);
   swap(countrycode_, other->countrycode_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }

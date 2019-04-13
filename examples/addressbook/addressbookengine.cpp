@@ -33,7 +33,7 @@ using namespace qtprotobuf::examples;
 
 AddressBookEngine::AddressBookEngine() : QObject()
   , m_client(new AddressBookClient)
-  , m_contacts(new ContactsListModel(this))
+  , m_contacts(new ContactsListModel({}, this))
 {
     Contacts tmp;
     std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel("localhost", 65001));

@@ -33,6 +33,10 @@ public:
         ::qtprotobuf::examples::Job *job = new ::qtprotobuf::examples::Job;
         job->set_title("Job title");
         contact->set_allocated_job(job);
+        ::qtprotobuf::examples::PhoneNumber home;
+        home.set_countrycode(7);
+        home.set_number(1232453467);
+        (*contact->mutable_phones())[::qtprotobuf::examples::Contact::Home] = home;
         return ::grpc::Status();
     }
     ::grpc::Status makeCall(::grpc::ServerContext* context, const ::qtprotobuf::examples::Contact* request, ::qtprotobuf::examples::SimpleResult* response) override

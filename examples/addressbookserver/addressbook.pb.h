@@ -204,17 +204,11 @@ class PhoneNumber : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   // accessors -------------------------------------------------------
 
-  // repeated uint64 number = 2;
-  int number_size() const;
+  // uint64 number = 2;
   void clear_number();
   static const int kNumberFieldNumber = 2;
-  ::google::protobuf::uint64 number(int index) const;
-  void set_number(int index, ::google::protobuf::uint64 value);
-  void add_number(::google::protobuf::uint64 value);
-  const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
-      number() const;
-  ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
-      mutable_number();
+  ::google::protobuf::uint64 number() const;
+  void set_number(::google::protobuf::uint64 value);
 
   // uint32 countryCode = 1;
   void clear_countrycode();
@@ -226,8 +220,7 @@ class PhoneNumber : public ::google::protobuf::Message /* @@protoc_insertion_poi
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedField< ::google::protobuf::uint64 > number_;
-  mutable int _number_cached_byte_size_;
+  ::google::protobuf::uint64 number_;
   ::google::protobuf::uint32 countrycode_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_addressbook_2eproto::TableStruct;
@@ -1092,34 +1085,18 @@ inline void PhoneNumber::set_countrycode(::google::protobuf::uint32 value) {
   // @@protoc_insertion_point(field_set:qtprotobuf.examples.PhoneNumber.countryCode)
 }
 
-// repeated uint64 number = 2;
-inline int PhoneNumber::number_size() const {
-  return number_.size();
-}
+// uint64 number = 2;
 inline void PhoneNumber::clear_number() {
-  number_.Clear();
+  number_ = GOOGLE_ULONGLONG(0);
 }
-inline ::google::protobuf::uint64 PhoneNumber::number(int index) const {
+inline ::google::protobuf::uint64 PhoneNumber::number() const {
   // @@protoc_insertion_point(field_get:qtprotobuf.examples.PhoneNumber.number)
-  return number_.Get(index);
-}
-inline void PhoneNumber::set_number(int index, ::google::protobuf::uint64 value) {
-  number_.Set(index, value);
-  // @@protoc_insertion_point(field_set:qtprotobuf.examples.PhoneNumber.number)
-}
-inline void PhoneNumber::add_number(::google::protobuf::uint64 value) {
-  number_.Add(value);
-  // @@protoc_insertion_point(field_add:qtprotobuf.examples.PhoneNumber.number)
-}
-inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
-PhoneNumber::number() const {
-  // @@protoc_insertion_point(field_list:qtprotobuf.examples.PhoneNumber.number)
   return number_;
 }
-inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
-PhoneNumber::mutable_number() {
-  // @@protoc_insertion_point(field_mutable_list:qtprotobuf.examples.PhoneNumber.number)
-  return &number_;
+inline void PhoneNumber::set_number(::google::protobuf::uint64 value) {
+  
+  number_ = value;
+  // @@protoc_insertion_point(field_set:qtprotobuf.examples.PhoneNumber.number)
 }
 
 // -------------------------------------------------------------------

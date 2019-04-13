@@ -66,13 +66,14 @@ ListView {
             Row {
                 Layout.alignment: Qt.AlignVCenter
                 Text {
-                    id: job
+                    id: defaultPhoneNumberText
+                    property PhoneNumber defaultPhoneNumber: contactDelegate.contact.phonesData.length > 0 ?
+                                                                 contactDelegate.contact.phonesData[0] : null
+                    visible: defaultPhoneNumber != null
                     color: "#EEEEEE"
-                    text: contactDelegate.contact.job.title
+                    text: defaultPhoneNumber ?
+                              "+" + defaultPhoneNumber.countryCode + " " + defaultPhoneNumber.number : ""
                     font.pointSize: 12
-                    Component.onCompleted: {
-                        console.log('contactDelegate.contact.job: ' + contactDelegate.contact.job.title);
-                    }
                 }
             }
         }

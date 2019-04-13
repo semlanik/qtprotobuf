@@ -34,36 +34,28 @@
 #include <contacts.h>
 #include <contact.h>
 
-#include "nestedobject.h"
-#include "testnesting.h"
 #include <QMetaProperty>
-#include<QMetaObject>
+#include <QQmlPropertyMap>
 
 using namespace qtprotobuf::examples;
 
 int main(int argc, char *argv[])
 {
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     qtprotobuf::QtProtobuf::init();
     Contact::registerTypes();
     Contacts::registerTypes();
     Job::registerTypes();
     Address::registerTypes();
+    PhoneNumber::registerTypes();
 
-    qRegisterMetaType<NestedObject>("NestedObject");
-    qRegisterMetaType<TestNesting>("TestNesting");
-    qmlRegisterType<NestedObject>("qtprotobuf.examples.addressbook", 1, 0, "NestedObject");
-    qmlRegisterType<TestNesting>("qtprotobuf.examples.addressbook", 1, 0, "TestNesting");
-
-
-    TestNesting test;
-    qDebug() << "test.property" << TestNesting::staticMetaObject.property(1).userType();
-    qDebug() << "NestedObject metatypeid" << qMetaTypeId<NestedObject*>();
     qmlRegisterType<ContactsListModel>("examples.addressbook", 1, 0, "ContactsListModel");
     qmlRegisterType<qtprotobuf::examples::Job>("qtprotobuf.examples.addressbook", 1, 0, "Job");
     qmlRegisterType<qtprotobuf::examples::Address>("qtprotobuf.examples.addressbook", 1, 0, "Address");
     qmlRegisterType<qtprotobuf::examples::Contact>("qtprotobuf.examples.addressbook", 1, 0, "Contact");
     qmlRegisterType<qtprotobuf::examples::Contacts>("qtprotobuf.examples.addressbook", 1, 0, "Contacts");
+    qmlRegisterType<qtprotobuf::examples::PhoneNumber>("qtprotobuf.examples.addressbook", 1, 0, "PhoneNumber");
 
     QGuiApplication app(argc, argv);
     AddressBookEngine abEngine;

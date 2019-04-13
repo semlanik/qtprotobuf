@@ -20,7 +20,9 @@ template <typename T>
 class UniversalListModel : public UniversalListModelBase
 {
 public:
-    UniversalListModel(QObject* parent = 0) : UniversalListModelBase(parent) {}
+    UniversalListModel(QList<QSharedPointer<T>> container = {}, QObject* parent = 0) : UniversalListModelBase(parent) {
+        reset(container);
+    }
     ~UniversalListModel() {
         clear();
     }
