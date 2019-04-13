@@ -64,8 +64,11 @@ void ProtobufSourceGenerator::printRegisterBody()
             mPrinter.Print({{"type", field->message_type()->name()},
                             {"namespaces", mNamespacesColonDelimited + "::" + mClassName}},
                            Templates::RegisterMetaTypeTemplate);
+
             mPrinter.Print({{"classname", mClassName},
-                            {"type", field->message_type()->name()}},
+                            {"type", field->message_type()->name()},
+                            {"key_type", getTypeName(field->message_type()->field(0), mMessage)},
+                            {"value_type", getTypeName(field->message_type()->field(1), mMessage)}},
                              Templates::MapSerializationRegisterTemplate);
         }
     }

@@ -30,7 +30,8 @@ using namespace qtprotobuf::generator;
 const char *Templates::DefaultProtobufIncludesTemplate = "#include <QMetaType>\n"
                                                          "#include <QList>\n"
                                                          "#include <qprotobufobject.h>\n"
-                                                         "#include <unordered_map>\n\n";
+                                                         "#include <unordered_map>\n"
+                                                         "#include <QPointer>\n\n";
 
 const char *Templates::GlobalEnumClassNameTemplate = "GlobalEnums";
 
@@ -52,8 +53,9 @@ const char *Templates::ComplexTypeRegistrationTemplate = "void $classname$::regi
                                                          "        qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
                                                          "        qRegisterMetaType<$classname$List>(\"$namespaces$::$classname$List\");\n"
                                                          "";
-const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<$classname$>;\n";
+const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<QPointer<$classname$>>;\n";
 const char *Templates::MapTypeUsingTemplate = "using $classname$ = QMap<$key$, $value$>;\n";
+const char *Templates::MessageMapTypeUsingTemplate = "using $classname$ = QMap<$key$, QPointer<$value$>>;\n";
 
 const char *Templates::EnumTypeUsingTemplate = "using $enum$List = QList<$enum$>;\n";
 
@@ -67,7 +69,7 @@ const char *Templates::ProtoClassDefinitionTemplate = "\nclass $classname$ final
                                                  "    Q_OBJECT\n";
 
 const char *Templates::PropertyTemplate = "Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
-const char *Templates::MessagePropertyTemplate = "Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
+const char *Templates::MessagePropertyTemplate = "Q_PROPERTY($type$ *$property_name$ READ $property_name$_p WRITE set$property_name_cap$_p NOTIFY $property_name$Changed)\n";
 const char *Templates::MemberTemplate = "$type$ m_$property_name$;\n";
 const char *Templates::EnumMemberTemplate = "::$type$ m_$property_name$;\n";
 const char *Templates::PublicBlockTemplate = "\npublic:\n";
@@ -92,18 +94,32 @@ const char *Templates::NotEqualOperatorTemplate = "bool operator !=(const $type$
                                                   "    return !this->operator ==(other);\n"
                                                   "}\n\n";
 
+const char *Templates::GetterMessageTemplate = "$type$ *$property_name$_p() const {\n" //formally const...
+                                        "    return const_cast<$type$*>(&m_$property_name$);\n"
+                                        "}\n\n";
+
 const char *Templates::GetterTemplate = "$type$ $property_name$() const {\n"
                                         "    return m_$property_name$;\n"
                                         "}\n\n";
 
-const char *Templates::SetterTemplateSimpleType = "void set$property_name_cap$($type$ $property_name$) {\n"
-                                                  "    if (m_$property_name$ != $property_name$) {\n"
-                                                  "        m_$property_name$ = $property_name$;\n"
-                                                  "        $property_name$Changed();\n"
-                                                  "    }\n"
-                                                  "}\n\n";
+const char *Templates::SetterTemplateMessageType = "void set$property_name_cap$_p($type$ *$property_name$) {\n"
+                                                   "    if ($property_name$ == nullptr) {\n"
+                                                   "        m_$property_name$ = {};\n"
+                                                   "    }\n"
+                                                   "    if (m_$property_name$ != *$property_name$) {\n"
+                                                   "        m_$property_name$ = *$property_name$;\n"
+                                                   "        $property_name$Changed();\n"
+                                                   "    }\n"
+                                                   "}\n\n";
 
 const char *Templates::SetterTemplateComplexType = "void set$property_name_cap$(const $type$ &$property_name$) {\n"
+                                                   "    if (m_$property_name$ != $property_name$) {\n"
+                                                   "        m_$property_name$ = $property_name$;\n"
+                                                   "        $property_name$Changed();\n"
+                                                   "    }\n"
+                                                   "}\n\n";
+
+const char *Templates::SetterTemplateSimpleType = "void set$property_name_cap$(const $type$ &$property_name$) {\n"
                                                    "    if (m_$property_name$ != $property_name$) {\n"
                                                    "        m_$property_name$ = $property_name$;\n"
                                                    "        $property_name$Changed();\n"
@@ -127,6 +143,8 @@ const char *Templates::PropertyInitializerTemplate = "\n    ,m_$property_name$($
 const char *Templates::ConstructorContentTemplate = "\n{\n    registerTypes();\n}\n";
 
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n";
+const char *Templates::DeclareMessageMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n"
+                                                        "Q_DECLARE_OPAQUE_POINTER($namespaces$::$classname$)\n";
 const char *Templates::DeclareComplexListTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$List)\n";
 const char *Templates::RegisterMetaTypeDefaultTemplate = "qRegisterMetaType<$namespaces$::$type$>();\n";
 const char *Templates::RegisterMetaTypeTemplateNoNamespace = "qRegisterMetaType<$namespaces$::$type$>(\"$type$\");\n";
@@ -135,8 +153,8 @@ const char *Templates::RegisterMetaTypeTemplate = "qRegisterMetaType<$namespaces
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 
 const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::ProtobufObjectPrivate::wrapSerializer<$classname$::$type$>(\n"
-                                                          "qtprotobuf::ProtobufObjectPrivate::serializeMap<$classname$::$type$::key_type, $classname$::$type$::mapped_type>,\n"
-                                                          "qtprotobuf::ProtobufObjectPrivate::deserializeMap<$classname$::$type$::key_type, $classname$::$type$::mapped_type>\n"
+                                                          "qtprotobuf::ProtobufObjectPrivate::serializeMap<$key_type$, $value_type$>,\n"
+                                                          "qtprotobuf::ProtobufObjectPrivate::deserializeMap<$key_type$, $value_type$>\n"
                                                           ", qtprotobuf::LengthDelimited);\n";
 
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"

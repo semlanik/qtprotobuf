@@ -45,6 +45,7 @@ public:
     static const char *ComplexTypeRegistrationTemplate;
     static const char *ComplexListTypeUsingTemplate;
     static const char *MapTypeUsingTemplate;
+    static const char *MessageMapTypeUsingTemplate;
     static const char *EnumTypeUsingTemplate;
     static const char *NamespaceTemplate;
     static const char *UsingNamespaceTemplate;
@@ -74,8 +75,10 @@ public:
     static const char *EqualOperatorPropertyTemplate;
     static const char *NotEqualOperatorTemplate;
     static const char *GetterTemplate;
+    static const char *GetterMessageTemplate;
     static const char *SetterTemplateSimpleType;
     static const char *SetterTemplateComplexType;
+    static const char *SetterTemplateMessageType;
     static const char *SignalsBlockTemplate;
     static const char *SignalTemplate;
     static const char *FieldsOrderingDefinitionContainerTemplate;
@@ -88,6 +91,7 @@ public:
     static const char *PropertyInitializerTemplate;
     static const char *ConstructorContentTemplate;
     static const char *DeclareMetaTypeTemplate;
+    static const char *DeclareMessageMetaTypeTemplate;
     static const char *DeclareComplexListTypeTemplate;
     static const char *RegisterMetaTypeDefaultTemplate;
     static const char *RegisterMetaTypeTemplate;

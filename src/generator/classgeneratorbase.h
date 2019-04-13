@@ -49,6 +49,12 @@ public:
     virtual ~ClassGeneratorBase() = default;
     virtual void run() = 0;
 protected:
+    enum EnumVisibility {
+        GLOBAL_ENUM,
+        LOCAL_ENUM,
+        NEIGHBOUR_ENUM
+    };
+
     std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> mOutput;
     ::google::protobuf::io::Printer mPrinter;
     std::string mClassName;
@@ -65,8 +71,6 @@ protected:
     void printMetaTypeDeclaration();
     void encloseNamespaces();
     void encloseNamespaces(int count);
-    bool isLocalMessageEnum(const google::protobuf::Descriptor *message,
-                            const ::google::protobuf::FieldDescriptor *field);
 
     template<typename T>
     void printQEnums(const T *message) {
@@ -109,6 +113,13 @@ protected:
         mPrinter.Outdent();
         mPrinter.Outdent();
     }
+
+    std::string getTypeName(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor);
+    static bool isLocalMessageEnum(const google::protobuf::Descriptor *message,
+                            const ::google::protobuf::FieldDescriptor *field);
+    template<typename T>
+    static std::string getNamespacesList(const T *message, std::vector<std::string> &container, const std::string &localNamespace);
+    static EnumVisibility getEnumVisibility(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor);
 };
 
 } //namespace generator

@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package qtprotobufnamespace.tests;
+
+message SimpleEnumMessage {
+  enum LocalEnum {
+    LOCAL_ENUM_VALUE0 = 0;
+    LOCAL_ENUM_VALUE1 = 1;
+    LOCAL_ENUM_VALUE2 = 2;
+    LOCAL_ENUM_VALUE3 = 3;
+  }
+
+  LocalEnum localEnum = 1;
+  repeated LocalEnum localEnumList = 2;
+}
+
+message SimpleFileEnumMessage {
+  TestEnum globalEnum = 1;
+  repeated TestEnum globalEnumList = 2;
+}
+
+message SimpleBoolMessage {
+    bool testFieldBool = 1;
+}
+
+message SimpleIntMessage {
+    int32 testFieldInt = 1;
+}
+
+message SimpleSIntMessage {
+    sint32 testFieldInt = 1;
+}
+
+message SimpleUIntMessage {
+    uint32 testFieldInt = 1;
+}
+
+message SimpleInt64Message {
+    int64 testFieldInt = 1;
+}
+
+message SimpleSInt64Message {
+    sint64 testFieldInt = 1;
+}
+
+message SimpleUInt64Message {
+    uint64 testFieldInt = 1;
+}
+
+message SimpleStringMessage {
+    string testFieldString = 6;
+}
+
+message SimpleFloatMessage {
+    float testFieldFloat = 7;
+}
+
+message SimpleDoubleMessage {
+    double testFieldDouble = 8;
+}
+
+message SimpleBytesMessage {
+    bytes testFieldBytes = 1;
+}
+
+message SimpleFixedInt32Message {
+    fixed32 testFieldFixedInt32 = 1;
+}
+
+message SimpleFixedInt64Message {
+    fixed64 testFieldFixedInt64 = 1;
+}
+
+message SimpleSFixedInt32Message {
+    sfixed32 testFieldFixedInt32 = 1;
+}
+
+message SimpleSFixedInt64Message {
+    sfixed64 testFieldFixedInt64 = 1;
+}
+
+message ComplexMessage {
+    int32 testFieldInt = 1;
+    SimpleStringMessage testComplexField = 2;
+}
+
+message RepeatedIntMessage {
+    repeated sint32 testRepeatedInt = 1;
+}
+
+message RepeatedStringMessage {
+    repeated string testRepeatedString = 1;
+}
+
+message RepeatedDoubleMessage {
+    repeated double testRepeatedDouble = 1;
+}
+
+message RepeatedBytesMessage {
+    repeated bytes testRepeatedBytes = 1;
+}
+
+message RepeatedFloatMessage {
+    repeated float testRepeatedFloat = 1;
+}
+
+message RepeatedComplexMessage {
+    repeated ComplexMessage testRepeatedComplex = 1;
+}
+
+enum TestEnum {
+    TEST_ENUM_VALUE0 = 0;
+    TEST_ENUM_VALUE1 = 1;
+    TEST_ENUM_VALUE2 = 2;
+    TEST_ENUM_VALUE3 = 4;
+    TEST_ENUM_VALUE4 = 3;
+}

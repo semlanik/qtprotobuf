@@ -1527,7 +1527,7 @@ TEST_F(SerializationTest, RepeatedComplexMessageTest)
     msg.setTestFieldInt(25);
     msg.setTestComplexField(stringMsg);
     RepeatedComplexMessage test;
-    test.setTestRepeatedComplex({msg, msg, msg});
+    test.setTestRepeatedComplex({&msg, &msg, &msg});
     QByteArray result = test.serialize();
     //qDebug() << "result " << result.toHex();
 

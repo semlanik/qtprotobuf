@@ -407,7 +407,7 @@ TEST_F(SimpleTest, RepeatedExternalComplexMessageTest)
     externalMessage.setTestFieldInt(complexMessage);
 
     qtprotobufnamespace1::externaltests::ExternalComplexMessageList complexMessageList;
-    complexMessageList << externalMessage;
+    complexMessageList << &externalMessage;
 
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(complexMessageList)));
     ASSERT_TRUE(test.property(propertyName).value<qtprotobufnamespace1::externaltests::ExternalComplexMessageList>() == complexMessageList);

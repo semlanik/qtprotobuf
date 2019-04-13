@@ -122,3 +122,119 @@ bool ClassGeneratorBase::isLocalMessageEnum(const google::protobuf::Descriptor *
     }
     return false;
 }
+
+std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const Descriptor *messageFor)
+{
+    assert(field != nullptr);
+    std::string typeName;
+    std::string namespaceQtProtoDefinition("qtprotobuf::");
+
+    std::string namespaceTypeName;
+    std::vector<std::string> typeNamespace;
+
+    if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
+        const Descriptor *msg = field->message_type();
+        namespaceTypeName = getNamespacesList(msg, typeNamespace, mNamespacesColonDelimited);
+        typeName = namespaceTypeName.append(msg->name());
+
+        if (field->is_map()) {
+            return mClassName + "::" + field->message_type()->name();
+        }
+        if (field->is_repeated()) {
+            return namespaceTypeName.append("List");
+        }
+    } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
+        const EnumDescriptor *enumType = field->enum_type();
+        namespaceTypeName = getNamespacesList(enumType, typeNamespace, mNamespacesColonDelimited);
+        EnumVisibility visibility = getEnumVisibility(field, messageFor);
+        if (visibility == LOCAL_ENUM) {
+            if(field->is_repeated()) {
+                typeName = typeName.append(mClassName + "::" + enumType->name());
+            } else {
+                typeName = typeName.append(enumType->name());
+            }
+        } else if (visibility == GLOBAL_ENUM) {
+            typeName = namespaceTypeName.append(Templates::GlobalEnumClassNameTemplate)
+                    .append("::").append(enumType->name());
+        } else {
+            typeName = namespaceTypeName.append(enumType->name());
+        }
+        if (field->is_repeated()) {
+            return typeName.append("List");
+        }
+    } else {
+        auto it = Templates::TypeReflection.find(field->type());
+        if (it != std::end(Templates::TypeReflection)) {
+            if (field->type() != FieldDescriptor::TYPE_STRING
+                    && field->type() != FieldDescriptor::TYPE_BYTES
+                    && field->type() != FieldDescriptor::TYPE_BOOL
+                    && field->type() != FieldDescriptor::TYPE_FLOAT
+                    && field->type() != FieldDescriptor::TYPE_DOUBLE) {
+                typeName = typeName.append(namespaceQtProtoDefinition.append(it->second));
+            } else {
+                typeName = typeName.append(it->second);
+            }
+            if (field->is_repeated()) {
+                if (field->type() == FieldDescriptor::TYPE_FLOAT
+                        || field->type() == FieldDescriptor::TYPE_DOUBLE) {
+                    typeName[0] = ::toupper(typeName[0]);
+                    typeName = namespaceQtProtoDefinition.append(typeName);
+                }
+                typeName.append("List");
+            }
+        }
+    }
+
+    return typeName;
+}
+
+template<typename T>
+std::string ClassGeneratorBase::getNamespacesList(const T *message, std::vector<std::string> &container, const std::string &localNamespace)
+{
+    std::string result;
+    utils::split(std::string(message->full_name()), container, '.');
+
+    if (container.size() > 1) {
+        //delete type name -> only namespace stays
+        container.pop_back();
+
+        for (size_t i = 0; i < container.size(); i++) {
+            if (i > 0) {
+                result = result.append("::");
+            }
+            result = result.append(container[i]);
+        }
+    }
+
+    if (container.size() > 0
+            && localNamespace != result) {
+        result = result.append("::");
+    } else {
+        result.clear();
+    }
+
+    return result;
+}
+
+ClassGeneratorBase::EnumVisibility ClassGeneratorBase::getEnumVisibility(const FieldDescriptor *field, const Descriptor *messageFor)
+{
+    assert(field->enum_type() != nullptr);
+
+    if (isLocalMessageEnum(messageFor, field)) {
+        return LOCAL_ENUM;
+    }
+
+    const EnumDescriptor *enumType = field->enum_type();
+    const FileDescriptor *enumFile = field->enum_type()->file();
+
+    for (int i = 0; i < enumFile->message_type_count(); i++) {
+        const Descriptor* msg = enumFile->message_type(i);
+        for (int j = 0; j < msg->enum_type_count(); j++) {
+            if (enumType->full_name() == msg->enum_type(j)->full_name()) {
+                return NEIGHBOUR_ENUM;
+            }
+        }
+    }
+
+    return GLOBAL_ENUM;
+}

@@ -191,7 +191,7 @@ void ProtobufClassGenerator::printInclude(const FieldDescriptor *field, std::set
         includeTemplate = Templates::ExternalIncludeTemplate;
         break;
     case FieldDescriptor::TYPE_ENUM: {
-        EnumVisibility enumVisibily = getEnumVisibility(field);
+        EnumVisibility enumVisibily = getEnumVisibility(field, mMessage);
         if (enumVisibily == GLOBAL_ENUM) {
             includeTemplate = Templates::GlobalEnumIncludeTemplate;
         } else if (enumVisibily == NEIGHBOUR_ENUM){
@@ -226,103 +226,10 @@ void ProtobufClassGenerator::printField(const FieldDescriptor *field, const char
     }
 }
 
-template<typename T>
-std::string ProtobufClassGenerator::getNamespacesList(const T *message, std::vector<std::string> &container)
-{
-    std::string result;
-    utils::split(std::string(message->full_name()), container, '.');
-
-    if (container.size() > 1) {
-        //delete type name -> only namespace stays
-        container.pop_back();
-
-        for (size_t i = 0; i < container.size(); i++) {
-            if (i > 0) {
-                result = result.append("::");
-            }
-            result = result.append(container[i]);
-        }
-    }
-
-    if (container.size() > 0
-            && mNamespacesColonDelimited != result) {
-        result = result.append("::");
-    } else {
-        result.clear();
-    }
-
-    return result;
-}
-
-std::string ProtobufClassGenerator::getTypeName(const FieldDescriptor *field)
-{
-    assert(field != nullptr);
-    std::string typeName;
-    std::string namespaceQtProtoDefinition("qtprotobuf::");
-
-    std::string namespaceTypeName;
-    std::vector<std::string> typeNamespace;
-
-    if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
-        const Descriptor *msg = field->message_type();
-        namespaceTypeName = getNamespacesList(msg, typeNamespace);
-        typeName = namespaceTypeName.append(msg->name());
-
-        if (field->is_map()) {
-            return mClassName + "::" + field->message_type()->name();
-        }
-        if (field->is_repeated()) {
-            return namespaceTypeName.append("List");
-        }
-    } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
-        const EnumDescriptor *enumType = field->enum_type();
-        namespaceTypeName = getNamespacesList(enumType, typeNamespace);
-        EnumVisibility visibility = getEnumVisibility(field);
-        if (visibility == LOCAL_ENUM) {
-            if(field->is_repeated()) {
-                typeName = typeName.append(mClassName + "::" + enumType->name());
-            } else {
-                typeName = typeName.append(enumType->name());
-            }
-        } else if (visibility == GLOBAL_ENUM) {
-            typeName = namespaceTypeName.append(Templates::GlobalEnumClassNameTemplate)
-                    .append("::").append(enumType->name());
-        } else {
-            typeName = namespaceTypeName.append(enumType->name());
-        }
-        if (field->is_repeated()) {
-            return typeName.append("List");
-        }
-    } else {
-        auto it = Templates::TypeReflection.find(field->type());
-        if (it != std::end(Templates::TypeReflection)) {
-            if (field->type() != FieldDescriptor::TYPE_STRING
-                    && field->type() != FieldDescriptor::TYPE_BYTES
-                    && field->type() != FieldDescriptor::TYPE_BOOL
-                    && field->type() != FieldDescriptor::TYPE_FLOAT
-                    && field->type() != FieldDescriptor::TYPE_DOUBLE) {
-                typeName = typeName.append(namespaceQtProtoDefinition.append(it->second));
-            } else {
-                typeName = typeName.append(it->second);
-            }
-            if (field->is_repeated()) {
-                if (field->type() == FieldDescriptor::TYPE_FLOAT
-                        || field->type() == FieldDescriptor::TYPE_DOUBLE) {
-                    typeName[0] = ::toupper(typeName[0]);
-                    typeName = namespaceQtProtoDefinition.append(typeName);
-                }
-                typeName.append("List");
-            }
-        }
-    }
-
-    return typeName;
-}
-
 bool ProtobufClassGenerator::producePropertyMap(const FieldDescriptor *field, PropertyMap &propertyMap)
 {
     assert(field != nullptr);
-    std::string typeName = getTypeName(field);
+    std::string typeName = getTypeName(field, mMessage);
 
     if (typeName.size() <= 0) {
         std::cerr << "Type "
@@ -366,7 +273,7 @@ void ProtobufClassGenerator::printConstructor()
     std::string parameterList;
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
-        std::string fieldTypeName = getTypeName(field);
+        std::string fieldTypeName = getTypeName(field, mMessage);
         std::string fieldName = field->name();
         fieldName[0] = ::tolower(fieldName[0]);
         if (field->is_repeated() || field->is_map()) {
@@ -421,11 +328,17 @@ void ProtobufClassGenerator::printMaps()
         const FieldDescriptor* field = mMessage->field(i);
 
         if (field->is_map()) {
-            std::string keyType = getTypeName(field->message_type()->field(0));
-            std::string valueType = getTypeName(field->message_type()->field(1));
-             mPrinter.Print({{"classname",field->message_type()->name()},
-                             {"key", keyType},
-                             {"value", valueType}}, Templates::MapTypeUsingTemplate);
+            std::string keyType = getTypeName(field->message_type()->field(0), mMessage);
+            std::string valueType = getTypeName(field->message_type()->field(1), mMessage);
+            const char *mapTemplate = Templates::MapTypeUsingTemplate;
+
+            if(field->message_type()->field(1)->type() == FieldDescriptor::TYPE_MESSAGE) {
+                mapTemplate = Templates::MessageMapTypeUsingTemplate;
+            }
+
+            mPrinter.Print({{"classname",field->message_type()->name()},
+                            {"key", keyType},
+                            {"value", valueType}}, mapTemplate);
         }
     }
     Outdent();
@@ -464,8 +377,10 @@ void ProtobufClassGenerator::printProperties()
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
-        const char* propertyTemplate = field->type() == FieldDescriptor::TYPE_MESSAGE ? Templates::MessagePropertyTemplate :
-                                                                                        Templates::PropertyTemplate;
+        const char* propertyTemplate = Templates::PropertyTemplate;
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+            propertyTemplate = Templates::MessagePropertyTemplate;
+        }
         printField(field, propertyTemplate);
     }
 
@@ -485,15 +400,30 @@ void ProtobufClassGenerator::printProperties()
     printComparisonOperators();
 
     for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage->field(i), Templates::GetterTemplate);
+        const FieldDescriptor* field = mMessage->field(i);
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
+            if (!field->is_map() && !field->is_repeated()) {
+                printField(field, Templates::GetterMessageTemplate);
+            }
+        }
+        printField(field, Templates::GetterTemplate);
     }
     for (int i = 0; i < mMessage->field_count(); i++) {
         auto field = mMessage->field(i);
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE
-                || field->type() == FieldDescriptor::TYPE_STRING) {
+        switch (field->type()) {
+        case FieldDescriptor::TYPE_MESSAGE:
+            if(!field->is_map() && !field->is_repeated()) {
+                printField(field, Templates::SetterTemplateMessageType);
+            }
             printField(field, Templates::SetterTemplateComplexType);
-        } else {
+            break;
+        case FieldDescriptor::FieldDescriptor::TYPE_STRING:
+        case FieldDescriptor::FieldDescriptor::TYPE_BYTES:
+            printField(field, Templates::SetterTemplateComplexType);
+            break;
+        default:
             printField(field, Templates::SetterTemplateSimpleType);
+            break;
         }
     }
     Outdent();
@@ -525,29 +455,6 @@ void ProtobufClassGenerator::printFieldsOrderingDefinition()
     Indent();
     mPrinter.Print(Templates::FieldsOrderingDefinitionContainerTemplate);
     Outdent();
-}
-
-ProtobufClassGenerator::EnumVisibility ProtobufClassGenerator::getEnumVisibility(const FieldDescriptor *field)
-{
-    assert(field->enum_type() != nullptr);
-
-    if (isLocalMessageEnum(mMessage, field)) {
-        return LOCAL_ENUM;
-    }
-
-    const EnumDescriptor *enumType = field->enum_type();
-    const FileDescriptor *enumFile = field->enum_type()->file();
-
-    for (int i = 0; i < enumFile->message_type_count(); i++) {
-        const Descriptor* msg = enumFile->message_type(i);
-        for (int j = 0; j < msg->enum_type_count(); j++) {
-            if (enumType->full_name() == msg->enum_type(j)->full_name()) {
-                return NEIGHBOUR_ENUM;
-            }
-        }
-    }
-
-    return GLOBAL_ENUM;
 }
 
 void ProtobufClassGenerator::printClassMembers()
