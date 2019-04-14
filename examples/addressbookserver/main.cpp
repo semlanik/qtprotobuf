@@ -21,21 +21,26 @@ public:
     {
         std::cout << "getContacts called" << std::endl;
         ::qtprotobuf::examples::Contact* contact = response->add_list();
-        contact->set_firstname("Test name 1");
+        contact->set_firstname("John");
+        contact->set_lastname("Doe");
         contact = response->add_list();
-        contact->set_firstname("Test name 2");
+        contact->set_firstname("Jane");
+        contact->set_lastname("Doe");
         contact = response->add_list();
-        contact->set_firstname("Test name 3");
+        contact->set_firstname("John");
+        contact->set_lastname("McClane");
         contact = response->add_list();
-        contact->set_firstname("Test name 4");
+        contact->set_firstname("Alexey");
+        contact->set_lastname("Edelev");
         contact = response->add_list();
-        contact->set_firstname("Test name 5");
+        contact->set_firstname("Ebenezer");
+        contact->set_lastname("Scrooge");
         ::qtprotobuf::examples::Job *job = new ::qtprotobuf::examples::Job;
         job->set_title("Job title");
         contact->set_allocated_job(job);
         ::qtprotobuf::examples::PhoneNumber home;
-        home.set_countrycode(7);
-        home.set_number(1232453467);
+        home.set_countrycode(49);
+        home.set_number(12324534679);
         (*contact->mutable_phones())[::qtprotobuf::examples::Contact::Home] = home;
         return ::grpc::Status();
     }

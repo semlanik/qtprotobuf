@@ -2,5 +2,8 @@
     <qresource prefix="/">
         <file>qml/main.qml</file>
         <file>qml/ContactList.qml</file>
+        <file>qml/AddContactView.qml</file>
+        <file>qml/FloatingRoundButton.qml</file>
+        <file>images/plus.png</file>
     </qresource>
 </RCC>
