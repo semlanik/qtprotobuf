@@ -23,22 +23,20 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "servertest.h"
-
 #include "testserviceserver.h"
 
-using namespace qtprotobufnamespace::tests;
-using namespace qtprotobuf::tests;
+#include <gtest/gtest.h>
 
+using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf;
 
 class TestServiceServerImpl : public TestServiceServer {
     SimpleStringMessage testMethod(const SimpleStringMessage &) override { return SimpleStringMessage(); }
 };
 
-ServerTest::ServerTest()
+class ServerTest : public ::testing::Test
 {
-}
+};
 
 TEST_F(ServerTest, CheckMethodsGeneration)
 {

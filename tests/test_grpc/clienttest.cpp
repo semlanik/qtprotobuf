@@ -23,10 +23,44 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include "testserviceclient.h"
+#include "http2channel.h"
+#include "qtprotobuf.h"
+
+#include <QCoreApplication>
 #include <gtest/gtest.h>
 
-int main(int argc, char *argv[])
+using namespace qtprotobufnamespace::tests;
+using namespace qtprotobuf;
+
+class ClientTest : public ::testing::Test
 {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+protected:
+    static void SetUpTestCase() {
+        QtProtobuf::init();
+        SimpleStringMessage::registerTypes();   
+    }
+};
+
+TEST_F(ClientTest, CheckMethodsGeneration)
+{
+    //Dummy compile time check of functions generation
+    TestServiceClient testClient;
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    testClient.testMethod(result, request);
+    testClient.testMethod(result, std::function<void(const SimpleStringMessage&)>([](const SimpleStringMessage&){}));
+}
+
+TEST_F(ClientTest, StringEchoTest)
+{
+    int argc = 0;
+    QCoreApplication app(argc, nullptr);
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("Hello beach!");
+    ASSERT_TRUE(testClient.testMethod(request, result));
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Hello beach!");
 }
