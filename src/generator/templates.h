@@ -103,6 +103,8 @@ public:
     static const char *MapSerializationRegisterTemplate;
     static const char *SerializersTemplate;
     static const char *RegisterSerializersTemplate;
+    static const char *QmlRegisterTypeTemplate;
+
     //Service templates
     static const char *ConstructorDefinitionSyncTemplate;
 

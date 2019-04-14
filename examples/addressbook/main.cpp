@@ -51,11 +51,6 @@ int main(int argc, char *argv[])
     PhoneNumber::registerTypes();
 
     qmlRegisterType<ContactsListModel>("examples.addressbook", 1, 0, "ContactsListModel");
-    qmlRegisterType<qtprotobuf::examples::Job>("qtprotobuf.examples.addressbook", 1, 0, "Job");
-    qmlRegisterType<qtprotobuf::examples::Address>("qtprotobuf.examples.addressbook", 1, 0, "Address");
-    qmlRegisterType<qtprotobuf::examples::Contact>("qtprotobuf.examples.addressbook", 1, 0, "Contact");
-    qmlRegisterType<qtprotobuf::examples::Contacts>("qtprotobuf.examples.addressbook", 1, 0, "Contacts");
-    qmlRegisterType<qtprotobuf::examples::PhoneNumber>("qtprotobuf.examples.addressbook", 1, 0, "PhoneNumber");
 
     QGuiApplication app(argc, argv);
     AddressBookEngine abEngine;

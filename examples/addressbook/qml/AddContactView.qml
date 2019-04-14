@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.4
 
-import qtprotobuf.examples.addressbook 1.0
+import qtprotobuf.examples 1.0
 
 StackItem {
     id: root

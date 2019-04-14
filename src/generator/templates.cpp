@@ -191,7 +191,8 @@ const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nbool $classname$
                                                              "    return false;\n"
                                                              "}\n";
 const char *Templates::SerializersTemplate = "Q_DECLARE_PROTOBUF_SERIALIZERS($classname$)\n";
-const char *Templates::RegisterSerializersTemplate = "qtprotobuf::ProtobufObjectPrivate::registerSerializers<$classname$>();";
+const char *Templates::RegisterSerializersTemplate = "qtprotobuf::ProtobufObjectPrivate::registerSerializers<$classname$>();\n";
+const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\");\n";
 
 const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> Templates::TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "double"},

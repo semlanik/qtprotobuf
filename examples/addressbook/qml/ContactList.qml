@@ -25,7 +25,7 @@
 
 import QtQuick 2.9
 import QtQuick.Layouts 1.1
-import qtprotobuf.examples.addressbook 1.0
+import qtprotobuf.examples 1.0
 
 StackItem {
     id: root
