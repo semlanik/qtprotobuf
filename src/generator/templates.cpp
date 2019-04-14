@@ -29,6 +29,7 @@ using namespace qtprotobuf::generator;
 
 const char *Templates::DefaultProtobufIncludesTemplate = "#include <QMetaType>\n"
                                                          "#include <QList>\n"
+                                                         "#include <QtQml/QQmlListProperty>\n"
                                                          "#include <qprotobufobject.h>\n"
                                                          "#include <unordered_map>\n"
                                                          "#include <QSharedPointer>\n\n";
@@ -70,6 +71,8 @@ const char *Templates::ProtoClassDefinitionTemplate = "\nclass $classname$ final
 
 const char *Templates::PropertyTemplate = "Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
 const char *Templates::MessagePropertyTemplate = "Q_PROPERTY($type$ *$property_name$ READ $property_name$_p WRITE set$property_name_cap$_p NOTIFY $property_name$Changed)\n";
+const char *Templates::QmlListPropertyTemplate = "Q_PROPERTY(QQmlListProperty<$type_nolist$> $property_name$Data READ $property_name$_l NOTIFY $property_name$Changed)\n";
+
 const char *Templates::MemberTemplate = "$type$ m_$property_name$;\n";
 const char *Templates::EnumMemberTemplate = "::$type$ m_$property_name$;\n";
 const char *Templates::PublicBlockTemplate = "\npublic:\n";
@@ -101,6 +104,10 @@ const char *Templates::GetterMessageTemplate = "$type$ *$property_name$_p() cons
 const char *Templates::GetterTemplate = "$type$ $property_name$() const {\n"
                                         "    return m_$property_name$;\n"
                                         "}\n\n";
+
+const char *Templates::QmlListGetterTemplate = "QQmlListProperty<$type_nolist$> $property_name$_l() {\n"
+                                               "    return qtprotobuf::ProtobufObjectPrivate::constructQmlListProperty<$type_nolist$>(this, &m_$property_name$);\n"
+                                               "}\n\n";
 
 const char *Templates::SetterTemplateMessageType = "void set$property_name_cap$_p($type$ *$property_name$) {\n"
                                                    "    if ($property_name$ == nullptr) {\n"
@@ -147,10 +154,15 @@ const char *Templates::ConstructorContentTemplate = "\n{\n    registerTypes();\n
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n";
 const char *Templates::DeclareMessageMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n"
                                                         "Q_DECLARE_OPAQUE_POINTER($namespaces$::$classname$)\n";
-const char *Templates::DeclareComplexListTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$List)\n";
+
+const char *Templates::DeclareComplexListTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$List)\n"
+                                                        "Q_DECLARE_METATYPE(QQmlListProperty<$namespaces$::$classname$>)\n";
 const char *Templates::RegisterMetaTypeDefaultTemplate = "qRegisterMetaType<$namespaces$::$type$>();\n";
 const char *Templates::RegisterMetaTypeTemplateNoNamespace = "qRegisterMetaType<$namespaces$::$type$>(\"$type$\");\n";
 const char *Templates::RegisterMetaTypeTemplate = "qRegisterMetaType<$namespaces$::$type$>(\"$namespaces$::$type$\");\n";
+const char *Templates::RegisterQmlListPropertyMetaTypeTemplate = "qRegisterMetaType<QQmlListProperty<$namespaces$::$classname$>>(\"QQmlListProperty<$namespaces$::$classname$>\");\n"
+                                                                 "qRegisterMetaType<QQmlListProperty<$namespaces$::$classname$>>(\"QQmlListProperty<$classname$>\");\n";
+
 
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 

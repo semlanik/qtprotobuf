@@ -42,8 +42,14 @@ ProtobufSourceGenerator::ProtobufSourceGenerator(const google::protobuf::Descrip
 
 void ProtobufSourceGenerator::printRegisterBody()
 {
-    mPrinter.Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
+    const std::map<std::string, std::string> registrationProperties = {{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}};
+    mPrinter.Print(registrationProperties,
                    Templates::ComplexTypeRegistrationTemplate);
+    Indent();
+    Indent();
+    mPrinter.Print(registrationProperties, Templates::RegisterQmlListPropertyMetaTypeTemplate);
+    Outdent();
+    Outdent();
 
     Indent();
     Indent();
@@ -72,6 +78,7 @@ void ProtobufSourceGenerator::printRegisterBody()
                              Templates::MapSerializationRegisterTemplate);
         }
     }
+
     mPrinter.Print({{"classname", mClassName}}, Templates::RegisterSerializersTemplate);
     Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);

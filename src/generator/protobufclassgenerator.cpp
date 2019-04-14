@@ -246,10 +246,16 @@ bool ProtobufClassGenerator::producePropertyMap(const FieldDescriptor *field, Pr
     std::string capProperty = field->camelcase_name();
     capProperty[0] = ::toupper(capProperty[0]);
 
+    std::string typeNameNoList = typeName;
+    if (field->is_repeated() && !field->is_map()) {
+        typeNameNoList.resize(typeNameNoList.size() - strlen("List"));
+    }
     propertyMap = {{"type", typeName},
                    {"type_lower", typeNameLower},
                    {"property_name", field->camelcase_name()},
-                   {"property_name_cap", capProperty}};
+                   {"property_name_cap", capProperty},
+                   {"type_nolist", typeNameNoList}
+                  };
     return true;
 }
 
@@ -384,6 +390,14 @@ void ProtobufClassGenerator::printProperties()
         printField(field, propertyTemplate);
     }
 
+    //Generate extra QmlListProperty that is mapped to list
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        const FieldDescriptor* field = mMessage->field(i);
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE && field->is_repeated() && !field->is_map()) {
+            printField(field, Templates::QmlListPropertyTemplate);
+        }
+    }
+
     Outdent();
 
     printQEnums(mMessage);
@@ -407,6 +421,9 @@ void ProtobufClassGenerator::printProperties()
             }
         }
         printField(field, Templates::GetterTemplate);
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE && field->is_repeated() && !field->is_map()) {
+             printField(field, Templates::QmlListGetterTemplate);
+        }
     }
     for (int i = 0; i < mMessage->field_count(); i++) {
         auto field = mMessage->field(i);

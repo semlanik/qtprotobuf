@@ -28,6 +28,7 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QMetaProperty>
+#include <QtQml/QQmlListProperty>
 
 #include <unordered_map>
 #include <memory>
@@ -660,9 +661,42 @@ public:
             ProtobufObjectPrivate::deserializeProperty(object, wireType, metaProperty, it);
         }
     }
+
+    //###########################################################################
+    //                                Qml support
+    //###########################################################################
+
+    template<typename T>
+    static void qmllistpropertyAppend(QQmlListProperty<T> *, T *) {
+        Q_ASSERT_X(false, "", "Access to append functionality of protobuf lists is restricted");
+    }
+
+    template<typename T>
+    static int qmllistpropertyCount(QQmlListProperty<T> *p) {
+        return reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->count();
+    }
+
+    template<typename T>
+    static T * qmllistpropertyAt(QQmlListProperty<T> *p, int index) {
+        return reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->at(index).data();
+    }
+
+    template<typename T>
+    static void qmllistpropertyReset(QQmlListProperty<T> *){
+        Q_ASSERT_X(false, "", "Access to reset functionality of protobuf lists is restricted");
+    }
+
+    template<typename T>
+    static QQmlListProperty<T> constructQmlListProperty(QObject* p, QList<QSharedPointer<T>> *data)
+    {
+        return QQmlListProperty<T>(p, data, qmllistpropertyAppend<T>, qmllistpropertyCount<T>,
+                                   qmllistpropertyAt<T>, qmllistpropertyReset<T>);
+    }
 };
 
-
+//###########################################################################
+//                             Common functions
+//###########################################################################
 /*  Header byte
  *  bits    | 7  6  5  4  3 | 2  1  0
  *  -----------------------------------

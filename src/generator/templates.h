@@ -54,6 +54,8 @@ public:
     static const char *ClassDefinitionTemplate;
     static const char *PropertyTemplate;
     static const char *MessagePropertyTemplate;
+    static const char *QmlListPropertyTemplate;
+    static const char *QmlListGetterTemplate;
     static const char *MemberTemplate;
     static const char *EnumMemberTemplate;
     static const char *PublicBlockTemplate;
@@ -96,6 +98,7 @@ public:
     static const char *RegisterMetaTypeDefaultTemplate;
     static const char *RegisterMetaTypeTemplate;
     static const char *RegisterMetaTypeTemplateNoNamespace;
+    static const char *RegisterQmlListPropertyMetaTypeTemplate;
     static const char *QEnumTemplate;
     static const char *MapSerializationRegisterTemplate;
     static const char *SerializersTemplate;
