@@ -42,6 +42,15 @@ AddressBookEngine::AddressBookEngine() : QObject()
     m_contacts->reset(tmp.list());
 }
 
+void AddressBookEngine::addContact(qtprotobuf::examples::Contact *contact)
+{
+    Contacts tmp;
+    m_client->addContact(*contact, tmp);
+    qDebug() << "tmp count:" << tmp.list().count();
+    m_contacts->reset(tmp.list());
+}
+
+
 AddressBookEngine::~AddressBookEngine()
 {
     delete m_client;

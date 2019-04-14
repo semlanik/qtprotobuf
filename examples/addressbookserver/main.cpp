@@ -4,35 +4,23 @@
 #include "addressbook.grpc.pb.h"
 
 class AddressBookService final : public qtprotobuf::examples::AddressBook::Service {
+    ::qtprotobuf::examples::Contacts m_contacts;
 public:
-    AddressBookService() {}
-    ~AddressBookService() {}
-    ::grpc::Status addContact(::grpc::ServerContext* context, const ::qtprotobuf::examples::Contact* request, ::qtprotobuf::examples::Contacts* response) override
-    {
-        std::cout << "addContact called" << std::endl;
-        return ::grpc::Status(::grpc::UNIMPLEMENTED, "Unimplemented");
-    }
-    ::grpc::Status removeContact(::grpc::ServerContext* context, const ::qtprotobuf::examples::Contact* request, ::qtprotobuf::examples::Contacts* response) override
-    {
-        std::cout << "removeContact called" << std::endl;
-        return ::grpc::Status(::grpc::UNIMPLEMENTED, "Unimplemented");
-    }
-    ::grpc::Status getContacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::qtprotobuf::examples::Contacts* response) override
-    {
+    AddressBookService() {
         std::cout << "getContacts called" << std::endl;
-        ::qtprotobuf::examples::Contact* contact = response->add_list();
+        ::qtprotobuf::examples::Contact* contact = m_contacts.add_list();
         contact->set_firstname("John");
         contact->set_lastname("Doe");
-        contact = response->add_list();
+        contact = m_contacts.add_list();
         contact->set_firstname("Jane");
         contact->set_lastname("Doe");
-        contact = response->add_list();
+        contact = m_contacts.add_list();
         contact->set_firstname("John");
         contact->set_lastname("McClane");
-        contact = response->add_list();
+        contact = m_contacts.add_list();
         contact->set_firstname("Alexey");
         contact->set_lastname("Edelev");
-        contact = response->add_list();
+        contact = m_contacts.add_list();
         contact->set_firstname("Ebenezer");
         contact->set_lastname("Scrooge");
         ::qtprotobuf::examples::Job *job = new ::qtprotobuf::examples::Job;
@@ -42,6 +30,24 @@ public:
         home.set_countrycode(49);
         home.set_number(12324534679);
         (*contact->mutable_phones())[::qtprotobuf::examples::Contact::Home] = home;
+    }
+    ~AddressBookService() {}
+    ::grpc::Status addContact(::grpc::ServerContext* context, const ::qtprotobuf::examples::Contact* request, ::qtprotobuf::examples::Contacts* response) override
+    {
+        std::cout << "addContact called" << std::endl;
+        ::qtprotobuf::examples::Contact* newContact = m_contacts.add_list();
+        *newContact = *request;
+        *response = m_contacts;
+        return ::grpc::Status();
+    }
+    ::grpc::Status removeContact(::grpc::ServerContext* context, const ::qtprotobuf::examples::Contact* request, ::qtprotobuf::examples::Contacts* response) override
+    {
+        std::cout << "removeContact called" << std::endl;
+        return ::grpc::Status(::grpc::UNIMPLEMENTED, "Unimplemented");
+    }
+    ::grpc::Status getContacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::qtprotobuf::examples::Contacts* response) override
+    {
+        *response = m_contacts;
         return ::grpc::Status();
     }
     ::grpc::Status makeCall(::grpc::ServerContext* context, const ::qtprotobuf::examples::Contact* request, ::qtprotobuf::examples::SimpleResult* response) override

@@ -8,7 +8,7 @@ RowLayout {
     spacing: 10
     PrimaryText {
         id: labelItem
-        Layout.alignment: Qt.AlignVCenter
+        Layout.alignment: Qt.AlignBottom
         Layout.minimumWidth: 100
         Layout.maximumWidth: 100
         Layout.margins: 10
@@ -17,7 +17,7 @@ RowLayout {
         id: inputItem
         Layout.fillWidth: true
         Layout.margins: 10
-        Layout.alignment: Qt.AlignVCenter
+        Layout.alignment: Qt.AlignBottom
         font.pointSize: 12
         color: "#ffffff"
         Rectangle {

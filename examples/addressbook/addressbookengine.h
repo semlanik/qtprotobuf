@@ -49,6 +49,8 @@ public:
         return m_contacts;
     }
 
+    Q_INVOKABLE void addContact(qtprotobuf::examples::Contact *contact);
+
 signals:
     void contactsChanged();
 
