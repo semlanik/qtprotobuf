@@ -27,9 +27,9 @@ import QtQuick 2.9
 import QtQuick.Layouts 1.1
 import qtprotobuf.examples.addressbook 1.0
 
-Item {
+StackItem {
     id: root
-    anchors.fill: parent
+    hasBack: false
     property alias model: contactList.model
     signal requestAddContact()
     ListView {
@@ -39,70 +39,58 @@ Item {
             id: contactDelegate
             property Contact contact: model.modelData
             width: contactList.width
-            height: 80
+            height: 70
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 10
                 Row {
                     Layout.alignment: Qt.AlignVCenter
                     spacing: 5
-                    Text {
+                    PrimaryText {
                         id: firstName
-                        color: "#FFFFFF"
                         text: contactDelegate.contact.firstName
-                        font.pointSize: 12
-                        font.weight: Font.Bold
                     }
-                    Text {
+                    PrimaryText {
                         id: middleName
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: "#FFFFFF"
                         text: contactDelegate.contact.middleName
-                        font.pointSize: 12
-                        font.weight: Font.Bold
                     }
-                    Text {
+                    PrimaryText {
                         id: lastName
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: "#FFFFFF"
                         text: contactDelegate.contact.lastName
-                        font.pointSize: 12
-                        font.weight: Font.Bold
                     }
                 }
                 Row {
                     Layout.alignment: Qt.AlignVCenter
-                    Text {
+                    SecondaryText {
                         id: defaultPhoneNumberText
                         property PhoneNumber defaultPhoneNumber: contactDelegate.contact.phonesData.length > 0 ?
                                                                      contactDelegate.contact.phonesData[0] : null
                         visible: defaultPhoneNumber != null
-                        color: "#EEEEEE"
                         text: defaultPhoneNumber ?
                                   "+" + defaultPhoneNumber.countryCode + " " + defaultPhoneNumber.number : ""
-                        font.pointSize: 12
                     }
                 }
             }
             Rectangle {
-                color:"#EEEEEE"
+                color:"#cfdfe7"
                 anchors.left: parent.left
                 anchors.right: parent.right
-                height: 2
+                height: 1
             }
 
             Rectangle {
-                color:"#EEEEEE"
+                color:"#cfdfe7"
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.bottom
-                height: 2
+                height: 1
                 visible: (contactList.count - 1) === model.index
             }
         }
     }
 
     FloatingRoundButton {
+        enabled: !contactList.moving
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.margins: 10

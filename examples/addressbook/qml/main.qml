@@ -29,11 +29,13 @@ import qtprotobuf.examples.addressbook 1.0
 import examples.addressbook 1.0
 
 ApplicationWindow {
+    id: mainWindow
     visible: true
     width: 640
     height: 480
     title: qsTr("QtProtobuf Address Book Example")
     Rectangle {
+        id: background
         anchors.fill: parent
         color: "#B0BEC5"
     }
@@ -46,23 +48,25 @@ ApplicationWindow {
     Component {
         id: contactList
         ContactList {
+            anchors.fill: background
             model: abEngine.contacts
             Component.onCompleted: {
                 console.log("abEngine.contacts.list.length " + abEngine.contacts.count)
             }
             onRequestAddContact: {
-                mainStack.push(addContactView)
+                mainStack.push(addContactView, {"stack": mainStack})
             }
         }
     }
     Component {
         id: addContactView
         AddContactView {
+            anchors.fill: background
         }
     }
 
     Component.onCompleted: {
-        mainStack.push(contactList)
+        mainStack.push(contactList, {"stack": mainStack})
     }
 }
 

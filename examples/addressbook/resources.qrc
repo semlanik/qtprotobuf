@@ -5,5 +5,11 @@
         <file>qml/AddContactView.qml</file>
         <file>qml/FloatingRoundButton.qml</file>
         <file>images/plus.png</file>
+        <file>qml/StackItem.qml</file>
+        <file>images/back.png</file>
+        <file>qml/PrimaryText.qml</file>
+        <file>qml/SecondaryText.qml</file>
+        <file>qml/TextInputRow.qml</file>
+        <file>images/check.png</file>
     </qresource>
 </RCC>
