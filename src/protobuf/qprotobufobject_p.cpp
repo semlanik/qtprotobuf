@@ -98,9 +98,7 @@ QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValu
     qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex;
 
     int userType = propertyValue.userType();
-    auto serializer = serializers[userType];
-    Q_ASSERT_X(serializer.serializer, "ProtobufObjectPrivate", "Serialization of unknown type is impossible. QtProtobuf::init() missed?");
-
+    auto serializer = serializers.at(userType);//Throws exception if not found
     type = serializer.type;
     return serializer.serializer(propertyValue, fieldIndex);
 }
@@ -142,8 +140,6 @@ void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaType, Q
     qProtoDebug() << __func__ << "userType" << metaType.userType() << "typeName" << metaType.typeName()
                   << "currentByte:" << QString::number((*it), 16);
     int userType = metaType.userType();
-    auto deserializer = serializers[userType].deserializer;
-    Q_ASSERT_X(deserializer, "ProtobufObjectPrivate", "Deserialization of unknown type is impossible. QtProtobuf::init() missed?");
-
+    auto deserializer = serializers.at(userType).deserializer;//Throws exception if not found
     deserializer(it, newValue);
 }

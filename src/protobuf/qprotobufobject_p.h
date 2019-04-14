@@ -303,8 +303,8 @@ public:
     static QByteArray serializeMap(const QMap<K,V> &mapValue, int &outFieldIndex) {
         using ItType = typename QMap<K,V>::const_iterator;
         QByteArray mapResult;
-        auto kSerializer = serializers[qMetaTypeId<K>()];
-        auto vSerializer = serializers[qMetaTypeId<V>()];
+        auto kSerializer = serializers.at(qMetaTypeId<K>());//Throws exception if not found
+        auto vSerializer = serializers.at(qMetaTypeId<V>());//Throws exception if not found
 
         for ( ItType it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
             QByteArray result;
@@ -322,8 +322,8 @@ public:
     static QByteArray serializeMap(const QMap<K, QSharedPointer<V>> &mapValue, int &outFieldIndex) {
         using ItType = typename QMap<K, QSharedPointer<V>>::const_iterator;
         QByteArray mapResult;
-        auto kSerializer = serializers[qMetaTypeId<K>()];
-        auto vSerializer = serializers[qMetaTypeId<V*>()];
+        auto kSerializer = serializers.at(qMetaTypeId<K>());//Throws exception if not found
+        auto vSerializer = serializers.at(qMetaTypeId<V*>());//Throws exception if not found
 
         for ( ItType it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
             QByteArray result;
@@ -477,7 +477,7 @@ public:
     static QVariant deserializeList(QByteArray::const_iterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         QVariant newValue;
-        serializers[qMetaTypeId<V*>()].deserializer(it, newValue);
+        serializers.at(qMetaTypeId<V*>()).deserializer(it, newValue);//Throws exception if not found
         return newValue;
     }
 
@@ -560,7 +560,7 @@ public:
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static T *deserializeMapHelper(QByteArray::const_iterator &it) {
-        auto serializer = serializers[qMetaTypeId<T *>()];
+        auto serializer = serializers.at(qMetaTypeId<T *>());//Throws exception if not found
         QVariant value;
         serializer.deserializer(it, value);
         return value.value<T *>();
@@ -569,7 +569,7 @@ public:
     template <typename T,
               typename std::enable_if_t<!std::is_base_of<QObject, T>::value, int> = 0>
     static T deserializeMapHelper(QByteArray::const_iterator &it) {
-        auto serializer = serializers[qMetaTypeId<T>()];
+        auto serializer = serializers.at(qMetaTypeId<T>());//Throws exception if not found
         QVariant value;
         serializer.deserializer(it, value);
         return value.value<T>();
