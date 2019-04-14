@@ -1,10 +1,8 @@
-set(SUPPORT_LIBRARY_TARGET qtprotobufsupport)
+
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(Qt5_POSITION_INDEPENDENT_CODE)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -23,11 +21,15 @@ file(GLOB HEADERS
     qtprotobuftypes.h
     qtprotobuf.h)
 
-find_package(Qt5 COMPONENTS Core Qml REQUIRED)
-
+set(SUPPORT_LIBRARY_TARGET qtprotobufsupport)
 add_library(${SUPPORT_LIBRARY_TARGET} ${SOURCES})
 set_target_properties(${SUPPORT_LIBRARY_TARGET} PROPERTIES PUBLIC_HEADER "${HEADERS}")
 target_link_libraries(${SUPPORT_LIBRARY_TARGET} PUBLIC Qt5::Core Qt5::Qml)
+# FIXME: in order to make separation between private and public headers, they should reside in different directories
+target_include_directories(${SUPPORT_LIBRARY_TARGET}
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
 
 install(TARGETS ${SUPPORT_LIBRARY_TARGET}
     ARCHIVE DESTINATION lib

@@ -1,5 +1,3 @@
-set(GRPC_SUPPORT_LIBRARY_TARGET qtgrpc)
-
 # FIXME: replace with 'target_include_directories'
 include_directories(${CMAKE_SOURCE_DIR}/src/protobuf)
 
@@ -21,15 +19,15 @@ file(GLOB HEADERS asyncreply.h
     http2channel.h
     abstractclient.h)
 
-find_package(Qt5 COMPONENTS Core Network REQUIRED)
-
+set(GRPC_SUPPORT_LIBRARY_TARGET qtgrpc)
 add_library(${GRPC_SUPPORT_LIBRARY_TARGET} ${SOURCES})
 set_target_properties(${GRPC_SUPPORT_LIBRARY_TARGET} PROPERTIES PUBLIC_HEADER "${HEADERS}")
-if(WIN32)
-    target_link_libraries(${GRPC_SUPPORT_LIBRARY_TARGET} PRIVATE qtprotobufsupport PUBLIC Qt5::Network Qt5::Core)
-elseif(UNIX)
-    target_link_libraries(${GRPC_SUPPORT_LIBRARY_TARGET} PRIVATE qtprotobufsupport PUBLIC Qt5::Network)
-endif()
+target_link_libraries(${GRPC_SUPPORT_LIBRARY_TARGET} PRIVATE qtprotobufsupport PUBLIC Qt5::Network Qt5::Core)
+target_include_directories(${GRPC_SUPPORT_LIBRARY_TARGET}
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+
 install(TARGETS ${GRPC_SUPPORT_LIBRARY_TARGET}
     ARCHIVE DESTINATION lib
     PUBLIC_HEADER DESTINATION include)

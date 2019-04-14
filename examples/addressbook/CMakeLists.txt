@@ -73,22 +73,12 @@ list(APPEND GENERATED_SOURCES
 )
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/globalenums.h PROPERTIES GENERATED TRUE)
 
+# FIXME: protobuf and grpc headers should be propagated from corresponding targets
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/protobuf ${CMAKE_SOURCE_DIR}/src/grpc)
-
-if(WIN32)
-    #Set  path to GTest build libraries
-    set(GTEST_BOTH_LIBRARIES "")
-    #Set  path to GTest include directory
-    include_directories(${GTEST_INCLUDE_PATHS} "/")
-endif()
 
 file(GLOB SOURCES main.cpp addressbookengine.cpp universallistmodel.cpp universallistmodelbase.cpp)
 
 set(addressbook "addressbook_example")
 add_executable(${addressbook} ${SOURCES} ${GENERATED_SOURCES} resources.qrc)
-if(WIN32)
-    target_link_libraries(${addressbook} qtgrpc qtprotobufsupport Qt5::Quick Qt5::Qml)
-elseif(UNIX)
-    target_link_libraries(${addressbook} qtgrpc qtprotobufsupport Qt5::Quick)
-endif()
+target_link_libraries(${addressbook} qtgrpc qtprotobufsupport Qt5::Quick Qt5::Qml)
 add_dependencies(${addressbook} ${addressbookgeneration})
