@@ -19,6 +19,8 @@ add_custom_command(TARGET ${testgeneration}
 
 add_dependencies(${testgeneration} ${PROJECT_NAME})
 
+find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
+
 ## test sources build
 # policy enables automoc for generated files
 if(${CMAKE_VERSION} VERSION_GREATER "3.10.0")
@@ -202,7 +204,6 @@ if(WIN32)
 
     #Set  path to GTest include directory
     include_directories(${GTEST_INCLUDE_PATHS} "/")
-    find_package(Qt5 COMPONENTS Core Quick Network Qml REQUIRED)
 endif()
 
 file(GLOB SOURCES main.cpp
@@ -217,7 +218,7 @@ set(testtarget "qtprotobuf_test")
 add_executable(${testtarget} ${SOURCES} ${GENERATED_SOURCES})
 
 if(WIN32)
-    target_link_libraries(${testtarget} qtgrpc qtprotobufsupport "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" Qt5::Quick Qt5::Core Qt5::Qml Qt5::Network)
+    target_link_libraries(${testtarget} qtgrpc qtprotobufsupport "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" Qt5::Core Qt5::Qml Qt5::Network)
 elseif(UNIX)
     target_link_libraries(${testtarget} gtest qtgrpc qtprotobufsupport)
 endif()

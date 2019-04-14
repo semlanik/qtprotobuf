@@ -18,7 +18,8 @@ endif()
 
 # grpc target requires QT version not less than 5.11
 # earlier versions do not provide required Http2DirectAttribute: https://doc.qt.io/qt-5/whatsnew511.html
-find_package(Qt5 COMPONENTS Core Network REQUIRED)
+find_package(Qt5 COMPONENTS Core REQUIRED)
+
 if (Qt5Core_VERSION VERSION_LESS "5.11.0")
     message(FATAL_ERROR "Required Qt version is 5.11+")
 endif()

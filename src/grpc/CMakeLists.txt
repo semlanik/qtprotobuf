@@ -21,10 +21,15 @@ file(GLOB HEADERS asyncreply.h
     http2channel.h
     abstractclient.h)
 
+find_package(Qt5 COMPONENTS Core Network REQUIRED)
+
 add_library(${GRPC_SUPPORT_LIBRARY_TARGET} ${SOURCES})
 set_target_properties(${GRPC_SUPPORT_LIBRARY_TARGET} PROPERTIES PUBLIC_HEADER "${HEADERS}")
-target_link_libraries(${GRPC_SUPPORT_LIBRARY_TARGET} PRIVATE qtprotobufsupport PUBLIC Qt5::Network)
-
+if(WIN32)
+    target_link_libraries(${GRPC_SUPPORT_LIBRARY_TARGET} PRIVATE qtprotobufsupport PUBLIC Qt5::Network Qt5::Core)
+elseif(UNIX)
+    target_link_libraries(${GRPC_SUPPORT_LIBRARY_TARGET} PRIVATE qtprotobufsupport PUBLIC Qt5::Network)
+endif()
 install(TARGETS ${GRPC_SUPPORT_LIBRARY_TARGET}
     ARCHIVE DESTINATION lib
     PUBLIC_HEADER DESTINATION include)
