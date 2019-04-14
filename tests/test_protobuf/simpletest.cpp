@@ -347,8 +347,8 @@ TEST_F(SimpleTest, SimpleFileEnumsTest)
     const char* propertyName = "globalEnumList";
     SimpleFileEnumMessage test;
     int propertyNumber = SimpleFileEnumMessage::propertyOrdering.at(2); //See simpletest.proto
-    ASSERT_STREQ(SimpleFileEnumMessage::staticMetaObject.property(propertyNumber).typeName(), "GlobalEnums::TestEnumList");
-    ASSERT_EQ(SimpleFileEnumMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<GlobalEnums::TestEnumList>());
+    ASSERT_STREQ(SimpleFileEnumMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobufnamespace::tests::GlobalEnums::TestEnumList");
+    ASSERT_EQ(SimpleFileEnumMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<qtprotobufnamespace::tests::GlobalEnums::TestEnumList>());
     ASSERT_STREQ(SimpleFileEnumMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
 
     GlobalEnums::TestEnumList value({GlobalEnums::TEST_ENUM_VALUE1,

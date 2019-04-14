@@ -48,12 +48,18 @@ const char *Templates::UsingQtProtobufNamespaceTemplate = "\nusing namespace qtp
 const char *Templates::ComplexTypeRegistrationMethodTemplate = "static void registerTypes();\n";
 const char *Templates::ComplexTypeRegistrationTemplate = "void $classname$::registerTypes()\n{\n"
                                                          "    static bool registationDone = false;\n"
-                                                         "    if (!registationDone) {\n\n"
+                                                         "    if (!registationDone) {\n"
+                                                         "        registationDone = true;\n"
                                                          "        qRegisterMetaType<$classname$>(\"$classname$\");\n"
                                                          "        qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
                                                          "        qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
                                                          "        qRegisterMetaType<$classname$List>(\"$namespaces$::$classname$List\");\n"
                                                          "";
+const char *Templates::ComplexGlobalEnumRegistrationTemplate = "void $classname$::registerTypes()\n{\n"
+                                                               "    static bool registationDone = false;\n"
+                                                               "    if (!registationDone) {\n\n"
+                                                               "        registationDone = true;\n";
+const char *Templates::ComplexGlobalEnumFieldRegistrationTemplate = "        qRegisterMetaType<$classname$::$enum$>(\"$namespaces$::$classname$::$enum$\");\n";
 const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<QSharedPointer<$classname$>>;\n";
 const char *Templates::MapTypeUsingTemplate = "using $classname$ = QMap<$key$, $value$>;\n";
 const char *Templates::MessageMapTypeUsingTemplate = "using $classname$ = QMap<$key$, QSharedPointer<$value$>>;\n";
@@ -152,6 +158,7 @@ const char *Templates::PropertyInitializerTemplate = "\n    ,m_$property_name$($
 const char *Templates::ConstructorContentTemplate = "\n{\n    registerTypes();\n}\n";
 
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n";
+const char *Templates::DeclareMetaTypeListTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$List)\n";
 const char *Templates::DeclareMessageMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n"
                                                         "Q_DECLARE_OPAQUE_POINTER($namespaces$::$classname$)\n";
 

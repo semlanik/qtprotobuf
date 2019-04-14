@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "globalenumsgenerator.h"
+#include "globalenumssourcegenerator.h"
 
 #include <google/protobuf/io/zero_copy_stream.h>
 
@@ -32,41 +32,26 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
-GlobalEnumsGenerator::GlobalEnumsGenerator(const PackagesList &packageList, std::unique_ptr<io::ZeroCopyOutputStream> out) :
+GlobalEnumsSourceGenerator::GlobalEnumsSourceGenerator(const PackagesList &packageList, std::unique_ptr<io::ZeroCopyOutputStream> out) :
     ClassGeneratorBase(Templates::GlobalEnumClassNameTemplate, std::move(out))
   , mPackageList(packageList) {}
 
-void GlobalEnumsGenerator::startEnum(const std::vector<std::string>& namespaces) {
-    printNamespaces(namespaces);
-    printEnumClass();
-    printPublic();
-    Indent();
-    mPrinter.Print(Templates::ComplexTypeRegistrationMethodTemplate);
-    Outdent();
-}
-
-void GlobalEnumsGenerator::run() {
+void GlobalEnumsSourceGenerator::run() {
     printPreamble();
+
     std::vector<std::string> namespaces;
     for (auto package : mPackageList) {
         utils::split(package.first, namespaces, '.');
-        startEnum(namespaces);
-        for (auto file : package.second) {
-            run(file);
-        }
-        encloseEnum(namespaces);
-        for (auto file : package.second) {
-            printMetatype(file, namespaces);
-        }
+
+        printNamespaces(namespaces);
+        printRegisterBody(package.second, namespaces);
+        encloseNamespaces(namespaces.size());
     }
 }
 
-void GlobalEnumsGenerator::run(const FileDescriptor *file) {
-    printQEnums(file);
-}
-
-void GlobalEnumsGenerator::printMetatype(const google::protobuf::FileDescriptor *file,
-                                         const std::vector<std::string>& namespaces) {
+void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDescriptor *> &list,
+                                                   const std::vector<std::string> &namespaces)
+{
     std::string fullNamespace;
     for (auto name : namespaces) {
         if (fullNamespace.empty()) {
@@ -75,24 +60,24 @@ void GlobalEnumsGenerator::printMetatype(const google::protobuf::FileDescriptor 
         }
         fullNamespace.append("::").append(name);
     }
-    std::string fullClassname;
-    for (int i = 0; i < file->enum_type_count(); i++) {
-        const auto enumDescr = file->enum_type(i);
-        if (!enumDescr->name().empty()) {
-            fullClassname.append(Templates::GlobalEnumClassNameTemplate).append("::").append(enumDescr->name());
+    const std::map<std::string, std::string> registrationProperties = {{"classname", mClassName},
+                                                                       {"namespaces", fullNamespace}};
+    mPrinter.Print(registrationProperties, Templates::ComplexGlobalEnumRegistrationTemplate);
+    for (auto file : list) {
+        std::string fullClassname;
+        for (int i = 0; i < file->enum_type_count(); i++) {
+            const auto enumDescr = file->enum_type(i);
+            if (!enumDescr->name().empty()) {
+                const std::map<std::string, std::string> properties = {{"classname", mClassName},
+                                                                       {"enum", enumDescr->name() + "List"},
+                                                                       {"namespaces", fullNamespace}};
+                mPrinter.Print(properties, Templates::ComplexGlobalEnumFieldRegistrationTemplate);
+            }
         }
     }
-    if (!fullClassname.empty()) {
-        mPrinter.Print({{"classname", fullClassname}, {"namespaces", fullNamespace}},
-                       Templates::DeclareMetaTypeListTemplate);
-    }
-}
 
-void GlobalEnumsGenerator::encloseEnum(const std::vector<std::string>& namespaces) {
-    encloseClass();
-    encloseNamespaces(namespaces.size());
-}
-
-void GlobalEnumsGenerator::printEnumClass() {
-    mPrinter.Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
+    Indent();
+    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+    Outdent();
+    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
 }

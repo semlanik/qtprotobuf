@@ -43,6 +43,8 @@ public:
     static const char *UsingQtProtobufNamespaceTemplate;
     static const char *ComplexTypeRegistrationMethodTemplate;
     static const char *ComplexTypeRegistrationTemplate;
+    static const char *ComplexGlobalEnumRegistrationTemplate;
+    static const char *ComplexGlobalEnumFieldRegistrationTemplate;
     static const char *ComplexListTypeUsingTemplate;
     static const char *MapTypeUsingTemplate;
     static const char *MessageMapTypeUsingTemplate;
@@ -93,6 +95,7 @@ public:
     static const char *PropertyInitializerTemplate;
     static const char *ConstructorContentTemplate;
     static const char *DeclareMetaTypeTemplate;
+    static const char *DeclareMetaTypeListTemplate;
     static const char *DeclareMessageMetaTypeTemplate;
     static const char *DeclareComplexListTypeTemplate;
     static const char *RegisterMetaTypeDefaultTemplate;

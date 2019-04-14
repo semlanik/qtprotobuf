@@ -157,7 +157,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
             typeName = namespaceTypeName.append(Templates::GlobalEnumClassNameTemplate)
                     .append("::").append(enumType->name());
         } else {
-            typeName = namespaceTypeName.append(enumType->name());
+            typeName = mNamespacesColonDelimited.append("::" + namespaceTypeName).append(enumType->name());
         }
         if (field->is_repeated()) {
             return typeName.append("List");

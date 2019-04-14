@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -31,22 +31,16 @@
 namespace qtprotobuf {
 namespace generator {
 
-class GlobalEnumsGenerator : public ClassGeneratorBase
+class GlobalEnumsSourceGenerator : public ClassGeneratorBase
 {
-    const ::google::protobuf::FileDescriptor *mFile;
     PackagesList mPackageList;
 public:
-    GlobalEnumsGenerator(const PackagesList &packageList, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);
-    virtual ~GlobalEnumsGenerator() = default;
+    GlobalEnumsSourceGenerator(const PackagesList &packageList, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);
+    virtual ~GlobalEnumsSourceGenerator() = default;
 
-    void run();
-
-    void startEnum(const std::vector<std::string>& namespaces);
-    void run(const ::google::protobuf::FileDescriptor *file);
-    void encloseEnum(const std::vector<std::string>& namespaces);
-    void printMetatype(const google::protobuf::FileDescriptor *file,
-                       const std::vector<std::string>& namespaces);
-    void printEnumClass();
+    void run() override;
+    void printRegisterBody(const std::list<const ::google::protobuf::FileDescriptor *> &list,
+                           const std::vector<std::string> &namespaces);
 };
 
 } //namespace generator

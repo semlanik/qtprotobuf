@@ -5,6 +5,7 @@ add_executable(${PROJECT_NAME}
     servergenerator.cpp
     protobufclassgenerator.cpp
     globalenumsgenerator.cpp
+    globalenumssourcegenerator.cpp
     servicegeneratorbase.cpp
     templates.cpp
     clientgenerator.cpp

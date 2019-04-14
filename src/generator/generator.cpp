@@ -29,6 +29,7 @@
 #include "protobufclassgenerator.h"
 #include "protobufsourcegenerator.h"
 #include "globalenumsgenerator.h"
+#include "globalenumssourcegenerator.h"
 #include "servergenerator.h"
 #include "clientgenerator.h"
 #include "clientsourcegenerator.h"
@@ -154,7 +155,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 
 bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, const string &parameter, GeneratorContext *generatorContext, string *error) const
 {
-    std::string globalEnumsFilename = "globalenums.h";
+    std::string globalEnumsFilename = "globalenums";
 
     PackagesList packageList;
     for (auto file : files) {
@@ -162,8 +163,12 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
     }
 
     GlobalEnumsGenerator enumGen(packageList,
-                                 std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename))));
+                                 std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".h"))));
     enumGen.run();
+
+    GlobalEnumsSourceGenerator enumSourceGen(packageList,
+                                             std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".cpp"))));
+    enumSourceGen.run();
 
     // FIXME: not sure about the actual protobuf version where GenerateAll was actually implemented
 #if GOOGLE_PROTOBUF_VERSION < 3006000
