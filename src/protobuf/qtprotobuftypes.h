@@ -47,8 +47,6 @@ struct transparent {
     T _t;
     operator T&(){ return _t; }
     operator T() const { return _t; }
-    operator QJSValue&() { return QJSValue(_t); }
-    operator QJSValue() const { return QJSValue(_t); }
     transparent& operator =(const T& t) { _t = t; return *this; }
 };
 
