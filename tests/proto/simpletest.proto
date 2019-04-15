@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "extrenalpackagetest.proto";
+import "externalpackagetest.proto";
 
 package qtprotobufnamespace.tests;
 
