@@ -47,7 +47,7 @@ void ProtobufObjectPrivate::registerSerializers()
 
     wrapSerializer<QString>([](const QString &data, int &/*fieldIndex*/) {
         return serializeLengthDelimited(data);
-    }, [](QByteArray::const_iterator &it){
+    }, [](SelfcheckIterator &it){
         return QVariant::fromValue(QString::fromUtf8(deserializeLengthDelimited(it)));
     }, LengthDelimited);
 
@@ -103,7 +103,7 @@ QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValu
     return serializer.serializer(propertyValue, fieldIndex);
 }
 
-void ProtobufObjectPrivate::deserializeProperty(QObject *object, WireTypes wireType, const QMetaProperty &metaProperty, QByteArray::const_iterator &it)
+void ProtobufObjectPrivate::deserializeProperty(QObject *object, WireTypes wireType, const QMetaProperty &metaProperty, SelfcheckIterator &it)
 {
     qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << metaProperty.typeName()
                   << "currentByte:" << QString::number((*it), 16);
@@ -135,7 +135,7 @@ void ProtobufObjectPrivate::deserializeProperty(QObject *object, WireTypes wireT
     metaProperty.write(object, newPropertyValue);
 }
 
-void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaType, QByteArray::const_iterator& it, QVariant &newValue)
+void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaType, SelfcheckIterator& it, QVariant &newValue)
 {
     qProtoDebug() << __func__ << "userType" << metaType.userType() << "typeName" << metaType.typeName()
                   << "currentByte:" << QString::number((*it), 16);

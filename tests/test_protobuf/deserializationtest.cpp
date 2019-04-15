@@ -833,3 +833,37 @@ TEST_F(DeserializationTest, SimpleStringComplexMapDeserializeTest)
     ASSERT_TRUE(*test.mapField()["where is my car dude?"] == ComplexMessage({10 , {"fourty two ten sixteen"}}));
     ASSERT_TRUE(*test.mapField()["WUT??"] == ComplexMessage({10 , {"?WUT?"}}));
 }
+
+TEST_F(DeserializationTest, SimpleUInt64ComplexMapInvalidLengthDeserializeTest)
+{
+    SimpleUInt64ComplexMessageMapMessage test;
+    EXPECT_THROW(test.deserialize(QByteArray::fromHex("3214080a1210120c320a74656e20656c6576656e080b3220082a121c12183216666f757274792074776f2074656e207369787465656e080a321008938004120a120")),
+                 std::invalid_argument);
+    ASSERT_TRUE(test.mapField().isEmpty());
+}
+
+TEST_F(DeserializationTest, SimpleStringComplexMapInvalidLengthDeserializeTest)
+{
+    SimpleStringComplexMessageMapMessage test;
+    EXPECT_THROW(test.deserialize(QByteArray::fromHex("6a140a055755543f3f120b120732053f5755543f080a6a170a0362656e1210120c320a74656e20656c6576656e080b6a350a157768657265206973206d792063617220647564653f121c12183216666f757274792074776f2074656e20736978746565")),
+                 std::out_of_range);
+    ASSERT_TRUE(*test.mapField()["ben"] == ComplexMessage({11 , {"ten eleven"}}));
+    ASSERT_TRUE(*test.mapField()["WUT??"] == ComplexMessage({10 , {"?WUT?"}}));
+    ASSERT_FALSE(test.mapField().contains("where is my car dude?"));
+}
+
+TEST_F(DeserializationTest, SimpleUInt64ComplexMapCorruptedDeserializeTest)
+{
+    SimpleUInt64ComplexMessageMapMessage test;
+    EXPECT_THROW(test.deserialize(QByteArray::fromHex("3214080a1210120c320a74656e20656c6576656e080b3221233522345b2183216666f757274792074776f2074656e207369787465656e080a321008938004120a120632045755543f080a")),
+                 std::invalid_argument);
+    ASSERT_TRUE(test.mapField().isEmpty());
+}
+
+TEST_F(DeserializationTest, SimpleStringComplexMapInvalidFieldDeserializeTest)
+{
+    SimpleStringComplexMessageMapMessage test;
+    EXPECT_THROW(test.deserialize(QByteArray::fromHex("6a460a055755543f3f120b120732053f5755543f080a6a170a0362656e1210120c320a74656e20656c6576656e080b6a350a157768657265206973206d792063617220647564653f121c12183216666f757274792074776f2074656e207369787465656e080a")),
+                 std::invalid_argument);
+    ASSERT_TRUE(test.mapField().isEmpty());
+}
