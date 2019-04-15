@@ -37,7 +37,8 @@ GlobalEnumsSourceGenerator::GlobalEnumsSourceGenerator(const PackagesList &packa
   , mPackageList(packageList) {}
 
 void GlobalEnumsSourceGenerator::run() {
-    printPreamble();
+    mPrinter.Print("#include \"globalenums.h\"\n"
+                   "#include <QQmlEngine>");
 
     std::vector<std::string> namespaces;
     for (auto package : mPackageList) {
@@ -52,6 +53,8 @@ void GlobalEnumsSourceGenerator::run() {
 void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDescriptor *> &list,
                                                    const std::vector<std::string> &namespaces)
 {
+    assert(list.size() > 0);
+
     std::string fullNamespace;
     for (auto name : namespaces) {
         if (fullNamespace.empty()) {
@@ -60,23 +63,28 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
         }
         fullNamespace.append("::").append(name);
     }
+
     const std::map<std::string, std::string> registrationProperties = {{"classname", mClassName},
-                                                                       {"namespaces", fullNamespace}};
+                                                                       {"type", mClassName},
+                                                                       {"namespaces", fullNamespace},
+                                                                       {"package", list.front()->package()}};
+
     mPrinter.Print(registrationProperties, Templates::ComplexGlobalEnumRegistrationTemplate);
+    Indent();
+    Indent();
+    mPrinter.Print(registrationProperties, Templates::RegisterMetaTypeTemplate);
+    mPrinter.Print(registrationProperties, Templates::QmlRegisterTypeTemplate);
+
     for (auto file : list) {
-        std::string fullClassname;
         for (int i = 0; i < file->enum_type_count(); i++) {
             const auto enumDescr = file->enum_type(i);
-            if (!enumDescr->name().empty()) {
-                const std::map<std::string, std::string> properties = {{"classname", mClassName},
-                                                                       {"enum", enumDescr->name() + "List"},
-                                                                       {"namespaces", fullNamespace}};
-                mPrinter.Print(properties, Templates::ComplexGlobalEnumFieldRegistrationTemplate);
-            }
+            const std::map<std::string, std::string> properties = {{"classname", mClassName},
+                                                                   {"enum", enumDescr->name() + "List"},
+                                                                   {"namespaces", fullNamespace}};
+            mPrinter.Print(properties, Templates::ComplexGlobalEnumFieldRegistrationTemplate);
         }
     }
-
-    Indent();
+    Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
     Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);

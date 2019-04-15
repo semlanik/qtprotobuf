@@ -177,10 +177,6 @@ endforeach(EXPECTED_GENERATED_HEADER)
 qt5_wrap_cpp(MOC_SOURCES ${GENERATED_HEADERS})
 list(APPEND GENERATED_SOURCES ${MOC_SOURCES})
 
-# TODO: so far the following cpp files are not generated 
-list(REMOVE_ITEM GENERATED_SOURCES
-    ${GENERATED_SOURCES_DIR}/globalenums.cpp
-)
 set_source_files_properties(${GENERATED_SOURCES} PROPERTIES GENERATED TRUE)
 
 # TODO: but their headers should be included in sources for executable to be processed by moc

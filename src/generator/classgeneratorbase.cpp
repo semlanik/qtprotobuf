@@ -41,6 +41,7 @@ using namespace ::google::protobuf::compiler;
 ClassGeneratorBase::ClassGeneratorBase(std::string fullClassName, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out) : mOutput(std::move(out))
   , mPrinter(mOutput.get(), '$')
 {
+    mPrinter.Print(Templates::DisclaimerTemplate);
     utils::split(fullClassName, mNamespaces, '.');
     assert(mNamespaces.size() > 0);
     mClassName = mNamespaces.back();

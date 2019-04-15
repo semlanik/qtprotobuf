@@ -37,6 +37,7 @@ public:
     static const char *DefaultProtobufIncludesTemplate;
     static const char *GlobalEnumClassNameTemplate;
     static const char *PreambleTemplate;
+    static const char *DisclaimerTemplate;
     static const char *InternalIncludeTemplate;
     static const char *ExternalIncludeTemplate;
     static const char *GlobalEnumIncludeTemplate;
@@ -53,6 +54,7 @@ public:
     static const char *UsingNamespaceTemplate;
     static const char *NonProtoClassDefinitionTemplate;
     static const char *ProtoClassDefinitionTemplate;
+    static const char *ConstructorHeaderTemplate;
     static const char *ClassDefinitionTemplate;
     static const char *PropertyTemplate;
     static const char *MessagePropertyTemplate;

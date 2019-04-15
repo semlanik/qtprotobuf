@@ -47,6 +47,7 @@ public:
     void printMetatype(const google::protobuf::FileDescriptor *file,
                        const std::vector<std::string>& namespaces);
     void printEnumClass();
+    void printConstructor();
 };
 
 } //namespace generator

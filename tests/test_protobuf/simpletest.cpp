@@ -307,6 +307,8 @@ TEST_F(SimpleTest, SimpleExternalEnumMessageTest)
 {
     const char* propertyName = "externalEnum";
     using ExternalGlobalEnums = qtprotobufnamespace1::externaltests::GlobalEnums;
+    ExternalGlobalEnums::registerTypes();
+
     SimpleExternalEnumMessage test;
     int propertyNumber = SimpleExternalEnumMessage::propertyOrdering.at(1); //See externalpackagetest.proto
     ASSERT_STREQ(SimpleExternalEnumMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobufnamespace1::externaltests::GlobalEnums::ExternalTestEnum");
@@ -683,6 +685,7 @@ TEST_F(SimpleTest, RepeatedSFixedInt64MessageTest)
 
 TEST_F(SimpleTest, StepChildEnumMessageTest)
 {
+    qtprotobufnamespace::tests::SimpleEnumMessage::registerTypes();
     const char* propertyName = "localStepChildEnum";
     StepChildEnumMessage test;
     int propertyNumber = StepChildEnumMessage::propertyOrdering.at(1); //See simpletest.proto
@@ -696,6 +699,7 @@ TEST_F(SimpleTest, StepChildEnumMessageTest)
 
 TEST_F(SimpleTest, StepChildEnumListMessageTest)
 {
+    qtprotobufnamespace::tests::SimpleEnumMessage::registerTypes();
     const char* propertyName = "localStepChildList";
     StepChildEnumMessage test;
     int propertyNumber = StepChildEnumMessage::propertyOrdering.at(2); //See simpletest.proto
