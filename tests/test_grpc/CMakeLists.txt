@@ -70,9 +70,9 @@ set(testtarget "qtgrpc_test")
 add_executable(${testtarget} ${SOURCES} ${GENERATED_SOURCES})
 
 if(WIN32)
-    target_link_libraries(${testtarget} qtgrpc qtprotobufsupport "${GTEST_BOTH_LIBRARIES}/gmock_main.lib" "${GTEST_BOTH_LIBRARIES}/gmock.lib" Qt5::Core Qt5::Qml Qt5::Network)
+    target_link_libraries(${testtarget} qtgrpc qtprotobufsupport "${GTEST_BOTH_LIBRARIES}/gtest_main.lib" "${GTEST_BOTH_LIBRARIES}/gtest.lib" Qt5::Core Qt5::Qml Qt5::Network)
 elseif(UNIX)
-    target_link_libraries(${testtarget} gtest_main qtgrpc qtprotobufsupport)
+    target_link_libraries(${testtarget} gtest_main gtest qtgrpc qtprotobufsupport)
 endif()
 
 target_include_directories(${testtarget} PRIVATE ${GENERATED_SOURCES_DIR})
