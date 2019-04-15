@@ -79,6 +79,7 @@ public:
     static const char *EqualOperatorPropertyTemplate;
     static const char *NotEqualOperatorTemplate;
     static const char *GetterTemplate;
+    static const char *GetterContainerExtraTemplate;
     static const char *GetterMessageTemplate;
     static const char *SetterTemplateSimpleType;
     static const char *SetterTemplateComplexType;

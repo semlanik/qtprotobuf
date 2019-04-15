@@ -421,8 +421,11 @@ void ProtobufClassGenerator::printProperties()
             }
         }
         printField(field, Templates::GetterTemplate);
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE && field->is_repeated() && !field->is_map()) {
-             printField(field, Templates::QmlListGetterTemplate);
+        if (field->is_repeated()) {
+            printField(field, Templates::GetterContainerExtraTemplate);
+            if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map()) {
+                printField(field, Templates::QmlListGetterTemplate);
+            }
         }
     }
     for (int i = 0; i < mMessage->field_count(); i++) {

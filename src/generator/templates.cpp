@@ -111,6 +111,10 @@ const char *Templates::GetterTemplate = "$type$ $property_name$() const {\n"
                                         "    return m_$property_name$;\n"
                                         "}\n\n";
 
+const char *Templates::GetterContainerExtraTemplate = "$type$ &$property_name$() {\n"
+                                        "    return m_$property_name$;\n"
+                                        "}\n\n";
+
 const char *Templates::QmlListGetterTemplate = "QQmlListProperty<$type_nolist$> $property_name$_l() {\n"
                                                "    return qtprotobuf::ProtobufObjectPrivate::constructQmlListProperty<$type_nolist$>(this, &m_$property_name$);\n"
                                                "}\n\n";

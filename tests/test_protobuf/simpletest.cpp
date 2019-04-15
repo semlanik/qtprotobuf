@@ -438,6 +438,12 @@ TEST_F(SimpleTest, RepeatedIntMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int32List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<int32List>() == int32List({1, 2, 3, 4, 5}));
     ASSERT_TRUE(test.testRepeatedInt() == int32List({1, 2, 3, 4, 5}));
+
+    test.testRepeatedInt().append(66);
+    ASSERT_TRUE(test.testRepeatedInt() == int32List({1, 2, 3, 4, 5, 66}));
+
+    test.testRepeatedInt().pop_back();
+    ASSERT_TRUE(test.testRepeatedInt() == int32List({1, 2, 3, 4, 5}));
 }
 
 TEST_F(SimpleTest, RepeatedDoubleMessageTest)
@@ -451,6 +457,12 @@ TEST_F(SimpleTest, RepeatedDoubleMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobuf::DoubleList>({1.0, 2.3, 3, 4.7, 5.9})));
     ASSERT_TRUE(test.property(propertyName).value<qtprotobuf::DoubleList>() == qtprotobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
     ASSERT_TRUE(test.testRepeatedDouble() == qtprotobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
+
+    test.testRepeatedDouble().append(6.6);
+    ASSERT_TRUE(test.testRepeatedDouble() == qtprotobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9, 6.6}));
+
+    test.testRepeatedDouble().pop_back();
+    ASSERT_TRUE(test.testRepeatedDouble() == qtprotobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
 }
 
 TEST_F(SimpleTest, RepeatedFloatMessageTest)
@@ -463,6 +475,12 @@ TEST_F(SimpleTest, RepeatedFloatMessageTest)
     ASSERT_STREQ(RepeatedFloatMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobuf::FloatList>({1.0f, 2.3f, 3, 4.7f, 5.9f})));
     ASSERT_TRUE(test.property(propertyName).value<qtprotobuf::FloatList>() == qtprotobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
+    ASSERT_TRUE(test.testRepeatedFloat() == qtprotobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
+
+    test.testRepeatedFloat().append(6.6f);
+    ASSERT_TRUE(test.testRepeatedFloat() == qtprotobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f, 6.6f}));
+
+    test.testRepeatedFloat().pop_back();
     ASSERT_TRUE(test.testRepeatedFloat() == qtprotobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
 }
 
@@ -481,6 +499,15 @@ TEST_F(SimpleTest, RepeatedBytesMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<QByteArrayList>(bList)));
     ASSERT_TRUE(test.property(propertyName).value<QByteArrayList>() == bList);
     ASSERT_TRUE(test.testRepeatedBytes() == bList);
+
+    bList << "\x01\x05\x03\x03";
+    test.testRepeatedBytes() << "\x01\x05\x03\x03";
+    ASSERT_TRUE(test.testRepeatedBytes() == bList);
+
+
+    bList.pop_back();
+    test.testRepeatedBytes().pop_back();
+    ASSERT_TRUE(test.testRepeatedBytes() == bList);
 }
 
 TEST_F(SimpleTest, RepeatedSIntMessageTest)
@@ -493,6 +520,12 @@ TEST_F(SimpleTest, RepeatedSIntMessageTest)
     ASSERT_STREQ(RepeatedSIntMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sint32List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<sint32List>() == sint32List({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.testRepeatedInt() == sint32List({1, 2, 3, 4, 5}));
+
+    test.testRepeatedInt() << 6;
+    ASSERT_TRUE(test.testRepeatedInt() == sint32List({1, 2, 3, 4, 5, 6}));
+
+    test.testRepeatedInt().pop_back();
     ASSERT_TRUE(test.testRepeatedInt() == sint32List({1, 2, 3, 4, 5}));
 }
 
@@ -507,6 +540,12 @@ TEST_F(SimpleTest, RepeatedUIntMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<uint32List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<uint32List>() == uint32List({1, 2, 3, 4, 5}));
     ASSERT_TRUE(test.testRepeatedInt() == uint32List({1, 2, 3, 4, 5}));
+
+    test.testRepeatedInt().append(6);
+    ASSERT_TRUE(test.testRepeatedInt() == uint32List({1, 2, 3, 4, 5,6}));
+
+    test.testRepeatedInt().pop_back();
+    ASSERT_TRUE(test.testRepeatedInt() == uint32List({1, 2, 3, 4, 5}));
 }
 
 TEST_F(SimpleTest, RepeatedInt64MessageTest)
@@ -519,6 +558,12 @@ TEST_F(SimpleTest, RepeatedInt64MessageTest)
     ASSERT_STREQ(RepeatedInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int64List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<int64List>() == int64List({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.testRepeatedInt() == int64List({1, 2, 3, 4, 5}));
+
+    test.testRepeatedInt().append(69);
+    ASSERT_TRUE(test.testRepeatedInt() == int64List({1, 2, 3, 4, 5, 69}));
+
+    test.testRepeatedInt().pop_back();
     ASSERT_TRUE(test.testRepeatedInt() == int64List({1, 2, 3, 4, 5}));
 }
 
@@ -533,6 +578,12 @@ TEST_F(SimpleTest, RepeatedSInt64MessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sint64List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<sint64List>() == sint64List({1, 2, 3, 4, 5}));
     ASSERT_TRUE(test.testRepeatedInt() == sint64List({1, 2, 3, 4, 5}));
+
+    test.testRepeatedInt() << 96;
+    ASSERT_TRUE(test.testRepeatedInt() == sint64List({1, 2, 3, 4, 5, 96}));
+
+    test.testRepeatedInt().pop_back();
+    ASSERT_TRUE(test.testRepeatedInt() == sint64List({1, 2, 3, 4, 5}));
 }
 
 TEST_F(SimpleTest, RepeatedUInt64MessageTest)
@@ -545,6 +596,12 @@ TEST_F(SimpleTest, RepeatedUInt64MessageTest)
     ASSERT_STREQ(RepeatedUInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<uint64List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<uint64List>() == uint64List({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.testRepeatedInt() == uint64List({1, 2, 3, 4, 5}));
+
+    test.testRepeatedInt().append(96);
+    ASSERT_TRUE(test.testRepeatedInt() == uint64List({1, 2, 3, 4, 5, 96}));
+
+    test.testRepeatedInt().pop_back();
     ASSERT_TRUE(test.testRepeatedInt() == uint64List({1, 2, 3, 4, 5}));
 }
 
@@ -559,6 +616,12 @@ TEST_F(SimpleTest, RepeatedFixedIntMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<fixed32List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<fixed32List>() == fixed32List({1, 2, 3, 4, 5}));
     ASSERT_TRUE(test.testRepeatedInt() == fixed32List({1, 2, 3, 4, 5}));
+
+    test.testRepeatedInt() << 0;
+    ASSERT_TRUE(test.testRepeatedInt() == fixed32List({1, 2, 3, 4, 5, 0}));
+
+    test.testRepeatedInt().pop_back();
+    ASSERT_TRUE(test.testRepeatedInt() == fixed32List({1, 2, 3, 4, 5}));
 }
 
 TEST_F(SimpleTest, RepeatedFixedInt64MessageTest)
@@ -571,6 +634,12 @@ TEST_F(SimpleTest, RepeatedFixedInt64MessageTest)
     ASSERT_STREQ(RepeatedFixedInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<fixed64List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<fixed64List>() == fixed64List({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.testRepeatedInt() == fixed64List({1, 2, 3, 4, 5}));
+
+    test.testRepeatedInt() << 0;
+    ASSERT_TRUE(test.testRepeatedInt() == fixed64List({1, 2, 3, 4, 5, 0}));
+
+    test.testRepeatedInt().pop_back();
     ASSERT_TRUE(test.testRepeatedInt() == fixed64List({1, 2, 3, 4, 5}));
 }
 
@@ -585,6 +654,12 @@ TEST_F(SimpleTest, RepeatedSFixedIntMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sfixed32List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<sfixed32List>() == sfixed32List({1, 2, 3, 4, 5}));
     ASSERT_TRUE(test.testRepeatedInt() == sfixed32List({1, 2, 3, 4, 5}));
+
+    test.testRepeatedInt() << 0;
+    ASSERT_TRUE(test.testRepeatedInt() == sfixed32List({1, 2, 3, 4, 5, 0}));
+
+    test.testRepeatedInt().pop_back();
+    ASSERT_TRUE(test.testRepeatedInt() == sfixed32List({1, 2, 3, 4, 5}));
 }
 
 TEST_F(SimpleTest, RepeatedSFixedInt64MessageTest)
@@ -597,6 +672,12 @@ TEST_F(SimpleTest, RepeatedSFixedInt64MessageTest)
     ASSERT_STREQ(RepeatedSFixedInt64Message::staticMetaObject.property(propertyNumber).name(), propertyName);
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sfixed64List>({1, 2, 3, 4, 5})));
     ASSERT_TRUE(test.property(propertyName).value<sfixed64List>() == sfixed64List({1, 2, 3, 4, 5}));
+    ASSERT_TRUE(test.testRepeatedInt() == sfixed64List({1, 2, 3, 4, 5}));
+
+    test.testRepeatedInt() << 0;
+    ASSERT_TRUE(test.testRepeatedInt() == sfixed64List({1, 2, 3, 4, 5, 0}));
+
+    test.testRepeatedInt().pop_back();
     ASSERT_TRUE(test.testRepeatedInt() == sfixed64List({1, 2, 3, 4, 5}));
 }
 
@@ -649,6 +730,12 @@ TEST_F(SimpleTest, SimpleSInt32StringMapMessageTest)
     ASSERT_STREQ(test.mapField()[10].toStdString().c_str(), "Some 10");
     ASSERT_STREQ(test.mapField()[0].toStdString().c_str(), "Some 0");
     ASSERT_STREQ(test.mapField()[44].toStdString().c_str(), "Some 44");
+
+    test.mapField()[66] = "Some 66";
+    ASSERT_STREQ(test.mapField()[66].toStdString().c_str(), "Some 66");
+
+    test.mapField()[66] = "Some default";
+    ASSERT_STREQ(test.mapField()[66].toStdString().c_str(), "Some default");
 }
 
 TEST_F(SimpleTest, SimpleStringStringMapMessageTest)
@@ -668,4 +755,10 @@ TEST_F(SimpleTest, SimpleStringStringMapMessageTest)
     ASSERT_STREQ(test.mapField()["key 10"].toStdString().c_str(), "Some 10");
     ASSERT_STREQ(test.mapField()["key 0"].toStdString().c_str(), "Some 0");
     ASSERT_STREQ(test.mapField()["key 44"].toStdString().c_str(), "Some 44");
+
+    test.mapField()["key 66"] = "Some 66";
+    ASSERT_STREQ(test.mapField()["key 66"].toStdString().c_str(), "Some 66");
+
+    test.mapField()["key 66"] = "Some default";
+    ASSERT_STREQ(test.mapField()["key 66"].toStdString().c_str(), "Some default");
 }
