@@ -40,10 +40,11 @@ void GlobalEnumsGenerator::startEnum(const std::vector<std::string>& namespaces)
     printNamespaces(namespaces);
     printEnumClass();
     printPublic();
-    printConstructor();
     Indent();
     mPrinter.Print(Templates::ComplexTypeRegistrationMethodTemplate);
     Outdent();
+    printPrivate();
+    printConstructor();
 }
 
 void GlobalEnumsGenerator::printConstructor()

@@ -686,15 +686,16 @@ TEST_F(SimpleTest, RepeatedSFixedInt64MessageTest)
 TEST_F(SimpleTest, StepChildEnumMessageTest)
 {
     qtprotobufnamespace::tests::SimpleEnumMessage::registerTypes();
+
     const char* propertyName = "localStepChildEnum";
     StepChildEnumMessage test;
     int propertyNumber = StepChildEnumMessage::propertyOrdering.at(1); //See simpletest.proto
     ASSERT_STREQ(StepChildEnumMessage::staticMetaObject.property(propertyNumber).typeName(), "qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnum");
-    ASSERT_EQ(StepChildEnumMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<SimpleEnumMessage::LocalEnum>());
+    ASSERT_EQ(StepChildEnumMessage::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnum>());
     ASSERT_STREQ(StepChildEnumMessage::staticMetaObject.property(propertyNumber).name(), propertyName);
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnum>(SimpleEnumMessage::LOCAL_ENUM_VALUE2)));
-    ASSERT_TRUE(test.property(propertyName).value<SimpleEnumMessage::LocalEnum>() == SimpleEnumMessage::LOCAL_ENUM_VALUE2);
-    ASSERT_TRUE(test.localStepChildEnum() == SimpleEnumMessage::LOCAL_ENUM_VALUE2);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnum>(qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnum::LOCAL_ENUM_VALUE2)));
+    ASSERT_TRUE(test.property(propertyName).value<qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnum>() == qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnum::LOCAL_ENUM_VALUE2);
+    ASSERT_TRUE(test.localStepChildEnum() == qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnum::LOCAL_ENUM_VALUE2);
 }
 
 TEST_F(SimpleTest, StepChildEnumListMessageTest)

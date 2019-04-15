@@ -110,7 +110,7 @@ public:
     static const char *SerializersTemplate;
     static const char *RegisterSerializersTemplate;
     static const char *QmlRegisterTypeTemplate;
-
+    static const char *QmlRegisterTypeUncreatableTemplate;
     //Service templates
     static const char *ConstructorDefinitionSyncTemplate;
 

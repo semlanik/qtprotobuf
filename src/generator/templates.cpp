@@ -57,7 +57,7 @@ const char *Templates::ComplexTypeRegistrationTemplate = "void $classname$::regi
                                                          "";
 const char *Templates::ComplexGlobalEnumRegistrationTemplate = "void $classname$::registerTypes()\n{\n"
                                                                "    static bool registationDone = false;\n"
-                                                               "    if (!registationDone) {\n\n"
+                                                               "    if (!registationDone) {\n"
                                                                "        registationDone = true;\n";
 const char *Templates::ComplexGlobalEnumFieldRegistrationTemplate = "qRegisterMetaType<$classname$::$enum$>(\"$namespaces$::$classname$::$enum$\");\n";
 const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<QSharedPointer<$classname$>>;\n";
@@ -205,6 +205,7 @@ const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nbool $classname$
 const char *Templates::SerializersTemplate = "Q_DECLARE_PROTOBUF_SERIALIZERS($classname$)\n";
 const char *Templates::RegisterSerializersTemplate = "qtprotobuf::ProtobufObjectPrivate::registerSerializers<$classname$>();\n";
 const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\");\n";
+const char *Templates::QmlRegisterTypeUncreatableTemplate = "qmlRegisterUncreatableType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\", \"$namespaces$::$classname$ Could not be created from qml context\");\n";
 
 const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> Templates::TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "double"},

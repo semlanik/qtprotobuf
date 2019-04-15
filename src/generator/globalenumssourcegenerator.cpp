@@ -72,16 +72,17 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
     mPrinter.Print(registrationProperties, Templates::ComplexGlobalEnumRegistrationTemplate);
     Indent();
     Indent();
-    mPrinter.Print(registrationProperties, Templates::RegisterMetaTypeTemplate);
-    mPrinter.Print(registrationProperties, Templates::QmlRegisterTypeTemplate);
+    mPrinter.Print(registrationProperties, Templates::QmlRegisterTypeUncreatableTemplate);
 
     for (auto file : list) {
         for (int i = 0; i < file->enum_type_count(); i++) {
             const auto enumDescr = file->enum_type(i);
             const std::map<std::string, std::string> properties = {{"classname", mClassName},
+                                                                   {"type", mClassName + "::" + enumDescr->name()},
                                                                    {"enum", enumDescr->name() + "List"},
                                                                    {"namespaces", fullNamespace}};
             mPrinter.Print(properties, Templates::ComplexGlobalEnumFieldRegistrationTemplate);
+            mPrinter.Print(properties, Templates::RegisterMetaTypeTemplate);
         }
     }
     Outdent();
