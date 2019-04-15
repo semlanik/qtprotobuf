@@ -28,7 +28,7 @@
 #include <memory>
 #include <QObject>
 #include <QByteArray>
-#include <QDebug>
+#include <qtprotobuflogging.h>
 
 #include "abstractchannel.h"
 
@@ -50,7 +50,17 @@ protected:
     bool call(const QString &method, const A &arg, R &ret) {
         QByteArray retData;
         if (call(method, arg.serialize(), retData)) {
-            ret.deserialize(retData.mid(5));
+            try {
+                ret.deserialize(retData.mid(5));
+            } catch (std::invalid_argument) {
+                qProtoCritical() << "Response deserialization failed invalid field found";
+                return false;
+            } catch (std::out_of_range) {
+                qProtoCritical() << "Invalid size of received buffer";
+                return false;
+            } catch (...) {
+                throw;
+            }
             return true;
         }
         return false;
