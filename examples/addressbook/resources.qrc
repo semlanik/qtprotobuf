@@ -11,5 +11,6 @@
         <file>qml/SecondaryText.qml</file>
         <file>qml/TextInputRow.qml</file>
         <file>images/check.png</file>
+        <file>images/minus.png</file>
     </qresource>
 </RCC>
