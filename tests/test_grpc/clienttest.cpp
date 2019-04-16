@@ -50,6 +50,7 @@ TEST_F(ClientTest, CheckMethodsGeneration)
     SimpleStringMessage request;
     testClient.testMethod(result, request);
     testClient.testMethod(result);
+    testClient.testMethod(result, &testClient, [](AsyncReply*){});
 }
 
 TEST_F(ClientTest, StringEchoTest)
@@ -62,5 +63,45 @@ TEST_F(ClientTest, StringEchoTest)
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
     ASSERT_TRUE(testClient.testMethod(request, result));
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Hello beach!");
+}
+
+TEST_F(ClientTest, StringEchoAsyncTest)
+{
+    int argc = 0;
+    QCoreApplication app(argc, nullptr);
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("Hello beach!");
+    QEventLoop waiter;
+
+    AsyncReply* reply = testClient.testMethod(request);
+    QObject::connect(reply, &AsyncReply::finished, &app, [reply, &result, &waiter]() {
+        result = reply->read<SimpleStringMessage>();
+        waiter.quit();
+    });
+
+    waiter.exec();
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Hello beach!");
+}
+
+TEST_F(ClientTest, StringEchoAsync2Test)
+{
+    int argc = 0;
+    QCoreApplication app(argc, nullptr);
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("Hello beach!");
+    QEventLoop waiter;
+    testClient.testMethod(request, &app, [&result, &waiter](AsyncReply *reply) {
+        result = reply->read<SimpleStringMessage>();
+        waiter.quit();
+    });
+
+    waiter.exec();
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Hello beach!");
 }

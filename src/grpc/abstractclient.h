@@ -55,7 +55,7 @@ protected:
         QByteArray retData;
         if (call(method, arg.serialize(), retData)) {
             try {
-                ret.deserialize(retData.mid(5));
+                ret.deserialize(retData);
             } catch (std::invalid_argument) {
                 qProtoCritical() << "Response deserialization failed invalid field found";
                 return false;
