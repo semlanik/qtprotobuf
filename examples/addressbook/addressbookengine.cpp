@@ -35,21 +35,19 @@ AddressBookEngine::AddressBookEngine() : QObject()
   , m_client(new AddressBookClient)
   , m_contacts(new ContactsListModel({}, this))
 {
-    Contacts tmp;
     std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel("localhost", 65001));
     m_client->attachChannel(channel);
-    m_client->getContacts(ListFrame(), tmp);
-    m_contacts->reset(tmp.list());
+    m_client->getContacts(ListFrame(), this, [this](qtprotobuf::AsyncReply *reply) {
+        m_contacts->reset(reply->read<Contacts>().list());
+    });
 }
 
 void AddressBookEngine::addContact(qtprotobuf::examples::Contact *contact)
 {
-    Contacts tmp;
-    m_client->addContact(*contact, tmp);
-    qDebug() << "tmp count:" << tmp.list().count();
-    m_contacts->reset(tmp.list());
+    m_client->addContact(*contact, this, [this](qtprotobuf::AsyncReply *reply) {
+        m_contacts->reset(reply->read<Contacts>().list());
+    });
 }
-
 
 AddressBookEngine::~AddressBookEngine()
 {

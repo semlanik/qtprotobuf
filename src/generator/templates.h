@@ -116,10 +116,12 @@ public:
 
     static const char *ClientMethodDeclarationSyncTemplate;
     static const char *ClientMethodDeclarationAsyncTemplate;
+    static const char *ClientMethodDeclarationAsync2Template;
     static const char *ServerMethodDeclarationTemplate;
 
     static const char *ClientMethodDefinitionSyncTemplate;
     static const char *ClientMethodDefinitionAsyncTemplate;
+    static const char *ClientMethodDefinitionAsync2Template;
 
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
 };

@@ -186,7 +186,8 @@ const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::ProtobufO
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
 const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$);\n";
-const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, const qtprotobuf::AsyncReply<$return_type$> &reply);\n";
+const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE qtprotobuf::AsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject* context, const std::function<void(qtprotobuf::AsyncReply*)> &callback);\n";
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
 
@@ -197,11 +198,18 @@ const char *Templates::ClientMethodDefinitionSyncTemplate = "\nbool $classname$:
                                                             "{\n"
                                                             "    return call(\"$method_name$\", $param_name$, $return_name$);\n"
                                                             "}\n";
-const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nbool $classname$::$method_name$(const $param_type$ &$param_name$, const qtprotobuf::AsyncReply<$return_type$> &reply)\n"
+const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nqtprotobuf::AsyncReply *$classname$::$method_name$(const $param_type$ &$param_name$)\n"
                                                              "{\n"
-                                                             "    //TODO: call transport method to serialize this method\n"
-                                                             "    return false;\n"
+                                                             "    return call(\"$method_name$\", $param_name$);\n"
                                                              "}\n";
+const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject* context, const std::function<void(AsyncReply*)> &callback)\n"
+                                                              "{\n"
+                                                              "    qtprotobuf::AsyncReply* reply = call(\"$method_name$\", $param_name$);\n"
+                                                              "    QObject::connect(reply, &qtprotobuf::AsyncReply::finished, context, [reply, callback](){\n"
+                                                              "        callback(reply);\n"
+                                                              "    });\n"
+                                                              "}\n";
+
 const char *Templates::SerializersTemplate = "Q_DECLARE_PROTOBUF_SERIALIZERS($classname$)\n";
 const char *Templates::RegisterSerializersTemplate = "qtprotobuf::ProtobufObjectPrivate::registerSerializers<$classname$>();\n";
 const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\");\n";

@@ -50,7 +50,7 @@ public:
 
     void printIncludes();
     void printClassName();
-    void printMethodsDeclaration(const char* methodTemplate, const char* methodAsyncTemplate = "");
+    void printMethodsDeclaration(const char* methodTemplate, const char* methodAsyncTemplate = "", const char *methodAsync2Template = "");
 };
 
 } //namespace generator

@@ -44,12 +44,12 @@ protected:
 
 TEST_F(ClientTest, CheckMethodsGeneration)
 {
-    //Dummy compile time check of functions generation
+    //Dummy compile time check of functions generation and interface compatibility
     TestServiceClient testClient;
     SimpleStringMessage result;
     SimpleStringMessage request;
     testClient.testMethod(result, request);
-    testClient.testMethod(result, std::function<void(const SimpleStringMessage&)>([](const SimpleStringMessage&){}));
+    testClient.testMethod(result);
 }
 
 TEST_F(ClientTest, StringEchoTest)

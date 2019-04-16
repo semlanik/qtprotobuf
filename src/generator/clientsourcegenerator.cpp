@@ -59,6 +59,7 @@ void ClientSourceGenerator::printMethods()
                                                         };
         mPrinter.Print(parameters, Templates::ClientMethodDefinitionSyncTemplate);
         mPrinter.Print(parameters, Templates::ClientMethodDefinitionAsyncTemplate);
+        mPrinter.Print(parameters, Templates::ClientMethodDefinitionAsync2Template);
     }
 }
 

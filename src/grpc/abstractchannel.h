@@ -30,6 +30,8 @@
 
 namespace qtprotobuf {
 
+class AsyncReply;
+
 class AbstractChannel
 {
 public:
@@ -57,11 +59,25 @@ public:
     };
 
     virtual StatusCodes call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) = 0;
+    /*!
+     * \brief call
+     * \param method
+     * \param service
+     * \param args
+     * \param ret AsyncReply that will be returned to end-point user to read data once ready. AsyncReply owned by AbstractClient only.
+     * \return
+     */
+    virtual void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *ret) = 0;
 
 protected:
-    AbstractChannel();
+    AbstractChannel() = default;
     virtual ~AbstractChannel() = default;
 
+    virtual void abort(AsyncReply *) {
+        assert("Abort is not supported by used channel");
+    }
+
+    friend class AsyncReply;
 private:
     Q_DISABLE_COPY(AbstractChannel)
 };

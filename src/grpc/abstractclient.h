@@ -31,16 +31,20 @@
 #include <qtprotobuflogging.h>
 
 #include "abstractchannel.h"
+#include "asyncreply.h"
 
 namespace qtprotobuf {
 
 class AbstractChannel;
 class AbstractClientPrivate;
 
-class AbstractClient : public QObject //TODO: QObject is not really required yet
+class AbstractClient : public QObject
 {
 public:
     void attachChannel(std::shared_ptr<AbstractChannel> channel);
+
+    AbstractChannel::StatusCodes lastError() const;
+    QString lastErrorString() const;
 
 protected:
     AbstractClient(const QString &service, QObject *parent = nullptr);
@@ -66,8 +70,14 @@ protected:
         return false;
     }
 
+    template<typename A>
+    AsyncReply *call(const QString &method, const A &arg) {
+        return call(method, arg.serialize());
+    }
+
 private:
     bool call(const QString &method, const QByteArray& arg, QByteArray& ret);
+    AsyncReply *call(const QString &method, const QByteArray& arg);
 
     Q_DISABLE_COPY(AbstractClient)
 

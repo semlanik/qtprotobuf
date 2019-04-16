@@ -52,7 +52,7 @@ public:
         printClientClass();
         printPublic();
         printConstructor();
-        printMethodsDeclaration(Templates::ClientMethodDeclarationSyncTemplate, Templates::ClientMethodDeclarationAsyncTemplate);
+        printMethodsDeclaration(Templates::ClientMethodDeclarationSyncTemplate, Templates::ClientMethodDeclarationAsyncTemplate, Templates::ClientMethodDeclarationAsync2Template);
         encloseClass();
         encloseNamespaces();
     }

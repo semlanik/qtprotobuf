@@ -35,21 +35,13 @@
 #include <QEventLoop>
 #include <QTimer>
 #include <QtEndian>
+#include "asyncreply.h"
 
 #include <unordered_map>
 
 #include "qtprotobuflogging.h"
 
 using namespace qtprotobuf;
-
-namespace qtprotobuf {
-
-struct Http2ChannelPrivate {
-    QUrl url;
-    QNetworkAccessManager nm;
-};
-
-}
 
 namespace  {
 const static std::unordered_map<QNetworkReply::NetworkError, AbstractChannel::StatusCodes> StatusCodeMap = { { QNetworkReply::ConnectionRefusedError, AbstractChannel::Unavailable },
@@ -92,6 +84,59 @@ const char *TEHeader = "te";
 const char *GrpcStatusHeader = "grpc-status";
 }
 
+namespace qtprotobuf {
+
+struct Http2ChannelPrivate {
+    QUrl url;
+    QNetworkAccessManager nm;
+    QNetworkReply* post(const QString &method, const QString &service, const QByteArray &args) {
+        QUrl callUrl = url;
+        callUrl.setPath("/" + service + "/" + method);
+
+        qProtoDebug() << "Service call url: " << callUrl;
+
+        QNetworkRequest request(callUrl);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/grpc");
+        request.setRawHeader(GrpcAcceptEncodingHeader, "identity,deflate,gzip");
+        request.setRawHeader(AcceptEncodingHeader, "identity,gzip");
+        request.setRawHeader(TEHeader, "trailers");
+
+        request.setAttribute(QNetworkRequest::Http2DirectAttribute, true);
+
+        QByteArray msg(5, '\0');
+        *(unsigned int*)(msg.data() + 1) = qToBigEndian(args.size());
+        msg += args;
+        qProtoDebug() << "SEND: " << msg.toHex();
+
+        QNetworkReply* networkReply = nm.post(request, msg);
+
+        //TODO: Add configurable timeout logic
+        QTimer::singleShot(6000, networkReply, &QNetworkReply::abort);
+        return networkReply;
+    }
+
+    static QByteArray processReply(QNetworkReply* networkReply, AbstractChannel::StatusCodes& statusCode) {
+        //Check if no network error occured
+        if (networkReply->error() != QNetworkReply::NoError) {
+            qProtoWarning() << "Network error occured" << networkReply->errorString();
+            statusCode = StatusCodeMap.at(networkReply->error());
+            return {};
+        }
+
+        //Check if server answer with error
+        statusCode = static_cast<AbstractChannel::StatusCodes>(networkReply->rawHeader(GrpcStatusHeader).toInt());
+        if (statusCode != AbstractChannel::StatusCodes::Ok) {
+            qProtoWarning() << "Protobuf server error occured" << networkReply->errorString();
+            return {};
+        }
+
+        //Message size doesn't matter for now
+        return networkReply->readAll().mid(5);
+    }
+};
+
+}
+
 Http2Channel::Http2Channel(const QString &addr, quint16 port) : AbstractChannel()
   , d(new Http2ChannelPrivate)
 {
@@ -107,56 +152,48 @@ Http2Channel::~Http2Channel()
 
 AbstractChannel::StatusCodes Http2Channel::call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret)
 {
-    QUrl callUrl = d->url;
-    callUrl.setPath("/" + service + "/" + method);
-
-    qProtoDebug() << "Service call url: " << callUrl;
-    QNetworkRequest request(callUrl);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/grpc");
-    request.setRawHeader(GrpcAcceptEncodingHeader, "identity,deflate,gzip");
-    request.setRawHeader(AcceptEncodingHeader, "identity,gzip");
-    request.setRawHeader(TEHeader, "trailers");
-
-    request.setAttribute(QNetworkRequest::Http2DirectAttribute, true);
-
-    QByteArray msg(5, '\0');
-    *(unsigned int*)(msg.data() + 1) = qToBigEndian(args.size());
-    msg += args;
-    qProtoDebug() << "SEND: " << msg.toHex();
-    QNetworkReply *reply = d->nm.post(request, msg);
     QEventLoop loop;
-    QTimer timer;
-    loop.connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
-    loop.connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
 
-    //TODO: Add configurable timeout logic
-    timer.setInterval(1000);
-    timer.start();
+    QNetworkReply *networkReply = d->post(method, service, args);
+    QObject::connect(networkReply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
 
-    if (!reply->isFinished()) {
+    //If reply was finished in same stack it doesn't matter to start event loop
+    if (!networkReply->isFinished()) {
         loop.exec();
-    }
-
-    timer.stop();
-
-    //Check if no network error occured
-    if (reply->error() != QNetworkReply::NoError) {
-        return StatusCodeMap.at(reply->error());
-    }
-
-    //Check if response timeout triggered
-    if (!reply->isFinished()) {
-        reply->abort();
+    } else {
         return AbstractChannel::DeadlineExceeded;
     }
 
-    //Check if server answer with error
-    StatusCodes grpcStatus = static_cast<StatusCodes>(reply->rawHeader(GrpcStatusHeader).toInt());
-    if (grpcStatus != StatusCodes::Ok) {
-        return grpcStatus;
-    }
+    StatusCodes grpcStatus = StatusCodes::Unknown;
+    ret = d->processReply(networkReply, grpcStatus);
 
-    ret = reply->readAll();
-    qProtoDebug() << "RECV: " << ret.toHex();
-    return StatusCodes::Ok;
+    qProtoDebug() << __func__ << "RECV: " << ret.toHex();
+    return grpcStatus;
+}
+
+void Http2Channel::call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *reply)
+{
+    QNetworkReply *networkReply = d->post(method, service, args);
+
+    QObject::connect(networkReply, &QNetworkReply::finished, reply, [this, reply, networkReply]() {
+        StatusCodes grpcStatus = StatusCodes::Unknown;
+        QByteArray data = Http2ChannelPrivate::processReply(networkReply, grpcStatus);
+        qProtoDebug() << "RECV: " << data;
+        if (grpcStatus != StatusCodes::Ok) {
+            reply->setData({});
+            reply->error(grpcStatus);
+            reply->finished();
+            return;
+        }
+        reply->setData(data);
+        reply->finished();
+    });
+}
+
+void Http2Channel::abort(AsyncReply *reply)
+{
+    assert(reply != nullptr);
+    reply->setData({});
+    reply->error(StatusCodes::Aborted);
+    reply->finished();
 }

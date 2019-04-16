@@ -24,10 +24,3 @@
  */
 
 #include "abstractchannel.h"
-
-using namespace qtprotobuf;
-
-AbstractChannel::AbstractChannel()
-{
-
-}

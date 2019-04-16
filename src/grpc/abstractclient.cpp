@@ -25,6 +25,8 @@
 
 #include "abstractclient.h"
 
+#include <QTimer>
+
 namespace qtprotobuf {
 struct AbstractClientPrivate final {
     AbstractClientPrivate(const QString &service) : service(service) {}
@@ -32,6 +34,7 @@ struct AbstractClientPrivate final {
     std::shared_ptr<AbstractChannel> channel;
     const QString service;
     AbstractChannel::StatusCodes lastError;
+    QString lastErrorString;
 };
 }
 
@@ -62,4 +65,42 @@ bool AbstractClient::call(const QString &method, const QByteArray& arg, QByteArr
 
     d->lastError = d->channel->call(method, d->service, arg, ret);
     return d->lastError == AbstractChannel::Ok;
+}
+
+AsyncReply *AbstractClient::call(const QString &method, const QByteArray& arg)
+{
+    AsyncReply *reply = new AsyncReply(d->channel);
+
+    if (!d->channel) {
+        d->lastError = AbstractChannel::Unknown;
+        d->lastErrorString = "No channel attached";
+        QTimer::singleShot(0, this, [reply]() {
+            reply->error(AbstractChannel::Unknown);
+            reply->deleteLater();
+        });
+        return reply;
+    }
+
+    connect(reply, &AsyncReply::error, this, [this, reply](AbstractChannel::StatusCodes statusCode){
+        d->lastError = statusCode;
+        reply->deleteLater();
+    });
+
+    connect(reply, &AsyncReply::finished, this, [this, reply](){
+        d->lastError = AbstractChannel::Ok;
+        reply->deleteLater();
+    });
+
+    d->channel->call(method, d->service, arg, reply);
+    return reply;
+}
+
+AbstractChannel::StatusCodes AbstractClient::lastError() const
+{
+    return d->lastError;
+}
+
+QString AbstractClient::lastErrorString() const
+{
+    return d->lastErrorString;
 }

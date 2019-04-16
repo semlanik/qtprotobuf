@@ -24,4 +24,14 @@
  */
 
 #include "asyncreply.h"
+#include <qtprotobuflogging.h>
 
+using namespace qtprotobuf;
+
+AsyncReply::~AsyncReply()
+{
+    qProtoDebug() << "Trying ~AsyncReply" << this;
+    QMutexLocker locker(&m_asyncLock);
+    qProtoDebug() << "~AsyncReply" << this;
+    (void)locker;
+}

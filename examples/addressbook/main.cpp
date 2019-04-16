@@ -41,7 +41,6 @@ using namespace qtprotobuf::examples;
 
 int main(int argc, char *argv[])
 {
-
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     qtprotobuf::QtProtobuf::init();
     Contact::registerTypes();
@@ -51,7 +50,6 @@ int main(int argc, char *argv[])
     PhoneNumber::registerTypes();
 
     qmlRegisterType<ContactsListModel>("examples.addressbook", 1, 0, "ContactsListModel");
-
     QGuiApplication app(argc, argv);
     AddressBookEngine abEngine;
     QQmlApplicationEngine engine;

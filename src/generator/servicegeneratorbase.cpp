@@ -72,7 +72,7 @@ void ServiceGeneratorBase::printClassName()
     mPrinter.Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
 }
 
-void ServiceGeneratorBase::printMethodsDeclaration(const char* methodTemplate, const char* methodAsyncTemplate)
+void ServiceGeneratorBase::printMethodsDeclaration(const char* methodTemplate, const char* methodAsyncTemplate, const char* methodAsync2Template)
 {
     Indent();
     for (int i = 0; i < mService->method_count(); i++) {
@@ -89,6 +89,7 @@ void ServiceGeneratorBase::printMethodsDeclaration(const char* methodTemplate, c
                                                         };
         mPrinter.Print(parameters, methodTemplate);
         mPrinter.Print(parameters, methodAsyncTemplate);
+        mPrinter.Print(parameters, methodAsync2Template);
     }
     Outdent();
 }

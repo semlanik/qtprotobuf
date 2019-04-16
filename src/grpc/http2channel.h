@@ -41,6 +41,10 @@ public:
     ~Http2Channel();
 
     StatusCodes call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
+    void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *reply) override;
+
+protected:
+    void abort(AsyncReply *reply) override;
 
 private:
     Q_DISABLE_COPY(Http2Channel)

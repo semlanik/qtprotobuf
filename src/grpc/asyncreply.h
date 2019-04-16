@@ -26,43 +26,50 @@
 #pragma once
 
 #include <functional>
+#include <QPointer>
+#include <QMutex>
+#include <memory>
+
+#include "abstractchannel.h"
 
 namespace qtprotobuf {
 
-template <typename M>
-class AsyncReply final
+class AsyncReply final : public QObject
 {
-    AsyncReply();
+    Q_OBJECT
 public:
-    AsyncReply(const std::function<void(const M&)> &callback) : m_callback(callback) {}
-    AsyncReply(AsyncReply &&other) {
-        m_callback = std::move(other.m_callback);
+    void abort() {
+        m_channel->abort(this);
     }
 
-    AsyncReply(const AsyncReply &other) {
-        m_callback = other.m_callback;
+    template <typename T>
+    T read() {
+        QMutexLocker locker(&m_asyncLock);
+        T value;
+        value.deserialize(m_data);
+        return value;
     }
 
-    AsyncReply& operator=(AsyncReply &&other) {
-        m_callback = std::move(other.m_callback);
-        return *this;
-    }
+    void setData(const QByteArray &data) { m_data = data; }
 
-    AsyncReply& operator=(const AsyncReply &other) {
-        m_callback = other.m_callback;
-        return *this;
-    }
+signals:
+    void finished();
+    void error(AbstractChannel::StatusCodes);
 
-    ~AsyncReply() {}
-
-    void operator()(const M& value) {
-        if (m_callback) {
-            m_callback(value);
-        }
-    }
+protected:
+    AsyncReply(const std::shared_ptr<AbstractChannel> &channel, QObject* parent = nullptr) : QObject(parent) {}
+    ~AsyncReply();
 
 private:
-    std::function<void(const M&)> m_callback;
+    AsyncReply();
+    Q_DISABLE_COPY(AsyncReply)
+
+    friend class AbstractClient;
+
+    std::shared_ptr<AbstractChannel> m_channel;
+    QByteArray m_data;
+
+    QMutex m_asyncLock;
 };
 
 }
