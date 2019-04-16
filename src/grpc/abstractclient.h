@@ -56,10 +56,10 @@ protected:
         if (call(method, arg.serialize(), retData)) {
             try {
                 ret.deserialize(retData);
-            } catch (std::invalid_argument) {
+            } catch (std::invalid_argument &) {
                 qProtoCritical() << "Response deserialization failed invalid field found";
                 return false;
-            } catch (std::out_of_range) {
+            } catch (std::out_of_range &) {
                 qProtoCritical() << "Invalid size of received buffer";
                 return false;
             } catch (...) {
