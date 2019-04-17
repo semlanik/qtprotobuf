@@ -123,6 +123,7 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
     request.setTestFieldString("sleep");
     QEventLoop waiter;
 
+    bool errorCalled = false;
     AsyncReply* reply = testClient.testMethod(request);
     result.setTestFieldString("Result not changed by echo");
     QObject::connect(reply, &AsyncReply::finished, &app, [reply, &result, &waiter, &testClient]() {
@@ -132,20 +133,28 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
         waiter.quit();
     });
 
+    QObject::connect(reply, &AsyncReply::error, reply, [&errorCalled](AbstractChannel::StatusCodes){
+        errorCalled = true;
+    });
     QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
     reply->abort();
 
     waiter.exec();
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
     ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Aborted);
+    ASSERT_TRUE(errorCalled);
 
 
+    errorCalled = false;
     reply = testClient.testMethod(request);
     QObject::connect(reply, &AsyncReply::finished, &app, [reply, &result, &waiter, &testClient]() {
         if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
             result = reply->read<SimpleStringMessage>();
         }
         waiter.quit();
+    });
+    QObject::connect(reply, &AsyncReply::error, reply, [&errorCalled](AbstractChannel::StatusCodes){
+        errorCalled = true;
     });
 
     QTimer::singleShot(2000, reply, &AsyncReply::abort);
@@ -155,4 +164,5 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
 
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
     ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Aborted);
+    ASSERT_TRUE(errorCalled);
 }
