@@ -57,7 +57,8 @@ signals:
     void error(AbstractChannel::StatusCodes);
 
 protected:
-    AsyncReply(const std::shared_ptr<AbstractChannel> &channel, QObject* parent = nullptr) : QObject(parent) {}
+    AsyncReply(const std::shared_ptr<AbstractChannel> &channel, QObject* parent = nullptr) : QObject(parent)
+    , m_channel(channel){}
     ~AsyncReply();
 
 private:

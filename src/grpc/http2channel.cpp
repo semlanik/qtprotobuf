@@ -175,7 +175,7 @@ void Http2Channel::call(const QString &method, const QString &service, const QBy
 {
     QNetworkReply *networkReply = d->post(method, service, args);
 
-    QObject::connect(networkReply, &QNetworkReply::finished, reply, [this, reply, networkReply]() {
+    auto connection = QObject::connect(networkReply, &QNetworkReply::finished, reply, [reply, networkReply]() {
         StatusCodes grpcStatus = StatusCodes::Unknown;
         QByteArray data = Http2ChannelPrivate::processReply(networkReply, grpcStatus);
         qProtoDebug() << "RECV: " << data;
@@ -187,6 +187,13 @@ void Http2Channel::call(const QString &method, const QString &service, const QBy
         }
         reply->setData(data);
         reply->finished();
+    });
+
+    QObject::connect(reply, &AsyncReply::error, networkReply, [reply, networkReply, connection]() {
+        QObject::disconnect(connection);
+        if (networkReply->isRunning()) {
+            networkReply->abort();
+        }
     });
 }
 

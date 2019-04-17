@@ -27,6 +27,8 @@
 #include "http2channel.h"
 #include "qtprotobuf.h"
 
+#include <QTimer>
+
 #include <QCoreApplication>
 #include <gtest/gtest.h>
 
@@ -78,8 +80,10 @@ TEST_F(ClientTest, StringEchoAsyncTest)
     QEventLoop waiter;
 
     AsyncReply* reply = testClient.testMethod(request);
-    QObject::connect(reply, &AsyncReply::finished, &app, [reply, &result, &waiter]() {
-        result = reply->read<SimpleStringMessage>();
+    QObject::connect(reply, &AsyncReply::finished, &app, [reply, &result, &waiter, &testClient]() {
+        if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
+            result = reply->read<SimpleStringMessage>();
+        }
         waiter.quit();
     });
 
@@ -97,11 +101,58 @@ TEST_F(ClientTest, StringEchoAsync2Test)
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
-    testClient.testMethod(request, &app, [&result, &waiter](AsyncReply *reply) {
-        result = reply->read<SimpleStringMessage>();
+    testClient.testMethod(request, &app, [&result, &waiter, &testClient](AsyncReply *reply) {
+        if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
+            result = reply->read<SimpleStringMessage>();
+        }
         waiter.quit();
     });
 
     waiter.exec();
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Hello beach!");
+}
+
+TEST_F(ClientTest, StringEchoAsyncAbortTest)
+{
+    int argc = 0;
+    QCoreApplication app(argc, nullptr);
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("sleep");
+    QEventLoop waiter;
+
+    AsyncReply* reply = testClient.testMethod(request);
+    result.setTestFieldString("Result not changed by echo");
+    QObject::connect(reply, &AsyncReply::finished, &app, [reply, &result, &waiter, &testClient]() {
+        if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
+            result = reply->read<SimpleStringMessage>();
+        }
+        waiter.quit();
+    });
+
+    QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
+    reply->abort();
+
+    waiter.exec();
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
+    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Aborted);
+
+
+    reply = testClient.testMethod(request);
+    QObject::connect(reply, &AsyncReply::finished, &app, [reply, &result, &waiter, &testClient]() {
+        if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
+            result = reply->read<SimpleStringMessage>();
+        }
+        waiter.quit();
+    });
+
+    QTimer::singleShot(2000, reply, &AsyncReply::abort);
+    QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
+
+    waiter.exec();
+
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
+    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Aborted);
 }

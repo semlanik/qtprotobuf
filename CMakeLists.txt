@@ -43,17 +43,26 @@ add_subdirectory("src/grpc")
 add_subdirectory("src/generator")
 
 if(DEFINED $ENV{MAKE_TESTS})
-    set(MAKE_TESTS ${MAKE_TESTS})
+    set(MAKE_TESTS $ENV{MAKE_TESTS})
 elseif(NOT DEFINED MAKE_TESTS)
     set(MAKE_TESTS ON)
 endif()
 
 if(DEFINED $ENV{MAKE_EXAMPLES})
-    set(MAKE_EXAMPLES ${MAKE_EXAMPLES})
+    set(MAKE_EXAMPLES $ENV{MAKE_EXAMPLES})
 elseif(NOT DEFINED MAKE_EXAMPLES)
     set(MAKE_EXAMPLES ON)
 endif()
 
+if(DEFINED $ENV{MAKE_COVERAGE})
+    set(MAKE_COVERAGE $ENV{MAKE_COVERAGE})
+elseif(NOT DEFINED MAKE_COVERAGE)
+    set(MAKE_COVERAGE OFF)
+endif()
+
+if(MAKE_COVERAGE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+endif()
 
 if(MAKE_TESTS)
     find_package(GTest)

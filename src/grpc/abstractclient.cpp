@@ -87,10 +87,10 @@ AsyncReply *AbstractClient::call(const QString &method, const QByteArray& arg)
     });
 
     connect(reply, &AsyncReply::finished, this, [this, reply](){
-        d->lastError = AbstractChannel::Ok;
         reply->deleteLater();
     });
 
+    d->lastError = AbstractChannel::Ok;//Assume that all is OK until something happened
     d->channel->call(method, d->service, arg, reply);
     return reply;
 }
