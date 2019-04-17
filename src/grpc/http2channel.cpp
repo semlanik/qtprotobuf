@@ -111,8 +111,16 @@ struct Http2ChannelPrivate {
         QNetworkReply* networkReply = nm.post(request, msg);
 
         //TODO: Add configurable timeout logic
-        QTimer::singleShot(6000, networkReply, &QNetworkReply::abort);
+        QTimer::singleShot(6000, networkReply, [networkReply]() {
+            Http2ChannelPrivate::abortNetworkReply(networkReply);
+        });
         return networkReply;
+    }
+
+    static void abortNetworkReply(QNetworkReply* networkReply) {
+        if (networkReply->isRunning()) {
+            networkReply->abort();
+        }
     }
 
     static QByteArray processReply(QNetworkReply* networkReply, AbstractChannel::StatusCodes& statusCode) {
@@ -191,9 +199,7 @@ void Http2Channel::call(const QString &method, const QString &service, const QBy
 
     QObject::connect(reply, &AsyncReply::error, networkReply, [reply, networkReply, connection]() {
         QObject::disconnect(connection);
-        if (networkReply->isRunning()) {
-            networkReply->abort();
-        }
+        Http2ChannelPrivate::abortNetworkReply(networkReply);
     });
 }
 
