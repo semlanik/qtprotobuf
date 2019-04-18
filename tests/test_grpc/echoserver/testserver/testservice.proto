@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-import "simpletest.proto";
-
-package qtprotobufnamespace.tests;
-
-service TestService {
-  rpc testMethod(SimpleStringMessage) returns (SimpleStringMessage) {}
-} 

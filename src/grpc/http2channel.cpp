@@ -36,6 +36,7 @@
 #include <QTimer>
 #include <QtEndian>
 #include "asyncreply.h"
+#include "abstractclient.h"
 
 #include <unordered_map>
 
@@ -89,7 +90,7 @@ namespace qtprotobuf {
 struct Http2ChannelPrivate {
     QUrl url;
     QNetworkAccessManager nm;
-    QNetworkReply* post(const QString &method, const QString &service, const QByteArray &args) {
+    QNetworkReply* post(const QString &method, const QString &service, const QByteArray &args, bool stream = false) {
         QUrl callUrl = url;
         callUrl.setPath("/" + service + "/" + method);
 
@@ -110,10 +111,12 @@ struct Http2ChannelPrivate {
 
         QNetworkReply* networkReply = nm.post(request, msg);
 
-        //TODO: Add configurable timeout logic
-        QTimer::singleShot(6000, networkReply, [networkReply]() {
-            Http2ChannelPrivate::abortNetworkReply(networkReply);
-        });
+        if (!stream) {
+            //TODO: Add configurable timeout logic
+            QTimer::singleShot(6000, networkReply, [networkReply]() {
+                Http2ChannelPrivate::abortNetworkReply(networkReply);
+            });
+        }
         return networkReply;
     }
 
@@ -201,6 +204,25 @@ void Http2Channel::call(const QString &method, const QString &service, const QBy
         QObject::disconnect(connection);
         Http2ChannelPrivate::abortNetworkReply(networkReply);
     });
+}
+
+void Http2Channel::subscribe(const QString &method, const QString &service, const QByteArray &args, AbstractClient *client, const std::function<void (const QByteArray &)> &handler)
+{
+    QNetworkReply *networkReply = d->post(method, service, args, true);
+
+    auto connection = QObject::connect(networkReply, &QNetworkReply::readyRead, client, [networkReply, handler]() {
+        handler(networkReply->readAll().mid(5));
+    });
+
+    QObject::connect(client, &AbstractClient::destroyed, networkReply, [client, networkReply, connection](){
+        QObject::disconnect(connection);
+        Http2ChannelPrivate::abortNetworkReply(networkReply);
+    });
+//TODO: implement error handling
+//    QObject::connect(networkReply, &QNetworkReply::error, networkReply, [networkReply, connection](QNetworkReply::NetworkError) {
+//        QObject::disconnect(connection);
+//        Http2ChannelPrivate::abortNetworkReply(networkReply);
+//    });
 }
 
 void Http2Channel::abort(AsyncReply *reply)

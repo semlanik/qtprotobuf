@@ -95,6 +95,18 @@ AsyncReply *AbstractClient::call(const QString &method, const QByteArray& arg)
     return reply;
 }
 
+void AbstractClient::subscribe_p(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray&)> &handler)
+{
+    d->lastError = AbstractChannel::Ok;
+    if (!d->channel) {
+        d->lastError = AbstractChannel::Unknown;
+        d->lastErrorString = "No channel attached";
+        return;
+    }
+
+    d->channel->subscribe(method, d->service, arg, this, handler);
+}
+
 AbstractChannel::StatusCodes AbstractClient::lastError() const
 {
     return d->lastError;

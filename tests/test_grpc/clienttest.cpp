@@ -166,3 +166,63 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
     ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Aborted);
     ASSERT_TRUE(errorCalled);
 }
+
+TEST_F(ClientTest, StringEchoStreamTest)
+{
+    int argc = 0;
+    QCoreApplication app(argc, nullptr);
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("Stream");
+
+    QEventLoop waiter;
+
+    int i = 0;
+    QObject::connect(&testClient, &TestServiceClient::testMethodServerStreamUpdated, &app, [&result, &i, &waiter](const SimpleStringMessage& ret) {
+        ++i;
+
+        result.setTestFieldString(result.testFieldString() + ret.testFieldString());
+
+        if (i == 4) {
+            waiter.quit();
+        }
+    });
+
+    testClient.subscribeTestMethodServerStreamUpdates(request);
+
+    QTimer::singleShot(20000, &waiter, &QEventLoop::quit);
+    waiter.exec();
+
+    ASSERT_EQ(i, 4);
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Stream1Stream2Stream3Stream4");
+    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Ok);
+}
+
+TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
+{
+    int argc = 0;
+    QCoreApplication app(argc, nullptr);
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("Stream");
+
+    QEventLoop waiter;
+
+    testClient.subscribeTestMethodServerStreamUpdates(request, result);
+
+    int i = 0;
+    QObject::connect(&result, &SimpleStringMessage::testFieldStringChanged, &app, [&i]() {
+        i++;
+    });
+
+    QTimer::singleShot(20000, &waiter, &QEventLoop::quit);
+    waiter.exec();
+
+    ASSERT_EQ(i, 4);
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Stream4");
+    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Ok);
+}

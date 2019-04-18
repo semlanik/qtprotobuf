@@ -26,8 +26,12 @@
 #pragma once
 
 #include <memory>
+#include <functional>
+#include <type_traits>
+
 #include <QObject>
 #include <QByteArray>
+
 #include <qtprotobuflogging.h>
 
 #include "abstractchannel.h"
@@ -75,9 +79,29 @@ protected:
         return call(method, arg.serialize());
     }
 
+    template<typename A, typename R, typename C,
+             typename std::enable_if_t<std::is_base_of<AbstractClient, C>::value, int> = 0>
+    void subscribe(const QString &method, const A &arg, void(C::*signal)(const R &)) {
+        subscribe_p(method, arg.serialize(), [this, signal](const QByteArray &data) {
+            R ret;
+            ret.deserialize(data);
+            C* client = static_cast<C*>(this);
+            (client->*signal)(ret);
+        });
+    }
+
+    template<typename A, typename R>
+    void subscribe(const QString &method, const A &arg, R &ret) {
+        subscribe_p(method, arg.serialize(), [&ret](const QByteArray &data) {
+            ret.deserialize(data);
+        });
+    }
+
+
 private:
     bool call(const QString &method, const QByteArray& arg, QByteArray& ret);
     AsyncReply *call(const QString &method, const QByteArray& arg);
+    void subscribe_p(const QString &method, const QByteArray& arg, const std::function<void(const QByteArray&)> &handler);
 
     Q_DISABLE_COPY(AbstractClient)
 

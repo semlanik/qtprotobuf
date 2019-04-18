@@ -46,20 +46,16 @@ void ClientSourceGenerator::printMethods()
 {
     for (int i = 0; i < mService->method_count(); i++) {
         const MethodDescriptor* method = mService->method(i);
-        std::string inputTypeName = method->input_type()->full_name();
-        std::string outputTypeName = method->output_type()->full_name();
-        utils::replace(inputTypeName, ".", "::");
-        utils::replace(outputTypeName, ".", "::");
-        std::map<std::string, std::string> parameters = {{"classname", mClassName},
-                                                         {"return_type", outputTypeName},
-                                                         {"method_name", method->name()},
-                                                         {"param_type", inputTypeName},
-                                                         {"param_name", "arg"},
-                                                         {"return_name", "ret"}
-                                                        };
-        mPrinter.Print(parameters, Templates::ClientMethodDefinitionSyncTemplate);
-        mPrinter.Print(parameters, Templates::ClientMethodDefinitionAsyncTemplate);
-        mPrinter.Print(parameters, Templates::ClientMethodDefinitionAsync2Template);
+        std::map<std::string, std::string> parameters;
+        getMethodParameters(method, parameters);
+        if (method->server_streaming()) {
+            mPrinter.Print(parameters, Templates::ClientMethodServerStreamDefinitionTemplate);
+            mPrinter.Print(parameters, Templates::ClientMethodServerStream2DefinitionTemplate);
+        } else {
+            mPrinter.Print(parameters, Templates::ClientMethodDefinitionSyncTemplate);
+            mPrinter.Print(parameters, Templates::ClientMethodDefinitionAsyncTemplate);
+            mPrinter.Print(parameters, Templates::ClientMethodDefinitionAsync2Template);
+        }
     }
 }
 

@@ -52,13 +52,23 @@ void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\021testservice.proto\022\031qtprotobufnamespace"
-      ".tests\032\020simpletest.proto2}\n\013TestService\022"
-      "n\n\ntestMethod\022..qtprotobufnamespace.test"
-      "s.SimpleStringMessage\032..qtprotobufnamesp"
-      "ace.tests.SimpleStringMessage\"\000b\006proto3"
+      ".tests\032\020simpletest.proto2\365\003\n\013TestService"
+      "\022n\n\ntestMethod\022..qtprotobufnamespace.tes"
+      "ts.SimpleStringMessage\032..qtprotobufnames"
+      "pace.tests.SimpleStringMessage\"\000\022|\n\026test"
+      "MethodServerStream\022..qtprotobufnamespace"
+      ".tests.SimpleStringMessage\032..qtprotobufn"
+      "amespace.tests.SimpleStringMessage\"\0000\001\022|"
+      "\n\026testMethodClientStream\022..qtprotobufnam"
+      "espace.tests.SimpleStringMessage\032..qtpro"
+      "tobufnamespace.tests.SimpleStringMessage"
+      "\"\000(\001\022z\n\022testMethodBiStream\022..qtprotobufn"
+      "amespace.tests.SimpleStringMessage\032..qtp"
+      "rotobufnamespace.tests.SimpleStringMessa"
+      "ge\"\000(\0010\001b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 199);
+      descriptor, 576);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "testservice.proto", &protobuf_RegisterTypes);
   ::protobuf_simpletest_2eproto::AddDescriptors();

@@ -77,16 +77,8 @@ void ServiceGeneratorBase::printMethodsDeclaration(const char* methodTemplate, c
     Indent();
     for (int i = 0; i < mService->method_count(); i++) {
         const MethodDescriptor* method = mService->method(i);
-        std::string inputTypeName = method->input_type()->full_name();
-        std::string outputTypeName = method->output_type()->full_name();
-        utils::replace(inputTypeName, ".", "::");
-        utils::replace(outputTypeName, ".", "::");
-        std::map<std::string, std::string> parameters = {{"return_type", outputTypeName},
-                                                         {"method_name", method->name()},
-                                                         {"param_type", inputTypeName},
-                                                         {"param_name", ""},
-                                                         {"return_name", ""}
-                                                        };
+        std::map<std::string, std::string> parameters;
+        getMethodParameters(method, parameters);
         mPrinter.Print(parameters, methodTemplate);
         mPrinter.Print(parameters, methodAsyncTemplate);
         mPrinter.Print(parameters, methodAsync2Template);

@@ -6,4 +6,7 @@ package qtprotobufnamespace.tests;
 
 service TestService {
   rpc testMethod(SimpleStringMessage) returns (SimpleStringMessage) {}
+  rpc testMethodServerStream(SimpleStringMessage) returns (stream SimpleStringMessage) {}
+  rpc testMethodClientStream(stream SimpleStringMessage) returns (SimpleStringMessage) {}
+  rpc testMethodBiStream(stream SimpleStringMessage) returns (stream SimpleStringMessage) {}
 } 

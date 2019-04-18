@@ -27,10 +27,12 @@
 
 #include <QString>
 #include <QByteArray>
+#include <functional>
 
 namespace qtprotobuf {
 
 class AsyncReply;
+class AbstractClient;
 
 class AbstractChannel
 {
@@ -58,7 +60,16 @@ public:
         DataLoss = 15,          //!< Unrecoverable data loss or corruption
     };
 
+    /*!
+     * \brief call
+     * \param method
+     * \param service
+     * \param args
+     * \param ret
+     * \return
+     */
     virtual StatusCodes call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) = 0;
+
     /*!
      * \brief call
      * \param method
@@ -69,6 +80,14 @@ public:
      */
     virtual void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *ret) = 0;
 
+    /*!
+     * \brief subscribe
+     * \param method
+     * \param service
+     * \param args
+     * \param handler
+     */
+    virtual void subscribe(const QString &method, const QString &service, const QByteArray &args, AbstractClient* client, const std::function<void(const QByteArray&)> &handler) = 0;
 protected:
     AbstractChannel() = default;
     virtual ~AbstractChannel() = default;

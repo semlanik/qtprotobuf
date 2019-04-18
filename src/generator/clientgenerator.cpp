@@ -49,6 +49,7 @@ ClientGenerator::ClientGenerator(const ServiceDescriptor *service, std::unique_p
 void ClientGenerator::printClientClass()
 {
     mPrinter.Print({{"classname", mClassName}, {"parent_class", "qtprotobuf::AbstractClient"}}, Templates::ClassDefinitionTemplate);
+    mPrinter.Print(Templates::QObjectMacro);
 }
 
 void ClientGenerator::printConstructor()
@@ -68,4 +69,26 @@ void ClientGenerator::printClientIncludes()
     for (auto type : includeSet) {
         mPrinter.Print({{"include", type}}, Templates::InternalIncludeTemplate);
     }
+}
+
+void ClientGenerator::printClientMethodsDeclaration()
+{
+    Indent();
+    for (int i = 0; i < mService->method_count(); i++) {
+        const MethodDescriptor* method = mService->method(i);
+        std::map<std::string, std::string> parameters;
+        getMethodParameters(method, parameters);
+
+        if (method->server_streaming()) {
+            mPrinter.Print(parameters, Templates::ClientMethodSignalDeclarationTemplate);
+            mPrinter.Print(parameters, Templates::ClientMethodServerStreamDeclarationTemplate);
+            mPrinter.Print(parameters, Templates::ClientMethodServerStream2DeclarationTemplate);
+        } else {
+            mPrinter.Print(parameters, Templates::ClientMethodDeclarationSyncTemplate);
+            mPrinter.Print(parameters, Templates::ClientMethodDeclarationAsyncTemplate);
+            mPrinter.Print(parameters, Templates::ClientMethodDeclarationAsync2Template);
+        }
+        mPrinter.Print("\n");
+    }
+    Outdent();
 }

@@ -56,6 +56,7 @@ public:
     static const char *ProtoClassDefinitionTemplate;
     static const char *ConstructorHeaderTemplate;
     static const char *ClassDefinitionTemplate;
+    static const char *QObjectMacro;
     static const char *PropertyTemplate;
     static const char *MessagePropertyTemplate;
     static const char *QmlListPropertyTemplate;
@@ -122,6 +123,14 @@ public:
     static const char *ClientMethodDefinitionSyncTemplate;
     static const char *ClientMethodDefinitionAsyncTemplate;
     static const char *ClientMethodDefinitionAsync2Template;
+
+    //Streaming
+    static const char *ClientMethodSignalDeclarationTemplate;
+    static const char *ClientMethodServerStreamDeclarationTemplate;
+    static const char *ClientMethodServerStream2DeclarationTemplate;
+    static const char *ClientMethodServerStreamDefinitionTemplate;
+    static const char *ClientMethodServerStream2DefinitionTemplate;
+
 
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
 };

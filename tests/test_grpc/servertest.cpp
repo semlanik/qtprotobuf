@@ -40,5 +40,5 @@ class ServerTest : public ::testing::Test
 
 TEST_F(ServerTest, CheckMethodsGeneration)
 {
-    TestServiceServerImpl testServer;
+//    TestServiceServerImpl testServer;
 }

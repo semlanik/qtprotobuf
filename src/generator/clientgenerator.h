@@ -52,7 +52,7 @@ public:
         printClientClass();
         printPublic();
         printConstructor();
-        printMethodsDeclaration(Templates::ClientMethodDeclarationSyncTemplate, Templates::ClientMethodDeclarationAsyncTemplate, Templates::ClientMethodDeclarationAsync2Template);
+        printClientMethodsDeclaration();
         encloseClass();
         encloseNamespaces();
     }
@@ -60,6 +60,7 @@ private:
     void printClientClass();
     void printConstructor();
     void printClientIncludes();
+    void printClientMethodsDeclaration();
 };
 
 

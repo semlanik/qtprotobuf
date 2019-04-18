@@ -240,3 +240,22 @@ ClassGeneratorBase::EnumVisibility ClassGeneratorBase::getEnumVisibility(const F
 
     return GLOBAL_ENUM;
 }
+
+void ClassGeneratorBase::getMethodParameters(const MethodDescriptor* method, std::map<std::string, std::string> &parameters)
+{
+    std::string inputTypeName = method->input_type()->full_name();
+    std::string outputTypeName = method->output_type()->full_name();
+    std::string methodName = method->name();
+    std::string methodNameUpper = method->name();
+    methodNameUpper[0] = ::toupper(methodNameUpper[0]);
+    utils::replace(inputTypeName, ".", "::");
+    utils::replace(outputTypeName, ".", "::");
+    parameters = {{"classname", mClassName},
+                  {"return_type", outputTypeName},
+                  {"method_name", methodName},
+                  {"method_name_upper", methodNameUpper},
+                  {"param_type", inputTypeName},
+                  {"param_name", "arg"},
+                  {"return_name", "ret"}
+                 };
+}

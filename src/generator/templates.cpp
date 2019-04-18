@@ -185,6 +185,7 @@ const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::ProtobufO
 
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
+const char *Templates::QObjectMacro = "Q_OBJECT";
 const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$);\n";
 const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE qtprotobuf::AsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
 const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject* context, const std::function<void(qtprotobuf::AsyncReply*)> &callback);\n";
@@ -214,6 +215,20 @@ const char *Templates::SerializersTemplate = "Q_DECLARE_PROTOBUF_SERIALIZERS($cl
 const char *Templates::RegisterSerializersTemplate = "qtprotobuf::ProtobufObjectPrivate::registerSerializers<$classname$>();\n";
 const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\");\n";
 const char *Templates::QmlRegisterTypeUncreatableTemplate = "qmlRegisterUncreatableType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\", \"$namespaces$::$classname$ Could not be created from qml context\");\n";
+
+
+const char *Templates::ClientMethodSignalDeclarationTemplate = "Q_SIGNAL void $method_name$Updated(const $return_type$ &);\n";
+const char *Templates::ClientMethodServerStreamDeclarationTemplate = "void subscribe$method_name_upper$Updates(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodServerStream2DeclarationTemplate = "void subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, $return_type$ &$return_name$);\n";
+const char *Templates::ClientMethodServerStreamDefinitionTemplate = "void $classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$)\n"
+                                                                    "{\n"
+                                                                    "    subscribe(\"$method_name$\", $param_name$, &$classname$::$method_name$Updated);\n"
+                                                                    "}\n";
+const char *Templates::ClientMethodServerStream2DefinitionTemplate = "void $classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, $return_type$ &$return_name$)\n"
+                                                                     "{\n"
+                                                                     "    subscribe(\"$method_name$\", $param_name$, $return_name$);\n"
+                                                                     "    subscribe(\"$method_name$\", $param_name$, &$classname$::$method_name$Updated);\n"
+                                                                     "}\n";
 
 const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> Templates::TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "double"},

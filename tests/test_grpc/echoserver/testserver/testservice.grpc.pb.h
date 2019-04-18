@@ -42,9 +42,45 @@ class TestService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>> PrepareAsynctestMethod(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>>(PrepareAsynctestMethodRaw(context, request, cq));
     }
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>> testMethodServerStream(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>>(testMethodServerStreamRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>> AsynctestMethodServerStream(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>>(AsynctestMethodServerStreamRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>> PrepareAsynctestMethodServerStream(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>>(PrepareAsynctestMethodServerStreamRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>> testMethodClientStream(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response) {
+      return std::unique_ptr< ::grpc::ClientWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>>(testMethodClientStreamRaw(context, response));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>> AsynctestMethodClientStream(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>>(AsynctestMethodClientStreamRaw(context, response, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>> PrepareAsynctestMethodClientStream(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>>(PrepareAsynctestMethodClientStreamRaw(context, response, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>> testMethodBiStream(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>>(testMethodBiStreamRaw(context));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>> AsynctestMethodBiStream(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>>(AsynctestMethodBiStreamRaw(context, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>> PrepareAsynctestMethodBiStream(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>>(PrepareAsynctestMethodBiStreamRaw(context, cq));
+    }
   private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>* AsynctestMethodRaw(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>* PrepareAsynctestMethodRaw(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>* testMethodServerStreamRaw(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>* AsynctestMethodServerStreamRaw(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>* PrepareAsynctestMethodServerStreamRaw(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>* testMethodClientStreamRaw(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>* AsynctestMethodClientStreamRaw(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage>* PrepareAsynctestMethodClientStreamRaw(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* testMethodBiStreamRaw(::grpc::ClientContext* context) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* AsynctestMethodBiStreamRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* PrepareAsynctestMethodBiStreamRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -56,12 +92,51 @@ class TestService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::qtprotobufnamespace::tests::SimpleStringMessage>> PrepareAsynctestMethod(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::qtprotobufnamespace::tests::SimpleStringMessage>>(PrepareAsynctestMethodRaw(context, request, cq));
     }
+    std::unique_ptr< ::grpc::ClientReader< ::qtprotobufnamespace::tests::SimpleStringMessage>> testMethodServerStream(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::qtprotobufnamespace::tests::SimpleStringMessage>>(testMethodServerStreamRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::qtprotobufnamespace::tests::SimpleStringMessage>> AsynctestMethodServerStream(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::qtprotobufnamespace::tests::SimpleStringMessage>>(AsynctestMethodServerStreamRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::qtprotobufnamespace::tests::SimpleStringMessage>> PrepareAsynctestMethodServerStream(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::qtprotobufnamespace::tests::SimpleStringMessage>>(PrepareAsynctestMethodServerStreamRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>> testMethodClientStream(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response) {
+      return std::unique_ptr< ::grpc::ClientWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>>(testMethodClientStreamRaw(context, response));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>> AsynctestMethodClientStream(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>>(AsynctestMethodClientStreamRaw(context, response, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>> PrepareAsynctestMethodClientStream(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>>(PrepareAsynctestMethodClientStreamRaw(context, response, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>> testMethodBiStream(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>>(testMethodBiStreamRaw(context));
+    }
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>> AsynctestMethodBiStream(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>>(AsynctestMethodBiStreamRaw(context, cq, tag));
+    }
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>> PrepareAsynctestMethodBiStream(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>>(PrepareAsynctestMethodBiStreamRaw(context, cq));
+    }
 
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     ::grpc::ClientAsyncResponseReader< ::qtprotobufnamespace::tests::SimpleStringMessage>* AsynctestMethodRaw(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::qtprotobufnamespace::tests::SimpleStringMessage>* PrepareAsynctestMethodRaw(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::qtprotobufnamespace::tests::SimpleStringMessage>* testMethodServerStreamRaw(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request) override;
+    ::grpc::ClientAsyncReader< ::qtprotobufnamespace::tests::SimpleStringMessage>* AsynctestMethodServerStreamRaw(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::qtprotobufnamespace::tests::SimpleStringMessage>* PrepareAsynctestMethodServerStreamRaw(::grpc::ClientContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>* testMethodClientStreamRaw(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response) override;
+    ::grpc::ClientAsyncWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>* AsynctestMethodClientStreamRaw(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>* PrepareAsynctestMethodClientStreamRaw(::grpc::ClientContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* response, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* testMethodBiStreamRaw(::grpc::ClientContext* context) override;
+    ::grpc::ClientAsyncReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* AsynctestMethodBiStreamRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* PrepareAsynctestMethodBiStreamRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_testMethod_;
+    const ::grpc::internal::RpcMethod rpcmethod_testMethodServerStream_;
+    const ::grpc::internal::RpcMethod rpcmethod_testMethodClientStream_;
+    const ::grpc::internal::RpcMethod rpcmethod_testMethodBiStream_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -70,6 +145,9 @@ class TestService final {
     Service();
     virtual ~Service();
     virtual ::grpc::Status testMethod(::grpc::ServerContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage* request, ::qtprotobufnamespace::tests::SimpleStringMessage* response);
+    virtual ::grpc::Status testMethodServerStream(::grpc::ServerContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage* request, ::grpc::ServerWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>* writer);
+    virtual ::grpc::Status testMethodClientStream(::grpc::ServerContext* context, ::grpc::ServerReader< ::qtprotobufnamespace::tests::SimpleStringMessage>* reader, ::qtprotobufnamespace::tests::SimpleStringMessage* response);
+    virtual ::grpc::Status testMethodBiStream(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* stream);
   };
   template <class BaseClass>
   class WithAsyncMethod_testMethod : public BaseClass {
@@ -91,7 +169,67 @@ class TestService final {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_testMethod<Service > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_testMethodServerStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_testMethodServerStream() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_testMethodServerStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status testMethodServerStream(::grpc::ServerContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage* request, ::grpc::ServerWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequesttestMethodServerStream(::grpc::ServerContext* context, ::qtprotobufnamespace::tests::SimpleStringMessage* request, ::grpc::ServerAsyncWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(1, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_testMethodClientStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_testMethodClientStream() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_testMethodClientStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status testMethodClientStream(::grpc::ServerContext* context, ::grpc::ServerReader< ::qtprotobufnamespace::tests::SimpleStringMessage>* reader, ::qtprotobufnamespace::tests::SimpleStringMessage* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequesttestMethodClientStream(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(2, context, reader, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_testMethodBiStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_testMethodBiStream() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_testMethodBiStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status testMethodBiStream(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* stream)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequesttestMethodBiStream(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncBidiStreaming(3, context, stream, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_testMethod<WithAsyncMethod_testMethodServerStream<WithAsyncMethod_testMethodClientStream<WithAsyncMethod_testMethodBiStream<Service > > > > AsyncService;
   template <class BaseClass>
   class WithGenericMethod_testMethod : public BaseClass {
    private:
@@ -105,6 +243,57 @@ class TestService final {
     }
     // disable synchronous version of this method
     ::grpc::Status testMethod(::grpc::ServerContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage* request, ::qtprotobufnamespace::tests::SimpleStringMessage* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_testMethodServerStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_testMethodServerStream() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_testMethodServerStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status testMethodServerStream(::grpc::ServerContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage* request, ::grpc::ServerWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_testMethodClientStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_testMethodClientStream() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_testMethodClientStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status testMethodClientStream(::grpc::ServerContext* context, ::grpc::ServerReader< ::qtprotobufnamespace::tests::SimpleStringMessage>* reader, ::qtprotobufnamespace::tests::SimpleStringMessage* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_testMethodBiStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_testMethodBiStream() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_testMethodBiStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status testMethodBiStream(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* stream)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -130,6 +319,66 @@ class TestService final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_testMethodServerStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_testMethodServerStream() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_testMethodServerStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status testMethodServerStream(::grpc::ServerContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage* request, ::grpc::ServerWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequesttestMethodServerStream(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(1, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_testMethodClientStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_testMethodClientStream() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_testMethodClientStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status testMethodClientStream(::grpc::ServerContext* context, ::grpc::ServerReader< ::qtprotobufnamespace::tests::SimpleStringMessage>* reader, ::qtprotobufnamespace::tests::SimpleStringMessage* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequesttestMethodClientStream(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(2, context, reader, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_testMethodBiStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_testMethodBiStream() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_testMethodBiStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status testMethodBiStream(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>* stream)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequesttestMethodBiStream(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncBidiStreaming(3, context, stream, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_testMethod : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
@@ -150,8 +399,28 @@ class TestService final {
     virtual ::grpc::Status StreamedtestMethod(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::qtprotobufnamespace::tests::SimpleStringMessage,::qtprotobufnamespace::tests::SimpleStringMessage>* server_unary_streamer) = 0;
   };
   typedef WithStreamedUnaryMethod_testMethod<Service > StreamedUnaryService;
-  typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_testMethod<Service > StreamedService;
+  template <class BaseClass>
+  class WithSplitStreamingMethod_testMethodServerStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithSplitStreamingMethod_testMethodServerStream() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::SplitServerStreamingHandler< ::qtprotobufnamespace::tests::SimpleStringMessage, ::qtprotobufnamespace::tests::SimpleStringMessage>(std::bind(&WithSplitStreamingMethod_testMethodServerStream<BaseClass>::StreamedtestMethodServerStream, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithSplitStreamingMethod_testMethodServerStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status testMethodServerStream(::grpc::ServerContext* context, const ::qtprotobufnamespace::tests::SimpleStringMessage* request, ::grpc::ServerWriter< ::qtprotobufnamespace::tests::SimpleStringMessage>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with split streamed
+    virtual ::grpc::Status StreamedtestMethodServerStream(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::qtprotobufnamespace::tests::SimpleStringMessage,::qtprotobufnamespace::tests::SimpleStringMessage>* server_split_streamer) = 0;
+  };
+  typedef WithSplitStreamingMethod_testMethodServerStream<Service > SplitStreamedService;
+  typedef WithStreamedUnaryMethod_testMethod<WithSplitStreamingMethod_testMethodServerStream<Service > > StreamedService;
 };
 
 }  // namespace tests
