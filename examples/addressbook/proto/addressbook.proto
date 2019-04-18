@@ -77,7 +77,7 @@ message ListFrame {
 service AddressBook {
     rpc addContact(Contact) returns (Contacts) {}
     rpc removeContact(Contact) returns (Contacts) {}
-    rpc getContacts(ListFrame) returns (Contacts) {}
+    rpc contacts(ListFrame) returns (stream Contacts) {}
     rpc makeCall(Contact) returns (SimpleResult) {}
     rpc navigateTo(Address) returns (SimpleResult) {}
 }

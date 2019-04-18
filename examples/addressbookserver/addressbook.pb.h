@@ -29,9 +29,6 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
-#include <google/protobuf/map.h>  // IWYU pragma: export
-#include <google/protobuf/map_entry.h>
-#include <google/protobuf/map_field_inl.h>
 #include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
@@ -42,7 +39,7 @@ namespace protobuf_addressbook_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[8];
+  static const ::google::protobuf::internal::ParseTable schema[7];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -57,9 +54,6 @@ extern AddressDefaultTypeInternal _Address_default_instance_;
 class Contact;
 class ContactDefaultTypeInternal;
 extern ContactDefaultTypeInternal _Contact_default_instance_;
-class Contact_PhonesEntry_DoNotUse;
-class Contact_PhonesEntry_DoNotUseDefaultTypeInternal;
-extern Contact_PhonesEntry_DoNotUseDefaultTypeInternal _Contact_PhonesEntry_DoNotUse_default_instance_;
 class Contacts;
 class ContactsDefaultTypeInternal;
 extern ContactsDefaultTypeInternal _Contacts_default_instance_;
@@ -81,7 +75,6 @@ namespace google {
 namespace protobuf {
 template<> ::qtprotobuf::examples::Address* Arena::CreateMaybeMessage<::qtprotobuf::examples::Address>(Arena*);
 template<> ::qtprotobuf::examples::Contact* Arena::CreateMaybeMessage<::qtprotobuf::examples::Contact>(Arena*);
-template<> ::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse* Arena::CreateMaybeMessage<::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse>(Arena*);
 template<> ::qtprotobuf::examples::Contacts* Arena::CreateMaybeMessage<::qtprotobuf::examples::Contacts>(Arena*);
 template<> ::qtprotobuf::examples::Job* Arena::CreateMaybeMessage<::qtprotobuf::examples::Job>(Arena*);
 template<> ::qtprotobuf::examples::ListFrame* Arena::CreateMaybeMessage<::qtprotobuf::examples::ListFrame>(Arena*);
@@ -506,27 +499,6 @@ class Job : public ::google::protobuf::Message /* @@protoc_insertion_point(class
 };
 // -------------------------------------------------------------------
 
-class Contact_PhonesEntry_DoNotUse : public ::google::protobuf::internal::MapEntry<Contact_PhonesEntry_DoNotUse, 
-    ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber,
-    ::google::protobuf::internal::WireFormatLite::TYPE_INT32,
-    ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE,
-    0 > {
-public:
-  typedef ::google::protobuf::internal::MapEntry<Contact_PhonesEntry_DoNotUse, 
-    ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber,
-    ::google::protobuf::internal::WireFormatLite::TYPE_INT32,
-    ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE,
-    0 > SuperType;
-  Contact_PhonesEntry_DoNotUse();
-  Contact_PhonesEntry_DoNotUse(::google::protobuf::Arena* arena);
-  void MergeFrom(const Contact_PhonesEntry_DoNotUse& other);
-  static const Contact_PhonesEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const Contact_PhonesEntry_DoNotUse*>(&_Contact_PhonesEntry_DoNotUse_default_instance_); }
-  void MergeFrom(const ::google::protobuf::Message& other) final;
-  ::google::protobuf::Metadata GetMetadata() const;
-};
-
-// -------------------------------------------------------------------
-
 class Contact : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:qtprotobuf.examples.Contact) */ {
  public:
   Contact();
@@ -562,7 +534,7 @@ class Contact : public ::google::protobuf::Message /* @@protoc_insertion_point(c
                &_Contact_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    3;
 
   void Swap(Contact* other);
   friend void swap(Contact& a, Contact& b) {
@@ -612,7 +584,6 @@ class Contact : public ::google::protobuf::Message /* @@protoc_insertion_point(c
 
   // nested types ----------------------------------------------------
 
-
   typedef Contact_PhoneType PhoneType;
   static const PhoneType Home =
     Contact_PhoneType_Home;
@@ -645,14 +616,17 @@ class Contact : public ::google::protobuf::Message /* @@protoc_insertion_point(c
 
   // accessors -------------------------------------------------------
 
-  // map<int32, .qtprotobuf.examples.PhoneNumber> phones = 4;
+  // repeated .qtprotobuf.examples.PhoneNumber phones = 4;
   int phones_size() const;
   void clear_phones();
   static const int kPhonesFieldNumber = 4;
-  const ::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >&
-      phones() const;
-  ::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >*
+  ::qtprotobuf::examples::PhoneNumber* mutable_phones(int index);
+  ::google::protobuf::RepeatedPtrField< ::qtprotobuf::examples::PhoneNumber >*
       mutable_phones();
+  const ::qtprotobuf::examples::PhoneNumber& phones(int index) const;
+  ::qtprotobuf::examples::PhoneNumber* add_phones();
+  const ::google::protobuf::RepeatedPtrField< ::qtprotobuf::examples::PhoneNumber >&
+      phones() const;
 
   // string firstName = 1;
   void clear_firstname();
@@ -724,12 +698,7 @@ class Contact : public ::google::protobuf::Message /* @@protoc_insertion_point(c
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::MapField<
-      Contact_PhonesEntry_DoNotUse,
-      ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber,
-      ::google::protobuf::internal::WireFormatLite::TYPE_INT32,
-      ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE,
-      0 > phones_;
+  ::google::protobuf::RepeatedPtrField< ::qtprotobuf::examples::PhoneNumber > phones_;
   ::google::protobuf::internal::ArenaStringPtr firstname_;
   ::google::protobuf::internal::ArenaStringPtr lastname_;
   ::google::protobuf::internal::ArenaStringPtr middlename_;
@@ -775,7 +744,7 @@ class Contacts : public ::google::protobuf::Message /* @@protoc_insertion_point(
                &_Contacts_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    4;
 
   void Swap(Contacts* other);
   friend void swap(Contacts& a, Contacts& b) {
@@ -884,7 +853,7 @@ class SimpleResult : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_SimpleResult_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    5;
 
   void Swap(SimpleResult* other);
   friend void swap(SimpleResult& a, SimpleResult& b) {
@@ -987,7 +956,7 @@ class ListFrame : public ::google::protobuf::Message /* @@protoc_insertion_point
                &_ListFrame_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    6;
 
   void Swap(ListFrame* other);
   friend void swap(ListFrame& a, ListFrame& b) {
@@ -1403,8 +1372,6 @@ inline void Job::set_allocated_officeaddress(::qtprotobuf::examples::Address* of
 
 // -------------------------------------------------------------------
 
-// -------------------------------------------------------------------
-
 // Contact
 
 // string firstName = 1;
@@ -1566,22 +1533,34 @@ inline void Contact::set_allocated_middlename(::std::string* middlename) {
   // @@protoc_insertion_point(field_set_allocated:qtprotobuf.examples.Contact.middleName)
 }
 
-// map<int32, .qtprotobuf.examples.PhoneNumber> phones = 4;
+// repeated .qtprotobuf.examples.PhoneNumber phones = 4;
 inline int Contact::phones_size() const {
   return phones_.size();
 }
 inline void Contact::clear_phones() {
   phones_.Clear();
 }
-inline const ::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >&
-Contact::phones() const {
-  // @@protoc_insertion_point(field_map:qtprotobuf.examples.Contact.phones)
-  return phones_.GetMap();
+inline ::qtprotobuf::examples::PhoneNumber* Contact::mutable_phones(int index) {
+  // @@protoc_insertion_point(field_mutable:qtprotobuf.examples.Contact.phones)
+  return phones_.Mutable(index);
 }
-inline ::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >*
+inline ::google::protobuf::RepeatedPtrField< ::qtprotobuf::examples::PhoneNumber >*
 Contact::mutable_phones() {
-  // @@protoc_insertion_point(field_mutable_map:qtprotobuf.examples.Contact.phones)
-  return phones_.MutableMap();
+  // @@protoc_insertion_point(field_mutable_list:qtprotobuf.examples.Contact.phones)
+  return &phones_;
+}
+inline const ::qtprotobuf::examples::PhoneNumber& Contact::phones(int index) const {
+  // @@protoc_insertion_point(field_get:qtprotobuf.examples.Contact.phones)
+  return phones_.Get(index);
+}
+inline ::qtprotobuf::examples::PhoneNumber* Contact::add_phones() {
+  // @@protoc_insertion_point(field_add:qtprotobuf.examples.Contact.phones)
+  return phones_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::qtprotobuf::examples::PhoneNumber >&
+Contact::phones() const {
+  // @@protoc_insertion_point(field_list:qtprotobuf.examples.Contact.phones)
+  return phones_;
 }
 
 // .qtprotobuf.examples.Address address = 5;
@@ -1779,8 +1758,6 @@ inline void ListFrame::set_end(::google::protobuf::int32 value) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
-// -------------------------------------------------------------------
-
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

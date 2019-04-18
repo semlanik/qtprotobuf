@@ -22,7 +22,6 @@
 namespace protobuf_addressbook_2eproto {
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_addressbook_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_Address;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_addressbook_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_PhoneNumber;
-extern PROTOBUF_INTERNAL_EXPORT_protobuf_addressbook_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Contact_PhonesEntry_DoNotUse;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_addressbook_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Job;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_addressbook_2eproto ::google::protobuf::internal::SCCInfo<3> scc_info_Contact;
 }  // namespace protobuf_addressbook_2eproto
@@ -43,11 +42,6 @@ class JobDefaultTypeInternal {
   ::google::protobuf::internal::ExplicitlyConstructed<Job>
       _instance;
 } _Job_default_instance_;
-class Contact_PhonesEntry_DoNotUseDefaultTypeInternal {
- public:
-  ::google::protobuf::internal::ExplicitlyConstructed<Contact_PhonesEntry_DoNotUse>
-      _instance;
-} _Contact_PhonesEntry_DoNotUse_default_instance_;
 class ContactDefaultTypeInternal {
  public:
   ::google::protobuf::internal::ExplicitlyConstructed<Contact>
@@ -114,20 +108,6 @@ static void InitDefaultsJob() {
     {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsJob}, {
       &protobuf_addressbook_2eproto::scc_info_Address.base,}};
 
-static void InitDefaultsContact_PhonesEntry_DoNotUse() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  {
-    void* ptr = &::qtprotobuf::examples::_Contact_PhonesEntry_DoNotUse_default_instance_;
-    new (ptr) ::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse();
-  }
-  ::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse::InitAsDefaultInstance();
-}
-
-::google::protobuf::internal::SCCInfo<1> scc_info_Contact_PhonesEntry_DoNotUse =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsContact_PhonesEntry_DoNotUse}, {
-      &protobuf_addressbook_2eproto::scc_info_PhoneNumber.base,}};
-
 static void InitDefaultsContact() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -141,7 +121,7 @@ static void InitDefaultsContact() {
 
 ::google::protobuf::internal::SCCInfo<3> scc_info_Contact =
     {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 3, InitDefaultsContact}, {
-      &protobuf_addressbook_2eproto::scc_info_Contact_PhonesEntry_DoNotUse.base,
+      &protobuf_addressbook_2eproto::scc_info_PhoneNumber.base,
       &protobuf_addressbook_2eproto::scc_info_Address.base,
       &protobuf_addressbook_2eproto::scc_info_Job.base,}};
 
@@ -192,14 +172,13 @@ void InitDefaults() {
   ::google::protobuf::internal::InitSCC(&scc_info_PhoneNumber.base);
   ::google::protobuf::internal::InitSCC(&scc_info_Address.base);
   ::google::protobuf::internal::InitSCC(&scc_info_Job.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_Contact_PhonesEntry_DoNotUse.base);
   ::google::protobuf::internal::InitSCC(&scc_info_Contact.base);
   ::google::protobuf::internal::InitSCC(&scc_info_Contacts.base);
   ::google::protobuf::internal::InitSCC(&scc_info_SimpleResult.base);
   ::google::protobuf::internal::InitSCC(&scc_info_ListFrame.base);
 }
 
-::google::protobuf::Metadata file_level_metadata[8];
+::google::protobuf::Metadata file_level_metadata[7];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[1];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
@@ -227,15 +206,6 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::qtprotobuf::examples::Job, title_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::qtprotobuf::examples::Job, officeaddress_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse, key_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse, value_),
-  0,
-  1,
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::qtprotobuf::examples::Contact, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -271,18 +241,16 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROT
   { 0, -1, sizeof(::qtprotobuf::examples::PhoneNumber)},
   { 7, -1, sizeof(::qtprotobuf::examples::Address)},
   { 17, -1, sizeof(::qtprotobuf::examples::Job)},
-  { 24, 31, sizeof(::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse)},
-  { 33, -1, sizeof(::qtprotobuf::examples::Contact)},
-  { 44, -1, sizeof(::qtprotobuf::examples::Contacts)},
-  { 50, -1, sizeof(::qtprotobuf::examples::SimpleResult)},
-  { 56, -1, sizeof(::qtprotobuf::examples::ListFrame)},
+  { 24, -1, sizeof(::qtprotobuf::examples::Contact)},
+  { 35, -1, sizeof(::qtprotobuf::examples::Contacts)},
+  { 41, -1, sizeof(::qtprotobuf::examples::SimpleResult)},
+  { 47, -1, sizeof(::qtprotobuf::examples::ListFrame)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&::qtprotobuf::examples::_PhoneNumber_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::qtprotobuf::examples::_Address_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::qtprotobuf::examples::_Job_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::qtprotobuf::examples::_Contact_PhonesEntry_DoNotUse_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::qtprotobuf::examples::_Contact_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::qtprotobuf::examples::_Contacts_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::qtprotobuf::examples::_SimpleResult_default_instance_),
@@ -304,7 +272,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 8);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 7);
 }
 
 void AddDescriptorsImpl() {
@@ -316,33 +284,31 @@ void AddDescriptorsImpl() {
       "\022\026\n\016streetAddress1\030\002 \001(\t\022\026\n\016streetAddres"
       "s2\030\003 \001(\t\022\r\n\005state\030\004 \001(\t\022\017\n\007country\030\005 \001(\r"
       "\"I\n\003Job\022\r\n\005title\030\001 \001(\t\0223\n\rofficeAddress\030"
-      "\002 \001(\0132\034.qtprotobuf.examples.Address\"\333\002\n\007"
+      "\002 \001(\0132\034.qtprotobuf.examples.Address\"\202\002\n\007"
       "Contact\022\021\n\tfirstName\030\001 \001(\t\022\020\n\010lastName\030\002"
-      " \001(\t\022\022\n\nmiddleName\030\003 \001(\t\0228\n\006phones\030\004 \003(\013"
-      "2(.qtprotobuf.examples.Contact.PhonesEnt"
-      "ry\022-\n\007address\030\005 \001(\0132\034.qtprotobuf.example"
-      "s.Address\022%\n\003job\030\006 \001(\0132\030.qtprotobuf.exam"
-      "ples.Job\032O\n\013PhonesEntry\022\013\n\003key\030\001 \001(\005\022/\n\005"
-      "value\030\002 \001(\0132 .qtprotobuf.examples.PhoneN"
-      "umber:\0028\001\"6\n\tPhoneType\022\010\n\004Home\020\000\022\010\n\004Work"
-      "\020\001\022\n\n\006Mobile\020\002\022\t\n\005Other\020\003\"6\n\010Contacts\022*\n"
-      "\004list\030\001 \003(\0132\034.qtprotobuf.examples.Contac"
-      "t\"\032\n\014SimpleResult\022\n\n\002ok\030\001 \001(\010\"\'\n\tListFra"
-      "me\022\r\n\005start\030\001 \001(\021\022\013\n\003end\030\002 \001(\0212\232\003\n\013Addre"
-      "ssBook\022K\n\naddContact\022\034.qtprotobuf.exampl"
-      "es.Contact\032\035.qtprotobuf.examples.Contact"
-      "s\"\000\022N\n\rremoveContact\022\034.qtprotobuf.exampl"
-      "es.Contact\032\035.qtprotobuf.examples.Contact"
-      "s\"\000\022N\n\013getContacts\022\036.qtprotobuf.examples"
-      ".ListFrame\032\035.qtprotobuf.examples.Contact"
-      "s\"\000\022M\n\010makeCall\022\034.qtprotobuf.examples.Co"
-      "ntact\032!.qtprotobuf.examples.SimpleResult"
-      "\"\000\022O\n\nnavigateTo\022\034.qtprotobuf.examples.A"
-      "ddress\032!.qtprotobuf.examples.SimpleResul"
-      "t\"\000b\006proto3"
+      " \001(\t\022\022\n\nmiddleName\030\003 \001(\t\0220\n\006phones\030\004 \003(\013"
+      "2 .qtprotobuf.examples.PhoneNumber\022-\n\007ad"
+      "dress\030\005 \001(\0132\034.qtprotobuf.examples.Addres"
+      "s\022%\n\003job\030\006 \001(\0132\030.qtprotobuf.examples.Job"
+      "\"6\n\tPhoneType\022\010\n\004Home\020\000\022\010\n\004Work\020\001\022\n\n\006Mob"
+      "ile\020\002\022\t\n\005Other\020\003\"6\n\010Contacts\022*\n\004list\030\001 \003"
+      "(\0132\034.qtprotobuf.examples.Contact\"\032\n\014Simp"
+      "leResult\022\n\n\002ok\030\001 \001(\010\"\'\n\tListFrame\022\r\n\005sta"
+      "rt\030\001 \001(\021\022\013\n\003end\030\002 \001(\0212\231\003\n\013AddressBook\022K\n"
+      "\naddContact\022\034.qtprotobuf.examples.Contac"
+      "t\032\035.qtprotobuf.examples.Contacts\"\000\022N\n\rre"
+      "moveContact\022\034.qtprotobuf.examples.Contac"
+      "t\032\035.qtprotobuf.examples.Contacts\"\000\022M\n\010co"
+      "ntacts\022\036.qtprotobuf.examples.ListFrame\032\035"
+      ".qtprotobuf.examples.Contacts\"\0000\001\022M\n\010mak"
+      "eCall\022\034.qtprotobuf.examples.Contact\032!.qt"
+      "protobuf.examples.SimpleResult\"\000\022O\n\nnavi"
+      "gateTo\022\034.qtprotobuf.examples.Address\032!.q"
+      "tprotobuf.examples.SimpleResult\"\000b\006proto"
+      "3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1171);
+      descriptor, 1081);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "addressbook.proto", &protobuf_RegisterTypes);
 }
@@ -1384,23 +1350,6 @@ void Job::InternalSwap(Job* other) {
 
 // ===================================================================
 
-Contact_PhonesEntry_DoNotUse::Contact_PhonesEntry_DoNotUse() {}
-Contact_PhonesEntry_DoNotUse::Contact_PhonesEntry_DoNotUse(::google::protobuf::Arena* arena) : SuperType(arena) {}
-void Contact_PhonesEntry_DoNotUse::MergeFrom(const Contact_PhonesEntry_DoNotUse& other) {
-  MergeFromInternal(other);
-}
-::google::protobuf::Metadata Contact_PhonesEntry_DoNotUse::GetMetadata() const {
-  ::protobuf_addressbook_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_addressbook_2eproto::file_level_metadata[3];
-}
-void Contact_PhonesEntry_DoNotUse::MergeFrom(
-    const ::google::protobuf::Message& other) {
-  ::google::protobuf::Message::MergeFrom(other);
-}
-
-
-// ===================================================================
-
 void Contact::InitAsDefaultInstance() {
   ::qtprotobuf::examples::_Contact_default_instance_._instance.get_mutable()->address_ = const_cast< ::qtprotobuf::examples::Address*>(
       ::qtprotobuf::examples::Address::internal_default_instance());
@@ -1425,9 +1374,9 @@ Contact::Contact()
 }
 Contact::Contact(const Contact& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
+      _internal_metadata_(NULL),
+      phones_(from.phones_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  phones_.MergeFrom(from.phones_);
   firstname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.firstname().size() > 0) {
     firstname_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.firstname_);
@@ -1568,19 +1517,12 @@ bool Contact::MergePartialFromCodedStream(
         break;
       }
 
-      // map<int32, .qtprotobuf.examples.PhoneNumber> phones = 4;
+      // repeated .qtprotobuf.examples.PhoneNumber phones = 4;
       case 4: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
-          Contact_PhonesEntry_DoNotUse::Parser< ::google::protobuf::internal::MapField<
-              Contact_PhonesEntry_DoNotUse,
-              ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber,
-              ::google::protobuf::internal::WireFormatLite::TYPE_INT32,
-              ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE,
-              0 >,
-            ::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber > > parser(&phones_);
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-              input, &parser));
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+                input, add_phones()));
         } else {
           goto handle_unusual;
         }
@@ -1667,43 +1609,13 @@ void Contact::SerializeWithCachedSizes(
       3, this->middlename(), output);
   }
 
-  // map<int32, .qtprotobuf.examples.PhoneNumber> phones = 4;
-  if (!this->phones().empty()) {
-    typedef ::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >::const_pointer
-        ConstPtr;
-    typedef ::google::protobuf::internal::SortItem< ::google::protobuf::int32, ConstPtr > SortItem;
-    typedef ::google::protobuf::internal::CompareByFirstField<SortItem> Less;
-
-    if (output->IsSerializationDeterministic() &&
-        this->phones().size() > 1) {
-      ::std::unique_ptr<SortItem[]> items(
-          new SortItem[this->phones().size()]);
-      typedef ::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >::size_type size_type;
-      size_type n = 0;
-      for (::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >::const_iterator
-          it = this->phones().begin();
-          it != this->phones().end(); ++it, ++n) {
-        items[static_cast<ptrdiff_t>(n)] = SortItem(&*it);
-      }
-      ::std::sort(&items[0], &items[static_cast<ptrdiff_t>(n)], Less());
-      ::std::unique_ptr<Contact_PhonesEntry_DoNotUse> entry;
-      for (size_type i = 0; i < n; i++) {
-        entry.reset(phones_.NewEntryWrapper(
-            items[static_cast<ptrdiff_t>(i)].second->first, items[static_cast<ptrdiff_t>(i)].second->second));
-        ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-            4, *entry, output);
-      }
-    } else {
-      ::std::unique_ptr<Contact_PhonesEntry_DoNotUse> entry;
-      for (::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >::const_iterator
-          it = this->phones().begin();
-          it != this->phones().end(); ++it) {
-        entry.reset(phones_.NewEntryWrapper(
-            it->first, it->second));
-        ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-            4, *entry, output);
-      }
-    }
+  // repeated .qtprotobuf.examples.PhoneNumber phones = 4;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->phones_size()); i < n; i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4,
+      this->phones(static_cast<int>(i)),
+      output);
   }
 
   // .qtprotobuf.examples.Address address = 5;
@@ -1765,47 +1677,12 @@ void Contact::SerializeWithCachedSizes(
         3, this->middlename(), target);
   }
 
-  // map<int32, .qtprotobuf.examples.PhoneNumber> phones = 4;
-  if (!this->phones().empty()) {
-    typedef ::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >::const_pointer
-        ConstPtr;
-    typedef ::google::protobuf::internal::SortItem< ::google::protobuf::int32, ConstPtr > SortItem;
-    typedef ::google::protobuf::internal::CompareByFirstField<SortItem> Less;
-
-    if (deterministic &&
-        this->phones().size() > 1) {
-      ::std::unique_ptr<SortItem[]> items(
-          new SortItem[this->phones().size()]);
-      typedef ::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >::size_type size_type;
-      size_type n = 0;
-      for (::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >::const_iterator
-          it = this->phones().begin();
-          it != this->phones().end(); ++it, ++n) {
-        items[static_cast<ptrdiff_t>(n)] = SortItem(&*it);
-      }
-      ::std::sort(&items[0], &items[static_cast<ptrdiff_t>(n)], Less());
-      ::std::unique_ptr<Contact_PhonesEntry_DoNotUse> entry;
-      for (size_type i = 0; i < n; i++) {
-        entry.reset(phones_.NewEntryWrapper(
-            items[static_cast<ptrdiff_t>(i)].second->first, items[static_cast<ptrdiff_t>(i)].second->second));
-        target = ::google::protobuf::internal::WireFormatLite::
-                   InternalWriteMessageNoVirtualToArray(
-                       4, *entry, deterministic, target);
-;
-      }
-    } else {
-      ::std::unique_ptr<Contact_PhonesEntry_DoNotUse> entry;
-      for (::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >::const_iterator
-          it = this->phones().begin();
-          it != this->phones().end(); ++it) {
-        entry.reset(phones_.NewEntryWrapper(
-            it->first, it->second));
-        target = ::google::protobuf::internal::WireFormatLite::
-                   InternalWriteMessageNoVirtualToArray(
-                       4, *entry, deterministic, target);
-;
-      }
-    }
+  // repeated .qtprotobuf.examples.PhoneNumber phones = 4;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->phones_size()); i < n; i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        4, this->phones(static_cast<int>(i)), deterministic, target);
   }
 
   // .qtprotobuf.examples.Address address = 5;
@@ -1839,17 +1716,14 @@ size_t Contact::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // map<int32, .qtprotobuf.examples.PhoneNumber> phones = 4;
-  total_size += 1 *
-      ::google::protobuf::internal::FromIntSize(this->phones_size());
+  // repeated .qtprotobuf.examples.PhoneNumber phones = 4;
   {
-    ::std::unique_ptr<Contact_PhonesEntry_DoNotUse> entry;
-    for (::google::protobuf::Map< ::google::protobuf::int32, ::qtprotobuf::examples::PhoneNumber >::const_iterator
-        it = this->phones().begin();
-        it != this->phones().end(); ++it) {
-      entry.reset(phones_.NewEntryWrapper(it->first, it->second));
-      total_size += ::google::protobuf::internal::WireFormatLite::
-          MessageSizeNoVirtual(*entry);
+    unsigned int count = static_cast<unsigned int>(this->phones_size());
+    total_size += 1UL * count;
+    for (unsigned int i = 0; i < count; i++) {
+      total_size +=
+        ::google::protobuf::internal::WireFormatLite::MessageSize(
+          this->phones(static_cast<int>(i)));
     }
   }
 
@@ -1960,7 +1834,7 @@ void Contact::Swap(Contact* other) {
 }
 void Contact::InternalSwap(Contact* other) {
   using std::swap;
-  phones_.Swap(&other->phones_);
+  CastToBase(&phones_)->InternalSwap(CastToBase(&other->phones_));
   firstname_.Swap(&other->firstname_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   lastname_.Swap(&other->lastname_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
@@ -2706,9 +2580,6 @@ template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::qtprotobuf::examples::Address* A
 }
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::qtprotobuf::examples::Job* Arena::CreateMaybeMessage< ::qtprotobuf::examples::Job >(Arena* arena) {
   return Arena::CreateInternal< ::qtprotobuf::examples::Job >(arena);
-}
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse* Arena::CreateMaybeMessage< ::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse >(Arena* arena) {
-  return Arena::CreateInternal< ::qtprotobuf::examples::Contact_PhonesEntry_DoNotUse >(arena);
 }
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::qtprotobuf::examples::Contact* Arena::CreateMaybeMessage< ::qtprotobuf::examples::Contact >(Arena* arena) {
   return Arena::CreateInternal< ::qtprotobuf::examples::Contact >(arena);

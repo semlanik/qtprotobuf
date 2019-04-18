@@ -74,12 +74,14 @@ class AddressBook final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>> PrepareAsyncremoveContact(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>>(PrepareAsyncremoveContactRaw(context, request, cq));
     }
-    virtual ::grpc::Status getContacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::qtprotobuf::examples::Contacts* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>> AsyncgetContacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>>(AsyncgetContactsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::qtprotobuf::examples::Contacts>> contacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::qtprotobuf::examples::Contacts>>(contactsRaw(context, request));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>> PrepareAsyncgetContacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>>(PrepareAsyncgetContactsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::qtprotobuf::examples::Contacts>> Asynccontacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::qtprotobuf::examples::Contacts>>(AsynccontactsRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::qtprotobuf::examples::Contacts>> PrepareAsynccontacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::qtprotobuf::examples::Contacts>>(PrepareAsynccontactsRaw(context, request, cq));
     }
     virtual ::grpc::Status makeCall(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::qtprotobuf::examples::SimpleResult* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::SimpleResult>> AsyncmakeCall(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) {
@@ -100,8 +102,9 @@ class AddressBook final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>* PrepareAsyncaddContactRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>* AsyncremoveContactRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>* PrepareAsyncremoveContactRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>* AsyncgetContactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::Contacts>* PrepareAsyncgetContactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::qtprotobuf::examples::Contacts>* contactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::qtprotobuf::examples::Contacts>* AsynccontactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::qtprotobuf::examples::Contacts>* PrepareAsynccontactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::SimpleResult>* AsyncmakeCallRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::SimpleResult>* PrepareAsyncmakeCallRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::qtprotobuf::examples::SimpleResult>* AsyncnavigateToRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Address& request, ::grpc::CompletionQueue* cq) = 0;
@@ -124,12 +127,14 @@ class AddressBook final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>> PrepareAsyncremoveContact(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>>(PrepareAsyncremoveContactRaw(context, request, cq));
     }
-    ::grpc::Status getContacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::qtprotobuf::examples::Contacts* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>> AsyncgetContacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>>(AsyncgetContactsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientReader< ::qtprotobuf::examples::Contacts>> contacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::qtprotobuf::examples::Contacts>>(contactsRaw(context, request));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>> PrepareAsyncgetContacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>>(PrepareAsyncgetContactsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::qtprotobuf::examples::Contacts>> Asynccontacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::qtprotobuf::examples::Contacts>>(AsynccontactsRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::qtprotobuf::examples::Contacts>> PrepareAsynccontacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::qtprotobuf::examples::Contacts>>(PrepareAsynccontactsRaw(context, request, cq));
     }
     ::grpc::Status makeCall(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::qtprotobuf::examples::SimpleResult* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::SimpleResult>> AsyncmakeCall(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) {
@@ -152,15 +157,16 @@ class AddressBook final {
     ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>* PrepareAsyncaddContactRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>* AsyncremoveContactRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>* PrepareAsyncremoveContactRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>* AsyncgetContactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>* PrepareAsyncgetContactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::qtprotobuf::examples::Contacts>* contactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request) override;
+    ::grpc::ClientAsyncReader< ::qtprotobuf::examples::Contacts>* AsynccontactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::qtprotobuf::examples::Contacts>* PrepareAsynccontactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::SimpleResult>* AsyncmakeCallRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::SimpleResult>* PrepareAsyncmakeCallRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::SimpleResult>* AsyncnavigateToRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Address& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::SimpleResult>* PrepareAsyncnavigateToRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::Address& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_addContact_;
     const ::grpc::internal::RpcMethod rpcmethod_removeContact_;
-    const ::grpc::internal::RpcMethod rpcmethod_getContacts_;
+    const ::grpc::internal::RpcMethod rpcmethod_contacts_;
     const ::grpc::internal::RpcMethod rpcmethod_makeCall_;
     const ::grpc::internal::RpcMethod rpcmethod_navigateTo_;
   };
@@ -172,7 +178,7 @@ class AddressBook final {
     virtual ~Service();
     virtual ::grpc::Status addContact(::grpc::ServerContext* context, const ::qtprotobuf::examples::Contact* request, ::qtprotobuf::examples::Contacts* response);
     virtual ::grpc::Status removeContact(::grpc::ServerContext* context, const ::qtprotobuf::examples::Contact* request, ::qtprotobuf::examples::Contacts* response);
-    virtual ::grpc::Status getContacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::qtprotobuf::examples::Contacts* response);
+    virtual ::grpc::Status contacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::grpc::ServerWriter< ::qtprotobuf::examples::Contacts>* writer);
     virtual ::grpc::Status makeCall(::grpc::ServerContext* context, const ::qtprotobuf::examples::Contact* request, ::qtprotobuf::examples::SimpleResult* response);
     virtual ::grpc::Status navigateTo(::grpc::ServerContext* context, const ::qtprotobuf::examples::Address* request, ::qtprotobuf::examples::SimpleResult* response);
   };
@@ -217,23 +223,23 @@ class AddressBook final {
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_getContacts : public BaseClass {
+  class WithAsyncMethod_contacts : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
-    WithAsyncMethod_getContacts() {
+    WithAsyncMethod_contacts() {
       ::grpc::Service::MarkMethodAsync(2);
     }
-    ~WithAsyncMethod_getContacts() override {
+    ~WithAsyncMethod_contacts() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status getContacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::qtprotobuf::examples::Contacts* response) override {
+    ::grpc::Status contacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::grpc::ServerWriter< ::qtprotobuf::examples::Contacts>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestgetContacts(::grpc::ServerContext* context, ::qtprotobuf::examples::ListFrame* request, ::grpc::ServerAsyncResponseWriter< ::qtprotobuf::examples::Contacts>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    void Requestcontacts(::grpc::ServerContext* context, ::qtprotobuf::examples::ListFrame* request, ::grpc::ServerAsyncWriter< ::qtprotobuf::examples::Contacts>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -276,7 +282,7 @@ class AddressBook final {
       ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_addContact<WithAsyncMethod_removeContact<WithAsyncMethod_getContacts<WithAsyncMethod_makeCall<WithAsyncMethod_navigateTo<Service > > > > > AsyncService;
+  typedef WithAsyncMethod_addContact<WithAsyncMethod_removeContact<WithAsyncMethod_contacts<WithAsyncMethod_makeCall<WithAsyncMethod_navigateTo<Service > > > > > AsyncService;
   template <class BaseClass>
   class WithGenericMethod_addContact : public BaseClass {
    private:
@@ -312,18 +318,18 @@ class AddressBook final {
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_getContacts : public BaseClass {
+  class WithGenericMethod_contacts : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
-    WithGenericMethod_getContacts() {
+    WithGenericMethod_contacts() {
       ::grpc::Service::MarkMethodGeneric(2);
     }
-    ~WithGenericMethod_getContacts() override {
+    ~WithGenericMethod_contacts() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status getContacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::qtprotobuf::examples::Contacts* response) override {
+    ::grpc::Status contacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::grpc::ServerWriter< ::qtprotobuf::examples::Contacts>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -403,23 +409,23 @@ class AddressBook final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_getContacts : public BaseClass {
+  class WithRawMethod_contacts : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
-    WithRawMethod_getContacts() {
+    WithRawMethod_contacts() {
       ::grpc::Service::MarkMethodRaw(2);
     }
-    ~WithRawMethod_getContacts() override {
+    ~WithRawMethod_contacts() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status getContacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::qtprotobuf::examples::Contacts* response) override {
+    ::grpc::Status contacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::grpc::ServerWriter< ::qtprotobuf::examples::Contacts>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestgetContacts(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    void Requestcontacts(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -503,26 +509,6 @@ class AddressBook final {
     virtual ::grpc::Status StreamedremoveContact(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::qtprotobuf::examples::Contact,::qtprotobuf::examples::Contacts>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_getContacts : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithStreamedUnaryMethod_getContacts() {
-      ::grpc::Service::MarkMethodStreamed(2,
-        new ::grpc::internal::StreamedUnaryHandler< ::qtprotobuf::examples::ListFrame, ::qtprotobuf::examples::Contacts>(std::bind(&WithStreamedUnaryMethod_getContacts<BaseClass>::StreamedgetContacts, this, std::placeholders::_1, std::placeholders::_2)));
-    }
-    ~WithStreamedUnaryMethod_getContacts() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status getContacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::qtprotobuf::examples::Contacts* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedgetContacts(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::qtprotobuf::examples::ListFrame,::qtprotobuf::examples::Contacts>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
   class WithStreamedUnaryMethod_makeCall : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
@@ -562,9 +548,29 @@ class AddressBook final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamednavigateTo(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::qtprotobuf::examples::Address,::qtprotobuf::examples::SimpleResult>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_addContact<WithStreamedUnaryMethod_removeContact<WithStreamedUnaryMethod_getContacts<WithStreamedUnaryMethod_makeCall<WithStreamedUnaryMethod_navigateTo<Service > > > > > StreamedUnaryService;
-  typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_addContact<WithStreamedUnaryMethod_removeContact<WithStreamedUnaryMethod_getContacts<WithStreamedUnaryMethod_makeCall<WithStreamedUnaryMethod_navigateTo<Service > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_addContact<WithStreamedUnaryMethod_removeContact<WithStreamedUnaryMethod_makeCall<WithStreamedUnaryMethod_navigateTo<Service > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithSplitStreamingMethod_contacts : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithSplitStreamingMethod_contacts() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::SplitServerStreamingHandler< ::qtprotobuf::examples::ListFrame, ::qtprotobuf::examples::Contacts>(std::bind(&WithSplitStreamingMethod_contacts<BaseClass>::Streamedcontacts, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithSplitStreamingMethod_contacts() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status contacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::grpc::ServerWriter< ::qtprotobuf::examples::Contacts>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with split streamed
+    virtual ::grpc::Status Streamedcontacts(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::qtprotobuf::examples::ListFrame,::qtprotobuf::examples::Contacts>* server_split_streamer) = 0;
+  };
+  typedef WithSplitStreamingMethod_contacts<Service > SplitStreamedService;
+  typedef WithStreamedUnaryMethod_addContact<WithStreamedUnaryMethod_removeContact<WithSplitStreamingMethod_contacts<WithStreamedUnaryMethod_makeCall<WithStreamedUnaryMethod_navigateTo<Service > > > > > StreamedService;
 };
 
 }  // namespace examples

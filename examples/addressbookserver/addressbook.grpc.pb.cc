@@ -19,7 +19,7 @@ namespace examples {
 static const char* AddressBook_method_names[] = {
   "/qtprotobuf.examples.AddressBook/addContact",
   "/qtprotobuf.examples.AddressBook/removeContact",
-  "/qtprotobuf.examples.AddressBook/getContacts",
+  "/qtprotobuf.examples.AddressBook/contacts",
   "/qtprotobuf.examples.AddressBook/makeCall",
   "/qtprotobuf.examples.AddressBook/navigateTo",
 };
@@ -33,7 +33,7 @@ std::unique_ptr< AddressBook::Stub> AddressBook::NewStub(const std::shared_ptr< 
 AddressBook::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
   : channel_(channel), rpcmethod_addContact_(AddressBook_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_removeContact_(AddressBook_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_getContacts_(AddressBook_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_contacts_(AddressBook_method_names[2], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   , rpcmethod_makeCall_(AddressBook_method_names[3], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_navigateTo_(AddressBook_method_names[4], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
@@ -62,16 +62,16 @@ AddressBook::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   return ::grpc::internal::ClientAsyncResponseReaderFactory< ::qtprotobuf::examples::Contacts>::Create(channel_.get(), cq, rpcmethod_removeContact_, context, request, false);
 }
 
-::grpc::Status AddressBook::Stub::getContacts(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::qtprotobuf::examples::Contacts* response) {
-  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_getContacts_, context, request, response);
+::grpc::ClientReader< ::qtprotobuf::examples::Contacts>* AddressBook::Stub::contactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request) {
+  return ::grpc::internal::ClientReaderFactory< ::qtprotobuf::examples::Contacts>::Create(channel_.get(), rpcmethod_contacts_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>* AddressBook::Stub::AsyncgetContactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::qtprotobuf::examples::Contacts>::Create(channel_.get(), cq, rpcmethod_getContacts_, context, request, true);
+::grpc::ClientAsyncReader< ::qtprotobuf::examples::Contacts>* AddressBook::Stub::AsynccontactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::qtprotobuf::examples::Contacts>::Create(channel_.get(), cq, rpcmethod_contacts_, context, request, true, tag);
 }
 
-::grpc::ClientAsyncResponseReader< ::qtprotobuf::examples::Contacts>* AddressBook::Stub::PrepareAsyncgetContactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::qtprotobuf::examples::Contacts>::Create(channel_.get(), cq, rpcmethod_getContacts_, context, request, false);
+::grpc::ClientAsyncReader< ::qtprotobuf::examples::Contacts>* AddressBook::Stub::PrepareAsynccontactsRaw(::grpc::ClientContext* context, const ::qtprotobuf::examples::ListFrame& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::qtprotobuf::examples::Contacts>::Create(channel_.get(), cq, rpcmethod_contacts_, context, request, false, nullptr);
 }
 
 ::grpc::Status AddressBook::Stub::makeCall(::grpc::ClientContext* context, const ::qtprotobuf::examples::Contact& request, ::qtprotobuf::examples::SimpleResult* response) {
@@ -111,9 +111,9 @@ AddressBook::Service::Service() {
           std::mem_fn(&AddressBook::Service::removeContact), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       AddressBook_method_names[2],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< AddressBook::Service, ::qtprotobuf::examples::ListFrame, ::qtprotobuf::examples::Contacts>(
-          std::mem_fn(&AddressBook::Service::getContacts), this)));
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< AddressBook::Service, ::qtprotobuf::examples::ListFrame, ::qtprotobuf::examples::Contacts>(
+          std::mem_fn(&AddressBook::Service::contacts), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       AddressBook_method_names[3],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
@@ -143,10 +143,10 @@ AddressBook::Service::~Service() {
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status AddressBook::Service::getContacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::qtprotobuf::examples::Contacts* response) {
+::grpc::Status AddressBook::Service::contacts(::grpc::ServerContext* context, const ::qtprotobuf::examples::ListFrame* request, ::grpc::ServerWriter< ::qtprotobuf::examples::Contacts>* writer) {
   (void) context;
   (void) request;
-  (void) response;
+  (void) writer;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
