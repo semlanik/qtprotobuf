@@ -25,32 +25,20 @@
 
 #pragma once
 
-#include "abstractchannel.h"
+#include "abstractcredentials.h"
 
-#include <QString>
-#include <QByteArray>
+#include <QSslConfiguration>
 
 namespace qtprotobuf {
 
-struct Http2ChannelPrivate;
-class AbstractCredentials;
-
-class Http2Channel final : public AbstractChannel
+class SslCredentials : public ChannelCredentials
 {
 public:
-    Http2Channel(const QString &addr, quint16 port, const AbstractCredentials &credentials);
-    ~Http2Channel();
-
-    StatusCodes call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
-    void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *reply) override;
-    void subscribe(const QString &method, const QString &service, const QByteArray &args, AbstractClient *client, const std::function<void (const QByteArray &)> &handler) override;
-
-protected:
-    void abort(AsyncReply *reply) override;
-
-private:
-    Q_DISABLE_COPY(Http2Channel)
-    Http2ChannelPrivate *d;
+    SslCredentials(const QSslConfiguration &configuation) {
+        CredentialMap credentials = CredentialMap{{QLatin1String("sslConfig"),
+                QVariant::fromValue<QSslConfiguration>(configuation)}};
+        channelCredentials_p = [credentials]() { return credentials; };
+    }
 };
 
 }

@@ -75,6 +75,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/globalenums.h PROPERTIES
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/protobuf ${CMAKE_SOURCE_DIR}/src/grpc)
 
 file(GLOB SOURCES main.cpp addressbookengine.cpp universallistmodel.cpp universallistmodelbase.cpp)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../addressbookserver/cert.pem DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 set(addressbook "addressbook_example")
 add_executable(${addressbook} ${SOURCES} ${GENERATED_SOURCES} resources.qrc)

@@ -26,16 +26,40 @@
 #include "addressbookengine.h"
 #include "addressbookclient.h"
 #include <http2channel.h>
+#include <insecurecredentials.h>
+#include <sslcredentials.h>
 
 #include <QDebug>
+#include <QFile>
+#include <QSslConfiguration>
+#include <QCryptographicHash>
 
 using namespace qtprotobuf::examples;
+
+class AuthCredentials : public qtprotobuf::CallCredentials
+{
+public:
+    AuthCredentials(const QString &userName, const QString &password) {
+        callCredentials_p = [userName, password]() { return CredentialMap{{QLatin1String("user-name"), QVariant::fromValue(userName)},
+                            {QLatin1String("user-password"), QVariant::fromValue(password)}}; };
+    }
+};
 
 AddressBookEngine::AddressBookEngine() : QObject()
   , m_client(new AddressBookClient)
   , m_contacts(new ContactsListModel({}, this))
 {
-    std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel("localhost", 65001));
+    //Prepare ssl configuration
+    QSslConfiguration conf = QSslConfiguration::defaultConfiguration();
+    QFile certFile("cert.pem");
+    certFile.open(QIODevice::ReadOnly);
+    QByteArray cert = certFile.readAll();
+    conf.setCaCertificates({QSslCertificate(cert)});
+    conf.setProtocol(QSsl::TlsV1_2);
+    conf.setAllowedNextProtocols({QSslConfiguration::ALPNProtocolHTTP2});
+
+    std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel("localhost", 65001, qtprotobuf::SslCredentials(conf) |
+                                                                                      AuthCredentials("authorizedUser", QCryptographicHash::hash("test", QCryptographicHash::Md5).toHex())));
     m_client->attachChannel(channel);
     m_client->subscribeContactsUpdates(ListFrame());
     connect(m_client, &AddressBookClient::contactsUpdated, this, [this](const Contacts &contacts) {

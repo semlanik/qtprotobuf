@@ -12,12 +12,18 @@ endif()
 file(GLOB SOURCES asyncreply.cpp
     abstractchannel.cpp
     http2channel.cpp
-    abstractclient.cpp)
+    abstractclient.cpp
+    abstractcredentials.cpp
+    sslcredentials.cpp
+    insecurecredentials.cpp)
 
 file(GLOB HEADERS asyncreply.h
     abstractchannel.h
     http2channel.h
-    abstractclient.h)
+    abstractclient.h
+    abstractcredentials.h
+    sslcredentials.h
+    insecurecredentials.h)
 
 set(GRPC_SUPPORT_LIBRARY_TARGET qtgrpc)
 add_library(${GRPC_SUPPORT_LIBRARY_TARGET} ${SOURCES})

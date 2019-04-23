@@ -35,8 +35,10 @@
 #include <QEventLoop>
 #include <QTimer>
 #include <QtEndian>
+
 #include "asyncreply.h"
 #include "abstractclient.h"
+#include "abstractcredentials.h"
 
 #include <unordered_map>
 
@@ -90,17 +92,23 @@ namespace qtprotobuf {
 struct Http2ChannelPrivate {
     QUrl url;
     QNetworkAccessManager nm;
+    AbstractCredentials credentials;
+    QSslConfiguration sslConfig;
     QNetworkReply* post(const QString &method, const QString &service, const QByteArray &args, bool stream = false) {
         QUrl callUrl = url;
         callUrl.setPath("/" + service + "/" + method);
 
         qProtoDebug() << "Service call url: " << callUrl;
-
         QNetworkRequest request(callUrl);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/grpc");
         request.setRawHeader(GrpcAcceptEncodingHeader, "identity,deflate,gzip");
         request.setRawHeader(AcceptEncodingHeader, "identity,gzip");
         request.setRawHeader(TEHeader, "trailers");
+        request.setSslConfiguration(sslConfig);
+        AbstractCredentials::CredentialMap callCredentials = credentials.callCredentials();
+        for (auto i = callCredentials.begin(); i != callCredentials.end(); ++i) {
+            request.setRawHeader(i.key().data(), i.value().toString().toUtf8());
+        }
 
         request.setAttribute(QNetworkRequest::Http2DirectAttribute, true);
 
@@ -144,14 +152,25 @@ struct Http2ChannelPrivate {
         //Message size doesn't matter for now
         return networkReply->readAll().mid(5);
     }
+
+    Http2ChannelPrivate(const AbstractCredentials &credentials_) : credentials(credentials_) {
+        if (credentials.channelCredentials().contains(QLatin1String("sslConfig"))) {
+            sslConfig = credentials.channelCredentials().value(QLatin1String("sslConfig")).value<QSslConfiguration>();
+        }
+
+        if (sslConfig.isNull()) {
+            url.setScheme("http");
+        } else {
+            url.setScheme("https");
+        }
+    }
 };
 
 }
 
-Http2Channel::Http2Channel(const QString &addr, quint16 port) : AbstractChannel()
-  , d(new Http2ChannelPrivate)
+Http2Channel::Http2Channel(const QString &addr, quint16 port, const AbstractCredentials &credentials) : AbstractChannel()
+  , d(new Http2ChannelPrivate(credentials))
 {
-    d->url.setScheme("http");
     d->url.setHost(addr, QUrl::StrictMode);
     d->url.setPort(port);
 }
@@ -178,7 +197,7 @@ AbstractChannel::StatusCodes Http2Channel::call(const QString &method, const QSt
     StatusCodes grpcStatus = StatusCodes::Unknown;
     ret = d->processReply(networkReply, grpcStatus);
 
-    qProtoDebug() << __func__ << "RECV: " << ret.toHex();
+    qProtoDebug() << __func__ << "RECV: " << ret.toHex() << "grpcStatus" << grpcStatus;
     return grpcStatus;
 }
 

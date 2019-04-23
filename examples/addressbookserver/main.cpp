@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
 #include <grpc++/grpc++.h>
 #include "addressbook.pb.h"
@@ -47,6 +49,22 @@ public:
 
     ::grpc::Status addContact(::grpc::ServerContext* context, const Contact* request, Contacts* response) override
     {
+        bool isUserOk = false;
+        bool isPasswordOk = false;
+        for (auto it = context->client_metadata().begin(); it != context->client_metadata().end(); ++it) {
+            if ((*it).first == std::string("user-name") && (*it).second == "authorizedUser") {
+                isUserOk = true;
+            }
+            if ((*it).first == std::string("user-password") && (*it).second == "098f6bcd4621d373cade4e832627b4f6") {
+                isPasswordOk = true;
+            }
+            std::cout << (*it).first << (*it).second << std::endl;
+        }
+
+        if (!isUserOk || !isPasswordOk) {
+            return ::grpc::Status(::grpc::StatusCode::UNAUTHENTICATED, grpc::string("Invalid user or password"));
+        }
+
         std::cout << "addContact called" << std::endl;
         Contact* newContact = m_contacts.add_list();
         *newContact = *request;
@@ -98,8 +116,20 @@ int main(int argc, char *argv[])
     std::string server_address("localhost:65001");
     AddressBookService service;
 
+    std::ifstream tfile("cert.pem");
+    std::stringstream cert;
+    cert << tfile.rdbuf();
+    tfile.close();
+
+    tfile.open("key.pem");
+    std::stringstream key;
+    key << tfile.rdbuf();
+    tfile.close();
+
     grpc::ServerBuilder builder;
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    grpc::SslServerCredentialsOptions opts(GRPC_SSL_DONT_REQUEST_CLIENT_CERTIFICATE);
+    opts.pem_key_cert_pairs.push_back({key.str(), cert.str()});
+    builder.AddListeningPort(server_address, grpc::SslServerCredentials(opts));
     builder.RegisterService(&service);
     std::unique_ptr<grpc::ServerCompletionQueue> cq = builder.AddCompletionQueue();
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());

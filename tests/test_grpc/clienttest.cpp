@@ -26,6 +26,7 @@
 #include "testserviceclient.h"
 #include "http2channel.h"
 #include "qtprotobuf.h"
+#include "insecurecredentials.h"
 
 #include <QTimer>
 
@@ -60,7 +61,7 @@ TEST_F(ClientTest, StringEchoTest)
     int argc = 0;
     QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
@@ -73,7 +74,7 @@ TEST_F(ClientTest, StringEchoAsyncTest)
     int argc = 0;
     QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
@@ -96,7 +97,7 @@ TEST_F(ClientTest, StringEchoAsync2Test)
     int argc = 0;
     QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
@@ -117,7 +118,7 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
     int argc = 0;
     QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
@@ -172,7 +173,7 @@ TEST_F(ClientTest, StringEchoStreamTest)
     int argc = 0;
     QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Stream");
@@ -205,7 +206,7 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
     int argc = 0;
     QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051));
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Stream");

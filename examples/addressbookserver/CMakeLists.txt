@@ -20,3 +20,5 @@ if(WIN32)
 elseif(UNIX)
     target_link_libraries(${ADDRESSBOOK_SERVER} protobuf grpc grpc++)
 endif()
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cert.pem ${CMAKE_CURRENT_SOURCE_DIR}/key.pem DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
