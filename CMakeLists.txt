@@ -1,19 +1,22 @@
+
 cmake_minimum_required(VERSION 3.1)
 
 project(qtprotobuf)
 
 find_package(Protobuf)
-if (NOT Protobuf_FOUND OR Protobuf_VERSION VERSION_LESS "3.0.0")
-    include(cmake/DownloadProject.cmake)
-    download_project(PROJ                Protobuf
-                     GIT_REPOSITORY      https://github.com/protocolbuffers/protobuf.git
-                     GIT_TAG             3.7.x
-    )
-    set(protobuf_BUILD_TESTS OFF CACHE BOOL "Disable protobuf tests build" FORCE)
+if (NOT Protobuf_FOUND OR Protobuf_VERSION VERSION_LESS "3.1.0")
+    # if no approprite Protobuf installed, there is no appropriate version of gRPC neither
+    # the next include provides both from sources 
+    include(cmake/gRPCBuild.cmake)
+    
+    # these names of the variable are equal to those assigned by find_package(Protobuf)
     set(Protobuf_PROTOC_EXECUTABLE protoc)
     set(Protobuf_PROTOC_LIBRARY libprotoc)
-    set(Protobuf_LIBRARIES "")
-    add_subdirectory("${Protobuf_SOURCE_DIR}/cmake" ${Protobuf_BINARY_DIR})
+    set(Protobuf_LIBRARIES libprotobuf)
+
+    set(gRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:grpc_cpp_plugin>)
+    # TODO when find_package(gRPC) is used, assign variable as follows 
+    # set(gRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
 endif()
 
 # grpc target requires QT version not less than 5.11
