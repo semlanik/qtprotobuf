@@ -55,45 +55,42 @@ public:
     using CredentialMap = QHash<QLatin1String, QVariant>;
 
     CredentialMap callCredentials() {
-        if (callCredentials_p) {
-            return callCredentials_p();
-        }
-        return CredentialMap();
+        return mCallCredentials;
     }
 
     CredentialMap channelCredentials() {
-        if (channelCredentials_p) {
-            return channelCredentials_p();
-        }
-        return CredentialMap();
+        return mChannelCredentials;
     }
 protected:
     AbstractCredentials() = default;
+    void setCallCredentials(const CredentialMap& credentialMap) { mCallCredentials = credentialMap; }
+    void setChannelCredentials(const CredentialMap& credentialMap) { mChannelCredentials = credentialMap; }
 
+private:
     using CredentialsFunction = std::function<CredentialMap(void)>;
-    CredentialsFunction callCredentials_p;
-    CredentialsFunction channelCredentials_p;
+    CredentialMap mCallCredentials;
+    CredentialMap mChannelCredentials;
 };
 
 class CallCredentials : public AbstractCredentials
 {
 protected:
-    CallCredentials() {
-        channelCredentials_p = [](){ return CredentialMap(); };
+    CallCredentials(const CredentialMap& credentialMap) {
+        setCallCredentials(credentialMap);
+        setChannelCredentials(CredentialMap{});
     }
 
 private:
-    using AbstractCredentials::channelCredentials_p;
+    CallCredentials() = default;
 };
 
 class ChannelCredentials : public AbstractCredentials
 {
 protected:
-    ChannelCredentials() {
-        callCredentials_p = [](){ return CredentialMap(); };
+    ChannelCredentials(const CredentialMap& credentialMap) {
+        setCallCredentials(CredentialMap{});
+        setChannelCredentials(credentialMap);
     }
-private:
-    using AbstractCredentials::callCredentials_p;
 };
 
 template<typename Call, typename Channel,
@@ -101,22 +98,22 @@ template<typename Call, typename Channel,
                                    && std::is_base_of<qtprotobuf::ChannelCredentials, Channel>::value, int> = 0>
 AbstractCredentials::AbstractCredentials(const Call &call, const Channel &channel)
 {
-    callCredentials_p = call.callCredentials_p;
-    channelCredentials_p = channel.channelCredentials_p;
+    mCallCredentials = call.mCallCredentials;
+    mChannelCredentials = channel.mChannelCredentials;
 }
 
 template<typename Call,
          typename std::enable_if_t<std::is_base_of<qtprotobuf::CallCredentials, Call>::value, int> = 0>
 AbstractCredentials::AbstractCredentials(const Call &call)
 {
-    callCredentials_p = call.callCredentials_p;
+    mCallCredentials = call.mCallCredentials;
 }
 
 template<typename Channel,
          typename std::enable_if_t<std::is_base_of<qtprotobuf::ChannelCredentials, Channel>::value, int> = 0>
 AbstractCredentials::AbstractCredentials(const Channel &channel)
 {
-    channelCredentials_p = channel.channelCredentials_p;
+    mChannelCredentials = channel.mChannelCredentials;
 }
 }
 

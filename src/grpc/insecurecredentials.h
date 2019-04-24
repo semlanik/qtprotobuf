@@ -32,9 +32,7 @@ namespace qtprotobuf {
 class InsecureCredentials : public ChannelCredentials
 {
 public:
-    InsecureCredentials() {
-        channelCredentials_p = []() { return AbstractCredentials::CredentialMap(); };
-    }
+    InsecureCredentials() : ChannelCredentials(CredentialMap()) {}
 };
 
 }

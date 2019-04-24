@@ -34,11 +34,9 @@ namespace qtprotobuf {
 class SslCredentials : public ChannelCredentials
 {
 public:
-    SslCredentials(const QSslConfiguration &configuation) {
-        CredentialMap credentials = CredentialMap{{QLatin1String("sslConfig"),
-                QVariant::fromValue<QSslConfiguration>(configuation)}};
-        channelCredentials_p = [credentials]() { return credentials; };
-    }
+    SslCredentials(const QSslConfiguration &configuation) :
+        ChannelCredentials(CredentialMap{{QLatin1String("sslConfig"),
+                           QVariant::fromValue<QSslConfiguration>(configuation)}}) {}
 };
 
 }

@@ -39,10 +39,9 @@ using namespace qtprotobuf::examples;
 class AuthCredentials : public qtprotobuf::CallCredentials
 {
 public:
-    AuthCredentials(const QString &userName, const QString &password) {
-        callCredentials_p = [userName, password]() { return CredentialMap{{QLatin1String("user-name"), QVariant::fromValue(userName)},
-                            {QLatin1String("user-password"), QVariant::fromValue(password)}}; };
-    }
+    AuthCredentials(const QString &userName, const QString &password) :
+        CallCredentials(CredentialMap{{QLatin1String("user-name"), QVariant::fromValue(userName)},
+                                      {QLatin1String("user-password"), QVariant::fromValue(password)}}) {}
 };
 
 AddressBookEngine::AddressBookEngine() : QObject()
