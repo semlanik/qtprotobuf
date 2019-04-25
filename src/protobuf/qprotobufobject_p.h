@@ -28,7 +28,8 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QMetaProperty>
-#include <QtQml/QQmlListProperty>
+#include <QQmlListProperty>
+#include <QQmlEngine>
 
 #include <unordered_map>
 #include <memory>
@@ -288,6 +289,10 @@ public:
 
         QByteArray serializedList;
         for (auto &value : listValue) {
+            if (!value) {
+                qProtoWarning() << "Null pointer in list";
+                continue;
+            }
             QByteArray serializedValue = serializeLengthDelimited(value->serialize());
             serializedValue.prepend(encodeHeaderByte(outFieldIndex, LengthDelimited));
             serializedList.append(serializedValue);
@@ -669,8 +674,9 @@ public:
     //###########################################################################
 
     template<typename T>
-    static void qmllistpropertyAppend(QQmlListProperty<T> *, T *) {
-        Q_ASSERT_X(false, "", "Access to append functionality of protobuf lists is restricted");
+    static void qmllistpropertyAppend(QQmlListProperty<T> *p, T *v) {
+        QQmlEngine::setObjectOwnership(v, QQmlEngine::CppOwnership);
+        reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->append(QSharedPointer<T>(v));
     }
 
     template<typename T>
@@ -684,8 +690,8 @@ public:
     }
 
     template<typename T>
-    static void qmllistpropertyReset(QQmlListProperty<T> *){
-        Q_ASSERT_X(false, "", "Access to reset functionality of protobuf lists is restricted");
+    static void qmllistpropertyReset(QQmlListProperty<T> *p){
+        reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->clear();
     }
 
     template<typename T>

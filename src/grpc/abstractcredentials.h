@@ -67,7 +67,6 @@ protected:
     void setChannelCredentials(const CredentialMap& credentialMap) { mChannelCredentials = credentialMap; }
 
 private:
-    using CredentialsFunction = std::function<CredentialMap(void)>;
     CredentialMap mCallCredentials;
     CredentialMap mChannelCredentials;
 };
