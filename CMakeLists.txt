@@ -4,7 +4,15 @@ cmake_minimum_required(VERSION 3.1)
 project(qtprotobuf)
 
 find_package(Protobuf)
-if (NOT Protobuf_FOUND OR Protobuf_VERSION VERSION_LESS "3.1.0")
+
+if(NOT DEFINED gRPC_CPP_PLUGIN_EXECUTABLE)
+    find_program(gRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
+    if(gRPC_CPP_PLUGIN_EXECUTABLE STREQUAL gRPC_CPP_PLUGIN_EXECUTABLE-NOTFOUND)
+        unset(gRPC_CPP_PLUGIN_EXECUTABLE)
+    endif()
+endif()
+
+if (NOT DEFINED gRPC_CPP_PLUGIN_EXECUTABLE)
     # if no approprite Protobuf installed, there is no appropriate version of gRPC neither
     # the next include provides both from sources 
     include(cmake/gRPCBuild.cmake)
@@ -15,9 +23,8 @@ if (NOT Protobuf_FOUND OR Protobuf_VERSION VERSION_LESS "3.1.0")
     set(Protobuf_LIBRARIES libprotobuf)
 
     set(gRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:grpc_cpp_plugin>)
-    # TODO when find_package(gRPC) is used, assign variable as follows 
-    # set(gRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
 endif()
+
 
 # grpc target requires QT version not less than 5.11
 # earlier versions do not provide required Http2DirectAttribute: https://doc.qt.io/qt-5/whatsnew511.html

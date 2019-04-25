@@ -77,7 +77,4 @@ endif()
 target_include_directories(${testtarget} PRIVATE ${GENERATED_SOURCES_DIR})
 add_dependencies(${testtarget} ${test_sources_generation})
 
-# FIXME: remove the following if-statement when find_package(gRPC) is employed
-if (NOT Protobuf_FOUND OR Protobuf_VERSION VERSION_LESS "3.1.0")
-    add_subdirectory(echoserver)
-endif()
+add_subdirectory(echoserver)
