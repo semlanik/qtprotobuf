@@ -19,6 +19,7 @@ Rectangle {
         anchors.centerIn: parent
         id: iconItem
     }
+
     MouseArea {
         id: control
         anchors.fill: parent

@@ -57,6 +57,8 @@ ApplicationWindow {
             onRequestAddContact: {
                 mainStack.push(addContactView, {"stack": mainStack})
             }
+            onShowContact: {
+            }
         }
     }
     Component {

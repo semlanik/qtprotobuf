@@ -32,6 +32,7 @@ StackItem {
     hasBack: false
     property alias model: contactList.model
     signal requestAddContact()
+    signal showContact(var contact)
     ListView {
         id: contactList
         anchors.fill: parent
@@ -85,6 +86,10 @@ StackItem {
                 anchors.top: parent.bottom
                 height: 1
                 visible: (contactList.count - 1) === model.index
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: showContact(contactDelegate.contact)
             }
         }
     }

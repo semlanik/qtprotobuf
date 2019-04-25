@@ -12,5 +12,10 @@
         <file>qml/TextInputRow.qml</file>
         <file>images/check.png</file>
         <file>images/minus.png</file>
+        <file>qml/DropDownColumn.qml</file>
+        <file>images/arrow.png</file>
+        <file>qml/CountryCodesModel.qml</file>
+        <file>qml/InputRow.qml</file>
+        <file>qml/PhoneInput.qml</file>
     </qresource>
 </RCC>

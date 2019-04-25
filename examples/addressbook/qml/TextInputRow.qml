@@ -1,28 +1,19 @@
 import QtQuick 2.9
 import QtQuick.Layouts 1.2
 
-RowLayout {
-    property alias label: labelItem.text
-    property alias text: inputItem.text
-    height: 70
-    spacing: 10
-    PrimaryText {
-        id: labelItem
-        Layout.alignment: Qt.AlignBottom
-        Layout.minimumWidth: 100
-        Layout.maximumWidth: 100
-        Layout.margins: 10
-    }
+InputRow {
+    property alias text: _inputItem.text
+    property alias input: _inputItem
     TextInput {
-        id: inputItem
-        Layout.fillWidth: true
-        Layout.margins: 10
-        Layout.alignment: Qt.AlignBottom
+        id: _inputItem
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
         font.pointSize: 12
         color: "#ffffff"
         Rectangle {
-            anchors.top: inputItem.bottom
-            width: inputItem.width
+            anchors.top: _inputItem.bottom
+            width: _inputItem.width
             color: "#cfdfe7"
             height: 1
         }

@@ -7,22 +7,102 @@ StackItem {
     id: root
     Flickable {
         anchors.fill: parent
+        contentHeight: innerColumn.height + 70 + 10
+        contentWidth: parent.width
         Column {
-            width: root.width
+            id: innerColumn
+            anchors.right: parent.right
+            anchors.left: parent.left
             TextInputRow {
                 id: firstNameField
-                width: root.width
                 label: qsTr("First name")
             }
             TextInputRow {
                 id: middleNameField
-                width: root.width
                 label: qsTr("Middle name")
             }
             TextInputRow {
                 id: lastNameField
-                width: root.width
                 label: qsTr("Last name")
+            }
+            PhoneInput {
+                id: homePhone
+                label: qsTr("Home phone")
+                PhoneNumber {
+                    id: _homePhoneData
+                    countryCode: homePhone.countryCode
+                    number: parseInt(homePhone.number, 10)
+                }
+            }
+
+            DropDownColumn {
+                anchors.right: parent.right
+                anchors.left: parent.left
+                width: root.width
+                header: qsTr("Job")
+                value: _jobTitle.text
+
+                TextInputRow {
+                    id: _jobTitle
+                    label: qsTr("Title")
+                }
+                Item {
+                    height: 70
+                    anchors.right: parent.right
+                    anchors.left: parent.left
+                    PrimaryText {
+                        anchors.bottom: parent.bottom
+                        text: qsTr("Address")
+                    }
+                }
+                TextInputRow {
+                    id: _jstreetAddress1
+                    label: qsTr("Street address 1")
+                }
+                TextInputRow {
+                    id: _jstreetAddress2
+                    label: qsTr("Street address 2")
+                }
+                TextInputRow {
+                    id: _jzipCode
+                    label: qsTr("Zip code")
+                }
+                TextInputRow {
+                    id: _jstate
+                    label: qsTr("State")
+                }
+                TextInputRow {
+                    id: _jCountry
+                    label: qsTr("Country")
+                }
+            }
+
+            DropDownColumn {
+                anchors.right: parent.right
+                anchors.left: parent.left
+                width: root.width
+                header: qsTr("Home address")
+
+                TextInputRow {
+                    id: _streetAddress1
+                    label: qsTr("Street address 1")
+                }
+                TextInputRow {
+                    id: _streetAddress2
+                    label: qsTr("Street address 2")
+                }
+                TextInputRow {
+                    id: _zipCode
+                    label: qsTr("Zip code")
+                }
+                TextInputRow {
+                    id: _state
+                    label: qsTr("State")
+                }
+                TextInputRow {
+                    id: _country
+                    label: qsTr("Country")
+                }
             }
         }
     }
@@ -31,6 +111,41 @@ StackItem {
         firstName: firstNameField.text
         middleName: middleNameField.text
         lastName: lastNameField.text
+        job.title: _jobTitle.text
+//        job.officeAddress.country: _jcountry.text
+        job.officeAddress.streetAddress1: _jstreetAddress1.text
+        job.officeAddress.streetAddress2: _jstreetAddress2.text
+        job.officeAddress.zipCode: parseInt(_jzipCode.text, 10)
+        job.officeAddress.state: _jstate.text
+
+//        address.country: _country.text
+        address.streetAddress1: _streetAddress1.text
+        address.streetAddress2: _streetAddress2.text
+        address.zipCode: parseInt(_zipCode.text, 10)
+        address.state: _state.text
+    }
+
+    onNewContactChanged: {
+        firstNameField.text = newContact.firstName
+        middleNameField.text = newContact.middleName
+        lastNameField.text = newContact.lastName
+        _jobTitle.text = newContact.job.title
+//        newContact.job.officeAddress.country: _jcountry.text
+        _jstreetAddress1.text = newContact.job.officeAddress.streetAddress1
+        _jstreetAddress2.text = newContact.job.officeAddress.streetAddress2
+        _jzipCode.text = newContact.job.officeAddress.zipCode.toString()
+        _jstate.text = newContact.job.officeAddress.state
+
+//        newContact.address.country: _country.text
+        _streetAddress1.text = newContact.address.streetAddress1
+        _streetAddress2.text = newContact.address.streetAddress2
+        _zipCode.text = newContact.address.zipCode.toString()
+        _state.text = newContact.address.state
+        var phoneNumber = newContact.phonesData.length > 0 ?
+                    newContact.phonesData[0] : null
+        if (phoneNumber) {
+            homePhone.number = phoneNumber.number.toString()
+        }
     }
 
     FloatingRoundButton {
@@ -41,6 +156,12 @@ StackItem {
         anchors.margins: 10
         icon: "qrc:/images/check.png"
         onClicked: {
+            var phones = new Array;
+            if (homePhone.number.length !== 0) {
+                phones.push(_homePhoneData);
+            }
+            newContact.phonesData = phones;
+
             abEngine.addContact(newContact)
             stack.pop()
         }
