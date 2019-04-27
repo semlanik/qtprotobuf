@@ -1,3 +1,4 @@
+find_package(Protobuf)
 # TODO: replace with target_link_directories once released
 link_directories(@TARGET_LIB_DIR@)
 
@@ -15,8 +16,8 @@ function(generate_qtprotobuf)
     set(multiValueArgs GENERATED_HEADERS PROTO_FILES)
     cmake_parse_arguments(generate_qtprotobuf "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    set(QtProtobufGen ${generate_qtprotobuf_TARGET}_qtprotobuf_gen PARENT_SCOPE)
-    set(QtProtobufGen ${generate_qtprotobuf_TARGET}_qtprotobuf_gen)
+    set(QtProtobuf_GENERATED ${generate_qtprotobuf_TARGET}_qtprotobuf_gen PARENT_SCOPE)
+    set(QtProtobuf_GENERATED ${generate_qtprotobuf_TARGET}_qtprotobuf_gen)
 
     set(GEN_TARGET ${generate_qtprotobuf_TARGET}_qtprotobuf_generate)
 
@@ -56,17 +57,16 @@ function(generate_qtprotobuf)
                 --@GENERATOR_TARGET@_out=${OUT_DIR}
                 ${PROTO_INCLUDES}
                 ${PROTO_FILES}
-            WORKING_DIRECTORY ${PROTO_FILES_DIR}
+            WORKING_DIRECTORY ${OUT_DIR}
             DEPENDS ${PROTO_FILES}
             COMMENT "Generating test headers"
     )
-
 
     qt5_wrap_cpp(MOC_SOURCES ${QTPROTOBUF_GENERATED_HEADERS})
     list(APPEND GENERATED_SOURCES ${MOC_SOURCES})
 
     set_source_files_properties(${QTPROTOBUF_GENERATED_SOURCES} PROPERTIES GENERATED TRUE)
-    add_library(${QtProtobufGen} ${QTPROTOBUF_GENERATED_SOURCES} ${MOC_SOURCES})
-    add_dependencies(${QtProtobufGen} ${GEN_TARGET})
-    target_include_directories(${QtProtobufGen} PRIVATE ${Qt5Core_INCLUDE_DIRS} ${Qt5Qml_INCLUDE_DIRS} ${QtProtobuf_INCLUDE_DIRS} ${QtGrpc_INCLUDE_DIRS} ${OUT_DIR})
+    add_library(${QtProtobuf_GENERATED} ${QTPROTOBUF_GENERATED_SOURCES} ${MOC_SOURCES})
+    add_dependencies(${QtProtobuf_GENERATED} ${GEN_TARGET})
+    target_include_directories(${QtProtobuf_GENERATED} PRIVATE ${Qt5Core_INCLUDE_DIRS} ${Qt5Qml_INCLUDE_DIRS} ${QtProtobuf_INCLUDE_DIRS} ${QtGrpc_INCLUDE_DIRS} ${OUT_DIR})
 endfunction()

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(qtprotobuf VERSION 0.1)
+project(QtProtobuf VERSION 0.1.0)
 
 find_package(Protobuf)
 
@@ -14,8 +14,8 @@ set(GRPC_LIBRARY_TARGET qtgrpc)
 
 set(TARGET_BIN_DIR ${PREFIX}/bin)
 set(TARGET_LIB_DIR ${PREFIX}/lib)
-set(TARGET_INCLUDE_DIR ${PREFIX}/include/QtProtobuf)
-set(TARGET_CMAKE_DIR ${TARGET_LIB_DIR}/cmake/QtProtobuf)
+set(TARGET_INCLUDE_DIR ${PREFIX}/include/${PROJECT_NAME})
+set(TARGET_CMAKE_DIR ${TARGET_LIB_DIR}/cmake/${PROJECT_NAME})
 
 message("CMAKE_MODULE_PATH: ${CMAKE_SYSTEM_MODULE_PATH}")
 include_directories(${CMAKE_SOURCE_DIR}/src/protobuf ${CMAKE_SOURCE_DIR}/src/grpc)
