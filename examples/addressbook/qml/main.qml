@@ -58,6 +58,7 @@ ApplicationWindow {
                 mainStack.push(addContactView, {"stack": mainStack})
             }
             onShowContact: {
+                mainStack.push(contactDetailsView, {"stack": mainStack, "contact": contact})
             }
         }
     }
@@ -68,6 +69,12 @@ ApplicationWindow {
         }
     }
 
+    Component {
+        id: contactDetailsView
+        ContactDetails  {
+            anchors.fill: background
+        }
+    }
     Component.onCompleted: {
         mainStack.push(contactList, {"stack": mainStack})
     }

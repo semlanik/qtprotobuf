@@ -17,5 +17,9 @@
         <file>qml/CountryCodesModel.qml</file>
         <file>qml/InputRow.qml</file>
         <file>qml/PhoneInput.qml</file>
+        <file>qml/ContactDetails.qml</file>
+        <file>qml/TextRow.qml</file>
+        <file>images/call.png</file>
+        <file>images/drop.png</file>
     </qresource>
 </RCC>

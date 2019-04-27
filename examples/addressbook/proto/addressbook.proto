@@ -74,10 +74,15 @@ message ListFrame {
     sint32 end = 2;
 }
 
+message None {
+    bool ok = 1;
+}
+
 service AddressBook {
     rpc addContact(Contact) returns (Contacts) {}
     rpc removeContact(Contact) returns (Contacts) {}
     rpc contacts(ListFrame) returns (stream Contacts) {}
     rpc makeCall(Contact) returns (SimpleResult) {}
+    rpc endCall(None) returns (SimpleResult) {}
     rpc navigateTo(Address) returns (SimpleResult) {}
 }

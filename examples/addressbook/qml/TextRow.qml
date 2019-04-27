@@ -23,10 +23,17 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import QtQuick 2.0
+import QtQuick 2.9
+import QtQuick.Layouts 1.2
 
-Text {
-    color: "#FFFFFF"
-    font.pointSize: 12
-    font.weight: Font.Bold
+InputRow {
+    property alias text: _textItem.text
+    Text {
+        id: _textItem
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        font.pointSize: 12
+        color: "#ffffff"
+    }
 }

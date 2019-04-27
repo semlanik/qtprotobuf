@@ -23,13 +23,15 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Controls 2.4
 
 import qtprotobuf.examples 1.0
 
 StackItem {
     id: root
+    property Contact contact: null
+
     Flickable {
         anchors.fill: parent
         contentHeight: innerColumn.height + 70 + 10
@@ -38,28 +40,27 @@ StackItem {
             id: innerColumn
             anchors.right: parent.right
             anchors.left: parent.left
-            TextInputRow {
+            TextRow {
                 id: firstNameField
                 label: qsTr("First name")
+                text: contact.firstName
             }
-            TextInputRow {
+            TextRow {
                 id: middleNameField
                 label: qsTr("Middle name")
+                text: contact.middleName
             }
-            TextInputRow {
+            TextRow {
                 id: lastNameField
                 label: qsTr("Last name")
+                text: contact.lastName
             }
-            PhoneInput {
-                id: homePhone
+            TextRow {
+                id: _homePhoneField
                 label: qsTr("Home phone")
-                PhoneNumber {
-                    id: _homePhoneData
-                    countryCode: homePhone.countryCode
-                    number: parseInt(homePhone.number, 10)
-                }
+                text: _homePhone ? "+" + _homePhone.countryCode + " " + _homePhone.number : ""
+                property PhoneNumber _homePhone: contact.phonesData[0]
             }
-
             DropDownColumn {
                 anchors.right: parent.right
                 anchors.left: parent.left
@@ -67,9 +68,10 @@ StackItem {
                 header: qsTr("Job")
                 value: _jobTitle.text
 
-                TextInputRow {
+                TextRow {
                     id: _jobTitle
                     label: qsTr("Title")
+                    text: contact.job.title
                 }
                 Item {
                     height: 70
@@ -80,25 +82,30 @@ StackItem {
                         text: qsTr("Address")
                     }
                 }
-                TextInputRow {
+                TextRow {
                     id: _jstreetAddress1
                     label: qsTr("Street address 1")
+                    text: contact.job.officeAddress.streetAddress1
                 }
-                TextInputRow {
+                TextRow {
                     id: _jstreetAddress2
                     label: qsTr("Street address 2")
+                    text: contact.job.officeAddress.streetAddress2
                 }
-                TextInputRow {
+                TextRow {
                     id: _jzipCode
                     label: qsTr("Zip code")
+                    text: contact.job.officeAddress.zipCode
                 }
-                TextInputRow {
+                TextRow {
                     id: _jstate
                     label: qsTr("State")
+                    text: contact.job.officeAddress.state
                 }
-                TextInputRow {
+                TextRow {
                     id: _jCountry
                     label: qsTr("Country")
+                    text: contact.job.officeAddress.country
                 }
             }
 
@@ -108,87 +115,45 @@ StackItem {
                 width: root.width
                 header: qsTr("Home address")
 
-                TextInputRow {
+                TextRow {
                     id: _streetAddress1
                     label: qsTr("Street address 1")
+                    text: contact.address.streetAddress1
                 }
-                TextInputRow {
+                TextRow {
                     id: _streetAddress2
                     label: qsTr("Street address 2")
+                    text: contact.address.streetAddress2
                 }
-                TextInputRow {
+                TextRow {
                     id: _zipCode
                     label: qsTr("Zip code")
+                    text: contact.address.zipCode
                 }
-                TextInputRow {
+                TextRow {
                     id: _state
                     label: qsTr("State")
+                    text: contact.address.state
                 }
-                TextInputRow {
+                TextRow {
                     id: _country
                     label: qsTr("Country")
+                    text: contact.address.country
                 }
             }
-        }
-    }
-
-    property Contact newContact: Contact {
-        firstName: firstNameField.text
-        middleName: middleNameField.text
-        lastName: lastNameField.text
-        job.title: _jobTitle.text
-//        job.officeAddress.country: _jcountry.text
-        job.officeAddress.streetAddress1: _jstreetAddress1.text
-        job.officeAddress.streetAddress2: _jstreetAddress2.text
-        job.officeAddress.zipCode: parseInt(_jzipCode.text, 10)
-        job.officeAddress.state: _jstate.text
-
-//        address.country: _country.text
-        address.streetAddress1: _streetAddress1.text
-        address.streetAddress2: _streetAddress2.text
-        address.zipCode: parseInt(_zipCode.text, 10)
-        address.state: _state.text
-    }
-
-    onNewContactChanged: {
-        firstNameField.text = newContact.firstName
-        middleNameField.text = newContact.middleName
-        lastNameField.text = newContact.lastName
-        _jobTitle.text = newContact.job.title
-//        newContact.job.officeAddress.country: _jcountry.text
-        _jstreetAddress1.text = newContact.job.officeAddress.streetAddress1
-        _jstreetAddress2.text = newContact.job.officeAddress.streetAddress2
-        _jzipCode.text = newContact.job.officeAddress.zipCode.toString()
-        _jstate.text = newContact.job.officeAddress.state
-
-//        newContact.address.country: _country.text
-        _streetAddress1.text = newContact.address.streetAddress1
-        _streetAddress2.text = newContact.address.streetAddress2
-        _zipCode.text = newContact.address.zipCode.toString()
-        _state.text = newContact.address.state
-        var phoneNumber = newContact.phonesData.length > 0 ?
-                    newContact.phonesData[0] : null
-        if (phoneNumber) {
-            homePhone.number = phoneNumber.number.toString()
         }
     }
 
     FloatingRoundButton {
-        id: addContactButton
-        enabled: firstNameField.text.length > 0
+        id: call
+        enabled: _homePhoneField.text.length > 0
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 10
-        icon: "qrc:/images/check.png"
+        icon: "qrc:/images/call.png"
+        primaryColor: "#4CAF50"
+        secondaryColor: "#58cb5c"
         onClicked: {
-            var phones = new Array;
-            if (homePhone.number.length !== 0) {
-                phones.push(_homePhoneData);
-            }
-            newContact.phonesData = phones;
-
-            abEngine.addContact(newContact)
-            stack.pop()
         }
     }
 }
