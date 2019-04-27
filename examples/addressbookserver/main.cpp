@@ -40,7 +40,7 @@ public:
     ~AddressBookService() {}
 
     void updateContacts() {
-        for(int i = 0; i < (m_clients.size() - 1); i++) {
+        for(unsigned int i = 0; i < (m_clients.size() - 1); i++) {
             m_clients[i]->Write(m_contacts, nullptr);
         }
     }
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
     std::cout << "Server listening on " << server_address << std::endl;
     ContactsHandler *last = new ContactsHandler(&service, cq.get());
     while (true) {
-        int *tag;
+        unsigned int *tag;
         bool ok;
         cq->Next((void**)&tag, &ok);
         if (tag == nullptr) {

@@ -1,42 +1,13 @@
-set(addressbookgeneration "addressbook_generation")
-set(ADDRESSBOOK_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-file(MAKE_DIRECTORY ${ADDRESSBOOK_OUT_DIR})
-file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/addressbook.proto)
-## test sources generation
-if(WIN32)
-    #Needs to set path to protobuf libraries
-    set(PROTOBUF_INSTALATION_PATH "")
-    set(Protobuf_PROTOC_EXECUTABLE ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe)
-endif()
-
-add_custom_target(${addressbookgeneration})
-add_custom_command(TARGET ${addressbookgeneration}
-        COMMAND ${Protobuf_PROTOC_EXECUTABLE} --${PROJECT_NAME}_opt=out=${ADDRESSBOOK_OUT_DIR} --plugin=protoc-gen-${PROJECT_NAME}=$<TARGET_FILE:${PROJECT_NAME}> --qtprotobuf_out=${ADDRESSBOOK_OUT_DIR} -I=${CMAKE_CURRENT_SOURCE_DIR}/proto/ ${PROTO_FILES}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/proto/
-        DEPENDS ${PROTO_FILES}
-        COMMENT "Generating test headers"
-)
-add_dependencies(${addressbookgeneration} ${PROJECT_NAME})
-
-## test sources build
-# policy enables automoc for generated files
-if(${CMAKE_VERSION} VERSION_GREATER "3.10.0")
-    cmake_policy(SET CMP0071 NEW)
-endif()
+set(TARGET addressbook)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-if(Qt5_POSITION_INDEPENDENT_CODE)
-    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-endif()
-
 find_package(Qt5 COMPONENTS Core Quick Network REQUIRED)
 
-set(EXPECTED_GENERATED_HEADERS 
+set(GENERATED_HEADERS
     addressbookclient.h
-#    addressbookserver.h
     address.h
     contact.h
     contacts.h
@@ -45,39 +16,23 @@ set(EXPECTED_GENERATED_HEADERS
     listframe.h
     phonenumber.h
     simpleresult.h
-    globalenums.h
-)
+    globalenums.h)
 
-foreach(EXPECTED_GENERATED_HEADER ${EXPECTED_GENERATED_HEADERS})
-    get_filename_component(GENERATED_HEADER_BASENAME ${EXPECTED_GENERATED_HEADER} NAME_WE)
+file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/addressbook.proto)
 
-    list(APPEND GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_HEADER_BASENAME}.cpp)
-    list(APPEND GENERATED_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_HEADER_BASENAME}.h)
-    set_property(SOURCE ${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_HEADER_BASENAME}.cpp PROPERTY SKIP_AUTOMOC ON)
-endforeach(EXPECTED_GENERATED_HEADER)
+generate_qtprotobuf(TARGET ${TARGET}
+    OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+    PROTO_FILES ${PROTO_FILES}
+    GENERATED_HEADERS ${GENERATED_HEADERS})
 
-qt5_wrap_cpp(MOC_SOURCES ${GENERATED_HEADERS})
-list(APPEND GENERATED_SOURCES ${MOC_SOURCES})
+file(GLOB SOURCES main.cpp
+    addressbookengine.cpp
+    universallistmodel.cpp
+    universallistmodelbase.cpp)
 
-# TODO: so far the following cpp files are not generated 
-list(REMOVE_ITEM GENERATED_SOURCES
-    ${CMAKE_CURRENT_BINARY_DIR}/globalenums.cpp
-)
-set_source_files_properties(${GENERATED_SOURCES} PROPERTIES GENERATED TRUE)
-
-# TODO: but their headers should be included in sources for executable to be processed by moc
-list(APPEND GENERATED_SOURCES
-    ${CMAKE_CURRENT_BINARY_DIR}/globalenums.h
-)
-set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/globalenums.h PROPERTIES GENERATED TRUE)
-
-# FIXME: protobuf and grpc headers should be propagated from corresponding targets
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/protobuf ${CMAKE_SOURCE_DIR}/src/grpc)
-
-file(GLOB SOURCES main.cpp addressbookengine.cpp universallistmodel.cpp universallistmodelbase.cpp)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../addressbookserver/cert.pem DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-set(addressbook "addressbook_example")
-add_executable(${addressbook} ${SOURCES} ${GENERATED_SOURCES} resources.qrc)
-target_link_libraries(${addressbook} qtgrpc qtprotobufsupport Qt5::Quick Qt5::Qml)
-add_dependencies(${addressbook} ${addressbookgeneration})
+add_executable(${TARGET} ${SOURCES} resources.qrc)
+add_dependencies(${TARGET} ${QtProtobufGen})
+target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
+target_link_libraries(${TARGET} ${GRPC_LIBRARY_TARGET} ${PROTOBUF_LIBRARY_TARGET} ${QtProtobufGen} Qt5::Quick Qt5::Qml)

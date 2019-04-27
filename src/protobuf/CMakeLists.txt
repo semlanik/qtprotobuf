@@ -1,12 +1,8 @@
+set(TARGET ${PROTOBUF_LIBRARY_TARGET})
+set(SHARED_TARGET ${TARGET}-shared)
 
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-
-if(Qt5_POSITION_INDEPENDENT_CODE)
-  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-endif()
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 
@@ -19,18 +15,22 @@ file(GLOB HEADERS
     qprotobufobject_p.h
     qprotobufobject.h
     qtprotobuftypes.h
-    qtprotobuf.h)
+    qtprotobuf.h
+    selfcheckiterator.h
+    qtprotobuflogging.h)
 
-set(SUPPORT_LIBRARY_TARGET qtprotobufsupport)
-add_library(${SUPPORT_LIBRARY_TARGET} ${SOURCES})
-set_target_properties(${SUPPORT_LIBRARY_TARGET} PROPERTIES PUBLIC_HEADER "${HEADERS}")
-target_link_libraries(${SUPPORT_LIBRARY_TARGET} PUBLIC Qt5::Core Qt5::Qml)
-# FIXME: in order to make separation between private and public headers, they should reside in different directories
-target_include_directories(${SUPPORT_LIBRARY_TARGET}
-    PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-)
+set(INCLUDE_DIRS PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Qml_INCLUDE_DIRS})
 
-install(TARGETS ${SUPPORT_LIBRARY_TARGET}
-    ARCHIVE DESTINATION lib
-    PUBLIC_HEADER DESTINATION include)
+add_library(${SHARED_TARGET} SHARED ${SOURCES})
+set_target_properties(${SHARED_TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})
+target_include_directories(${SHARED_TARGET} ${INCLUDE_DIRS})
+target_link_libraries(${SHARED_TARGET} PUBLIC Qt5::Core Qt5::Qml)
+add_dependencies(${SHARED_TARGET} ${PROTOBUF_LIBRARY_TARGET})
+
+add_library(${TARGET} ${SOURCES})
+target_include_directories(${TARGET} ${INCLUDE_DIRS})
+
+install(TARGETS ${TARGET} ${SHARED_TARGET}
+    ARCHIVE DESTINATION ${TARGET_LIB_DIR}
+    PUBLIC_HEADER DESTINATION ${TARGET_INCLUDE_DIR}
+    LIBRARY DESTINATION ${TARGET_LIB_DIR})

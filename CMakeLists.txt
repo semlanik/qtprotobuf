@@ -1,9 +1,31 @@
-
 cmake_minimum_required(VERSION 3.1)
 
-project(qtprotobuf)
+project(qtprotobuf VERSION 0.1)
 
 find_package(Protobuf)
+
+if(NOT DEFINED PREFIX)
+    set(PREFIX /usr)
+endif()
+
+set(GENERATOR_TARGET qtprotobufgen)
+set(PROTOBUF_LIBRARY_TARGET qtprotobuf)
+set(GRPC_LIBRARY_TARGET qtgrpc)
+
+set(TARGET_BIN_DIR ${PREFIX}/bin)
+set(TARGET_LIB_DIR ${PREFIX}/lib)
+set(TARGET_INCLUDE_DIR ${PREFIX}/include/QtProtobuf)
+set(TARGET_CMAKE_DIR ${TARGET_LIB_DIR}/cmake/QtProtobuf)
+
+message("CMAKE_MODULE_PATH: ${CMAKE_SYSTEM_MODULE_PATH}")
+include_directories(${CMAKE_SOURCE_DIR}/src/protobuf ${CMAKE_SOURCE_DIR}/src/grpc)
+
+if(NOT Protobuf_FOUND)
+    # these names of the variable are equal to those assigned by find_package(Protobuf)
+    set(Protobuf_PROTOC_EXECUTABLE protoc)
+    set(Protobuf_PROTOC_LIBRARY protoc)
+    set(Protobuf_LIBRARIES protobuf pthread)
+endif()
 
 if(NOT DEFINED gRPC_CPP_PLUGIN_EXECUTABLE)
     find_program(gRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
@@ -14,27 +36,19 @@ endif()
 
 if (NOT DEFINED gRPC_CPP_PLUGIN_EXECUTABLE)
     # if no approprite Protobuf installed, there is no appropriate version of gRPC neither
-    # the next include provides both from sources 
+    # the next include provides both from sources
     include(cmake/gRPCBuild.cmake)
-    
-    # these names of the variable are equal to those assigned by find_package(Protobuf)
-    set(Protobuf_PROTOC_EXECUTABLE protoc)
-    set(Protobuf_PROTOC_LIBRARY libprotoc)
-    set(Protobuf_LIBRARIES libprotobuf)
 
     set(gRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:grpc_cpp_plugin>)
 endif()
 
-
 # grpc target requires QT version not less than 5.11
 # earlier versions do not provide required Http2DirectAttribute: https://doc.qt.io/qt-5/whatsnew511.html
 find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
+
 if (Qt5Core_VERSION VERSION_LESS "5.11.0")
     message(FATAL_ERROR "Required Qt version is 5.11+")
 endif()
-
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(UNIX)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -48,9 +62,23 @@ elseif(WIN32)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall" "-Werror")
 endif()
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+if(Qt5_POSITION_INDEPENDENT_CODE)
+    set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+endif()
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(cmake/QtProtobufCommon.cmake)
+configure_file(cmake/QtProtobufConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake/QtProtobufConfig.cmake @ONLY)
+include(${CMAKE_CURRENT_BINARY_DIR}/cmake/QtProtobufConfig.cmake)
+
 add_subdirectory("src/protobuf")
 add_subdirectory("src/grpc")
 add_subdirectory("src/generator")
+
+set(QTPROTOBUF_EXECUTABLE $<TARGET_FILE:${GENERATOR_TARGET}>)
 
 if(DEFINED $ENV{MAKE_TESTS})
     set(MAKE_TESTS $ENV{MAKE_TESTS})
@@ -90,9 +118,25 @@ if(MAKE_TESTS)
         add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
     endif()
 
+
+    if(WIN32)
+        #Needs to set path to protobuf libraries
+        set(PROTOBUF_INSTALATION_PATH "")
+        set(Protobuf_PROTOC_EXECUTABLE ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe)
+        #Set  path to GTest build libraries
+        set(GTEST_BOTH_LIBRARIES "")
+
+        #Set  path to GTest include directory
+        include_directories(${GTEST_INCLUDE_PATHS} "/")
+        link_directories(${GTEST_BOTH_LIBRARIES})
+    endif()
+
     add_subdirectory("tests")
 endif()
 
 if(MAKE_EXAMPLES)
     add_subdirectory("examples/addressbook")
+    add_subdirectory("examples/addressbookserver")
 endif()
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/QtProtobufConfig.cmake DESTINATION ${TARGET_CMAKE_DIR} PERMISSIONS OWNER_WRITE GROUP_READ WORLD_READ)

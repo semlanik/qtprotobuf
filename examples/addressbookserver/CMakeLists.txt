@@ -1,24 +1,25 @@
-find_package(Protobuf)
+set(TARGET addressbookserver)
 
-file(GLOB HEADERS ${TESTS_OUT_DIR}/*.h)
-file(GLOB SOURCES main.cpp)
-file(GLOB GENERATED_SOURCES addressbook.pb.cc addressbook.grpc.pb.cc)
+set(GENERATED_SOURCES
+    ${CMAKE_CURRENT_BINARY_DIR}/addressbook.pb.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/addressbook.grpc.pb.cc)
+set_source_files_properties(${GENERATED_SOURCES} PROPERTIES GENERATED TRUE)
 
-set(ADDRESSBOOK_SERVER "address_servers")
+add_executable(${TARGET} main.cpp ${GENERATED_SOURCES})
+target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable(${ADDRESSBOOK_SERVER} ${SOURCES} ${GENERATED_SOURCES})
+file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/../addressbook/proto/*.proto)
+protobuf_generate_all(TARGET ${TARGET}
+    GENERATED_SOURCES ${GENERATED_SOURCES}
+    PROTO_FILES ${PROTO_FILES})
 
 if(WIN32)
     include_directories(${GRPC_INCLUDE_PATHS} "/")
     set(GRPC_LIBRARIES "")
-    target_link_libraries(${ADDRESSBOOK_SERVER} "${GRPC_LIBRARIES}/grpc++.lib")
-
     #Needs to set path to protobuf libraries
-    set(PROTOBUF_INSTALATION_PATH "")
     set(PROTOBUF_LIBRARIES_PATH ${PROTOBUF_INSTALATION_PATH}/lib)
-    target_link_libraries(${ADDRESSBOOK_SERVER} "${PROTOBUF_LIBRARIES_PATH}/libprotobuf.lib")
-elseif(UNIX)
-    target_link_libraries(${ADDRESSBOOK_SERVER} protobuf grpc grpc++)
+    link_directories(${PROTOBUF_LIBRARIES_PATH} ${GRPC_LIBRARIES})
 endif()
 
+target_link_libraries(${TARGET} protobuf grpc grpc++)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cert.pem ${CMAKE_CURRENT_SOURCE_DIR}/key.pem DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

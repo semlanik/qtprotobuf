@@ -1,13 +1,8 @@
-# FIXME: replace with 'target_include_directories'
-include_directories(${CMAKE_SOURCE_DIR}/src/protobuf)
+set(TARGET ${GRPC_LIBRARY_TARGET})
+set(SHARED_TARGET ${TARGET}-shared)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-
-if(Qt5_POSITION_INDEPENDENT_CODE)
-  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-endif()
 
 file(GLOB SOURCES asyncreply.cpp
     abstractchannel.cpp
@@ -25,15 +20,18 @@ file(GLOB HEADERS asyncreply.h
     sslcredentials.h
     insecurecredentials.h)
 
-set(GRPC_SUPPORT_LIBRARY_TARGET qtgrpc)
-add_library(${GRPC_SUPPORT_LIBRARY_TARGET} ${SOURCES})
-set_target_properties(${GRPC_SUPPORT_LIBRARY_TARGET} PROPERTIES PUBLIC_HEADER "${HEADERS}")
-target_link_libraries(${GRPC_SUPPORT_LIBRARY_TARGET} PRIVATE qtprotobufsupport PUBLIC Qt5::Network Qt5::Core)
-target_include_directories(${GRPC_SUPPORT_LIBRARY_TARGET}
-    PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-)
+set(INCLUDE_DIRS PRIVATE ${CMAKE_SOURCE_DIR}/src/protobuf PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS})
 
-install(TARGETS ${GRPC_SUPPORT_LIBRARY_TARGET}
-    ARCHIVE DESTINATION lib
-    PUBLIC_HEADER DESTINATION include)
+add_library(${SHARED_TARGET} SHARED ${SOURCES})
+set_target_properties(${SHARED_TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})
+target_include_directories(${SHARED_TARGET} ${INCLUDE_DIRS})
+target_link_libraries(${SHARED_TARGET} PRIVATE ${PROTOBUF_LIBRARY_TARGET} PUBLIC Qt5::Network Qt5::Core)
+add_dependencies(${SHARED_TARGET} ${PROTOBUF_LIBRARY_TARGET})
+
+add_library(${TARGET} ${SOURCES})
+target_include_directories(${TARGET} ${INCLUDE_DIRS})
+
+install(TARGETS ${TARGET} ${SHARED_TARGET}
+    ARCHIVE DESTINATION ${TARGET_LIB_DIR}
+    PUBLIC_HEADER DESTINATION ${TARGET_INCLUDE_DIR}
+    LIBRARY DESTINATION ${TARGET_LIB_DIR})
