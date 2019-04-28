@@ -9,7 +9,6 @@ set(GENERATED_HEADERS
 file(GLOB SOURCES main.cpp
 #    servertest.cpp
     clienttest.cpp)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 add_test_target(TARGET ${TARGET}
     GENERATED_HEADERS ${GENERATED_HEADERS}
     SOURCES ${SOURCES})

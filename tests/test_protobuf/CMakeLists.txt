@@ -137,7 +137,6 @@ file(GLOB SOURCES
     deserializationtest.cpp
     serializationcomplexmessagemap.cpp)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 add_test_target(TARGET ${TARGET}
     GENERATED_HEADERS ${GENERATED_HEADERS}
     SOURCES ${SOURCES})
