@@ -75,6 +75,22 @@ ApplicationWindow {
             anchors.fill: background
         }
     }
+
+    Connections {
+        target: abEngine.callStatus
+        onStatusChanged: {
+            console.log("Call status: " + abEngine.callStatus.status);
+        }
+    }
+
+    CallPopup {
+        id: activeCallPopup
+        width: 300
+        height: 170
+        anchors.centerIn: parent
+        callStatus: abEngine.callStatus
+    }
+
     Component.onCompleted: {
         mainStack.push(contactList, {"stack": mainStack})
     }

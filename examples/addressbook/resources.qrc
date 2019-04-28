@@ -21,5 +21,6 @@
         <file>qml/TextRow.qml</file>
         <file>images/call.png</file>
         <file>images/drop.png</file>
+        <file>qml/CallPopup.qml</file>
     </qresource>
 </RCC>

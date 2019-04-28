@@ -28,6 +28,7 @@
 #include <QObject>
 #include "contacts.h"
 #include "universallistmodel.h"
+#include "callstatus.h"
 
 namespace qtprotobuf { namespace examples {
 class AddressBookClient;
@@ -40,6 +41,7 @@ class AddressBookEngine : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(ContactsListModel *contacts READ contacts NOTIFY contactsChanged)
+    Q_PROPERTY(qtprotobuf::examples::CallStatus *callStatus READ callStatus NOTIFY callStatusChanged)
 public:
     AddressBookEngine();
     virtual ~AddressBookEngine();
@@ -49,15 +51,25 @@ public:
         return m_contacts;
     }
 
+    qtprotobuf::examples::CallStatus *callStatus()
+    {
+        return &m_callStatus;
+    }
+
     Q_INVOKABLE void addContact(qtprotobuf::examples::Contact *contact);
+    Q_INVOKABLE void makeCall(qtprotobuf::examples::PhoneNumber *phoneNumber);
+    Q_INVOKABLE void endCall();
 
 signals:
     void contactsChanged();
+
+    void callStatusChanged();
 
 private:
     qtprotobuf::examples::AddressBookClient *m_client;
     ContactsListModel *m_contacts;
     qtprotobuf::examples::ContactList m_container;
+    qtprotobuf::examples::CallStatus m_callStatus;
 };
 
 Q_DECLARE_METATYPE(ContactsListModel*)

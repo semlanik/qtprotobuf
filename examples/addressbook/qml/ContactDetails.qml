@@ -154,6 +154,8 @@ StackItem {
         primaryColor: "#4CAF50"
         secondaryColor: "#58cb5c"
         onClicked: {
+            abEngine.makeCall(contact.phonesData[0])
+            stack.pop();
         }
     }
 }

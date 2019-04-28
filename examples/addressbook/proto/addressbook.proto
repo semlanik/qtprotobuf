@@ -69,6 +69,18 @@ message SimpleResult {
     bool ok = 1;
 }
 
+message CallStatus {
+    enum Status {
+        Invalid = 0;
+        Inactive = 1;
+        Active = 2;
+        Ended = 3;
+    };
+
+    Status status = 1;
+    PhoneNumber phoneNumber = 2;
+}
+
 message ListFrame {
     sint32 start = 1;
     sint32 end = 2;
@@ -82,7 +94,8 @@ service AddressBook {
     rpc addContact(Contact) returns (Contacts) {}
     rpc removeContact(Contact) returns (Contacts) {}
     rpc contacts(ListFrame) returns (stream Contacts) {}
-    rpc makeCall(Contact) returns (SimpleResult) {}
+    rpc callStatus(None) returns (stream CallStatus) {}
+    rpc makeCall(PhoneNumber) returns (CallStatus) {}
     rpc endCall(None) returns (SimpleResult) {}
     rpc navigateTo(Address) returns (SimpleResult) {}
 }

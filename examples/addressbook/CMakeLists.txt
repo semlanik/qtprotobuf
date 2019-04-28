@@ -17,7 +17,8 @@ set(GENERATED_HEADERS
     phonenumber.h
     simpleresult.h
     globalenums.h
-    none.h)
+    none.h
+    callstatus.h)
 
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/addressbook.proto)
 

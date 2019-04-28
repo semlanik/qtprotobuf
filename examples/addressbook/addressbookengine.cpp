@@ -47,6 +47,7 @@ public:
 AddressBookEngine::AddressBookEngine() : QObject()
   , m_client(new AddressBookClient)
   , m_contacts(new ContactsListModel({}, this))
+  , m_callStatus(CallStatus::Inactive)
 {
     //Prepare ssl configuration
     QSslConfiguration conf = QSslConfiguration::defaultConfiguration();
@@ -64,11 +65,24 @@ AddressBookEngine::AddressBookEngine() : QObject()
     connect(m_client, &AddressBookClient::contactsUpdated, this, [this](const Contacts &contacts) {
         m_contacts->reset(contacts.list());
     });
+    m_client->subscribeCallStatusUpdates(qtprotobuf::examples::None(), m_callStatus);
 }
 
 void AddressBookEngine::addContact(qtprotobuf::examples::Contact *contact)
 {
+    Q_ASSERT(contact != nullptr);
     m_client->addContact(*contact);
+}
+
+void AddressBookEngine::makeCall(qtprotobuf::examples::PhoneNumber *phoneNumber)
+{
+    Q_ASSERT(phoneNumber != nullptr);
+    m_client->makeCall(*phoneNumber);
+}
+
+void AddressBookEngine::endCall()
+{
+    m_client->endCall(qtprotobuf::examples::None());
 }
 
 AddressBookEngine::~AddressBookEngine()

@@ -2,17 +2,23 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <thread>
+
 #include <grpc++/grpc++.h>
 #include "addressbook.pb.h"
 #include "addressbook.grpc.pb.h"
 using namespace ::qtprotobuf::examples;
 
 class ContactsHandler;
+class CallHandler;
 
-class AddressBookService final : public AddressBook::WithAsyncMethod_contacts<AddressBook::Service> {
+class AddressBookService final : public AddressBook::WithAsyncMethod_callStatus<AddressBook::WithAsyncMethod_contacts<AddressBook::Service>> {
 public:
+    PhoneNumber m_lastPhone;
+    CallStatus m_lastCallStatus;
     Contacts m_contacts;
     std::vector<::grpc::ServerAsyncWriter<Contacts> *> m_clients;
+    std::vector<::grpc::ServerAsyncWriter<CallStatus> *> m_callClients;
     AddressBookService(): m_clients({}) {
         Contact* contact = m_contacts.add_list();
         contact->set_firstname("John");
@@ -35,6 +41,9 @@ public:
         PhoneNumber *home = (*contact->mutable_phones()).Add();
         home->set_countrycode(49);
         home->set_number(12324534679);
+
+        m_lastCallStatus.set_allocated_phonenumber(new PhoneNumber);
+        m_lastCallStatus.set_status(CallStatus::Inactive);
     }
 
     ~AddressBookService() {}
@@ -46,8 +55,9 @@ public:
     }
 
     void registerWriter(ContactsHandler *handler);
+    void registerCallStatusHandler(CallHandler *handler);
 
-    ::grpc::Status addContact(::grpc::ServerContext* context, const Contact* request, Contacts* response) override
+    ::grpc::Status addContact(::grpc::ServerContext *context, const Contact *request, Contacts *response) override
     {
         bool isUserOk = false;
         bool isPasswordOk = false;
@@ -72,18 +82,46 @@ public:
         updateContacts();
         return ::grpc::Status();
     }
-    ::grpc::Status removeContact(::grpc::ServerContext* context, const Contact* request, Contacts* response) override
+
+    ::grpc::Status makeCall(grpc::ServerContext *, const PhoneNumber *request, CallStatus *response) override
+    {
+        m_lastPhone = *request;
+        for(unsigned int i = 0; i < (m_callClients.size() - 1); i++) {
+            response->set_status(CallStatus::Active);
+            PhoneNumber *phoneNumber = new PhoneNumber(*request);
+            response->set_allocated_phonenumber(phoneNumber);
+            m_lastCallStatus = *response;
+            m_callClients[i]->Write(m_lastCallStatus, nullptr);
+        }
+        return ::grpc::Status();
+    }
+
+    ::grpc::Status endCall(grpc::ServerContext *, const None *, SimpleResult *) override
+    {
+        std::cout << "Call ended" << std::endl;
+        m_lastCallStatus.set_status(CallStatus::Ended);
+        for(unsigned int i = 0; i < (m_callClients.size() - 1); i++) {
+            m_callClients[i]->Write(m_lastCallStatus, nullptr);
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        std::cout << "Call ended" << std::endl;
+        m_lastCallStatus.set_status(CallStatus::Inactive);
+        for(unsigned int i = 0; i < (m_callClients.size() - 1); i++) {
+            m_callClients[i]->Write(m_lastCallStatus, nullptr);
+        }
+        return ::grpc::Status();
+    }
+
+    ::grpc::Status removeContact(::grpc::ServerContext *, const Contact *, Contacts *) override
     {
         std::cout << "removeContact called" << std::endl;
         updateContacts();
         return ::grpc::Status(::grpc::UNIMPLEMENTED, "Unimplemented");
     }
-    ::grpc::Status makeCall(::grpc::ServerContext* context, const Contact* request, SimpleResult* response) override
-    {
-        std::cout << "makeCall called" << std::endl;
-        return ::grpc::Status(::grpc::UNIMPLEMENTED, "Unimplemented");
-    }
-    ::grpc::Status navigateTo(::grpc::ServerContext* context, const Address* request, SimpleResult* response) override
+
+    ::grpc::Status navigateTo(::grpc::ServerContext *, const Address *, SimpleResult *) override
     {
         std::cout << "navigateTo called" << std::endl;
         return ::grpc::Status(::grpc::UNIMPLEMENTED, "Unimplemented");
@@ -106,9 +144,28 @@ public:
     ::grpc::ServerCompletionQueue* cq_;
 };
 
+class CallHandler {
+public:
+    CallHandler(AddressBookService* service, ::grpc::ServerCompletionQueue* cq) :  tag_(0xdeadbeee)
+      , writer_(&ctx_)
+      , cq_(cq)
+    {
+        service->RequestcallStatus(&ctx_, &request_, &writer_, cq_, cq_, &tag_);
+        service->registerCallStatusHandler(this);
+    }
+    int tag_;
+    grpc::ServerContext ctx_;
+    None request_;
+    ::grpc::ServerAsyncWriter< ::qtprotobuf::examples::CallStatus> writer_;
+    ::grpc::ServerCompletionQueue* cq_;
+};
 
 void AddressBookService::registerWriter(ContactsHandler *handler)    {
     m_clients.push_back(&(handler->writer_));
+}
+
+void AddressBookService::registerCallStatusHandler(CallHandler *handler) {
+    m_callClients.push_back(&(handler->writer_));
 }
 
 int main(int argc, char *argv[])
@@ -135,16 +192,23 @@ int main(int argc, char *argv[])
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
     std::cout << "Server listening on " << server_address << std::endl;
     ContactsHandler *last = new ContactsHandler(&service, cq.get());
+    CallHandler *lastCall = new CallHandler(&service, cq.get());
     while (true) {
         unsigned int *tag;
         bool ok;
         cq->Next((void**)&tag, &ok);
         if (tag == nullptr) {
+            std::cout << "Some request";
             continue;
         }
         if ((*tag) == 0xdeadbeef) {
             last->writer_.Write(service.m_contacts, nullptr);
             last = new ContactsHandler(&service, cq.get());
+        }
+
+        if ((*tag) == 0xdeadbeee) {
+            lastCall->writer_.Write(service.m_lastCallStatus, nullptr);
+            lastCall = new CallHandler(&service, cq.get());
         }
     }
 }
