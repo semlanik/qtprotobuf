@@ -5,7 +5,6 @@ download_project(PROJ   gRPCDownload
 )
 set(gRPCDownload_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
-
 include(ExternalProject)
 # Builds c-ares project from the git submodule.
 # Note: For all external projects, instead of using checked-out code, one could
@@ -36,26 +35,25 @@ set(LIBPROTOC_PREFIX_PATH "${gRPCDownload_INSTALL_DIR}/protobuf")
 set(LIBPROTOC_BINARY_PATH "${LIBPROTOC_PREFIX_PATH}/lib")
 set(LIBPROTOC_LIB_INCLUDE "${LIBPROTOC_PREFIX_PATH}/include")
 
-# Hack to make it work, otherwise INTERFACE_INCLUDE_DIRECTORIES will not be propagated
-file(MAKE_DIRECTORY ${LIBPROTOC_LIB_INCLUDE})
-
 add_library(libprotoc IMPORTED STATIC GLOBAL)
 add_library(libprotobuf IMPORTED STATIC GLOBAL)
 add_executable(protoc IMPORTED GLOBAL)
 add_dependencies(libprotoc protobuf)
+add_dependencies(libprotobuf protobuf)
+add_dependencies(protoc protobuf)
 
 set_target_properties(protoc PROPERTIES
-        "IMPORTED_LOCATION" "${LIBPROTOC_PREFIX_PATH}/bin/protoc"
+        IMPORTED_LOCATION "${LIBPROTOC_PREFIX_PATH}/bin/protoc"
 )
 
 set_target_properties(libprotoc PROPERTIES
-        "IMPORTED_LOCATION" "${LIBPROTOC_BINARY_PATH}/libprotoc.a"
-        "INTERFACE_INCLUDE_DIRECTORIES" "${LIBPROTOC_LIB_INCLUDE}"
+        IMPORTED_LOCATION "${LIBPROTOC_BINARY_PATH}/libprotoc.a"
+        INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${LIBPROTOC_LIB_INCLUDE}>
 )
 
 set_target_properties(libprotobuf PROPERTIES
-        "IMPORTED_LOCATION" "${LIBPROTOC_BINARY_PATH}/libprotobuf.a"
-        "INTERFACE_INCLUDE_DIRECTORIES" "${LIBPROTOC_LIB_INCLUDE}"
+        IMPORTED_LOCATION "${LIBPROTOC_BINARY_PATH}/libprotobuf.a"
+        INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${LIBPROTOC_LIB_INCLUDE}>
 )
 
 # Builds zlib project from the git submodule.
@@ -81,7 +79,7 @@ endif()
 
 # Builds gRPC based on locally checked-out sources and set arguments so that all the dependencies
 # are correctly located.
-ExternalProject_Add(grpc
+ExternalProject_Add(gRPC
   PREFIX grpc
   SOURCE_DIR "${gRPCDownload_SOURCE_DIR}"
   CMAKE_CACHE_ARGS
@@ -108,8 +106,15 @@ set_target_properties(grpc_cpp_plugin PROPERTIES
 
 add_library(grpc++ IMPORTED STATIC GLOBAL)
 set_target_properties(grpc++ PROPERTIES
-        IMPORTED_LOCATION "${LIBGRPC_PREFIX_PATH}/lib/libgrpc++_unsecure.a"
-        INTERFACE_INCLUDE_DIRECTORIES "${LIBGRPC_PREFIX_PATH}/include"
-        IMPORTED_LINK_INTERFACE_LIBRARIES "${LIBGRPC_PREFIX_PATH}/lib/libgrpc.a;${LIBGRPC_PREFIX_PATH}/lib/libgpr.a;${LIBGRPC_PREFIX_PATH}/lib/libaddress_sorting.a;${gRPCDownload_INSTALL_DIR}/c-ares/lib/libcares.a;${gRPCDownload_INSTALL_DIR}/zlib/lib/libz.a;pthread"
-                                          
+        IMPORTED_LOCATION "${LIBGRPC_PREFIX_PATH}/lib/libgrpc++.a"
+        INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${LIBGRPC_PREFIX_PATH}/include>
+        IMPORTED_LINK_INTERFACE_LIBRARIES "${LIBGRPC_PREFIX_PATH}/lib/libgrpc.a;${LIBGRPC_PREFIX_PATH}/lib/libgpr.a;${LIBGRPC_PREFIX_PATH}/lib/libaddress_sorting.a;${gRPCDownload_INSTALL_DIR}/c-ares/lib/libcares.a;${gRPCDownload_INSTALL_DIR}/zlib/lib/libz.a;ssl;crypto;pthread"
 )
+
+add_library(grpc IMPORTED STATIC GLOBAL)
+set_target_properties(grpc PROPERTIES
+        IMPORTED_LOCATION "${LIBGRPC_PREFIX_PATH}/lib/libgrpc.a"
+)
+add_dependencies(grpc_cpp_plugin gRPC)
+add_dependencies(grpc++ gRPC)
+add_dependencies(grpc gRPC)

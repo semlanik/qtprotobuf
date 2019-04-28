@@ -4,6 +4,7 @@ project(QtProtobuf VERSION 0.1.0)
 
 find_package(Protobuf)
 
+# FIXME: what is the reason to set these variables in root CMake?
 if(NOT DEFINED PREFIX)
     set(PREFIX /usr)
 endif()
@@ -18,26 +19,19 @@ set(TARGET_INCLUDE_DIR ${PREFIX}/include/${PROJECT_NAME})
 set(TARGET_CMAKE_DIR ${TARGET_LIB_DIR}/cmake/${PROJECT_NAME})
 
 message("CMAKE_MODULE_PATH: ${CMAKE_SYSTEM_MODULE_PATH}")
+# FIXME: each target must expose their headers via target_include_directories
 include_directories(${CMAKE_SOURCE_DIR}/src/protobuf ${CMAKE_SOURCE_DIR}/src/grpc)
 
-if(NOT Protobuf_FOUND)
-    # these names of the variable are equal to those assigned by find_package(Protobuf)
-    set(Protobuf_PROTOC_EXECUTABLE protoc)
-    set(Protobuf_PROTOC_LIBRARY protoc)
-    set(Protobuf_LIBRARIES protobuf pthread)
-endif()
-
-if(NOT DEFINED gRPC_CPP_PLUGIN_EXECUTABLE)
-    find_program(gRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
-    if(gRPC_CPP_PLUGIN_EXECUTABLE STREQUAL gRPC_CPP_PLUGIN_EXECUTABLE-NOTFOUND)
-        unset(gRPC_CPP_PLUGIN_EXECUTABLE)
-    endif()
-endif()
-
-if (NOT DEFINED gRPC_CPP_PLUGIN_EXECUTABLE)
+find_program(gRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
+if (gRPC_CPP_PLUGIN_EXECUTABLE STREQUAL gRPC_CPP_PLUGIN_EXECUTABLE-NOTFOUND)
     # if no approprite Protobuf installed, there is no appropriate version of gRPC neither
     # the next include provides both from sources
     include(cmake/gRPCBuild.cmake)
+    
+    # names of the variables are equal to those assigned by find_package(Protobuf)
+    set(Protobuf_PROTOC_EXECUTABLE protoc)
+    set(Protobuf_PROTOC_LIBRARY libprotoc)
+    set(Protobuf_LIBRARIES libprotobuf)
 
     set(gRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:grpc_cpp_plugin>)
 endif()
