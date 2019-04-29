@@ -65,10 +65,6 @@ message Contacts {
     repeated Contact list = 1;
 }
 
-message SimpleResult {
-    bool ok = 1;
-}
-
 message CallStatus {
     enum Status {
         Invalid = 0;
@@ -87,7 +83,6 @@ message ListFrame {
 }
 
 message None {
-    bool ok = 1;
 }
 
 service AddressBook {
@@ -96,6 +91,6 @@ service AddressBook {
     rpc contacts(ListFrame) returns (stream Contacts) {}
     rpc callStatus(None) returns (stream CallStatus) {}
     rpc makeCall(PhoneNumber) returns (CallStatus) {}
-    rpc endCall(None) returns (SimpleResult) {}
-    rpc navigateTo(Address) returns (SimpleResult) {}
+    rpc endCall(None) returns (None) {}
+    rpc navigateTo(Address) returns (None) {}
 }

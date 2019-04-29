@@ -5,8 +5,8 @@
 #include <thread>
 
 #include <grpc++/grpc++.h>
-#include "addressbook.pb.h"
-#include "addressbook.grpc.pb.h"
+#include <addressbook.pb.h>
+#include <addressbook.grpc.pb.h>
 using namespace ::qtprotobuf::examples;
 
 class ContactsHandler;
@@ -96,7 +96,7 @@ public:
         return ::grpc::Status();
     }
 
-    ::grpc::Status endCall(grpc::ServerContext *, const None *, SimpleResult *) override
+    ::grpc::Status endCall(grpc::ServerContext *, const None *, None *) override
     {
         if (m_lastCallStatus.status() != CallStatus::Active) {
             return ::grpc::Status();
@@ -125,7 +125,7 @@ public:
         return ::grpc::Status(::grpc::UNIMPLEMENTED, "Unimplemented");
     }
 
-    ::grpc::Status navigateTo(::grpc::ServerContext *, const Address *, SimpleResult *) override
+    ::grpc::Status navigateTo(::grpc::ServerContext *, const Address *, None *) override
     {
         std::cout << "navigateTo called" << std::endl;
         return ::grpc::Status(::grpc::UNIMPLEMENTED, "Unimplemented");

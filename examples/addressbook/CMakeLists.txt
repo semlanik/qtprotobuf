@@ -15,7 +15,6 @@ set(GENERATED_HEADERS
     job.h
     listframe.h
     phonenumber.h
-    simpleresult.h
     globalenums.h
     none.h
     callstatus.h)
