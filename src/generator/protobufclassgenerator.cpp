@@ -123,6 +123,9 @@ void ProtobufClassGenerator::printComparisonOperators()
     bool isFirst = true;
     PropertyMap properties;
     mPrinter.Print({{"type", mClassName}}, Templates::EqualOperatorTemplate);
+    if (mMessage->field_count() <= 0) {
+        mPrinter.Print("true");
+    }
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
         if (producePropertyMap(field, properties)) {

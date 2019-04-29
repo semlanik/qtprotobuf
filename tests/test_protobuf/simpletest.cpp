@@ -65,6 +65,7 @@
 #include "repeatedexternalcomplexmessage.h"
 #include "simplesint32stringmapmessage.h"
 #include "simplestringstringmapmessage.h"
+#include "emptymessage.h"
 
 #include "globalenums.h"
 #include "qtprotobuf.h"
@@ -766,4 +767,11 @@ TEST_F(SimpleTest, SimpleStringStringMapMessageTest)
 
     test.mapField()["key 66"] = "Some default";
     ASSERT_STREQ(test.mapField()["key 66"].toStdString().c_str(), "Some default");
+}
+
+TEST_F(SimpleTest, EmptyMessageTest)
+{
+    EmptyMessage::registerTypes();
+    ASSERT_EQ(0, EmptyMessage::propertyOrdering.size());
+    ASSERT_EQ(1, EmptyMessage::staticMetaObject.propertyCount());
 }

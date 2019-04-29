@@ -4,6 +4,9 @@ import "externalpackagetest.proto";
 
 package qtprotobufnamespace.tests;
 
+message EmptyMessage {
+}
+
 message SimpleEnumMessage {
   enum LocalEnum {
     LOCAL_ENUM_VALUE0 = 0;

@@ -129,6 +129,7 @@ set(GENERATED_HEADERS
     simpleuint64uint64mapmessage.h
     simpleuintmessage.h
     stepchildenummessage.h
+    emptymessage.h
 )
 
 file(GLOB SOURCES
