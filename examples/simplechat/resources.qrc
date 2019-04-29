@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>img/arrow.png</file>
+        <file>ChatInputField.qml</file>
+        <file>ChatView.qml</file>
+    </qresource>
+</RCC>

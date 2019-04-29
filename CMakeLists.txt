@@ -74,6 +74,7 @@ add_subdirectory("src/generator")
 
 set(QTPROTOBUF_EXECUTABLE $<TARGET_FILE:${GENERATOR_TARGET}>)
 
+set(MAKE_TESTS OFF)
 if(DEFINED $ENV{MAKE_TESTS})
     set(MAKE_TESTS $ENV{MAKE_TESTS})
 elseif(NOT DEFINED MAKE_TESTS)
@@ -132,6 +133,8 @@ endif()
 if(MAKE_EXAMPLES)
     add_subdirectory("examples/addressbook")
     add_subdirectory("examples/addressbookserver")
+    add_subdirectory("examples/simplechat")
+    add_subdirectory("examples/simplechatserver")
 endif()
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/QtProtobufConfig.cmake DESTINATION ${TARGET_CMAKE_DIR} PERMISSIONS OWNER_WRITE GROUP_READ WORLD_READ)
