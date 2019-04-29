@@ -20,16 +20,16 @@ file(GLOB HEADERS asyncreply.h
     sslcredentials.h
     insecurecredentials.h)
 
-set(INCLUDE_DIRS PRIVATE ${CMAKE_SOURCE_DIR}/src/protobuf PUBLIC ${Qt5Core_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS})
-
-add_library(${SHARED_TARGET} SHARED ${SOURCES})
-set_target_properties(${SHARED_TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})
-target_include_directories(${SHARED_TARGET} ${INCLUDE_DIRS})
-target_link_libraries(${SHARED_TARGET} PRIVATE ${PROTOBUF_LIBRARY_TARGET} PUBLIC Qt5::Network Qt5::Core)
-add_dependencies(${SHARED_TARGET} ${PROTOBUF_LIBRARY_TARGET})
+set(INCLUDE_DIRS INTERFACE ${CURRENT_SOURCE_DIR} PUBLIC ${CMAKE_SOURCE_DIR}/src/protobuf ${Qt5Core_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS})
 
 add_library(${TARGET} ${SOURCES})
 target_include_directories(${TARGET} ${INCLUDE_DIRS})
+
+add_library(${SHARED_TARGET} SHARED)
+set_target_properties(${SHARED_TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})
+target_include_directories(${SHARED_TARGET} ${INCLUDE_DIRS})
+target_link_libraries(${SHARED_TARGET} PRIVATE $<TARGET_FILE:${TARGET}> PUBLIC ${PROTOBUF_LIBRARY_TARGET} Qt5::Network Qt5::Core)
+add_dependencies(${SHARED_TARGET} ${PROTOBUF_LIBRARY_TARGET})
 
 install(TARGETS ${TARGET} ${SHARED_TARGET}
     ARCHIVE DESTINATION ${TARGET_LIB_DIR}

@@ -2,23 +2,20 @@ cmake_minimum_required(VERSION 3.1)
 
 project(QtProtobuf VERSION 0.1.0)
 
+include(GNUInstallDirs)
 find_package(Protobuf)
 
 # FIXME: what is the reason to set these variables in root CMake?
-if(NOT DEFINED PREFIX)
-    set(PREFIX /usr)
-endif()
 
 set(GENERATOR_TARGET qtprotobufgen)
 set(PROTOBUF_LIBRARY_TARGET qtprotobuf)
 set(GRPC_LIBRARY_TARGET qtgrpc)
 
-set(TARGET_BIN_DIR ${PREFIX}/bin)
-set(TARGET_LIB_DIR ${PREFIX}/lib)
-set(TARGET_INCLUDE_DIR ${PREFIX}/include/${PROJECT_NAME})
-set(TARGET_CMAKE_DIR ${TARGET_LIB_DIR}/cmake/${PROJECT_NAME})
+set(TARGET_BIN_DIR ${CMAKE_INSTALL_BINDIR})
+set(TARGET_LIB_DIR ${CMAKE_INSTALL_LIBDIR})
+set(TARGET_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+set(TARGET_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
-message("CMAKE_MODULE_PATH: ${CMAKE_SYSTEM_MODULE_PATH}")
 # FIXME: each target must expose their headers via target_include_directories
 include_directories(${CMAKE_SOURCE_DIR}/src/protobuf ${CMAKE_SOURCE_DIR}/src/grpc)
 
@@ -74,7 +71,6 @@ add_subdirectory("src/generator")
 
 set(QTPROTOBUF_EXECUTABLE $<TARGET_FILE:${GENERATOR_TARGET}>)
 
-set(MAKE_TESTS OFF)
 if(DEFINED $ENV{MAKE_TESTS})
     set(MAKE_TESTS $ENV{MAKE_TESTS})
 elseif(NOT DEFINED MAKE_TESTS)

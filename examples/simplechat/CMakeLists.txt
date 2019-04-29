@@ -11,7 +11,6 @@ set(GENERATED_HEADERS
     chatmessages.h
     user.h
     users.h
-    simplereply.h
     none.h
     simplechatclient.h)
 
