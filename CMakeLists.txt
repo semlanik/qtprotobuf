@@ -125,6 +125,7 @@ if(MAKE_TESTS)
         link_directories(${GTEST_BOTH_LIBRARIES})
     endif()
 
+    enable_testing()
     add_subdirectory("tests")
 endif()
 
