@@ -98,6 +98,10 @@ public:
 
     ::grpc::Status endCall(grpc::ServerContext *, const None *, SimpleResult *) override
     {
+        if (m_lastCallStatus.status() != CallStatus::Active) {
+            return ::grpc::Status();
+        }
+
         std::cout << "Call ended" << std::endl;
         m_lastCallStatus.set_status(CallStatus::Ended);
         for(unsigned int i = 0; i < (m_callClients.size() - 1); i++) {

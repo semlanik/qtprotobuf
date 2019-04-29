@@ -31,10 +31,11 @@ import qtprotobuf.examples 1.0
 Rectangle {
     id: root
     property CallStatus callStatus: null
-    visible: false
     color: "#B0BEC5"
     border.width: 1
     border.color: "#cfdfe7"
+    opacity: 0.0
+    visible: opacity > 0
     PrimaryText {
         id: _statusText
         text: _d.getCallStatusText()
@@ -44,24 +45,95 @@ Rectangle {
     }
     radius: 10
 
+    transform: Rotation {
+        id: _rotation
+        axis {
+            x: 1
+            y: 0
+            z: 0
+        }
+        origin {
+            x: root.width / 2
+            y: root.height / 2
+        }
+
+        angle: 0
+    }
+
     states: [
         State {
             name: "opened"
             when: callStatus.status === CallStatus.Active || callStatus.status === CallStatus.Ended
-            PropertyChanges {
-                target: root
-                visible: true
-            }
         },
         State {
             name: "closed"
             when: callStatus.status !== CallStatus.Active && callStatus.status !== CallStatus.Ended
-            PropertyChanges {
+        }
+    ]
+
+    transitions: [
+        Transition {
+            from: "opened"
+            to: "closed"
+
+            NumberAnimation {
                 target: root
-                visible: false
+                property: "opacity"
+                duration: 300
+                from: 1.0
+                to: 0.0
+            }
+
+
+            NumberAnimation {
+                target: root
+                property: "anchors.verticalCenterOffset"
+                duration: 300
+                from: 0
+                to: 50
+            }
+
+            NumberAnimation {
+                target: _rotation
+                property: "angle"
+                duration: 300
+                from: 0
+                to: -45
+            }
+        },
+        Transition {
+            from: "closed"
+            to: "opened"
+
+            NumberAnimation {
+                target: root
+                property: "anchors.verticalCenterOffset"
+                duration: 300
+                from: 50
+                to: 0
+            }
+
+            NumberAnimation {
+                target: root
+                property: "opacity"
+                duration: 300
+                from: 0.0
+                to: 1.0
+            }
+
+            NumberAnimation {
+                target: _rotation
+                property: "angle"
+                duration: 300
+                from: -45
+                to: 0
             }
         }
     ]
+
+    MouseArea {
+        anchors.fill: parent
+    }
 
     FloatingRoundButton {
         id: _hangButton

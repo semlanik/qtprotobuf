@@ -147,6 +147,7 @@ StackItem {
     FloatingRoundButton {
         id: call
         enabled: _homePhoneField.text.length > 0
+                 && abEngine.callStatus.status !== CallStatus.Active && abEngine.callStatus.status !== CallStatus.Ended
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 10
