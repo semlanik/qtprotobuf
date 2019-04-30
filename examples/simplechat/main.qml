@@ -48,11 +48,17 @@ ApplicationWindow {
             id: _loginField
             width: 200
             placeholderText: qsTr("Login")
+            onAccepted:             {
+                scEngine.login(_loginField.text, _passwordField.text)
+            }
         }
         ChatInputField {
             id: _passwordField
             echoMode: TextInput.Password
             placeholderText: qsTr("Password")
+            onAccepted:             {
+                scEngine.login(_loginField.text, _passwordField.text)
+            }
         }
         Button {
             id: _pressedControl

@@ -4,9 +4,20 @@ import examples.simplechat 1.0
 Rectangle {
     anchors.fill: parent
     color: "#303030"
+    onVisibleChanged: {
+        if(visible) {
+            _inputField.forceActiveFocus()
+        }
+    }
+    MouseArea {
+        anchors.fill: parent
+    }
+
     ListView {
         anchors.top: parent.top
         anchors.bottom: _inputField.top
+        anchors.left: parent.left
+        anchors.right: parent.right
         model: scEngine.messages
         delegate: Item {
             height: childrenRect.height
@@ -21,8 +32,10 @@ Rectangle {
 
             Text {
                 anchors.left: _userName.right
+                anchors.right: parent.right
                 font.pointSize: 12
                 color: "#ffffff"
+                wrapMode: Text.Wrap
                 text: scEngine.getText(model.modelData.content)
             }
         }
@@ -33,9 +46,13 @@ Rectangle {
 
     ChatInputField {
         id: _inputField
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        focus: true
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+            margins: 20
+        }
         placeholderText: qsTr("Start type here")
         onAccepted: {
             scEngine.sendMessage(_inputField.text)
