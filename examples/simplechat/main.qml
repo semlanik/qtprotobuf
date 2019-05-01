@@ -42,7 +42,9 @@ ApplicationWindow {
     }
 
     Column {
+        id: _loginControl
         spacing: 5
+        visible: true
         anchors.centerIn: parent
         ChatInputField {
             id: _loginField
@@ -50,6 +52,16 @@ ApplicationWindow {
             placeholderText: qsTr("Login")
             onAccepted:             {
                 scEngine.login(_loginField.text, _passwordField.text)
+            }
+            onVisibleChanged: {
+                if(visible) {
+                    _loginField.forceActiveFocus()
+                }
+            }
+            Component.onCompleted: {
+                if(visible) {
+                    _loginField.forceActiveFocus()
+                }
             }
         }
         ChatInputField {
@@ -102,6 +114,7 @@ ApplicationWindow {
             target: scEngine
             onLoggedIn: {
                 _chatView.visible = true
+                _loginControl.visible = false
             }
         }
     }

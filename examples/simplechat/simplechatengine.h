@@ -26,11 +26,13 @@
 #pragma once
 
 #include <QObject>
+
 #include <chatmessages.h>
 #include "simplechatclient.h"
 
 #include "universallistmodel.h"
 
+class QClipboard;
 
 namespace qtprotobuf {
 namespace examples {
@@ -40,25 +42,45 @@ using ChatMessageModel = UniversalListModel<qtprotobuf::examples::ChatMessage>;
 class SimpleChatEngine : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString userName READ userName NOTIFY userNameChanged)
     Q_PROPERTY(qtprotobuf::examples::ChatMessageModel *messages READ messages CONSTANT)
+    Q_PROPERTY(qtprotobuf::examples::ChatMessage::ContentType clipBoardContentType READ clipBoardContentType NOTIFY clipBoardContentTypeChanged)
 
     ChatMessageModel m_messages;
     SimpleChatClient *m_client;
+    QClipboard *m_clipBoard;
+    QString m_userName;
+
 public:
     explicit SimpleChatEngine(QObject *parent = nullptr);
     ~SimpleChatEngine();
     Q_INVOKABLE void login(const QString &name, const QString &password);
     Q_INVOKABLE void sendMessage(const QString &message);
 
-    Q_INVOKABLE QString getText(const QByteArray &data) { return QString::fromUtf8(data); }
+    Q_INVOKABLE QString getText(const QByteArray &data) const { return QString::fromUtf8(data); }
+    Q_INVOKABLE QString getImage(const QByteArray &data) const { return QString("data:image/png;base64,") + data.toBase64(); }
+    Q_INVOKABLE QString getImageThumbnail(const QByteArray &data) const;
+    Q_INVOKABLE void sendImageFromClipboard();
 
     ChatMessageModel *messages()
     {
         return &m_messages;
     }
+
+
+    qtprotobuf::examples::ChatMessage::ContentType clipBoardContentType() const;
+
+    QString userName() const
+    {
+        return m_userName;
+    }
+
 Q_SIGNALS:
     void loggedIn();
     void authFailed();
+    void clipBoardContentTypeChanged();
+    void userNameChanged();
+
 };
 
 }

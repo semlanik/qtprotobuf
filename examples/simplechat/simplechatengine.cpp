@@ -34,6 +34,12 @@
 #include <QSslConfiguration>
 #include <QCryptographicHash>
 #include <QDateTime>
+#include <QClipboard>
+#include <QGuiApplication>
+#include <QMimeData>
+#include <QImage>
+#include <QByteArray>
+#include <QBuffer>
 
 using namespace qtprotobuf::examples;
 
@@ -42,12 +48,15 @@ class AuthCredentials : public qtprotobuf::CallCredentials
 public:
     AuthCredentials(const QString &userName, const QString &password) :
         CallCredentials(CredentialMap{{QLatin1String("user-name"), QVariant::fromValue(userName)},
-                                      {QLatin1String("user-password"), QVariant::fromValue(password)}}) {}
+    {QLatin1String("user-password"), QVariant::fromValue(password)}}) {}
 };
 
 SimpleChatEngine::SimpleChatEngine(QObject *parent) : QObject(parent), m_client(new SimpleChatClient)
+  , m_clipBoard(QGuiApplication::clipboard())
 {
-
+    if(m_clipBoard) {
+        connect(m_clipBoard, &QClipboard::dataChanged, this, &SimpleChatEngine::clipBoardContentTypeChanged);
+    }
 }
 
 SimpleChatEngine::~SimpleChatEngine()
@@ -70,8 +79,12 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
 
     m_client->attachChannel(channel);
     m_client->subscribeMessageListUpdates(None());
-    QObject::connect(m_client, &SimpleChatClient::messageListUpdated, this, [this](const qtprotobuf::examples::ChatMessages &messages){
-        loggedIn();
+    QObject::connect(m_client, &SimpleChatClient::messageListUpdated, this, [this, name](const qtprotobuf::examples::ChatMessages &messages){
+        if (m_userName != name) {
+            m_userName = name;
+            userNameChanged();
+            loggedIn();
+        }
         m_messages.reset(messages.messages());
     });
 }
@@ -80,3 +93,70 @@ void SimpleChatEngine::sendMessage(const QString &content)
 {
     m_client->sendMessage(ChatMessage(QDateTime::currentMSecsSinceEpoch(), content.toUtf8(), ChatMessage::ContentType::Text));
 }
+
+qtprotobuf::examples::ChatMessage::ContentType SimpleChatEngine::clipBoardContentType() const
+{
+    if(m_clipBoard != nullptr) {
+        const QMimeData *mime = m_clipBoard->mimeData();
+        if (mime != nullptr) {
+            if (mime->hasImage() || mime->hasUrls()) {
+                return qtprotobuf::examples::ChatMessage::ContentType::Image;
+            } else if(mime->hasText()) {
+                return qtprotobuf::examples::ChatMessage::ContentType::Text;
+            }
+        }
+    }
+    return qtprotobuf::examples::ChatMessage::Unknown;
+}
+
+void SimpleChatEngine::sendImageFromClipboard()
+{
+    if(m_clipBoard == nullptr) {
+        return;
+    }
+
+    QByteArray imgData;
+    const QMimeData *mime = m_clipBoard->mimeData();
+    if (mime != nullptr) {
+        if(mime->hasImage()) {
+            QImage img = mime->imageData().value<QImage>();
+            QBuffer buffer(&imgData);
+            buffer.open(QIODevice::WriteOnly);
+            img.save(&buffer, "PNG");
+            buffer.close();
+        } else if(mime->hasUrls()) {
+            QUrl imgUrl = mime->urls().first();
+            if (!imgUrl.isLocalFile()) {
+                qWarning() << "Only supports transfer of local images";
+                return;
+            }
+            QImage img(imgUrl.toLocalFile());
+            if(img.isNull()) {
+                qWarning() << "Invalid image format";
+                return;
+            }
+
+            QBuffer buffer(&imgData);
+            buffer.open(QIODevice::WriteOnly);
+            img.save(&buffer, "PNG");
+            buffer.close();
+        }
+    }
+
+    if(imgData.isEmpty()) {
+        return;
+    }
+
+    m_client->sendMessage(ChatMessage(QDateTime::currentMSecsSinceEpoch(), imgData, qtprotobuf::examples::ChatMessage::ContentType::Image));
+}
+
+QString SimpleChatEngine::getImageThumbnail(const QByteArray &data) const
+{
+    QImage img = QImage::fromData(data, "PNG");
+    img = img.scaled(200, 200, Qt::KeepAspectRatio);
+    QByteArray scaledData;
+    QBuffer buffer(&scaledData);
+    img.save(&buffer, "PNG");
+    return getImage(scaledData);
+}
+

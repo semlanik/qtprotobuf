@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     qtprotobuf::QtProtobuf::init();
     ChatMessages::registerTypes();
     ChatMessage::registerTypes();
