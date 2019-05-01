@@ -117,7 +117,7 @@ if(MAKE_TESTS)
         #Set  path to GTest build libraries
         set(GTEST_BOTH_LIBRARIES "")
 
-        #Set  path to GTest include directory
+        #Set path to GTest include directory
         include_directories(${GTEST_INCLUDE_PATHS} "/")
         link_directories(${GTEST_BOTH_LIBRARIES})
     endif()

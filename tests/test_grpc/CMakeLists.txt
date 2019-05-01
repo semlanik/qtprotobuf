@@ -1,9 +1,12 @@
 configure_file(test_driver.sh.in test_driver.sh @ONLY)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testfile ${CMAKE_CURRENT_BINARY_DIR}/testfile COPYONLY)
+
 set(TARGET qtgrpc_test)
 set(GENERATED_HEADERS
     simplestringmessage.h
     testserviceclient.h
+    blobmessage.h
 #    testserviceserver.h
 )
 

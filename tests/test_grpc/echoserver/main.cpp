@@ -46,6 +46,16 @@ public:
 
         return ::grpc::Status();
     }
+
+    ::grpc::Status testMethodBlobServerStream(grpc::ServerContext *, const qtprotobufnamespace::tests::BlobMessage *request,
+                                          ::grpc::ServerWriter<qtprotobufnamespace::tests::BlobMessage> *writer) override
+    {
+        std::cerr << "testMethodBlobServerStream called" << std::endl;
+        qtprotobufnamespace::tests::BlobMessage msg;
+        msg.set_allocated_testbytes(new std::string(request->testbytes()));
+        writer->Write(msg);
+        return ::grpc::Status();
+    }
 };
 
 int main(int, char *[])

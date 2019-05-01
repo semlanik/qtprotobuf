@@ -6,3 +6,6 @@ message SimpleStringMessage {
     string testFieldString = 6;
 }
 
+message BlobMessage {
+    bytes testBytes = 1;
+}

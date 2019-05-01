@@ -27,8 +27,11 @@
 #include "http2channel.h"
 #include "qtprotobuf.h"
 #include "insecurecredentials.h"
+#include "blobmessage.h"
 
 #include <QTimer>
+#include <QFile>
+#include <QCryptographicHash>
 
 #include <QCoreApplication>
 #include <gtest/gtest.h>
@@ -225,5 +228,35 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
 
     ASSERT_EQ(i, 4);
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Stream4");
+    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Ok);
+}
+
+TEST_F(ClientTest, HugeBlobEchoStreamTest)
+{
+    int argc = 0;
+    QCoreApplication app(argc, nullptr);
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
+    BlobMessage result;
+    BlobMessage request;
+    QFile testFile("testfile");
+    ASSERT_TRUE(testFile.open(QFile::ReadOnly));
+
+    request.setTestBytes(testFile.readAll());
+    QByteArray dataHash = QCryptographicHash::hash(request.testBytes(), QCryptographicHash::Sha256);
+    QEventLoop waiter;
+
+    QObject::connect(&testClient, &TestServiceClient::testMethodBlobServerStreamUpdated, &app, [&result, &waiter](const BlobMessage& ret) {
+        result.setTestBytes(ret.testBytes());
+        waiter.quit();
+    });
+
+    testClient.subscribeTestMethodBlobServerStreamUpdates(request);
+
+    QTimer::singleShot(20000, &waiter, &QEventLoop::quit);
+    waiter.exec();
+
+    QByteArray returnDataHash = QCryptographicHash::hash(result.testBytes(), QCryptographicHash::Sha256);
+    ASSERT_TRUE(returnDataHash == dataHash);
     ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Ok);
 }
