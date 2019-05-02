@@ -1,3 +1,5 @@
+find_package(QtProtobuf REQUIRED)
+
 function(protobuf_generate_all)
     set(options)
     set(oneValueArgs OUT_DIR TARGET)
@@ -59,10 +61,10 @@ function(add_test_target)
 
     add_executable(${add_test_target_TARGET} ${add_test_target_SOURCES})
     if(Qt5_POSITION_INDEPENDENT_CODE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
         set_target_properties(${add_test_target_TARGET} PROPERTIES POSITION_INDEPENDENT_CODE FALSE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     endif()
     add_dependencies(${add_test_target_TARGET} ${QtProtobuf_GENERATED})
-    target_link_libraries(${add_test_target_TARGET} gtest_main gtest ${QtProtobuf_GENERATED} ${GRPC_LIBRARY_TARGET} ${PROTOBUF_LIBRARY_TARGET} Qt5::Core Qt5::Qml Qt5::Network)
+    target_link_libraries(${add_test_target_TARGET} gtest_main gtest ${QtProtobuf_GENERATED} ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf ${QTPROTOBUF_COMMON_NAMESPACE}::QtGrpc Qt5::Core Qt5::Qml Qt5::Network)
     target_include_directories(${add_test_target_TARGET} PRIVATE ${GENERATED_SOURCES_DIR})
 endfunction(add_test_target)

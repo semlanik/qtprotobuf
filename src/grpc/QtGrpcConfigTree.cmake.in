@@ -1,0 +1,6 @@
+include(CMakeFindDependencyMacro)
+find_dependency(Protobuf REQUIRED)
+find_dependency(QtProtobuf REQUIRED)
+
+@PACKAGE_INIT@
+

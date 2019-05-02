@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(QtProtobuf VERSION 0.1.0)
+set(QTPROTOBUF_PROJECT_VERSION 0.1.0)
+project(QtProtobufProject VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
+set(QTPROTOBUF_COMMON_NAMESPACE QtProtobufProject)
 
 include(GNUInstallDirs)
 find_package(Protobuf)
@@ -8,16 +10,7 @@ find_package(Protobuf)
 # FIXME: what is the reason to set these variables in root CMake?
 
 set(GENERATOR_TARGET qtprotobufgen)
-set(PROTOBUF_LIBRARY_TARGET qtprotobuf)
-set(GRPC_LIBRARY_TARGET qtgrpc)
-
-set(TARGET_BIN_DIR ${CMAKE_INSTALL_BINDIR})
-set(TARGET_LIB_DIR ${CMAKE_INSTALL_LIBDIR})
-set(TARGET_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
-set(TARGET_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
-
-# FIXME: each target must expose their headers via target_include_directories
-include_directories(${CMAKE_SOURCE_DIR}/src/protobuf ${CMAKE_SOURCE_DIR}/src/grpc)
+set(QTPROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_FULL_BINDIR}/${GENERATOR_TARGET})
 
 find_program(gRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
 if (gRPC_CPP_PLUGIN_EXECUTABLE STREQUAL gRPC_CPP_PLUGIN_EXECUTABLE-NOTFOUND)
@@ -60,10 +53,6 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-include(cmake/QtProtobufCommon.cmake)
-configure_file(cmake/QtProtobufConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake/QtProtobufConfig.cmake @ONLY)
-include(${CMAKE_CURRENT_BINARY_DIR}/cmake/QtProtobufConfig.cmake)
 
 add_subdirectory("src/protobuf")
 add_subdirectory("src/grpc")
@@ -132,5 +121,3 @@ if(MAKE_EXAMPLES)
     add_subdirectory("examples/simplechat")
     add_subdirectory("examples/simplechatserver")
 endif()
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/QtProtobufConfig.cmake DESTINATION ${TARGET_CMAKE_DIR} PERMISSIONS OWNER_WRITE GROUP_READ WORLD_READ)

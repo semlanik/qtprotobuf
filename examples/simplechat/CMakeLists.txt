@@ -5,6 +5,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Quick Network REQUIRED)
+find_package(QtProtobuf REQUIRED)
+find_package(QtGrpc REQUIRED)
 
 set(GENERATED_HEADERS
     chatmessage.h
@@ -31,4 +33,4 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../simplechatserver/cert.pem DESTINATION $
 add_executable(${TARGET} ${SOURCES} resources.qrc)
 add_dependencies(${TARGET} ${QtProtobuf_GENERATED})
 target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
-target_link_libraries(${TARGET} ${GRPC_LIBRARY_TARGET} ${PROTOBUF_LIBRARY_TARGET} ${QtProtobuf_GENERATED} Qt5::Quick Qt5::Qml)
+target_link_libraries(${TARGET}  QtProtobufProject::QtProtobuf QtProtobufProject::QtGrpc ${QtProtobuf_GENERATED} Qt5::Quick Qt5::Qml)

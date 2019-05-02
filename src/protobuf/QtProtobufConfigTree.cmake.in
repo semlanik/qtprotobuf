@@ -1,0 +1,6 @@
+include(CMakeFindDependencyMacro)
+find_dependency(Protobuf REQUIRED)
+
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/QtProtobufGen.cmake")

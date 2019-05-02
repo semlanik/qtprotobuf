@@ -1,5 +1,7 @@
 set(TARGET addressbookserver)
 
+include(${CMAKE_SOURCE_DIR}/cmake/QtProtobufCommon.cmake)
+
 set(GENERATED_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/addressbook.pb.cc
     ${CMAKE_CURRENT_BINARY_DIR}/addressbook.grpc.pb.cc)
