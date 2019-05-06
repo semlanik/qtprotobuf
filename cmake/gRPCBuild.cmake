@@ -1,3 +1,19 @@
+# This script clones gRPC project and builds it with its dependencies
+# In order to use it
+# - copy DownloadProject.cmake, DownloadProject.CMakeLists.cmake.in and current file
+#   into a separate folder outside the project.
+# - create there a simple CMakeLists.txt with content:
+# -------
+#   cmake_minimum_required(VERSION 3.1)
+#   project(gRPCTargetsBuilder)
+#   include(gRPCBuild.cmake)
+# -------
+#
+# -  from a build directory run "cmake <folder with created CMakeLists.txt>"
+#
+# In order to use the built gRPC project with qtprotobuf, please, specify CMAKE_PREFIX_PATH and other vars. E.g.
+# PATH="<build-grpc>/grpc/bin:$PATH" cmake -DCMAKE_PREFIX_PATH="<build-grpc>/protobuf/lib/cmake;<build-grpc>/grpc/lib/cmake" -Dprotobuf_MODULE_COMPATIBLE=ON <qtprotobuf_CMakeLists_dir>
+
 include(cmake/DownloadProject.cmake)
 download_project(PROJ   gRPCDownload
                         GIT_REPOSITORY      https://github.com/grpc/grpc.git

@@ -2,41 +2,35 @@ cmake_minimum_required(VERSION 3.1)
 
 set(QTPROTOBUF_PROJECT_VERSION 0.1.0)
 project(QtProtobufProject VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
-set(QTPROTOBUF_COMMON_NAMESPACE QtProtobufProject)
 
 include(GNUInstallDirs)
 
 find_package(Protobuf CONFIG)
 if(NOT Protobuf_FOUND)
     find_package(Protobuf MODULE)
+    # still Protobuf hard dependency not found
+    if(NOT Protobuf_FOUND)
+        # TODO: add instructions to cmake/gRPCBuild.cmake
+        message(FATAL_ERROR "Protobuf is a hard dependency of the project. You may install it (with gRPC) by following instructions in cmake/gRPCBuild.cmake script.")
+    endif()
 endif()
 
-# FIXME: what is the reason to set these variables in root CMake?
-
-set(GENERATOR_TARGET qtprotobufgen)
-set(QTPROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_FULL_BINDIR}/${GENERATOR_TARGET})
+find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
+if (Qt5Core_VERSION VERSION_LESS "5.11.0")
+    # grpc target requires QT version not less than 5.11
+    # earlier versions do not provide required Http2DirectAttribute: https://doc.qt.io/qt-5/whatsnew511.html
+    message(FATAL_ERROR "Required Qt version is 5.11+")
+endif()
 
 find_program(gRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
 if (gRPC_CPP_PLUGIN_EXECUTABLE STREQUAL gRPC_CPP_PLUGIN_EXECUTABLE-NOTFOUND)
-    # if no approprite Protobuf installed, there is no appropriate version of gRPC neither
-    # the next include provides both from sources
-    include(cmake/gRPCBuild.cmake)
-    
-    # names of the variables are equal to those assigned by find_package(Protobuf)
-    set(Protobuf_PROTOC_EXECUTABLE protoc)
-    set(Protobuf_PROTOC_LIBRARY libprotoc)
-    set(Protobuf_LIBRARIES libprotobuf)
-
-    set(gRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:grpc_cpp_plugin>)
+    message(WARNING "grpc_cpp_plugin not found: some tests and examples cannot be built.")
 endif()
 
-# grpc target requires QT version not less than 5.11
-# earlier versions do not provide required Http2DirectAttribute: https://doc.qt.io/qt-5/whatsnew511.html
-find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
-
-if (Qt5Core_VERSION VERSION_LESS "5.11.0")
-    message(FATAL_ERROR "Required Qt version is 5.11+")
-endif()
+set(QTPROTOBUF_COMMON_NAMESPACE QtProtobufProject)
+set(GENERATOR_TARGET qtprotobufgen)
+set(QTPROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_FULL_BINDIR}/${GENERATOR_TARGET})
+set(QTPROTOBUF_EXECUTABLE $<TARGET_FILE:${GENERATOR_TARGET}>)
 
 if(UNIX)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -50,6 +44,7 @@ elseif(WIN32)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall" "-Werror")
 endif()
 
+# TODO: are these features needed?
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 if(Qt5_POSITION_INDEPENDENT_CODE)
     set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
@@ -61,8 +56,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory("src/protobuf")
 add_subdirectory("src/grpc")
 add_subdirectory("src/generator")
-
-set(QTPROTOBUF_EXECUTABLE $<TARGET_FILE:${GENERATOR_TARGET}>)
 
 if(DEFINED $ENV{MAKE_TESTS})
     set(MAKE_TESTS $ENV{MAKE_TESTS})
@@ -89,10 +82,7 @@ endif()
 if(MAKE_TESTS)
     find_package(GTest)
     if (UNIX AND NOT GTest_FOUND)
-        if (NOT Protobuf_FOUND)
-            # if prebuilt found protobuf then functionality to download GTEST is needed
-            include(cmake/DownloadProject.cmake)
-        endif()
+        include(cmake/DownloadProject.cmake)
         download_project(PROJ                GTest
             GIT_REPOSITORY      https://github.com/google/googletest.git
             GIT_TAG             v1.8.x
@@ -101,7 +91,6 @@ if(MAKE_TESTS)
         set(BUILD_GMOCK OFF CACHE BOOL "Disable gmock build functionality" FORCE)
         add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
     endif()
-
 
     if(WIN32)
         #Needs to set path to protobuf libraries
