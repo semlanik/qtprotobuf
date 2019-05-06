@@ -10,7 +10,6 @@ function(generate_qtprotobuf)
     set(GEN_TARGET ${generate_qtprotobuf_TARGET}_qtprotobuf_generate)
 
     add_custom_target(${GEN_TARGET})
-    message(STATUS "add_custom_target ${GEN_TARGET} ${Protobuf_PROTOC_EXECUTABLE}")
 
     if(NOT DEFINED QTPROTOBUF_EXECUTABLE)
         set(QTPROTOBUF_EXECUTABLE @QTPROTOBUF_EXECUTABLE_INSTALL@)
@@ -52,7 +51,6 @@ function(generate_qtprotobuf)
 
     qt5_wrap_cpp(MOC_SOURCES ${QTPROTOBUF_GENERATED_HEADERS})
     list(APPEND GENERATED_SOURCES ${MOC_SOURCES})
-    message(STATUS "GENERATED_SOURCES: ${GENERATED_SOURCES}")
     set_source_files_properties(${QTPROTOBUF_GENERATED_SOURCES} PROPERTIES GENERATED TRUE)
     add_library(${QtProtobuf_GENERATED} ${QTPROTOBUF_GENERATED_SOURCES} ${MOC_SOURCES})
     add_dependencies(${QtProtobuf_GENERATED} ${GEN_TARGET})

@@ -40,6 +40,10 @@ if(WIN32)
     link_directories(${PROTOBUF_LIBRARIES_PATH} ${GRPC_LIBRARIES})
 endif()
 
+if(DEFINED Protobuf_INCLUDE_DIRS)
+    target_include_directories(${TARGET} PUBLIC ${Protobuf_INCLUDE_DIRS})
+endif()
+
 target_link_libraries(${TARGET} ${Protobuf_LIBRARIES} ${Protobuf_PROTOC_LIBRARY})
 
 install(TARGETS ${TARGET}

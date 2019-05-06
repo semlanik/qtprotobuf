@@ -5,7 +5,7 @@ project(QtProtobufProject VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
 set(QTPROTOBUF_COMMON_NAMESPACE QtProtobufProject)
 
 include(GNUInstallDirs)
-find_package(Protobuf)
+find_package(Protobuf REQUIRED CONFIG)
 
 # FIXME: what is the reason to set these variables in root CMake?
 
