@@ -22,9 +22,13 @@ if (Qt5Core_VERSION VERSION_LESS "5.11.0")
     message(FATAL_ERROR "Required Qt version is 5.11+")
 endif()
 
+unset(gRPC_CPP_PLUGIN_EXECUTABLE CACHE)
 find_program(gRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
 if (gRPC_CPP_PLUGIN_EXECUTABLE STREQUAL gRPC_CPP_PLUGIN_EXECUTABLE-NOTFOUND)
+    set(gRPC_CPP_PLUGIN_EXECUTABLE_FOUND FALSE)
     message(WARNING "grpc_cpp_plugin not found: some tests and examples cannot be built.")
+else()
+    set(gRPC_CPP_PLUGIN_EXECUTABLE_FOUND TRUE)
 endif()
 
 set(QTPROTOBUF_COMMON_NAMESPACE QtProtobufProject)
@@ -44,12 +48,9 @@ elseif(WIN32)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall" "-Werror")
 endif()
 
-# TODO: are these features needed?
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 if(Qt5_POSITION_INDEPENDENT_CODE)
     set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 endif()
-
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -77,6 +78,13 @@ endif()
 
 if(MAKE_COVERAGE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+endif()
+
+if(NOT gRPC_CPP_PLUGIN_EXECUTABLE_FOUND)
+    message(STATUS "Force disable test")
+    set(MAKE_TESTS OFF)
+    message(STATUS "Force disable examples")
+    set(MAKE_EXAMPLES OFF)
 endif()
 
 if(MAKE_TESTS)
