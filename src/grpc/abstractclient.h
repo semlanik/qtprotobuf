@@ -55,11 +55,16 @@ protected:
     virtual ~AbstractClient();
 
     template<typename A, typename R>
-    bool call(const QString &method, const A &arg, R &ret) {
+    bool call(const QString &method, const A &arg, const QPointer<R> &ret) {
+        if (ret.isNull()) {
+            qProtoCritical() << "Unable to call method: " << method << ". Pointer to return data is null";
+            return false;
+        }
+
         QByteArray retData;
         if (call(method, arg.serialize(), retData)) {
             try {
-                ret.deserialize(retData);
+                ret->deserialize(retData);
             } catch (std::invalid_argument &) {
                 qProtoCritical() << "Response deserialization failed invalid field found";
                 return false;
@@ -91,12 +96,20 @@ protected:
     }
 
     template<typename A, typename R>
-    void subscribe(const QString &method, const A &arg, R &ret) {
-        subscribe_p(method, arg.serialize(), [&ret](const QByteArray &data) {
-            ret.deserialize(data);
+    void subscribe(const QString &method, const A &arg, const QPointer<R> &ret) {
+        if (ret.isNull()) {
+            qProtoCritical() << "Unable to subscribe method: " << method << ". Pointer to return data is null";
+            return;
+        }
+
+        subscribe_p(method, arg.serialize(), [ret](const QByteArray &data) {
+            if (!ret.isNull()) {
+                ret->deserialize(data);
+            } else {
+                qProtoCritical() << "Pointer to return data is null while subscription update received";
+            }
         });
     }
-
 
 private:
     bool call(const QString &method, const QByteArray& arg, QByteArray& ret);

@@ -65,7 +65,7 @@ AddressBookEngine::AddressBookEngine() : QObject()
     connect(m_client, &AddressBookClient::contactsUpdated, this, [this](const Contacts &contacts) {
         m_contacts->reset(contacts.list());
     });
-    m_client->subscribeCallStatusUpdates(qtprotobuf::examples::None(), m_callStatus);
+    m_client->subscribeCallStatusUpdates(qtprotobuf::examples::None(), QPointer<CallStatus>(&m_callStatus));
 }
 
 void AddressBookEngine::addContact(qtprotobuf::examples::Contact *contact)

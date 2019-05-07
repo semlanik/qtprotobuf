@@ -186,7 +186,7 @@ const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::ProtobufO
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
 const char *Templates::QObjectMacro = "Q_OBJECT";
-const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$);\n";
+const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
 const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE qtprotobuf::AsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
 const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject* context, const std::function<void(qtprotobuf::AsyncReply*)> &callback);\n";
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
@@ -195,7 +195,7 @@ const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $r
 const char *Templates::ConstructorDefinitionSyncTemplate = "\n$classname$::$classname$() : $parent_class$(\"$service_name$\")\n"
                                                            "{\n"
                                                            "}\n";
-const char *Templates::ClientMethodDefinitionSyncTemplate = "\nbool $classname$::$method_name$(const $param_type$ &$param_name$, $return_type$ &$return_name$)\n"
+const char *Templates::ClientMethodDefinitionSyncTemplate = "\nbool $classname$::$method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
                                                             "{\n"
                                                             "    return call(\"$method_name$\", $param_name$, $return_name$);\n"
                                                             "}\n";
@@ -219,12 +219,12 @@ const char *Templates::QmlRegisterTypeUncreatableTemplate = "qmlRegisterUncreata
 
 const char *Templates::ClientMethodSignalDeclarationTemplate = "Q_SIGNAL void $method_name$Updated(const $return_type$ &);\n";
 const char *Templates::ClientMethodServerStreamDeclarationTemplate = "void subscribe$method_name_upper$Updates(const $param_type$ &$param_name$);\n";
-const char *Templates::ClientMethodServerStream2DeclarationTemplate = "void subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, $return_type$ &$return_name$);\n";
+const char *Templates::ClientMethodServerStream2DeclarationTemplate = "void subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
 const char *Templates::ClientMethodServerStreamDefinitionTemplate = "void $classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$)\n"
                                                                     "{\n"
                                                                     "    subscribe(\"$method_name$\", $param_name$, &$classname$::$method_name$Updated);\n"
                                                                     "}\n";
-const char *Templates::ClientMethodServerStream2DefinitionTemplate = "void $classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, $return_type$ &$return_name$)\n"
+const char *Templates::ClientMethodServerStream2DefinitionTemplate = "void $classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
                                                                      "{\n"
                                                                      "    subscribe(\"$method_name$\", $param_name$, $return_name$);\n"
                                                                      "    subscribe(\"$method_name$\", $param_name$, &$classname$::$method_name$Updated);\n"

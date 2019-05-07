@@ -52,11 +52,12 @@ TEST_F(ClientTest, CheckMethodsGeneration)
 {
     //Dummy compile time check of functions generation and interface compatibility
     TestServiceClient testClient;
-    SimpleStringMessage result;
     SimpleStringMessage request;
-    testClient.testMethod(result, request);
-    testClient.testMethod(result);
-    testClient.testMethod(result, &testClient, [](AsyncReply*){});
+    QPointer<SimpleStringMessage> result(new SimpleStringMessage);
+    testClient.testMethod(request, result);
+    testClient.testMethod(request);
+    testClient.testMethod(request, &testClient, [](AsyncReply*){});
+    delete result;
 }
 
 TEST_F(ClientTest, StringEchoTest)
@@ -65,11 +66,12 @@ TEST_F(ClientTest, StringEchoTest)
     QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
-    SimpleStringMessage result;
     SimpleStringMessage request;
+    QPointer<SimpleStringMessage> result(new SimpleStringMessage);
     request.setTestFieldString("Hello beach!");
     ASSERT_TRUE(testClient.testMethod(request, result));
-    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Hello beach!");
+    ASSERT_STREQ(result->testFieldString().toStdString().c_str(), "Hello beach!");
+    delete result;
 }
 
 TEST_F(ClientTest, StringEchoAsyncTest)
@@ -78,8 +80,8 @@ TEST_F(ClientTest, StringEchoAsyncTest)
     QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
-    SimpleStringMessage result;
     SimpleStringMessage request;
+    SimpleStringMessage result;
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
 
@@ -210,8 +212,9 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
     QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
-    SimpleStringMessage result;
     SimpleStringMessage request;
+    QPointer<SimpleStringMessage> result(new SimpleStringMessage);
+
     request.setTestFieldString("Stream");
 
     QEventLoop waiter;
@@ -219,7 +222,7 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
     testClient.subscribeTestMethodServerStreamUpdates(request, result);
 
     int i = 0;
-    QObject::connect(&result, &SimpleStringMessage::testFieldStringChanged, &app, [&i]() {
+    QObject::connect(result.data(), &SimpleStringMessage::testFieldStringChanged, &app, [&i]() {
         i++;
     });
 
@@ -227,7 +230,7 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
     waiter.exec();
 
     ASSERT_EQ(i, 4);
-    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Stream4");
+    ASSERT_STREQ(result->testFieldString().toStdString().c_str(), "Stream4");
     ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Ok);
 }
 
