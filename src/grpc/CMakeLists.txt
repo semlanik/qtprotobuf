@@ -35,8 +35,14 @@ add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
 set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})
 target_include_directories(${TARGET} ${INCLUDE_DIRS})
 target_link_libraries(${TARGET} PUBLIC ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf Qt5::Core Qt5::Network)
-target_compile_features(${TARGET} PUBLIC cxx_std_14)
-
+target_compile_features(${TARGET} PUBLIC cxx_std_14
+                                         cxx_auto_type
+                                         cxx_decltype
+                                         cxx_final
+                                         cxx_override
+                                         cxx_nullptr
+                                         cxx_lambdas
+                                         cxx_func_identifier)
 install(TARGETS ${TARGET}
     EXPORT ${TARGET_EXPORT}
     ARCHIVE DESTINATION ${TARGET_LIB_DIR}

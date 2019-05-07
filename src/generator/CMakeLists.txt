@@ -44,7 +44,7 @@ if(DEFINED Protobuf_INCLUDE_DIRS)
     target_include_directories(${TARGET} PUBLIC ${Protobuf_INCLUDE_DIRS})
 endif()
 
-target_link_libraries(${TARGET} ${Protobuf_LIBRARIES} ${Protobuf_PROTOC_LIBRARY})
+target_link_libraries(${TARGET} protobuf::libprotobuf protobuf::libprotoc)
 
 install(TARGETS ${TARGET}
     RUNTIME DESTINATION ${TARGET_BIN_DIR})

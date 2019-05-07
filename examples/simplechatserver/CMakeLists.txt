@@ -23,5 +23,5 @@ if(WIN32)
     link_directories(${PROTOBUF_LIBRARIES_PATH} ${GRPC_LIBRARIES})
 endif()
 
-target_link_libraries(${TARGET} ${Protobuf_LIBRARIES} grpc++ grpc)
+target_link_libraries(${TARGET} protobuf::libprotobuf gRPC::grpc++ gRPC::grpc)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cert.pem ${CMAKE_CURRENT_SOURCE_DIR}/key.pem DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

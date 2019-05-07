@@ -1,5 +1,5 @@
 include(CMakeFindDependencyMacro)
-find_dependency(Protobuf REQUIRED CONFIG)
+
 find_dependency(QtProtobuf REQUIRED CONFIG)
 
 @PACKAGE_INIT@

@@ -34,7 +34,14 @@ add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
 set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})
 target_include_directories(${TARGET} ${INCLUDE_DIRS})
 target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml)
-target_compile_features(${TARGET} PUBLIC cxx_std_14)
+target_compile_features(${TARGET} PUBLIC cxx_std_14
+                                         cxx_auto_type
+                                         cxx_decltype
+                                         cxx_final
+                                         cxx_override
+                                         cxx_nullptr
+                                         cxx_lambdas
+                                         cxx_func_identifier)
 
 install(TARGETS ${TARGET}
     EXPORT ${TARGET_EXPORT}
@@ -58,4 +65,7 @@ export(TARGETS ${TARGET} NAMESPACE ${QTPROTOBUF_COMMON_NAMESPACE}:: FILE ${TARGE
 export(PACKAGE ${TARGET})
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/QtProtobufGen.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/QtProtobufGen.cmake" @ONLY)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/QtProtobufGen.cmake DESTINATION "${TARGET_CMAKE_DIR}")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/QtProtobufGen.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
+
+configure_file("${CMAKE_SOURCE_DIR}/cmake/ProtobufLookup.cmake" "${CMAKE_CURRENT_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")

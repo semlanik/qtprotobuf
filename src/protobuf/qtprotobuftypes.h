@@ -100,4 +100,3 @@ Q_DECLARE_METATYPE(qtprotobuf::sfixed64List)
 
 Q_DECLARE_METATYPE(qtprotobuf::FloatList)
 Q_DECLARE_METATYPE(qtprotobuf::DoubleList)
-

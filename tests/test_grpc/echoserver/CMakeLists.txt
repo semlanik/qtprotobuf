@@ -8,7 +8,7 @@ set(GENERATED_SOURCES
 set_source_files_properties(${GENERATED_SOURCES} PROPERTIES GENERATED TRUE)
 
 add_executable(${TARGET} main.cpp ${GENERATED_SOURCES})
-target_link_libraries(${TARGET} grpc++ ${Protobuf_LIBRARIES})
+target_link_libraries(${TARGET} gRPC::grpc++ protobuf::libprotobuf)
 target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/../proto/*.proto)

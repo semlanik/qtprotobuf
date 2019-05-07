@@ -5,16 +5,6 @@ project(QtProtobufProject VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
-find_package(Protobuf CONFIG)
-if(NOT Protobuf_FOUND)
-    find_package(Protobuf MODULE)
-    # still Protobuf hard dependency not found
-    if(NOT Protobuf_FOUND)
-        # TODO: add instructions to cmake/gRPCBuild.cmake
-        message(FATAL_ERROR "Protobuf is a hard dependency of the project. You may install it (with gRPC) by following instructions in cmake/gRPCBuild.cmake script.")
-    endif()
-endif()
-
 find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
 if (Qt5Core_VERSION VERSION_LESS "5.11.0")
     # grpc target requires QT version not less than 5.11
@@ -22,14 +12,8 @@ if (Qt5Core_VERSION VERSION_LESS "5.11.0")
     message(FATAL_ERROR "Required Qt version is 5.11+")
 endif()
 
-unset(gRPC_CPP_PLUGIN_EXECUTABLE CACHE)
-find_program(gRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
-if (gRPC_CPP_PLUGIN_EXECUTABLE STREQUAL gRPC_CPP_PLUGIN_EXECUTABLE-NOTFOUND)
-    set(gRPC_CPP_PLUGIN_EXECUTABLE_FOUND FALSE)
-    message(WARNING "grpc_cpp_plugin not found: some tests and examples cannot be built.")
-else()
-    set(gRPC_CPP_PLUGIN_EXECUTABLE_FOUND TRUE)
-endif()
+include("cmake/ProtobufLookup.cmake")
+include("cmake/gRPCLookup.cmake")
 
 set(QTPROTOBUF_COMMON_NAMESPACE QtProtobufProject)
 set(GENERATOR_TARGET qtprotobufgen)
@@ -80,7 +64,8 @@ if(MAKE_COVERAGE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 endif()
 
-if(NOT gRPC_CPP_PLUGIN_EXECUTABLE_FOUND)
+if(NOT gRPC_FOUND)
+    message(WARNING "gRPC not found: some tests and examples cannot be built.")
     message(STATUS "Force disable test")
     set(MAKE_TESTS OFF)
     message(STATUS "Force disable examples")

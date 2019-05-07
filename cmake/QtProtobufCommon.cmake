@@ -22,17 +22,17 @@ function(protobuf_generate_all)
 
     file(MAKE_DIRECTORY ${OUT_DIR})
 
-    if(NOT DEFINED gRPC_CPP_PLUGIN_EXECUTABLE)
-        message(FATAL_ERROR "gRPC plugin is not found set full path to grpc_cpp_plugin using -DgRPC_CPP_PLUGIN_EXECUTABLE=</path/to/grpc_cpp_plugin>")
+    if(NOT TARGET gRPC::grpc_cpp_plugin)
+        message(FATAL_ERROR "gRPC plugin is not found")
     endif()
 
     add_custom_command(
         TARGET ${GEN_TARGET}
-        COMMAND ${Protobuf_PROTOC_EXECUTABLE}
+        COMMAND $<TARGET_FILE:protobuf::protoc>
         ARGS --grpc_out="${OUT_DIR}"
         --cpp_out="${OUT_DIR}"
         ${PROTO_INCLUDES}
-        --plugin=protoc-gen-grpc="${gRPC_CPP_PLUGIN_EXECUTABLE}"
+        --plugin=protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>
         ${protobuf_generate_all_PROTO_FILES}
         DEPENDS ${protobuf_generate_all_PROTO_FILES})
     add_dependencies(${protobuf_generate_all_TARGET} ${GEN_TARGET})

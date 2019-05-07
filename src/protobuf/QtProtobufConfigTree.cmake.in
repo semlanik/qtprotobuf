@@ -1,5 +1,4 @@
-include(CMakeFindDependencyMacro)
-find_dependency(Protobuf REQUIRED CONFIG)
+include("${CMAKE_CURRENT_LIST_DIR}/ProtobufLookup.cmake")
 
 @PACKAGE_INIT@
 
