@@ -55,6 +55,9 @@ struct make_unsigned<int64> { typedef typename std::make_unsigned<decltype(int64
 
 class ProtobufObjectPrivate
 {
+    ProtobufObjectPrivate() = delete;
+    ~ProtobufObjectPrivate() = delete;
+    Q_DISABLE_COPY(ProtobufObjectPrivate)
 public:
     using Serializer = std::function<QByteArray(const QVariant &, int &)>;
     using Deserializer = std::function<void(SelfcheckIterator &, QVariant &)>;
@@ -65,8 +68,6 @@ public:
     };
     using SerializerRegistry = std::unordered_map<int/*metatypeid*/, SerializationHandlers>;
     static SerializerRegistry serializers;
-
-    ProtobufObjectPrivate() {}
 
     static void registerSerializers();
 
