@@ -198,8 +198,8 @@ public:
         QByteArray result;
         //Reserve maximum required amount of bytes
         result.reserve(sizeof(V));
-        while (value > 0) {
-            //Put first 7 bits to result buffer and mark as not last
+        while (value != 0) {
+            //Put 7 bits to result buffer and mark as "not last"(0x80)
             result.append((value & 0x7F) | 0x80);
             //Devide values to chunks of 7 bits, move to next chunk
             value >>= 7;
@@ -211,10 +211,11 @@ public:
          * }
          */
 
-        //Mark last chunk as last or invalidate field in case if serialized result is empty
+        //Invalidate field in case if serialized result is empty
         if (result.size() == 0) {
             outFieldIndex = NotUsedFieldIndex;
         } else {
+            //Mark last chunk as last by removing(0x80)
             result.data()[result.size() - 1] &= ~0x80;
         }
         return result;
