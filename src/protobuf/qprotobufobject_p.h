@@ -151,6 +151,15 @@ public:
     }
 
     //----------------Serialize basic integral and floating point----------------
+    /**
+     *@brief Serialization of fixed-length primitive types
+     *
+     * Natural layout of bits is used: value is encoded in a byte array same way as it is located in memory
+     *
+     * @param[in] value Value to serialize
+     * @param[out] outFieldIndex Index of the value in parent structure (ignored)
+     * @return Byte array with value encoded
+     */
     template <typename V,
               typename std::enable_if_t<std::is_floating_point<V>::value
                                         || std::is_same<V, fixed32>::value
@@ -160,12 +169,22 @@ public:
     static QByteArray serializeBasic(V value, int &/*outFieldIndex*/) {
         qProtoDebug() << __func__ << "value" << value;
 
-        //Reserve required amount of bytes
+        //Reserve required number of bytes
         QByteArray result(sizeof(V), '\0');
-        *(V*)(result.data()) = value;
+        *reinterpret_cast<V*>(result.data()) = value;
         return result;
     }
 
+    /**
+     *@brief Serialization of signed integral types
+     *
+     * Use <a href="https://developers.google.com/protocol-buffers/docs/encoding">ZigZag encoding</a> first,
+     * then apply serialization as for unsigned integral types
+     *
+     * @param[in] value Value to serialize
+     * @param[out] outFieldIndex Index of the value in parent structure
+     * @return Byte array with value encoded
+     */
     template <typename V,
               typename std::enable_if_t<std::is_integral<V>::value
                                         && std::is_signed<V>::value, int> = 0>
@@ -189,6 +208,17 @@ public:
         return serializeBasic(static_cast<UV>(value), outFieldIndex);
     }
 
+    /**
+    *@brief Serialization of unsigned integral types
+    *
+    * Use <a href="https://developers.google.com/protocol-buffers/docs/encoding">Varint encoding</a>:
+    * "Varints are a method of serializing integers using one or more bytes. Smaller numbers
+    * [regardless its type] take a smaller number of bytes."
+    *
+    * @param[in] value Value to serialize
+    * @param[out] outFieldIndex Index of the value in parent structure
+    * @return Byte array with value encoded
+    */
     template <typename V,
               typename std::enable_if_t<std::is_integral<V>::value
                                         && std::is_unsigned<V>::value, int> = 0>
@@ -196,12 +226,13 @@ public:
         qProtoDebug() << __func__ << "value" << value;
 
         QByteArray result;
-        //Reserve maximum required amount of bytes
+        //Reserve maximum required number of bytes
         result.reserve(sizeof(V));
         while (value != 0) {
+            // NOTE: bin(0x7F) == "0111 1111" and bin(0x80) = "1000 0000"
             //Put 7 bits to result buffer and mark as "not last"(0x80)
             result.append((value & 0x7F) | 0x80);
-            //Devide values to chunks of 7 bits, move to next chunk
+            //Divide values to chunks of 7 bits and move to next chunk
             value >>= 7;
         }
 
@@ -211,7 +242,8 @@ public:
          * }
          */
 
-        //Invalidate field in case if serialized result is empty
+        // Invalidate field index in case if serialized result is empty
+        // NOTE: the field will not be sent if its index is equal to NotUsedFieldIndex
         if (result.size() == 0) {
             outFieldIndex = NotUsedFieldIndex;
         } else {
