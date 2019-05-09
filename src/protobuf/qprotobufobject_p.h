@@ -127,8 +127,8 @@ public:
         };
     }
 
-    static unsigned char encodeHeaderByte(int fieldIndex, WireTypes wireType);
-    static bool decodeHeaderByte(unsigned char typeByte, int &fieldIndex, WireTypes &wireType);
+    static char encodeHeaderByte(int fieldIndex, WireTypes wireType);
+    static bool decodeHeaderByte(char typeByte, int &fieldIndex, WireTypes &wireType);
 
     static QByteArray serializeValue(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty);
     static QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex, WireTypes &type);
@@ -180,6 +180,7 @@ public:
      *
      * Use <a href="https://developers.google.com/protocol-buffers/docs/encoding">ZigZag encoding</a> first,
      * then apply serialization as for unsigned integral types
+     * @see serializeBasic\<typename V, typename std::enable_if_t\<std::is_integral\<V\>::value && std::is_unsigned\<V\>::value, int\> = 0\>(V, int)
      *
      * @param[in] value Value to serialize
      * @param[out] outFieldIndex Index of the value in parent structure
@@ -739,21 +740,41 @@ public:
 //###########################################################################
 //                             Common functions
 //###########################################################################
-/*  Header byte
- *  bits    | 7  6  5  4  3 | 2  1  0
- *  -----------------------------------
- *  meaning |  Field index  |  Type
+
+/*! @brief Encode a property field index and its type into a header byte
+ *
+ * @details
+ * Header byte
+ *  Meaning    |  Field index  |  Type
+ *  ---------- | ------------- | --------
+ *  bit number | 7  6  5  4  3 | 2  1  0
+ * @param fieldIndex The index of a property in parent object
+ * @param wireType Serialization type used for the property with index @p fieldIndex
+ * @return Byte with encoded fieldIndex and wireType
+ *
+ * @todo change types of @p fieldIndex and @p wireType to "char"
  */
-inline unsigned char ProtobufObjectPrivate::encodeHeaderByte(int fieldIndex, WireTypes wireType)
+inline char ProtobufObjectPrivate::encodeHeaderByte(int fieldIndex, WireTypes wireType)
 {
-    unsigned char header = (fieldIndex << 3) | wireType;
-    return static_cast<char>(header);
+    char header = (fieldIndex << 3) | wireType;
+    return header;
 }
 
-inline bool ProtobufObjectPrivate::decodeHeaderByte(unsigned char typeByte, int &fieldIndex, WireTypes &wireType)
+/*! @brief Decode a property field index and its serialization type from the header byte
+ *
+ * @param[in] typeByte Header byte with encoded field index and serialization type
+ * @param[out] fieldIndex Decoded index of a property in parent object
+ * @param[out] wireType Decoded serialization type used for the property with index @p fieldIndex
+ *
+ * @todo true if both decoded wireType and fieldIndex have "allowed" values and false, otherwise
+ */
+inline bool ProtobufObjectPrivate::decodeHeaderByte(char typeByte, int &fieldIndex, WireTypes &wireType)
 {
+    // bin(0x07) == 0000 0111
     wireType = static_cast<WireTypes>(typeByte & 0x07);
     fieldIndex = typeByte >> 3;
+
+    // FIXME: field index max value is 2**5 - 1 (== 32)
     return fieldIndex < 128 && fieldIndex > 0 && (wireType == Varint
                                                   || wireType == Fixed64
                                                   || wireType == Fixed32
