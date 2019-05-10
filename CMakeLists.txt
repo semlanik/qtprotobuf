@@ -12,6 +12,10 @@ if (Qt5Core_VERSION VERSION_LESS "5.11.0")
     message(FATAL_ERROR "Required Qt version is 5.11+")
 endif()
 
+if (Qt5Core_VERSION VERSION_LESS "5.11.4" OR (Qt5Core_VERSION VERSION_GREATER "5.12.0" AND Qt5Core_VERSION VERSION_LESS "5.12.3"))
+    message(WARNING "Qt version<5.11.4 and (v5.12.0>=version<v5.12.3 has a bug in http2 connection handling. Tests using http2 feature and examples will not work!")
+endif()
+
 include("cmake/ProtobufLookup.cmake")
 include("cmake/gRPCLookup.cmake")
 
