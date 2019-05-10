@@ -44,9 +44,15 @@ class ClientTest : public ::testing::Test
 protected:
     static void SetUpTestCase() {
         QtProtobuf::init();
-        SimpleStringMessage::registerTypes();   
+        SimpleStringMessage::registerTypes();
+
     }
+    static QCoreApplication m_app;
+    static int m_argc;
 };
+
+int ClientTest::m_argc(0);
+QCoreApplication ClientTest::m_app(m_argc, nullptr);
 
 TEST_F(ClientTest, CheckMethodsGeneration)
 {
@@ -62,8 +68,6 @@ TEST_F(ClientTest, CheckMethodsGeneration)
 
 TEST_F(ClientTest, StringEchoTest)
 {
-    int argc = 0;
-    QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage request;
@@ -76,8 +80,6 @@ TEST_F(ClientTest, StringEchoTest)
 
 TEST_F(ClientTest, StringEchoAsyncTest)
 {
-    int argc = 0;
-    QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage request;
@@ -86,7 +88,7 @@ TEST_F(ClientTest, StringEchoAsyncTest)
     QEventLoop waiter;
 
     AsyncReply* reply = testClient.testMethod(request);
-    QObject::connect(reply, &AsyncReply::finished, &app, [reply, &result, &waiter, &testClient]() {
+    QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
         if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
             result = reply->read<SimpleStringMessage>();
         }
@@ -99,15 +101,13 @@ TEST_F(ClientTest, StringEchoAsyncTest)
 
 TEST_F(ClientTest, StringEchoAsync2Test)
 {
-    int argc = 0;
-    QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
-    testClient.testMethod(request, &app, [&result, &waiter, &testClient](AsyncReply *reply) {
+    testClient.testMethod(request, &m_app, [&result, &waiter, &testClient](AsyncReply *reply) {
         if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
             result = reply->read<SimpleStringMessage>();
         }
@@ -120,8 +120,6 @@ TEST_F(ClientTest, StringEchoAsync2Test)
 
 TEST_F(ClientTest, StringEchoAsyncAbortTest)
 {
-    int argc = 0;
-    QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage result;
@@ -132,7 +130,7 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
     bool errorCalled = false;
     AsyncReply* reply = testClient.testMethod(request);
     result.setTestFieldString("Result not changed by echo");
-    QObject::connect(reply, &AsyncReply::finished, &app, [reply, &result, &waiter, &testClient]() {
+    QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
         if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
             result = reply->read<SimpleStringMessage>();
         }
@@ -153,7 +151,7 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
 
     errorCalled = false;
     reply = testClient.testMethod(request);
-    QObject::connect(reply, &AsyncReply::finished, &app, [reply, &result, &waiter, &testClient]() {
+    QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
         if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
             result = reply->read<SimpleStringMessage>();
         }
@@ -175,8 +173,6 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
 
 TEST_F(ClientTest, StringEchoStreamTest)
 {
-    int argc = 0;
-    QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage result;
@@ -186,7 +182,7 @@ TEST_F(ClientTest, StringEchoStreamTest)
     QEventLoop waiter;
 
     int i = 0;
-    QObject::connect(&testClient, &TestServiceClient::testMethodServerStreamUpdated, &app, [&result, &i, &waiter](const SimpleStringMessage& ret) {
+    QObject::connect(&testClient, &TestServiceClient::testMethodServerStreamUpdated, &m_app, [&result, &i, &waiter](const SimpleStringMessage& ret) {
         ++i;
 
         result.setTestFieldString(result.testFieldString() + ret.testFieldString());
@@ -208,8 +204,6 @@ TEST_F(ClientTest, StringEchoStreamTest)
 
 TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
 {
-    int argc = 0;
-    QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     SimpleStringMessage request;
@@ -222,7 +216,7 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
     testClient.subscribeTestMethodServerStreamUpdates(request, result);
 
     int i = 0;
-    QObject::connect(result.data(), &SimpleStringMessage::testFieldStringChanged, &app, [&i]() {
+    QObject::connect(result.data(), &SimpleStringMessage::testFieldStringChanged, &m_app, [&i]() {
         i++;
     });
 
@@ -234,10 +228,9 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
     ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Ok);
 }
 
+
 TEST_F(ClientTest, HugeBlobEchoStreamTest)
 {
-    int argc = 0;
-    QCoreApplication app(argc, nullptr);
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
     BlobMessage result;
@@ -249,7 +242,7 @@ TEST_F(ClientTest, HugeBlobEchoStreamTest)
     QByteArray dataHash = QCryptographicHash::hash(request.testBytes(), QCryptographicHash::Sha256);
     QEventLoop waiter;
 
-    QObject::connect(&testClient, &TestServiceClient::testMethodBlobServerStreamUpdated, &app, [&result, &waiter](const BlobMessage& ret) {
+    QObject::connect(&testClient, &TestServiceClient::testMethodBlobServerStreamUpdated, &m_app, [&result, &waiter](const BlobMessage& ret) {
         result.setTestBytes(ret.testBytes());
         waiter.quit();
     });
