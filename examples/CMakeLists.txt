@@ -1,0 +1,5 @@
+add_subdirectory("addressbook")
+add_subdirectory("addressbookserver")
+add_subdirectory("simplechat")
+add_subdirectory("simplechatserver")
+add_subdirectory("qttools")

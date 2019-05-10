@@ -2,7 +2,7 @@
 
 #include <QAbstractListModel>
 /*!
- * \brief The UniversalListModelBase class to make prossible properties definition for UniversalListModel
+ * \brief The UniversalListModelBase class to make possible properties definition for UniversalListModel
  * This class should not be used as is, but leaves this possibility.
  */
 class UniversalListModelBase : public QAbstractListModel
