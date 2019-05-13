@@ -866,12 +866,12 @@ TEST_F(DeserializationTest, SimpleUInt64ComplexMapCorruptedDeserializeTest)
     ASSERT_TRUE(test.mapField().isEmpty());
 }
 
-TEST_F(DeserializationTest, SimpleStringComplexMapInvalidFieldDeserializeTest)
+TEST_F(DeserializationTest, InvalidFieldIndexDeserializeTest)
 {
-    SimpleStringComplexMessageMapMessage test;
-    EXPECT_THROW(test.deserialize(QByteArray::fromHex("6a460a055755543f3f120b120732053f5755543f080a6a170a0362656e1210120c320a74656e20656c6576656e080b6a350a157768657265206973206d792063617220647564653f121c12183216666f757274792074776f2074656e207369787465656e080a")),
-                 std::invalid_argument);
-    ASSERT_TRUE(test.mapField().isEmpty());
+    ComplexMessage test{0, QString{}};
+    test.deserialize(QByteArray::fromHex("60d3ffffffffffffffff0112083206717765727479"));
+    ASSERT_EQ(test.testFieldInt(), 0);
+    ASSERT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");
 }
 
 TEST_F(DeserializationTest, FieldIndexRangeTest)
