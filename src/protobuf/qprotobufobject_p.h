@@ -741,7 +741,7 @@ public:
 //                             Common functions
 //###########################################################################
 
-/*! @brief Encode a property field index and its type into a header byte
+/*! @brief Encode a property field index and its type into output bytes
  *
  * @details
  * Header byte
@@ -759,7 +759,7 @@ inline QByteArray ProtobufObjectPrivate::encodeHeader(int fieldIndex, WireTypes 
     return serializeBasic(header, fieldIndex);
 }
 
-/*! @brief Decode a property field index and its serialization type from the header byte
+/*! @brief Decode a property field index and its serialization type from input bytes
  *
  * @param[in] Iterator that points to header with encoded field index and serialization type
  * @param[out] fieldIndex Decoded index of a property in parent object
