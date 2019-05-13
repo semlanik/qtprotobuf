@@ -88,7 +88,7 @@ QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, 
 
     if (fieldIndex != NotUsedFieldIndex
             && type != UnknownWireType) {
-        result.prepend(encodeHeaderByte(fieldIndex, type));
+        result.prepend(encodeHeader(fieldIndex, type));
     }
     return result;
 }

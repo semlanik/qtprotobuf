@@ -40,7 +40,7 @@
 #include "qtprotobuflogging.h"
 #include "selfcheckiterator.h"
 
-#define ASSERT_FIELD_NUMBER(X) Q_ASSERT_X(X < 128 && X > 0, T::staticMetaObject.className(), "fieldIndex is out of range")
+#define ASSERT_FIELD_NUMBER(X) Q_ASSERT_X(X < 536870912 && X > 0, T::staticMetaObject.className(), "fieldIndex is out of range")
 
 namespace qtprotobuf {
 
@@ -127,8 +127,8 @@ public:
         };
     }
 
-    static char encodeHeaderByte(int fieldIndex, WireTypes wireType);
-    static bool decodeHeaderByte(char typeByte, int &fieldIndex, WireTypes &wireType);
+    static QByteArray encodeHeader(int fieldIndex, WireTypes wireType);
+    static bool decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType);
 
     static QByteArray serializeValue(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty);
     static QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex, WireTypes &type);
@@ -304,7 +304,7 @@ public:
 
         QByteArray serializedList;
         for (auto &value : listValue) {
-            serializedList.append(encodeHeaderByte(outFieldIndex, LengthDelimited));
+            serializedList.append(encodeHeader(outFieldIndex, LengthDelimited));
             serializedList.append(serializeLengthDelimited(value));
         }
 
@@ -329,7 +329,7 @@ public:
                 continue;
             }
             QByteArray serializedValue = serializeLengthDelimited(value->serialize());
-            serializedValue.prepend(encodeHeaderByte(outFieldIndex, LengthDelimited));
+            serializedValue.prepend(encodeHeader(outFieldIndex, LengthDelimited));
             serializedList.append(serializedValue);
         }
 
@@ -351,7 +351,7 @@ public:
             QByteArray result;
             result = mapSerializeHelper<K, 1>(it.key(), kSerializer) + mapSerializeHelper<V, 2>(it.value(), vSerializer);
             prependLengthDelimitedSize(result);
-            result.prepend(encodeHeaderByte(outFieldIndex, LengthDelimited));
+            result.prepend(encodeHeader(outFieldIndex, LengthDelimited));
             mapResult.append(result);
         }
         outFieldIndex = NotUsedFieldIndex;
@@ -374,7 +374,7 @@ public:
             }
             result = mapSerializeHelper<K, 1>(it.key(), kSerializer) + mapSerializeHelper<V, 2>(it.value().data(), vSerializer);
             prependLengthDelimitedSize(result);
-            result.prepend(encodeHeaderByte(outFieldIndex, LengthDelimited));
+            result.prepend(encodeHeader(outFieldIndex, LengthDelimited));
             mapResult.append(result);
         }
         outFieldIndex = NotUsedFieldIndex;
@@ -388,7 +388,7 @@ public:
         QByteArray result = handlers.serializer(QVariant::fromValue<V>(value), mapIndex);
         if (mapIndex != NotUsedFieldIndex
                 && handlers.type != UnknownWireType) {
-            result.prepend(encodeHeaderByte(mapIndex, handlers.type));
+            result.prepend(encodeHeader(mapIndex, handlers.type));
         }
         return result;
     }
@@ -400,7 +400,7 @@ public:
         QByteArray result = handlers.serializer(QVariant::fromValue<V*>(value), mapIndex);
         if (mapIndex != NotUsedFieldIndex
                 && handlers.type != UnknownWireType) {
-            result.prepend(encodeHeaderByte(mapIndex, handlers.type));
+            result.prepend(encodeHeader(mapIndex, handlers.type));
         }
         return result;
     }
@@ -556,8 +556,7 @@ public:
         qProtoDebug() << __func__ << "count:" << count;
         SelfcheckIterator last = it + count;
         while (it != last) {
-            decodeHeaderByte(*it, mapIndex, type);
-            ++it;
+            decodeHeader(it, mapIndex, type);
             if(mapIndex == 1) {
                 key = deserializeMapHelper<K>(it);
             } else {
@@ -585,8 +584,7 @@ public:
         qProtoDebug() << __func__ << "count:" << count;
         SelfcheckIterator last = it + count;
         while (it != last) {
-            decodeHeaderByte(*it, mapIndex, type);
-            ++it;
+            decodeHeader(it, mapIndex, type);
             if(mapIndex == 1) {
                 key = deserializeMapHelper<K>(it);
             } else {
@@ -680,13 +678,16 @@ public:
             //Each iteration we expect iterator is setup to beginning of next chunk
             int fieldNumber = NotUsedFieldIndex;
             WireTypes wireType = UnknownWireType;
-            if (!ProtobufObjectPrivate::decodeHeaderByte(*it, fieldNumber, wireType)) {
+            if (!ProtobufObjectPrivate::decodeHeader(it, fieldNumber, wireType)) {
                 qProtoCritical() << "Message received doesn't contains valid header byte. "
                                     "Trying next, but seems stream is broken" << QString::number((*it), 16);
                 throw std::invalid_argument("Message received doesn't contains valid header byte. "
                                       "Seems stream is broken");
             }
 
+            //FIXME: This check is incorrect in protobuf syntax 3 perspective.
+            //It should be possible to process stream even if it contains field
+            //is not a part of the structure.
             auto propertyNumberIt = T::propertyOrdering.find(fieldNumber);
             if (propertyNumberIt == std::end(T::propertyOrdering)) {
                 qProtoCritical() << "Message received contains invalid field number. "
@@ -699,7 +700,6 @@ public:
             int propertyIndex = propertyNumberIt->second;
             QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
 
-            ++it;
             ProtobufObjectPrivate::deserializeProperty(object, wireType, metaProperty, it);
         }
     }
@@ -750,32 +750,31 @@ public:
  *  bit number | 7  6  5  4  3 | 2  1  0
  * @param fieldIndex The index of a property in parent object
  * @param wireType Serialization type used for the property with index @p fieldIndex
- * @return Byte with encoded fieldIndex and wireType
  *
- * @todo change types of @p fieldIndex and @p wireType to "char"
+ * @return Varint encoded fieldIndex and wireType
  */
-inline char ProtobufObjectPrivate::encodeHeaderByte(int fieldIndex, WireTypes wireType)
+inline QByteArray ProtobufObjectPrivate::encodeHeader(int fieldIndex, WireTypes wireType)
 {
-    char header = (fieldIndex << 3) | wireType;
-    return header;
+    uint32_t header = (fieldIndex << 3) | wireType;
+    return serializeBasic(header, fieldIndex);
 }
 
 /*! @brief Decode a property field index and its serialization type from the header byte
  *
- * @param[in] typeByte Header byte with encoded field index and serialization type
+ * @param[in] Iterator that points to header with encoded field index and serialization type
  * @param[out] fieldIndex Decoded index of a property in parent object
  * @param[out] wireType Decoded serialization type used for the property with index @p fieldIndex
  *
- * @todo true if both decoded wireType and fieldIndex have "allowed" values and false, otherwise
+ * @return true if both decoded wireType and fieldIndex have "allowed" values and false, otherwise
  */
-inline bool ProtobufObjectPrivate::decodeHeaderByte(char typeByte, int &fieldIndex, WireTypes &wireType)
+inline bool ProtobufObjectPrivate::decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType)
 {
     // bin(0x07) == 0000 0111
-    wireType = static_cast<WireTypes>(typeByte & 0x07);
-    fieldIndex = typeByte >> 3;
+    uint32_t header = deserializeVarintCommon<uint32_t>(it);
+    wireType = static_cast<WireTypes>(header & 0x07);
+    fieldIndex = header >> 3;
 
-    // FIXME: field index max value is 2**5 - 1 (== 32)
-    return fieldIndex < 128 && fieldIndex > 0 && (wireType == Varint
+    return fieldIndex < 536870912 && fieldIndex > 0 && (wireType == Varint
                                                   || wireType == Fixed64
                                                   || wireType == Fixed32
                                                   || wireType == LengthDelimited);

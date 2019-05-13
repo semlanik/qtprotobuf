@@ -132,6 +132,10 @@ set(GENERATED_HEADERS
     simpleuintmessage.h
     stepchildenummessage.h
     emptymessage.h
+    fieldindextest1message.h
+    fieldindextest2message.h
+    fieldindextest3message.h
+    fieldindextest4message.h
 )
 
 file(GLOB SOURCES

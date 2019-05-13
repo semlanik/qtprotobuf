@@ -81,6 +81,12 @@
 #include "simpleuint64complexmessagemapmessage.h"
 
 #include "simplestringcomplexmessagemapmessage.h"
+
+#include "fieldindextest1message.h"
+#include "fieldindextest2message.h"
+#include "fieldindextest3message.h"
+#include "fieldindextest4message.h"
+
 using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf::tests;
 using namespace qtprotobuf;
@@ -866,4 +872,23 @@ TEST_F(DeserializationTest, SimpleStringComplexMapInvalidFieldDeserializeTest)
     EXPECT_THROW(test.deserialize(QByteArray::fromHex("6a460a055755543f3f120b120732053f5755543f080a6a170a0362656e1210120c320a74656e20656c6576656e080b6a350a157768657265206973206d792063617220647564653f121c12183216666f757274792074776f2074656e207369787465656e080a")),
                  std::invalid_argument);
     ASSERT_TRUE(test.mapField().isEmpty());
+}
+
+TEST_F(DeserializationTest, FieldIndexRangeTest)
+{
+    FieldIndexTest1Message msg1({0});
+    msg1.deserialize(QByteArray::fromHex("f80102"));
+    ASSERT_EQ(msg1.testField(), 1);
+
+    FieldIndexTest2Message msg2({0});
+    msg2.deserialize(QByteArray::fromHex("f8ff0302"));
+    ASSERT_EQ(msg2.testField(), 1);
+
+    FieldIndexTest3Message msg3({0});
+    msg3.deserialize(QByteArray::fromHex("f8ffff0702"));
+    ASSERT_EQ(msg3.testField(), 1);
+
+    FieldIndexTest4Message msg4({0});
+    msg4.deserialize(QByteArray::fromHex("f8ffffff0f02"));
+    ASSERT_EQ(msg4.testField(), 1);
 }

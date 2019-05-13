@@ -71,6 +71,11 @@
 
 #include "simplestringstringmapmessage.h"
 
+#include "fieldindextest1message.h"
+#include "fieldindextest2message.h"
+#include "fieldindextest3message.h"
+#include "fieldindextest4message.h"
+
 #include "qtprotobuf.h"
 
 using namespace qtprotobufnamespace::tests;
@@ -1323,7 +1328,7 @@ TEST_F(SerializationTest, ComplexTypeSerializeTest)
     test.setTestComplexField(stringMsg);
 
     result = test.serialize();
-//    qDebug() << "result" << result.toHex();
+    //    qDebug() << "result" << result.toHex();
 
     ASSERT_TRUE(result == QByteArray::fromHex("1208320671776572747908d3ffffff0f")
                 || result == QByteArray::fromHex("08d3ffffff0f12083206717765727479"));
@@ -1569,7 +1574,7 @@ TEST_F(SerializationTest, SimpleFixed32StringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "3a0a0d0a000000120374656e3a0e0d0f00000012076669667465656e3a110d2a000000120a666f757274792074776f");
+                 "3a0a0d0a000000120374656e3a0e0d0f00000012076669667465656e3a110d2a000000120a666f757274792074776f");
 }
 
 TEST_F(SerializationTest, SimpleSFixed32StringMapSerializeTest)
@@ -1579,7 +1584,7 @@ TEST_F(SerializationTest, SimpleSFixed32StringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "4a170dd6ffffff12106d696e757320666f757274792074776f4a0a0d0a000000120374656e4a0e0d0f00000012076669667465656e");
+                 "4a170dd6ffffff12106d696e757320666f757274792074776f4a0a0d0a000000120374656e4a0e0d0f00000012076669667465656e");
 }
 
 TEST_F(SerializationTest, SimpleInt32StringMapSerializeTest)
@@ -1589,7 +1594,7 @@ TEST_F(SerializationTest, SimpleInt32StringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "1a1108f6ffffff0f12096d696e75732074656e1a0b080f12076669667465656e1a0e082a120a666f757274792074776f");
+                 "1a1108f6ffffff0f12096d696e75732074656e1a0b080f12076669667465656e1a0e082a120a666f757274792074776f");
 }
 
 TEST_F(SerializationTest, SimpleSInt32StringMapSerializeTest)
@@ -1599,7 +1604,7 @@ TEST_F(SerializationTest, SimpleSInt32StringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "0a14085312106d696e757320666f757274792074776f0a070814120374656e0a0b081e12076669667465656e");
+                 "0a14085312106d696e757320666f757274792074776f0a070814120374656e0a0b081e12076669667465656e");
 }
 
 TEST_F(SerializationTest, SimpleUInt32StringMapSerializeTest)
@@ -1609,7 +1614,7 @@ TEST_F(SerializationTest, SimpleUInt32StringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "2a07080a120374656e2a0b080f12076669667465656e2a0e082a120a666f757274792074776f");
+                 "2a07080a120374656e2a0b080f12076669667465656e2a0e082a120a666f757274792074776f");
 }
 
 TEST_F(SerializationTest, SimpleFixed64StringMapSerializeTest)
@@ -1619,7 +1624,7 @@ TEST_F(SerializationTest, SimpleFixed64StringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "420e090a00000000000000120374656e4212090f0000000000000012076669667465656e4215092a00000000000000120a666f757274792074776f");
+                 "420e090a00000000000000120374656e4212090f0000000000000012076669667465656e4215092a00000000000000120a666f757274792074776f");
 }
 
 TEST_F(SerializationTest, SimpleSFixed64StringMapSerializeTest)
@@ -1629,7 +1634,7 @@ TEST_F(SerializationTest, SimpleSFixed64StringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "521b09d6ffffffffffffff12106d696e757320666f757274792074776f520e090a00000000000000120374656e5212090f0000000000000012076669667465656e");
+                 "521b09d6ffffffffffffff12106d696e757320666f757274792074776f520e090a00000000000000120374656e5212090f0000000000000012076669667465656e");
 }
 
 TEST_F(SerializationTest, SimpleInt64StringMapSerializeTest)
@@ -1639,7 +1644,7 @@ TEST_F(SerializationTest, SimpleInt64StringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "221608f6ffffffffffffffff0112096d696e75732074656e220b080f12076669667465656e220e082a120a666f757274792074776f");
+                 "221608f6ffffffffffffffff0112096d696e75732074656e220b080f12076669667465656e220e082a120a666f757274792074776f");
 }
 
 TEST_F(SerializationTest, SimpleSInt64StringMapSerializeTest)
@@ -1648,7 +1653,7 @@ TEST_F(SerializationTest, SimpleSInt64StringMapSerializeTest)
     test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
     QByteArray result = test.serialize();
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "1214085312106d696e757320666f757274792074776f12070814120374656e120b081e12076669667465656e");
+                 "1214085312106d696e757320666f757274792074776f12070814120374656e120b081e12076669667465656e");
 }
 
 TEST_F(SerializationTest, SimpleUInt64StringMapSerializeTest)
@@ -1658,7 +1663,7 @@ TEST_F(SerializationTest, SimpleUInt64StringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "3207080a120374656e320b080f12076669667465656e320e082a120a666f757274792074776f");
+                 "3207080a120374656e320b080f12076669667465656e320e082a120a666f757274792074776f");
 }
 
 TEST_F(SerializationTest, SimpleStringStringMapSerializeTest)
@@ -1668,7 +1673,34 @@ TEST_F(SerializationTest, SimpleStringStringMapSerializeTest)
     QByteArray result = test.serialize();
 
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
-                "6a0a0a0362656e120374656e6a100a05737765657412076669667465656e6a210a13776861742069732074686520616e737765723f120a666f757274792074776f");
+                 "6a0a0a0362656e120374656e6a100a05737765657412076669667465656e6a210a13776861742069732074686520616e737765723f120a666f757274792074776f");
+}
+
+TEST_F(SerializationTest, FieldIndexRangeTest)
+{
+    FieldIndexTest1Message msg1;
+    msg1.setTestField(1);
+    QByteArray result = msg1.serialize();
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                 "f80102");
+
+    FieldIndexTest2Message msg2;
+    msg2.setTestField(1);
+    result = msg2.serialize();
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                 "f8ff0302");
+
+    FieldIndexTest3Message msg3;
+    msg3.setTestField(1);
+    result = msg3.serialize();
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                 "f8ffff0702");
+
+    FieldIndexTest4Message msg4;
+    msg4.setTestField(1);
+    result = msg4.serialize();
+    ASSERT_STREQ(result.toHex().toStdString().c_str(),
+                 "f8ffffff0f02");
 }
 
 //TEST_F(SerializationTest, DISABLE_BenchmarkTest)

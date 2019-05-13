@@ -540,3 +540,19 @@ enum TestEnum {
     TEST_ENUM_VALUE3 = 4;
     TEST_ENUM_VALUE4 = 3;
 }
+
+message FieldIndexTest1Message {
+    sint32 testField = 31;
+}
+
+message FieldIndexTest2Message {
+    sint32 testField = 8191;
+}
+
+message FieldIndexTest3Message {
+    sint32 testField = 2097151;
+}
+
+message FieldIndexTest4Message {
+    sint32 testField = 536870911;
+}
