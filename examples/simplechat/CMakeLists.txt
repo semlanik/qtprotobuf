@@ -30,6 +30,6 @@ file(GLOB SOURCES main.cpp
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../simplechatserver/cert.pem DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(${TARGET} ${SOURCES} resources.qrc)
-add_dependencies(${TARGET} ${QtProtobuf_GENERATED} qttools)
+add_dependencies(${TARGET} ${QtProtobuf_GENERATED} examples_common)
 target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
-target_link_libraries(${TARGET} qttools QtProtobufProject::QtProtobuf QtProtobufProject::QtGrpc ${QtProtobuf_GENERATED} Qt5::Quick Qt5::Qml)
+target_link_libraries(${TARGET} examples_common QtProtobufProject::QtProtobuf QtProtobufProject::QtGrpc ${QtProtobuf_GENERATED} Qt5::Quick Qt5::Qml)

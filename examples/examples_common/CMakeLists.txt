@@ -13,7 +13,7 @@ file(GLOB SOURCES
 )
 
 # headers added to make them visible in IDE
-add_library(qttools ${SOURCES} ${HEADERS})
+add_library(examples_common ${SOURCES} ${HEADERS})
 
-target_include_directories(qttools PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(qttools Qt5::Core)
+target_include_directories(examples_common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(examples_common Qt5::Core)
