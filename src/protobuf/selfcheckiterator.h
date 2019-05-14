@@ -26,11 +26,14 @@
 #include <QByteArray>
 #include <stdexcept>
 
+#include "qtprotobuf_global.h"
+
 #pragma once
 
 namespace qtprotobuf {
 
-class SelfcheckIterator {
+class QTPROTOBUFSHARED_EXPORT SelfcheckIterator
+{
 public:
     SelfcheckIterator(const QByteArray& container) : m_sizeLeft(container.size())
       , m_containerSize(container.size())

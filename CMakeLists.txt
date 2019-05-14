@@ -16,8 +16,21 @@ if (Qt5Core_VERSION VERSION_LESS "5.11.4" OR (Qt5Core_VERSION VERSION_GREATER "5
     message(WARNING "Qt version<5.11.4 and (v5.12.0>=version<v5.12.3 has a bug in http2 connection handling. Tests using http2 feature and examples will not work!")
 endif()
 
-include("cmake/ProtobufLookup.cmake")
-include("cmake/gRPCLookup.cmake")
+if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/grpc/CMakeLists.txt")
+    message(STATUS "Found local gRPC sources directory. Perform all-in-one build")
+    set(gRPC_BUILD_TESTS FALSE)
+    set(protobuf_BUILD_TESTS FALSE)
+    add_subdirectory("3rdparty/grpc")
+    if(TARGET grpc AND TARGET grpc++ AND TARGET grpc_cpp_plugin)
+        add_library(gRPC::grpc ALIAS grpc)
+        add_library(gRPC::grpc++ ALIAS grpc++)
+        add_executable(gRPC::grpc_cpp_plugin ALIAS grpc_cpp_plugin)
+        set(gRPC_FOUND TRUE)
+    endif()
+else()
+    include("cmake/ProtobufLookup.cmake")
+    include("cmake/gRPCLookup.cmake")
+endif()
 
 set(QTPROTOBUF_COMMON_NAMESPACE QtProtobufProject)
 set(GENERATOR_TARGET qtprotobufgen)
@@ -105,18 +118,6 @@ if(MAKE_TESTS)
         # uncomment if gmock is going to be needed
         set(BUILD_GMOCK OFF CACHE BOOL "Disable gmock build functionality" FORCE)
         add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
-    endif()
-
-    if(WIN32)
-        #Needs to set path to protobuf libraries
-        set(PROTOBUF_INSTALATION_PATH "")
-        set(Protobuf_PROTOC_EXECUTABLE ${PROTOBUF_INSTALATION_PATH}/bin/protoc.exe)
-        #Set  path to GTest build libraries
-        set(GTEST_BOTH_LIBRARIES "")
-
-        #Set path to GTest include directory
-        include_directories(${GTEST_INCLUDE_PATHS} "/")
-        link_directories(${GTEST_BOTH_LIBRARIES})
     endif()
 
     enable_testing()

@@ -34,7 +34,7 @@
 
 namespace qtprotobuf {
 
-class QtProtobuf {
+class QTPROTOBUFSHARED_EXPORT QtProtobuf {
 public:
     static void init() {
         static bool registationDone = false;

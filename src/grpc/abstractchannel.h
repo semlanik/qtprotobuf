@@ -29,12 +29,14 @@
 #include <QByteArray>
 #include <functional>
 
+#include "qtgrpc_global.h"
+
 namespace qtprotobuf {
 
 class AsyncReply;
 class AbstractClient;
 
-class AbstractChannel
+class QTGRPCSHARED_EXPORT AbstractChannel
 {
 public:
     /*!

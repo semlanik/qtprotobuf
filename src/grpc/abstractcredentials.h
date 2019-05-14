@@ -31,12 +31,14 @@
 
 #include <functional>
 
+#include "qtgrpc_global.h"
+
 namespace qtprotobuf {
 
 class CallCredentials;
 class ChannelCredentials;
 
-class AbstractCredentials
+class QTGRPCSHARED_EXPORT AbstractCredentials
 {
 public:
     template<typename Call, typename Channel,
@@ -71,7 +73,7 @@ private:
     CredentialMap mChannelCredentials;
 };
 
-class CallCredentials : public AbstractCredentials
+class QTGRPCSHARED_EXPORT CallCredentials : public AbstractCredentials
 {
 protected:
     CallCredentials(const CredentialMap& credentialMap) {
@@ -83,7 +85,7 @@ private:
     CallCredentials() = default;
 };
 
-class ChannelCredentials : public AbstractCredentials
+class QTGRPCSHARED_EXPORT ChannelCredentials : public AbstractCredentials
 {
 protected:
     ChannelCredentials(const CredentialMap& credentialMap) {

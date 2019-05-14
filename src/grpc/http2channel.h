@@ -30,12 +30,14 @@
 #include <QString>
 #include <QByteArray>
 
+#include "qtgrpc_global.h"
+
 namespace qtprotobuf {
 
 struct Http2ChannelPrivate;
 class AbstractCredentials;
 
-class Http2Channel final : public AbstractChannel
+class QTGRPCSHARED_EXPORT Http2Channel final : public AbstractChannel
 {
 public:
     Http2Channel(const QString &addr, quint16 port, const AbstractCredentials &credentials);

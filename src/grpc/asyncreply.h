@@ -32,9 +32,11 @@
 
 #include "abstractchannel.h"
 
+#include "qtgrpc_global.h"
+
 namespace qtprotobuf {
 
-class AsyncReply final : public QObject
+class QTGRPCSHARED_EXPORT AsyncReply final : public QObject
 {
     Q_OBJECT
 public:

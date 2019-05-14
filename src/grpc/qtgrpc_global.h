@@ -25,16 +25,10 @@
 
 #pragma once
 
-#include "abstractcredentials.h"
+#include <QtCore/QtGlobal>
 
-#include "qtgrpc_global.h"
-
-namespace qtprotobuf {
-
-class QTGRPCSHARED_EXPORT InsecureCredentials : public ChannelCredentials
-{
-public:
-    InsecureCredentials() : ChannelCredentials(CredentialMap()) {}
-};
-
-}
+#ifdef QTGRPC_LIB
+    #define QTGRPCSHARED_EXPORT Q_DECL_EXPORT
+#else
+    #define QTGRPCSHARED_EXPORT Q_DECL_IMPORT
+#endif

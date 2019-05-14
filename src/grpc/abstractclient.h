@@ -37,12 +37,14 @@
 #include "abstractchannel.h"
 #include "asyncreply.h"
 
+#include "qtgrpc_global.h"
+
 namespace qtprotobuf {
 
 class AbstractChannel;
 class AbstractClientPrivate;
 
-class AbstractClient : public QObject
+class QTGRPCSHARED_EXPORT AbstractClient : public QObject
 {
 public:
     void attachChannel(std::shared_ptr<AbstractChannel> channel);

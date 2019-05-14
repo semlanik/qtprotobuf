@@ -40,6 +40,8 @@
 #include "qtprotobuflogging.h"
 #include "selfcheckiterator.h"
 
+#include "qtprotobuf_global.h"
+
 #define ASSERT_FIELD_NUMBER(X) Q_ASSERT_X(X < 536870912 && X > 0, T::staticMetaObject.className(), "fieldIndex is out of range")
 
 namespace qtprotobuf {
@@ -53,7 +55,7 @@ struct make_unsigned<int32> { typedef typename std::make_unsigned<decltype(int32
 template<>
 struct make_unsigned<int64> { typedef typename std::make_unsigned<decltype(int64::_t)>::type type; };
 
-class ProtobufObjectPrivate
+class QTPROTOBUFSHARED_EXPORT ProtobufObjectPrivate
 {
     ProtobufObjectPrivate() = delete;
     ~ProtobufObjectPrivate() = delete;

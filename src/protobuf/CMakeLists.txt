@@ -23,9 +23,12 @@ file(GLOB HEADERS
     qtprotobuftypes.h
     qtprotobuf.h
     selfcheckiterator.h
-    qtprotobuflogging.h)
+    qtprotobuflogging.h
+    qtprotobuf_global.h)
 
 add_library(${TARGET} SHARED ${SOURCES})
+target_compile_definitions(${TARGET} PRIVATE QTPROTOBUF_LIB)
+
 add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
 set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})
 target_include_directories(${TARGET} PUBLIC 
