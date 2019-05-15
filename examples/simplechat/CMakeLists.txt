@@ -5,8 +5,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Quick Network REQUIRED)
-find_package(QtProtobuf REQUIRED)
-find_package(QtGrpc REQUIRED)
+find_package(QtProtobufProject CONFIG REQUIRED COMPONENTS QtProtobuf QtGrpc)
 
 set(GENERATED_HEADERS
     chatmessage.h

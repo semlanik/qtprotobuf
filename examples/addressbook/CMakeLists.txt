@@ -5,8 +5,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Quick Network REQUIRED)
-find_package(QtProtobuf CONFIG REQUIRED)
-find_package(QtGrpc CONFIG REQUIRED)
+find_package(QtProtobufProject CONFIG REQUIRED COMPONENTS QtProtobuf QtGrpc)
 
 set(GENERATED_HEADERS
     addressbookclient.h

@@ -46,6 +46,13 @@ add_subdirectory("src/protobuf")
 add_subdirectory("src/grpc")
 add_subdirectory("src/generator")
 
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
+install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+
+export(PACKAGE ${PROJECT_NAME})
+
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
