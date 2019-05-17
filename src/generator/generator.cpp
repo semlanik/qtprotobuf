@@ -35,9 +35,6 @@
 #include "clientsourcegenerator.h"
 #include "utils.h"
 
-#include <sys/stat.h>
-#include <time.h>
-
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/io/printer.h>
@@ -54,15 +51,6 @@ namespace {
 #else
     const char separator = '/';
 #endif
-
-bool checkFileModification(struct stat *protoFileStat, std::string filename) {
-    struct stat genFileStat;
-#ifdef _WIN32
-    return stat(filename.c_str(), &genFileStat) != 0 || difftime(protoFileStat->st_mtime, genFileStat.st_mtime) >= 0;
-#else
-    return stat(filename.c_str(), &genFileStat) != 0 || difftime(protoFileStat->st_mtim.tv_sec, genFileStat.st_mtim.tv_sec) >= 0;
-#endif
-}
 }
 
 bool QtGenerator::Generate(const FileDescriptor *file,
@@ -70,7 +58,6 @@ bool QtGenerator::Generate(const FileDescriptor *file,
                            GeneratorContext *generatorContext,
                            std::string *error) const
 {
-    struct stat protoFileStat;
     std::vector<std::pair<std::string, std::string> > parammap;
     ParseGeneratorParameter(parameter, &parammap);
     std::string outDir;
@@ -105,24 +92,17 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         }
         std::string baseFilename(message->name());
         utils::tolower(baseFilename);
-        stat(message->file()->name().c_str(), &protoFileStat);
 
         std::string filename = baseFilename + ".h";
-        if (checkFileModification(&protoFileStat, outDir + filename)) {
-            ProtobufClassGenerator classGen(message,
-                                      std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
-            classGen.run();
-        }
+        ProtobufClassGenerator classGen(message,
+                                        std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
+        classGen.run();
 
         filename = baseFilename + ".cpp";
-        if (checkFileModification(&protoFileStat, outDir + filename)) {
             ProtobufSourceGenerator classSourceGen(message,
                                       std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
             classSourceGen.run();
-        }
     }
-
-    stat(file->name().c_str(), &protoFileStat);
 
     for (int i = 0; i < file->service_count(); i++) {
         const ServiceDescriptor* service = file->service(i);
@@ -130,25 +110,19 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         utils::tolower(baseFilename);
 
         std::string fullFilename = baseFilename + "server.h";
-        if (checkFileModification(&protoFileStat, outDir + fullFilename)) {
-            ServerGenerator serverGen(service,
-                                      std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
-            serverGen.run();
-        }
+        ServerGenerator serverGen(service,
+                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+        serverGen.run();
 
         fullFilename = baseFilename + "client.h";
-        if (checkFileModification(&protoFileStat, outDir + fullFilename)) {
-            ClientGenerator clientGen(service,
-                                      std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
-            clientGen.run();
-        }
+        ClientGenerator clientGen(service,
+                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+        clientGen.run();
 
         fullFilename = baseFilename + "client.cpp";
-        if (checkFileModification(&protoFileStat, outDir + fullFilename)) {
-            ClientSourceGenerator clientSrcGen(service,
-                                               std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
-            clientSrcGen.run();
-        }
+        ClientSourceGenerator clientSrcGen(service,
+                                           std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+        clientSrcGen.run();
     }
     return true;
 }
@@ -169,15 +143,7 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
     GlobalEnumsSourceGenerator enumSourceGen(packageList,
                                              std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".cpp"))));
     enumSourceGen.run();
-
-    // FIXME: not sure about the actual protobuf version where GenerateAll was actually implemented
-#if GOOGLE_PROTOBUF_VERSION < 3006000
-    CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
-    *error = "";
-    return true;
-#else
     return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
-#endif
 
 }
 
