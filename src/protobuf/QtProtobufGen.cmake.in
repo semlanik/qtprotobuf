@@ -9,8 +9,6 @@ function(generate_qtprotobuf)
 
     set(GEN_TARGET ${generate_qtprotobuf_TARGET}_qtprotobuf_generate)
 
-    add_custom_target(${GEN_TARGET})
-
     if(NOT DEFINED QTPROTOBUF_EXECUTABLE)
         set(QTPROTOBUF_EXECUTABLE @QTPROTOBUF_EXECUTABLE_INSTALL@)
     endif()
@@ -37,7 +35,8 @@ function(generate_qtprotobuf)
         set_property(SOURCE ${OUT_DIR}/${GENERATED_BASENAME}.cpp PROPERTY SKIP_AUTOMOC ON)
     endforeach()
 
-    add_custom_command(TARGET ${GEN_TARGET}
+    add_custom_command(
+            OUTPUT ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS}
             COMMAND $<TARGET_FILE:protobuf::protoc>
                 --@GENERATOR_TARGET@_opt=out=${OUT_DIR}
                 --plugin=protoc-gen-@GENERATOR_TARGET@=${QTPROTOBUF_EXECUTABLE}
@@ -48,6 +47,8 @@ function(generate_qtprotobuf)
             DEPENDS ${PROTO_FILES}
             COMMENT "Generating test headers"
     )
+    
+    add_custom_target(${GEN_TARGET} DEPENDS ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS} ${PROTO_FILES})
 
     qt5_wrap_cpp(MOC_SOURCES ${QTPROTOBUF_GENERATED_HEADERS})
     list(APPEND GENERATED_SOURCES ${MOC_SOURCES})

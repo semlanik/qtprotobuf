@@ -1,4 +1,4 @@
-find_package(QtProtobuf REQUIRED)
+find_package(QtProtobufProject COMPONENTS QtProtobuf QtGrpc REQUIRED)
 
 function(protobuf_generate_all)
     set(options)

@@ -1,6 +1,5 @@
-message(STATUS ${CMAKE_CURRENT_LIST_DIR})
 foreach(component ${@PROJECT_NAME@_FIND_COMPONENTS})
   # For requested component, execute its "config" script
-  message(STATUS "Including ${CMAKE_CURRENT_LIST_DIR}/${component}Config.cmake...")
+  #message(STATUS "Including ${CMAKE_CURRENT_LIST_DIR}/${component}Config.cmake...")
   include(${CMAKE_CURRENT_LIST_DIR}/${component}Config.cmake)
 endforeach()
