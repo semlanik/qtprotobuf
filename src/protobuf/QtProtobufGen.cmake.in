@@ -44,7 +44,7 @@ function(generate_qtprotobuf)
                 ${PROTO_INCLUDES}
                 ${PROTO_FILES}
             WORKING_DIRECTORY ${OUT_DIR}
-            DEPENDS ${PROTO_FILES}
+            DEPENDS ${PROTO_FILES} ${QTPROTOBUF_EXECUTABLE}
             COMMENT "Generating test headers"
     )
     

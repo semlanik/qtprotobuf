@@ -45,28 +45,13 @@ using namespace ::qtprotobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 
-namespace {
-#ifdef _WIN32
-    const char separator = '\\';
-#else
-    const char separator = '/';
-#endif
-}
-
 bool QtGenerator::Generate(const FileDescriptor *file,
                            const std::string &parameter,
                            GeneratorContext *generatorContext,
                            std::string *error) const
 {
-    std::vector<std::pair<std::string, std::string> > parammap;
-    ParseGeneratorParameter(parameter, &parammap);
-    std::string outDir;
-
-    for(auto param : parammap) {
-        if (param.first == "out") {
-            outDir = param.second + separator;
-        }
-    }
+    // the variable contains only the relative path to ouput dir which is unused in this method
+    UNUSED(parameter);
 
     if (file->syntax() != FileDescriptor::SYNTAX_PROTO3) {
         *error = "Invalid proto used. This plugin only supports 'proto3' syntax";

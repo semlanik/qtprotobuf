@@ -64,6 +64,8 @@ static void tolower(std::string& str) {
 
 };
 
+#define UNUSED(expr) do { (void)(expr); } while (0)
+
 using PackagesList = std::unordered_map<std::string/*package*/, std::list<const ::google::protobuf::FileDescriptor *>>;
 
 } //namespace generator
