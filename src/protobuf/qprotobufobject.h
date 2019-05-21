@@ -30,6 +30,8 @@
 #define Q_DECLARE_PROTOBUF_SERIALIZERS(T) QByteArray serialize() const { return qtprotobuf::ProtobufObjectPrivate::serialize<T>(this); } \
     void deserialize(const QByteArray &array) { qtprotobuf::ProtobufObjectPrivate::deserialize<T>(this, array); }
 
+namespace qtprotobuf {
+
 template<typename T>
 class RegistrationHelper {
 public:
@@ -37,3 +39,5 @@ public:
         T::registerTypes();
     }
 };
+
+}

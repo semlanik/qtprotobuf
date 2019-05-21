@@ -110,5 +110,5 @@ void ProtobufSourceGenerator::printFieldsOrdering() {
 
 void ProtobufSourceGenerator::printRegistrationHelperInvokation()
 {
-    mPrinter.Print({{"classname", mClassName}}, "static RegistrationHelper<$classname$> helper;\n");
+    mPrinter.Print({{"classname", mClassName}}, "static qtprotobuf::RegistrationHelper<$classname$> helper;\n");
 }

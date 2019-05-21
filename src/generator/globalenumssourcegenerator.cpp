@@ -95,5 +95,5 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
 
 void GlobalEnumsSourceGenerator::printRegistrationHelperInvokation()
 {
-    mPrinter.Print({{"classname", mClassName}}, "static RegistrationHelper<$classname$> helper;\n");
+    mPrinter.Print({{"classname", mClassName}}, "static qtprotobuf::RegistrationHelper<$classname$> helper;\n");
 }
