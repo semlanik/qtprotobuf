@@ -105,4 +105,10 @@ void ProtobufSourceGenerator::printFieldsOrdering() {
     }
     Outdent();
     mPrinter.Print(Templates::SemicolonBlockEnclosureTemplate);
+    mPrinter.Print("\n");
+}
+
+void ProtobufSourceGenerator::printRegistrationHelperInvokation()
+{
+    mPrinter.Print({{"classname", mClassName}}, "static RegistrationHelper<$classname$> helper;\n");
 }

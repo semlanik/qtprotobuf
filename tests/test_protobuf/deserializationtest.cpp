@@ -384,8 +384,6 @@ TEST_F(DeserializationTest, ComplexTypeDeserializeTest)
 {
     ComplexMessage test;
 
-    SimpleEnumMessage::registerTypes();
-
     test.deserialize(QByteArray::fromHex("1208320671776572747908d3ffffffffffffffff01"));
     ASSERT_EQ(-45, test.testFieldInt());
     ASSERT_TRUE(QString::fromUtf8("qwerty") == test.testComplexField().testFieldString());
@@ -534,8 +532,6 @@ TEST_F(DeserializationTest, RepeatedSFixedInt64MessageTest)
 
 TEST_F(DeserializationTest, RepeatedComplexMessageTest)
 {
-    ComplexMessage::registerTypes();
-    SimpleStringMessage::registerTypes();
     RepeatedComplexMessage test;
     test.deserialize(QByteArray::fromHex("0a0c0819120832067177657274790a0c0819120832067177657274790a0c081912083206717765727479"));
     ASSERT_EQ(3, test.testRepeatedComplex().count());

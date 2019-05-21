@@ -308,7 +308,6 @@ TEST_F(SimpleTest, SimpleExternalEnumMessageTest)
 {
     const char* propertyName = "externalEnum";
     using ExternalGlobalEnums = qtprotobufnamespace1::externaltests::GlobalEnums;
-    ExternalGlobalEnums::registerTypes();
 
     SimpleExternalEnumMessage test;
     int propertyNumber = SimpleExternalEnumMessage::propertyOrdering.at(1); //See externalpackagetest.proto
@@ -686,8 +685,6 @@ TEST_F(SimpleTest, RepeatedSFixedInt64MessageTest)
 
 TEST_F(SimpleTest, StepChildEnumMessageTest)
 {
-    qtprotobufnamespace::tests::SimpleEnumMessage::registerTypes();
-
     const char* propertyName = "localStepChildEnum";
     StepChildEnumMessage test;
     int propertyNumber = StepChildEnumMessage::propertyOrdering.at(1); //See simpletest.proto
@@ -701,7 +698,7 @@ TEST_F(SimpleTest, StepChildEnumMessageTest)
 
 TEST_F(SimpleTest, StepChildEnumListMessageTest)
 {
-    qtprotobufnamespace::tests::SimpleEnumMessage::registerTypes();
+
     const char* propertyName = "localStepChildList";
     StepChildEnumMessage test;
     int propertyNumber = StepChildEnumMessage::propertyOrdering.at(2); //See simpletest.proto
@@ -722,7 +719,7 @@ TEST_F(SimpleTest, StepChildEnumListMessageTest)
 TEST_F(SimpleTest, SimpleSInt32StringMapMessageTest)
 {
     const char* propertyName = "mapField";
-    SimpleSInt32StringMapMessage::registerTypes();
+
     SimpleSInt32StringMapMessage test;
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleSInt32StringMapMessage::MapFieldEntry>()));
     int propertyNumber = SimpleSInt32StringMapMessage::propertyOrdering.at(1); //See simpletest.proto
@@ -747,7 +744,7 @@ TEST_F(SimpleTest, SimpleSInt32StringMapMessageTest)
 TEST_F(SimpleTest, SimpleStringStringMapMessageTest)
 {
     const char* propertyName = "mapField";
-    SimpleStringStringMapMessage::registerTypes();
+
     SimpleStringStringMapMessage test;
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleStringStringMapMessage::MapFieldEntry>()));
     int propertyNumber = SimpleStringStringMapMessage::propertyOrdering.at(13); //See simpletest.proto
@@ -771,7 +768,6 @@ TEST_F(SimpleTest, SimpleStringStringMapMessageTest)
 
 TEST_F(SimpleTest, EmptyMessageTest)
 {
-    EmptyMessage::registerTypes();
     ASSERT_EQ(0, EmptyMessage::propertyOrdering.size());
     ASSERT_EQ(1, EmptyMessage::staticMetaObject.propertyCount());
 }

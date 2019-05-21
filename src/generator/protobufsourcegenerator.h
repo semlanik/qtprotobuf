@@ -37,12 +37,14 @@ public:
     ProtobufSourceGenerator(const google::protobuf::Descriptor *message, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
     void printRegisterBody();
     void printFieldsOrdering();
+    void printRegistrationHelperInvokation();
 
     void run() override {
         printClassHeaderInclude();
         printNamespaces();
         printFieldsOrdering();
         printRegisterBody();
+        printRegistrationHelperInvokation();
         encloseNamespaces();
     }
 };

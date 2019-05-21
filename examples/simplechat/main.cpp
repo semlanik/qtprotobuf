@@ -48,10 +48,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     qtprotobuf::QtProtobuf::init();
-    ChatMessages::registerTypes();
-    ChatMessage::registerTypes();
-    User::registerTypes();
-    Users::registerTypes();
 
     qmlRegisterUncreatableType<ChatMessageModel>("examples.simplechat",  1, 0, "ChatMessageModel", "");
 

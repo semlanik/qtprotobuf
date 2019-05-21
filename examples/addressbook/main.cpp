@@ -43,11 +43,6 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     qtprotobuf::QtProtobuf::init();
-    Contact::registerTypes();
-    Contacts::registerTypes();
-    Job::registerTypes();
-    Address::registerTypes();
-    PhoneNumber::registerTypes();
 
     qmlRegisterType<ContactsListModel>("examples.addressbook", 1, 0, "ContactsListModel");
     QGuiApplication app(argc, argv);

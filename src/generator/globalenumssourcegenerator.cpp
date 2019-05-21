@@ -38,6 +38,7 @@ GlobalEnumsSourceGenerator::GlobalEnumsSourceGenerator(const PackagesList &packa
 
 void GlobalEnumsSourceGenerator::run() {
     mPrinter.Print("#include \"globalenums.h\"\n"
+                   "#include \"qprotobufobject.h\"\n"
                    "#include <QQmlEngine>");
 
     std::vector<std::string> namespaces;
@@ -46,6 +47,7 @@ void GlobalEnumsSourceGenerator::run() {
 
         printNamespaces(namespaces);
         printRegisterBody(package.second, namespaces);
+        printRegistrationHelperInvokation();
         encloseNamespaces(namespaces.size());
     }
 }
@@ -89,4 +91,9 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
     Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+}
+
+void GlobalEnumsSourceGenerator::printRegistrationHelperInvokation()
+{
+    mPrinter.Print({{"classname", mClassName}}, "static RegistrationHelper<$classname$> helper;\n");
 }

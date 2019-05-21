@@ -35,10 +35,6 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
-namespace {
-const std::string VariantList("QVariantList");
-}
-
 ProtobufClassGenerator::ProtobufClassGenerator(const Descriptor *message, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out)
     : ClassGeneratorBase(message->full_name(), std::move(out))
     , mMessage(message)

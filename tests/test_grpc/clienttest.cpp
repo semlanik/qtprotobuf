@@ -44,8 +44,6 @@ class ClientTest : public ::testing::Test
 protected:
     static void SetUpTestCase() {
         QtProtobuf::init();
-        SimpleStringMessage::registerTypes();
-
     }
     static QCoreApplication m_app;
     static int m_argc;
