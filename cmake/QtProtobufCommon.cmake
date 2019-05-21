@@ -7,7 +7,6 @@ function(protobuf_generate_all)
     cmake_parse_arguments(protobuf_generate_all "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(GEN_TARGET "${protobuf_generate_all_TARGET}_generate")
-    add_custom_target(${GEN_TARGET})
 
     foreach(PROTO_FILE IN LISTS protobuf_generate_all_PROTO_FILES)
         get_filename_component(BASE_DIR ${PROTO_FILE} DIRECTORY)
@@ -27,14 +26,17 @@ function(protobuf_generate_all)
     endif()
 
     add_custom_command(
-        TARGET ${GEN_TARGET}
+        OUTPUT ${GENERATED_SOURCES}
         COMMAND $<TARGET_FILE:protobuf::protoc>
         ARGS --grpc_out="${OUT_DIR}"
-        --cpp_out="${OUT_DIR}"
-        ${PROTO_INCLUDES}
-        --plugin=protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>
-        ${protobuf_generate_all_PROTO_FILES}
-        DEPENDS ${protobuf_generate_all_PROTO_FILES})
+            --cpp_out="${OUT_DIR}"
+            ${PROTO_INCLUDES}
+            --plugin=protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>
+            ${protobuf_generate_all_PROTO_FILES}
+        DEPENDS ${protobuf_generate_all_PROTO_FILES}
+    )
+
+    add_custom_target(${GEN_TARGET} DEPENDS ${protobuf_generate_all_PROTO_FILES} ${GENERATED_SOURCES})
     add_dependencies(${protobuf_generate_all_TARGET} ${GEN_TARGET})
 endfunction(protobuf_generate_all)
 
