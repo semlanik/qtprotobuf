@@ -862,7 +862,7 @@ TEST_F(DeserializationTest, SimpleUInt64ComplexMapCorruptedDeserializeTest)
     ASSERT_TRUE(test.mapField().isEmpty());
 }
 
-TEST_F(DeserializationTest, InvalidFieldIndexDeserializeTest)
+TEST_F(DeserializationTest, DISABLED_InvalidFieldIndexDeserializeTest)
 {
     ComplexMessage test{0, QString{}};
     test.deserialize(QByteArray::fromHex("60d3ffffffffffffffff0112083206717765727479"));
