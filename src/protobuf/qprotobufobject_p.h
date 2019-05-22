@@ -163,12 +163,22 @@ public:
      * @return Byte array with value encoded
      */
     template <typename V,
-              typename std::enable_if_t<std::is_floating_point<V>::value
-                                        || std::is_same<V, fixed32>::value
+              typename std::enable_if_t<std::is_floating_point<V>::value, int> = 0>
+    static QByteArray serializeBasic(const V &value, int &/*outFieldIndex*/) {
+        qProtoDebug() << __func__ << "value" << value;
+
+        //Reserve required number of bytes
+        QByteArray result(sizeof(V), '\0');
+        *reinterpret_cast<V*>(result.data()) = value;
+        return result;
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_same<V, fixed32>::value
                                         || std::is_same<V, fixed64>::value
                                         || std::is_same<V, sfixed32>::value
                                         || std::is_same<V, sfixed64>::value, int> = 0>
-    static QByteArray serializeBasic(V value, int &/*outFieldIndex*/) {
+    static QByteArray serializeBasic(const V &value, int &/*outFieldIndex*/) {
         qProtoDebug() << __func__ << "value" << value;
 
         //Reserve required number of bytes
@@ -191,21 +201,21 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_integral<V>::value
                                         && std::is_signed<V>::value, int> = 0>
-    static QByteArray serializeBasic(V value, int &outFieldIndex) {
+    static QByteArray serializeBasic(const V &value, int &outFieldIndex) {
         qProtoDebug() << __func__ << "value" << value;
         using UV = typename qtprotobuf::make_unsigned<V>::type;
         UV uValue = 0;
 
         //Use ZigZag convertion first and apply unsigned variant next
-        value = (value << 1) ^ (value >> (sizeof(UV) * 8 - 1));
-        uValue = static_cast<UV>(value);
+        V zigZagValue = (value << 1) ^ (value >> (sizeof(UV) * 8 - 1));
+        uValue = static_cast<UV>(zigZagValue);
         return serializeBasic(uValue, outFieldIndex);
     }
 
     template <typename V,
               typename std::enable_if_t<std::is_same<V, int32>::value
                                         || std::is_same<V, int64>::value, int> = 0>
-    static QByteArray serializeBasic(V value, int &outFieldIndex) {
+    static QByteArray serializeBasic(const V &value, int &outFieldIndex) {
         qProtoDebug() << __func__ << "value" << value;
         using UV = typename qtprotobuf::make_unsigned<V>::type;
         return serializeBasic(static_cast<UV>(value), outFieldIndex);
@@ -225,18 +235,18 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_integral<V>::value
                                         && std::is_unsigned<V>::value, int> = 0>
-    static QByteArray serializeBasic(V value, int &outFieldIndex) {
+    static QByteArray serializeBasic(const V &value, int &outFieldIndex) {
         qProtoDebug() << __func__ << "value" << value;
-
+        V varint = value;
         QByteArray result;
         //Reserve maximum required number of bytes
         result.reserve(sizeof(V));
-        while (value != 0) {
+        while (varint != 0) {
             // NOTE: bin(0x7F) == "0111 1111" and bin(0x80) = "1000 0000"
             //Put 7 bits to result buffer and mark as "not last"(0x80)
-            result.append((value & 0x7F) | 0x80);
+            result.append((varint & 0x7F) | 0x80);
             //Divide values to chunks of 7 bits and move to next chunk
-            value >>= 7;
+            varint >>= 7;
         }
 
         /* NOTE: Zero case aligned to reference cpp implementation. Where 0 ignored.
@@ -459,7 +469,7 @@ public:
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         using  UV = typename qtprotobuf::make_unsigned<V>::type;
         UV unsignedValue = deserializeVarintCommon<UV>(it);
-        V value = (unsignedValue >> 1) ^ (-(unsignedValue & 1));
+        V value = (unsignedValue >> 1) ^ (-1 * (unsignedValue & 1));
         return QVariant::fromValue<V>(value);
     }
 
