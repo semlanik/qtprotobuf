@@ -71,7 +71,7 @@ void ProtobufObjectPrivate::registerSerializers()
     wrapSerializer<QByteArrayList>(ProtobufObjectPrivate::serializeListType<QByteArray>, ProtobufObjectPrivate::deserializeList<QByteArray>, LengthDelimited);
 }
 
-QByteArray ProtobufObjectPrivate::serializeValue(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty)
+QByteArray ProtobufObjectPrivate::serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty)
 {
     qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex
                   << "typeName" << metaProperty.typeName() << static_cast<QMetaType::Type>(propertyValue.type());
@@ -103,7 +103,7 @@ QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValu
     return serializer.serializer(propertyValue, fieldIndex);
 }
 
-void ProtobufObjectPrivate::deserializeProperty(QObject *object, WireTypes wireType, const QMetaProperty &metaProperty, SelfcheckIterator &it)
+void ProtobufObjectPrivate::deserializeProperty(QObject *object, const QMetaProperty &metaProperty, SelfcheckIterator &it, WireTypes wireType)
 {
     qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << metaProperty.typeName()
                   << "currentByte:" << QString::number((*it), 16);
@@ -135,11 +135,11 @@ void ProtobufObjectPrivate::deserializeProperty(QObject *object, WireTypes wireT
     metaProperty.write(object, newPropertyValue);
 }
 
-void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaType, SelfcheckIterator& it, QVariant &newValue)
+void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaProperty, SelfcheckIterator& it, QVariant &out)
 {
-    qProtoDebug() << __func__ << "userType" << metaType.userType() << "typeName" << metaType.typeName()
+    qProtoDebug() << __func__ << "userType" << metaProperty.userType() << "typeName" << metaProperty.typeName()
                   << "currentByte:" << QString::number((*it), 16);
-    int userType = metaType.userType();
+    int userType = metaProperty.userType();
     auto deserializer = serializers.at(userType).deserializer;//Throws exception if not found
-    deserializer(it, newValue);
+    deserializer(it, out);
 }

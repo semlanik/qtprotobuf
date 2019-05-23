@@ -1703,11 +1703,11 @@ TEST_F(SerializationTest, FieldIndexRangeTest)
                  "f8ffffff0f02");
 }
 
-//TEST_F(SerializationTest, DISABLE_BenchmarkTest)
-//{
-//    SimpleIntMessage msg;
-//    for (int i = INT16_MIN; i < INT16_MAX; i++) {
-//        msg.setTestFieldInt(i);
-//        msg.serialize();
-//    }
-//}
+TEST_F(SerializationTest, DISABLED_BenchmarkTest)
+{
+    SimpleIntMessage msg;
+    for (int i = INT16_MIN; i < INT16_MAX; i++) {
+        msg.setTestFieldInt(i);
+        msg.serialize();
+    }
+}

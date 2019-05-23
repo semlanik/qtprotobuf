@@ -132,11 +132,11 @@ public:
     static QByteArray encodeHeader(int fieldIndex, WireTypes wireType);
     static bool decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType);
 
-    static QByteArray serializeValue(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty);
+    static QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty);
     static QByteArray serializeUserType(const QVariant &propertyValue, int &fieldIndex, WireTypes &type);
 
-    static void deserializeProperty(QObject *object, WireTypes wireType, const QMetaProperty &metaProperty, SelfcheckIterator &it);
-    static void deserializeUserType(const QMetaProperty &metaType, SelfcheckIterator &it, QVariant &newValue);
+    static void deserializeProperty(QObject *object, const QMetaProperty &metaProperty, SelfcheckIterator &it, WireTypes wireType);
+    static void deserializeUserType(const QMetaProperty &metaProperty, SelfcheckIterator &it, QVariant &out);
 
     //###########################################################################
     //                           Serialization helpers
@@ -676,7 +676,7 @@ public:
             QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
             const char *propertyName = metaProperty.name();
             const QVariant &propertyValue = object->property(propertyName);
-            result.append(ProtobufObjectPrivate::serializeValue(propertyValue, fieldIndex, metaProperty));
+            result.append(ProtobufObjectPrivate::serializeProperty(propertyValue, fieldIndex, metaProperty));
         }
 
         return result;
@@ -712,7 +712,7 @@ public:
             int propertyIndex = propertyNumberIt->second;
             QMetaProperty metaProperty = T::staticMetaObject.property(propertyIndex);
 
-            ProtobufObjectPrivate::deserializeProperty(object, wireType, metaProperty, it);
+            ProtobufObjectPrivate::deserializeProperty(object, metaProperty, it, wireType);
         }
     }
 
