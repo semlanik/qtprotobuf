@@ -45,7 +45,7 @@ function(generate_qtprotobuf)
                 ${PROTO_FILES}
             WORKING_DIRECTORY ${OUT_DIR}
             DEPENDS ${PROTO_FILES} ${QTPROTOBUF_EXECUTABLE}
-            COMMENT "Generating test headers"
+            COMMENT "Generating QtProtobuf sources ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS}"
     )
     
     add_custom_target(${GEN_TARGET} DEPENDS ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS} ${PROTO_FILES})

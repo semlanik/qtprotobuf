@@ -76,15 +76,12 @@
 #include "fieldindextest3message.h"
 #include "fieldindextest4message.h"
 
-#include "qtprotobuf.h"
-
 using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf::tests;
 using namespace qtprotobuf;
 
 SerializationTest::SerializationTest()
 {
-    qtprotobuf::QtProtobuf::init();
 }
 
 TEST_F(SerializationTest, IntMessageSerializeTest)

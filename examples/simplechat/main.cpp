@@ -29,7 +29,6 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include <qtprotobuf.h>
 #include <chatmessage.h>
 #include <user.h>
 #include <chatmessages.h>
@@ -46,8 +45,6 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
-    qtprotobuf::QtProtobuf::init();
 
     qmlRegisterUncreatableType<ChatMessageModel>("examples.simplechat",  1, 0, "ChatMessageModel", "");
 

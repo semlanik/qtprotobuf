@@ -25,7 +25,6 @@
 
 #include "testserviceclient.h"
 #include "http2channel.h"
-#include "qtprotobuf.h"
 #include "insecurecredentials.h"
 #include "blobmessage.h"
 
@@ -43,7 +42,6 @@ class ClientTest : public ::testing::Test
 {
 protected:
     static void SetUpTestCase() {
-        QtProtobuf::init();
     }
     static QCoreApplication m_app;
     static int m_argc;

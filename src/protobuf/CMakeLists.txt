@@ -21,10 +21,10 @@ file(GLOB HEADERS
     qprotobufobject_p.h
     qprotobufobject.h
     qtprotobuftypes.h
-    qtprotobuf.h
     selfcheckiterator.h
     qtprotobuflogging.h
-    qtprotobuf_global.h)
+    qtprotobuf_global.h
+    registrationhelper.h)
 
 add_library(${TARGET} SHARED ${SOURCES})
 target_compile_definitions(${TARGET} PRIVATE QTPROTOBUF_LIB)

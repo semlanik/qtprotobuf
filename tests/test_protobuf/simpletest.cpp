@@ -66,7 +66,6 @@
 #include "emptymessage.h"
 
 #include "globalenums.h"
-#include "qtprotobuf.h"
 #include <QVariantList>
 #include <QMetaProperty>
 
@@ -83,7 +82,6 @@ public:
     // see simpletest.proto for property names and their field indices
     SimpleTest()
     {
-        QtProtobuf::init();
     }
 
     template<typename MessageType, typename PropertyType>

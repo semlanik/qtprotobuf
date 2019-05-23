@@ -24,7 +24,6 @@
  */
 
 #include "deserializationtest.h"
-#include "qtprotobuf.h"
 #include "simpleboolmessage.h"
 #include "simplefixedint32message.h"
 #include "simplefixedint64message.h"
@@ -93,7 +92,6 @@ using namespace qtprotobuf;
 
 DeserializationTest::DeserializationTest()
 {
-    QtProtobuf::init();
 }
 
 TEST_F(DeserializationTest, FixedInt32MessageDeserializeTest)

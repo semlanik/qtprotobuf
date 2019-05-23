@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2019 Viktor Kopp <vifactor@gmail.com>, Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,9 +23,15 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+namespace qtprotobuf {
 
-#include "qprotobufobject_p.h"
+template<typename T>
+class RegistrationHelper {
+public:
+    RegistrationHelper() {
+        T::registerTypes();
+    }
+};
 
-#define Q_DECLARE_PROTOBUF_SERIALIZERS(T) QByteArray serialize() const { return qtprotobuf::ProtobufObjectPrivate::serialize<T>(this); } \
-    void deserialize(const QByteArray &array) { qtprotobuf::ProtobufObjectPrivate::deserialize<T>(this, array); }
+}
+

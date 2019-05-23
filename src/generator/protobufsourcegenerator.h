@@ -41,6 +41,7 @@ public:
 
     void run() override {
         printClassHeaderInclude();
+        mPrinter.Print({{"include", "registrationhelper.h"}}, Templates::ExternalIncludeTemplate);
         printNamespaces();
         printFieldsOrdering();
         printRegisterBody();
