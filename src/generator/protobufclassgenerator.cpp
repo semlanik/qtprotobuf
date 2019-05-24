@@ -243,7 +243,7 @@ bool ProtobufClassGenerator::producePropertyMap(const FieldDescriptor *field, Pr
     utils::tolower(typeNameLower);
 
     std::string capProperty = field->camelcase_name();
-    capProperty[0] = ::toupper(capProperty[0]);
+    capProperty[0] = static_cast<char>(::toupper(capProperty[0]));
 
     std::string typeNameNoList = typeName;
     if (field->is_repeated() && !field->is_map()) {
@@ -280,7 +280,7 @@ void ProtobufClassGenerator::printConstructor()
         const FieldDescriptor* field = mMessage->field(i);
         std::string fieldTypeName = getTypeName(field, mMessage);
         std::string fieldName = field->name();
-        fieldName[0] = ::tolower(fieldName[0]);
+        fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
         if (field->is_repeated() || field->is_map()) {
             parameterList += "const " + fieldTypeName + " &" + fieldName + " = {}";
         } else {
@@ -320,7 +320,7 @@ void ProtobufClassGenerator::printConstructor()
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
         std::string fieldName = field->name();
-        fieldName[0] = ::tolower(fieldName[0]);
+        fieldName[0] =  static_cast<char>(::tolower(fieldName[0]));
         mPrinter.Print({{"property_name", fieldName}}, Templates::PropertyInitializerTemplate);
     }
     mPrinter.Print(Templates::ConstructorContentTemplate);
@@ -456,13 +456,6 @@ void ProtobufClassGenerator::printProperties()
     Outdent();
 }
 
-void ProtobufClassGenerator::printRegisterTypes()
-{
-    Indent();
-    mPrinter.Print(Templates::ComplexTypeRegistrationMethodTemplate);
-    Outdent();
-}
-
 void ProtobufClassGenerator::printListType()
 {
     mPrinter.Print({{"classname", mClassName}}, Templates::ComplexListTypeUsingTemplate);
@@ -496,7 +489,7 @@ std::set<std::string> ProtobufClassGenerator::extractModels() const
             extractedModels.insert(typeName);
         }
     }
-    return std::move(extractedModels);
+    return extractedModels;
 }
 
 void ProtobufClassGenerator::printSerializers()
@@ -514,7 +507,6 @@ void ProtobufClassGenerator::run()
     printClassDeclaration();
     printProperties();
     printPublic();
-    printRegisterTypes();
     printFieldsOrderingDefinition();
     printSerializers();
     printPrivate();

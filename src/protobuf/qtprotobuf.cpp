@@ -33,36 +33,35 @@
 
 namespace qtprotobuf {
 
-class QtProtobuf {
-public:
-    static void registerTypes() {
-        registerProtobufType(int32);
-        registerProtobufType(int64);
-        registerProtobufType(uint32);
-        registerProtobufType(uint64);
-        registerProtobufType(sint32);
-        registerProtobufType(sint64);
-        registerProtobufType(fixed32);
-        registerProtobufType(fixed64);
-        registerProtobufType(sfixed32);
-        registerProtobufType(sfixed64);
+namespace  {
+void registerTypes() {
+    registerProtobufType(int32);
+    registerProtobufType(int64);
+    registerProtobufType(uint32);
+    registerProtobufType(uint64);
+    registerProtobufType(sint32);
+    registerProtobufType(sint64);
+    registerProtobufType(fixed32);
+    registerProtobufType(fixed64);
+    registerProtobufType(sfixed32);
+    registerProtobufType(sfixed64);
 
-        registerProtobufType(int32List);
-        registerProtobufType(int64List);
-        registerProtobufType(uint32List);
-        registerProtobufType(uint64List);
-        registerProtobufType(sint32List);
-        registerProtobufType(sint64List);
-        registerProtobufType(fixed32List);
-        registerProtobufType(fixed64List);
-        registerProtobufType(sfixed32List);
-        registerProtobufType(sfixed64List);
+    registerProtobufType(int32List);
+    registerProtobufType(int64List);
+    registerProtobufType(uint32List);
+    registerProtobufType(uint64List);
+    registerProtobufType(sint32List);
+    registerProtobufType(sint64List);
+    registerProtobufType(fixed32List);
+    registerProtobufType(fixed64List);
+    registerProtobufType(sfixed32List);
+    registerProtobufType(sfixed64List);
 
-        registerProtobufType(DoubleList);
-        registerProtobufType(FloatList);
-        ProtobufObjectPrivate::registerSerializers();
-    }
-};
+    registerProtobufType(DoubleList);
+    registerProtobufType(FloatList);
+    ProtobufObjectPrivate::registerSerializers();
+}
+}
 
-static RegistrationHelper<QtProtobuf> helper;
+static RegistrationHelper helper(registerTypes);
 }

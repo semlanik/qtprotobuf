@@ -40,9 +40,6 @@ void GlobalEnumsGenerator::startEnum(const std::vector<std::string>& namespaces)
     printNamespaces(namespaces);
     printEnumClass();
     printPublic();
-    Indent();
-    mPrinter.Print(Templates::ComplexTypeRegistrationMethodTemplate);
-    Outdent();
     printPrivate();
     printConstructor();
 }
@@ -51,10 +48,8 @@ void GlobalEnumsGenerator::printConstructor()
 {
     Indent();
     mPrinter.Print({{"classname", mClassName}}, Templates::ConstructorHeaderTemplate);
-    mPrinter.Print({{"classname", mClassName}}, Templates::CopyConstructorTemplate);
-    encloseNamespaces(1);
-    mPrinter.Print({{"classname", mClassName}}, Templates::MoveConstructorTemplate);
-    encloseNamespaces(1);
+    mPrinter.Print({{"classname", mClassName}}, Templates::DeletedCopyConstructorTemplate);
+    mPrinter.Print({{"classname", mClassName}}, Templates::DeletedMoveConstructorTemplate);
     Outdent();
 }
 
@@ -103,7 +98,7 @@ void GlobalEnumsGenerator::printMetatype(const google::protobuf::FileDescriptor 
 
 void GlobalEnumsGenerator::encloseEnum(const std::vector<std::string>& namespaces) {
     encloseClass();
-    encloseNamespaces(namespaces.size());
+    encloseNamespaces(static_cast<int>(namespaces.size()));
 }
 
 void GlobalEnumsGenerator::printEnumClass() {

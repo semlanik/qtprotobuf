@@ -42,7 +42,6 @@ public:
     static const char *ExternalIncludeTemplate;
     static const char *GlobalEnumIncludeTemplate;
     static const char *UsingQtProtobufNamespaceTemplate;
-    static const char *ComplexTypeRegistrationMethodTemplate;
     static const char *ComplexTypeRegistrationTemplate;
     static const char *ComplexGlobalEnumRegistrationTemplate;
     static const char *ComplexGlobalEnumFieldRegistrationTemplate;
@@ -71,6 +70,8 @@ public:
     static const char *ConstructorTemplate;
     static const char *CopyConstructorTemplate;
     static const char *MoveConstructorTemplate;
+    static const char *DeletedCopyConstructorTemplate;
+    static const char *DeletedMoveConstructorTemplate;
     static const char *CopyFieldTemplate;
     static const char *MoveComplexFieldTemplate;
     static const char *MoveFieldTemplate;
@@ -110,6 +111,7 @@ public:
     static const char *MapSerializationRegisterTemplate;
     static const char *SerializersTemplate;
     static const char *RegisterSerializersTemplate;
+    static const char *RegistratorTemplate;
     static const char *QmlRegisterTypeTemplate;
     static const char *QmlRegisterTypeUncreatableTemplate;
     //Service templates

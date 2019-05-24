@@ -45,7 +45,6 @@ public:
         printNamespaces();
         printFieldsOrdering();
         printRegisterBody();
-        printRegistrationHelperInvokation();
         encloseNamespaces();
     }
 };

@@ -48,8 +48,7 @@ void GlobalEnumsSourceGenerator::run() {
 
         printNamespaces(namespaces);
         printRegisterBody(package.second, namespaces);
-        printRegistrationHelperInvokation();
-        encloseNamespaces(namespaces.size());
+        encloseNamespaces(static_cast<int>(namespaces.size()));
     }
 }
 
@@ -74,7 +73,6 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
 
     mPrinter.Print(registrationProperties, Templates::ComplexGlobalEnumRegistrationTemplate);
     Indent();
-    Indent();
     mPrinter.Print(registrationProperties, Templates::QmlRegisterTypeUncreatableTemplate);
 
     for (auto file : list) {
@@ -90,11 +88,11 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
     }
     Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
-    Outdent();
+    printRegistrationHelperInvokation();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
 }
 
 void GlobalEnumsSourceGenerator::printRegistrationHelperInvokation()
 {
-    mPrinter.Print({{"classname", mClassName}}, "static qtprotobuf::RegistrationHelper<$classname$> helper;\n");
+    mPrinter.Print(Templates::RegistratorTemplate);
 }

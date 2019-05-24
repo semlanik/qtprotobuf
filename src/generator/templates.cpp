@@ -45,20 +45,15 @@ const char *Templates::ExternalIncludeTemplate = "#include <$include$>\n";
 const char *Templates::GlobalEnumIncludeTemplate = "#include <globalenums.h>\n";
 
 const char *Templates::UsingQtProtobufNamespaceTemplate = "\nusing namespace qtprotobuf;\n";
-const char *Templates::ComplexTypeRegistrationMethodTemplate = "static void registerTypes();\n";
-const char *Templates::ComplexTypeRegistrationTemplate = "void $classname$::registerTypes()\n{\n"
-                                                         "    static bool registationDone = false;\n"
-                                                         "    if (!registationDone) {\n"
-                                                         "        registationDone = true;\n"
-                                                         "        qRegisterMetaType<$classname$>(\"$classname$\");\n"
-                                                         "        qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
-                                                         "        qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
-                                                         "        qRegisterMetaType<$classname$List>(\"$namespaces$::$classname$List\");\n"
+const char *Templates::ComplexTypeRegistrationTemplate = "namespace {\n"
+                                                         "void registerTypes()\n{\n"
+                                                         "    qRegisterMetaType<$classname$>(\"$classname$\");\n"
+                                                         "    qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
+                                                         "    qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
+                                                         "    qRegisterMetaType<$classname$List>(\"$namespaces$::$classname$List\");\n"
                                                          "";
-const char *Templates::ComplexGlobalEnumRegistrationTemplate = "void $classname$::registerTypes()\n{\n"
-                                                               "    static bool registationDone = false;\n"
-                                                               "    if (!registationDone) {\n"
-                                                               "        registationDone = true;\n";
+const char *Templates::ComplexGlobalEnumRegistrationTemplate = "namespace {\n"
+                                                               "void registerTypes()\n{\n";
 const char *Templates::ComplexGlobalEnumFieldRegistrationTemplate = "qRegisterMetaType<$classname$::$enum$>(\"$namespaces$::$classname$::$enum$\");\n";
 const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<QSharedPointer<$classname$>>;\n";
 const char *Templates::MapTypeUsingTemplate = "using $classname$ = QMap<$key$, $value$>;\n";
@@ -90,6 +85,8 @@ const char *Templates::ConstructorTemplate = "$classname$();\n";
 const char *Templates::ConstructorHeaderTemplate = "$classname$(){}\n";
 const char *Templates::CopyConstructorTemplate = "$classname$(const $classname$ &other) : QObject() {\n";
 const char *Templates::MoveConstructorTemplate = "$classname$($classname$ &&other) : QObject() {\n";
+const char *Templates::DeletedCopyConstructorTemplate = "$classname$(const $classname$ &) = delete;\n";
+const char *Templates::DeletedMoveConstructorTemplate = "$classname$($classname$ &&) = delete;\n";
 const char *Templates::CopyFieldTemplate = "m_$property_name$ = other.m_$property_name$;\n";
 const char *Templates::MoveComplexFieldTemplate = "m_$property_name$ = std::move(other.m_$property_name$);\n";
 const char *Templates::MoveFieldTemplate = "m_$property_name$ = std::exchange(other.m_$property_name$, 0);\n";
@@ -160,7 +157,7 @@ const char *Templates::SimpleBlockEnclosureTemplate = "}\n\n";
 const char *Templates::SemicolonBlockEnclosureTemplate = "};\n";
 const char *Templates::EmptyBlockTemplate = "{}\n\n";
 const char *Templates::PropertyInitializerTemplate = "\n    ,m_$property_name$($property_name$)";
-const char *Templates::ConstructorContentTemplate = "\n{\n    registerTypes();\n}\n";
+const char *Templates::ConstructorContentTemplate = "\n{\n}\n";
 
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n";
 const char *Templates::DeclareMetaTypeListTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$List)\n";
@@ -213,6 +210,7 @@ const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname
 
 const char *Templates::SerializersTemplate = "Q_DECLARE_PROTOBUF_SERIALIZERS($classname$)\n";
 const char *Templates::RegisterSerializersTemplate = "qtprotobuf::ProtobufObjectPrivate::registerSerializers<$classname$>();\n";
+const char *Templates::RegistratorTemplate = "static qtprotobuf::RegistrationHelper helper(registerTypes);\n";
 const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\");\n";
 const char *Templates::QmlRegisterTypeUncreatableTemplate = "qmlRegisterUncreatableType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\", \"$namespaces$::$classname$ Could not be created from qml context\");\n";
 

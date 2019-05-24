@@ -60,7 +60,6 @@ public:
     void printProperties();
     void printFieldsOrderingDefinition();
     void printClassMembers();
-    void printRegisterTypes();
     void printConstructor();
     void printListType();
     void printInclude(const google::protobuf::FieldDescriptor *field, std::set<std::string> &existingIncludes);

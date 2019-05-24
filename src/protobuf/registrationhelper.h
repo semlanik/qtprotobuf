@@ -23,13 +23,13 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include <functional>
 namespace qtprotobuf {
 
-template<typename T>
 class RegistrationHelper {
 public:
-    RegistrationHelper() {
-        T::registerTypes();
+    RegistrationHelper(const std::function<void(void)> &registrator) {
+        registrator();
     }
 };
 

@@ -33,7 +33,6 @@ namespace generator {
 
 class GlobalEnumsGenerator : public ClassGeneratorBase
 {
-    const ::google::protobuf::FileDescriptor *mFile;
     PackagesList mPackageList;
 public:
     GlobalEnumsGenerator(const PackagesList &packageList, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);

@@ -49,14 +49,9 @@ void ProtobufSourceGenerator::printRegisterBody()
     mPrinter.Print(registrationProperties,
                    Templates::ComplexTypeRegistrationTemplate);
     Indent();
-    Indent();
     mPrinter.Print(registrationProperties, Templates::RegisterQmlListPropertyMetaTypeTemplate);
     mPrinter.Print(registrationProperties, Templates::QmlRegisterTypeTemplate);
-    Outdent();
-    Outdent();
 
-    Indent();
-    Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor* field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_ENUM
@@ -86,6 +81,8 @@ void ProtobufSourceGenerator::printRegisterBody()
     mPrinter.Print({{"classname", mClassName}}, Templates::RegisterSerializersTemplate);
     Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+    Indent();
+    printRegistrationHelperInvokation();
     Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
 }
@@ -110,5 +107,5 @@ void ProtobufSourceGenerator::printFieldsOrdering() {
 
 void ProtobufSourceGenerator::printRegistrationHelperInvokation()
 {
-    mPrinter.Print({{"classname", mClassName}}, "static qtprotobuf::RegistrationHelper<$classname$> helper;\n");
+    mPrinter.Print(Templates::RegistratorTemplate);
 }
