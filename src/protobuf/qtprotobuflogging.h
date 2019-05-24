@@ -25,8 +25,9 @@
 
 #pragma once
 #include <QLoggingCategory>
+#include <qtprotobuf_global.h>
 
-Q_DECLARE_LOGGING_CATEGORY(qtprotobuflog)
+QTPROTOBUFSHARED_EXPORT Q_DECLARE_LOGGING_CATEGORY(qtprotobuflog)
 
 #define qProtoDebug(...) qCDebug(qtprotobuflog, __VA_ARGS__)
 #define qProtoInfo(...) qCInfo(qtprotobuflog, __VA_ARGS__)
