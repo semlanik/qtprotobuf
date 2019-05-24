@@ -45,10 +45,12 @@ protected:
     }
     static QCoreApplication m_app;
     static int m_argc;
+    static QUrl m_echoServerAddress;
 };
 
 int ClientTest::m_argc(0);
 QCoreApplication ClientTest::m_app(m_argc, nullptr);
+QUrl ClientTest::m_echoServerAddress("http://localhost:50051", QUrl::StrictMode);
 
 TEST_F(ClientTest, CheckMethodsGeneration)
 {
@@ -65,7 +67,7 @@ TEST_F(ClientTest, CheckMethodsGeneration)
 TEST_F(ClientTest, StringEchoTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage request;
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
     request.setTestFieldString("Hello beach!");
@@ -77,7 +79,7 @@ TEST_F(ClientTest, StringEchoTest)
 TEST_F(ClientTest, StringEchoAsyncTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage request;
     SimpleStringMessage result;
     request.setTestFieldString("Hello beach!");
@@ -98,7 +100,7 @@ TEST_F(ClientTest, StringEchoAsyncTest)
 TEST_F(ClientTest, StringEchoAsync2Test)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
@@ -117,7 +119,7 @@ TEST_F(ClientTest, StringEchoAsync2Test)
 TEST_F(ClientTest, StringEchoAsyncAbortTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
@@ -170,7 +172,7 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
 TEST_F(ClientTest, StringEchoStreamTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Stream");
@@ -201,7 +203,7 @@ TEST_F(ClientTest, StringEchoStreamTest)
 TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage request;
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
 
@@ -228,7 +230,7 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
 TEST_F(ClientTest, HugeBlobEchoStreamTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>("localhost", 50051, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
     BlobMessage result;
     BlobMessage request;
     QFile testFile("testfile");

@@ -172,6 +172,20 @@ struct Http2ChannelPrivate {
         }
     }
 
+
+    Http2ChannelPrivate(const QUrl &_url, const AbstractCredentials &_credentials)
+        : url(_url)
+        , credentials(_credentials)
+    {
+        if (url.scheme() == "https") {
+            if (!credentials.channelCredentials().contains(QLatin1String("sslConfig"))) {
+                throw std::invalid_argument("Https connection requested but not ssl configuration provided.");
+            }
+            sslConfig = credentials.channelCredentials().value(QLatin1String("sslConfig")).value<QSslConfiguration>();
+        } else if (url.scheme().isEmpty()) {
+            url.setScheme("http");
+        }
+    }
 };
 
 }
@@ -181,6 +195,11 @@ Http2Channel::Http2Channel(const QString &addr, quint16 port, const AbstractCred
 {
     d->url.setHost(addr, QUrl::StrictMode);
     d->url.setPort(port);
+}
+
+Http2Channel::Http2Channel(const QUrl &url, const AbstractCredentials &credentials) : AbstractChannel()
+  , d(new Http2ChannelPrivate(url, credentials))
+{
 }
 
 Http2Channel::~Http2Channel()

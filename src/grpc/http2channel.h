@@ -27,10 +27,7 @@
 
 #include "abstractchannel.h"
 
-#include <QString>
-#include <QByteArray>
-
-#include "qtgrpc_global.h"
+#include <QUrl>
 
 namespace qtprotobuf {
 
@@ -40,7 +37,9 @@ class AbstractCredentials;
 class QTGRPCSHARED_EXPORT Http2Channel final : public AbstractChannel
 {
 public:
+    // this contructor is obsolete and is going to be removed soon
     Http2Channel(const QString &addr, quint16 port, const AbstractCredentials &credentials);
+    Http2Channel(const QUrl &url, const AbstractCredentials &credentials);
     ~Http2Channel();
 
     StatusCodes call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;

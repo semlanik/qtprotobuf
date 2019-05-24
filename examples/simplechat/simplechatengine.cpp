@@ -74,7 +74,8 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
     conf.setProtocol(QSsl::TlsV1_2);
     conf.setAllowedNextProtocols({QSslConfiguration::ALPNProtocolHTTP2});
 
-    std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel("localhost", 65002, qtprotobuf::SslCredentials(conf) |
+    QUrl url("https://localhost:65002");
+    std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel(url, qtprotobuf::SslCredentials(conf) |
                                                                                       AuthCredentials(name, QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())));
 
     m_client->attachChannel(channel);
