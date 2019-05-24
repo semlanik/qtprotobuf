@@ -230,7 +230,7 @@ ClassGeneratorBase::EnumVisibility ClassGeneratorBase::getEnumVisibility(const F
     const FileDescriptor *enumFile = field->enum_type()->file();
 
     for (int i = 0; i < enumFile->message_type_count(); i++) {
-        const Descriptor* msg = enumFile->message_type(i);
+        const Descriptor *msg = enumFile->message_type(i);
         for (int j = 0; j < msg->enum_type_count(); j++) {
             if (enumType->full_name() == msg->enum_type(j)->full_name()) {
                 return NEIGHBOUR_ENUM;
@@ -241,7 +241,7 @@ ClassGeneratorBase::EnumVisibility ClassGeneratorBase::getEnumVisibility(const F
     return GLOBAL_ENUM;
 }
 
-void ClassGeneratorBase::getMethodParameters(const MethodDescriptor* method, std::map<std::string, std::string> &parameters)
+void ClassGeneratorBase::getMethodParameters(const MethodDescriptor *method, std::map<std::string, std::string> &parameters)
 {
     std::string inputTypeName = method->input_type()->full_name();
     std::string outputTypeName = method->output_type()->full_name();

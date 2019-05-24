@@ -45,9 +45,9 @@ using PropertyMap = std::map<std::string, std::string>;
 
 class ProtobufClassGenerator : public ClassGeneratorBase
 {
-    const ::google::protobuf::Descriptor* mMessage;
+    const ::google::protobuf::Descriptor *mMessage;
 public:
-    ProtobufClassGenerator(const ::google::protobuf::Descriptor* message, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);
+    ProtobufClassGenerator(const ::google::protobuf::Descriptor *message, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);
     virtual ~ProtobufClassGenerator() = default;
 
     void run() override;
@@ -58,7 +58,6 @@ public:
     void printComparisonOperators();
     void printField(const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
     void printProperties();
-    void printFieldsOrderingDefinition();
     void printClassMembers();
     void printConstructor();
     void printListType();
@@ -66,7 +65,6 @@ public:
     void printMaps();
     void printMapsMetaTypesDeclaration();
     void printLocalEmumsMetaTypesDeclaration();
-    void printSerializers();
 
     std::set<std::string> extractModels() const;
 

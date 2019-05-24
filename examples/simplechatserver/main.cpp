@@ -97,7 +97,7 @@ public:
 
 class MessageListHandler {
 public:
-    MessageListHandler(SimpleChatService* service, ::grpc::ServerCompletionQueue* cq) :  tag_(0xdeadbeef)
+    MessageListHandler(SimpleChatService *service, ::grpc::ServerCompletionQueue *cq) :  tag_(0xdeadbeef)
       , writer_(&ctx_)
       , cq_(cq)
     {
@@ -108,7 +108,7 @@ public:
     grpc::ServerContext ctx_;
     None request_;
     ::grpc::ServerAsyncWriter< ::qtprotobuf::examples::ChatMessages> writer_;
-    ::grpc::ServerCompletionQueue* cq_;
+    ::grpc::ServerCompletionQueue *cq_;
 };
 
 void SimpleChatService::loginUser(MessageListHandler *handler) {

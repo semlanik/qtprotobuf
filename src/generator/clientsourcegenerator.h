@@ -45,7 +45,7 @@ public:
 protected:
     void printMethods();
     void printConstructor();
-    const ::google::protobuf::ServiceDescriptor* mService;
+    const ::google::protobuf::ServiceDescriptor *mService;
 };
 
 } //namespace qtprotobuf

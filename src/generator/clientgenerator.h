@@ -41,7 +41,7 @@ namespace generator {
 class ClientGenerator : public ServiceGeneratorBase
 {
 public:
-    ClientGenerator(const ::google::protobuf::ServiceDescriptor* service,
+    ClientGenerator(const ::google::protobuf::ServiceDescriptor *service,
                     std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
     ~ClientGenerator() = default;
 

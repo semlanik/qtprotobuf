@@ -135,7 +135,7 @@ void ProtobufObjectPrivate::deserializeProperty(QObject *object, const QMetaProp
     metaProperty.write(object, newPropertyValue);
 }
 
-void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaProperty, SelfcheckIterator& it, QVariant &out)
+void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaProperty, SelfcheckIterator &it, QVariant &out)
 {
     qProtoDebug() << __func__ << "userType" << metaProperty.userType() << "typeName" << metaProperty.typeName()
                   << "currentByte:" << QString::number((*it), 16);

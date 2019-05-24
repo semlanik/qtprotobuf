@@ -58,7 +58,7 @@ void AbstractClient::attachChannel(const std::shared_ptr<AbstractChannel> &chann
     d->channel = channel;
 }
 
-bool AbstractClient::call(const QString &method, const QByteArray& arg, QByteArray& ret)
+bool AbstractClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
 {
     if (!d->channel) {
         d->lastError = AbstractChannel::Unknown;
@@ -69,7 +69,7 @@ bool AbstractClient::call(const QString &method, const QByteArray& arg, QByteArr
     return d->lastError == AbstractChannel::Ok;
 }
 
-AsyncReply *AbstractClient::call(const QString &method, const QByteArray& arg)
+AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
 {
     AsyncReply *reply = new AsyncReply(d->channel);
 

@@ -53,7 +53,7 @@ void ProtobufSourceGenerator::printRegisterBody()
     mPrinter.Print(registrationProperties, Templates::QmlRegisterTypeTemplate);
 
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_ENUM
                 && isLocalMessageEnum(mMessage, field)) {
             mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name() + "List"},
@@ -91,7 +91,7 @@ void ProtobufSourceGenerator::printFieldsOrdering() {
     mPrinter.Print({{"type", mClassName}}, Templates::FieldsOrderingContainerTemplate);
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         if (i != 0) {
             mPrinter.Print("\n,");
         }

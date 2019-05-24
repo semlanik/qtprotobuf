@@ -102,19 +102,19 @@ public:
         return *this;
     }
 
-    bool operator ==(const SelfcheckIterator& other) const {
+    bool operator ==(const SelfcheckIterator &other) const {
         return other.m_it == m_it;
     }
 
-    bool operator !=(const SelfcheckIterator& other) const {
+    bool operator !=(const SelfcheckIterator &other) const {
         return other.m_it != m_it;
     }
 
-    bool operator ==(const QByteArray::const_iterator& other) const {
+    bool operator ==(const QByteArray::const_iterator &other) const {
         return other == m_it;
     }
 
-    bool operator !=(const QByteArray::const_iterator& other) const {
+    bool operator !=(const QByteArray::const_iterator &other) const {
         return other != m_it;
     }
 private:

@@ -107,9 +107,9 @@ public:
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<QVariant(SelfcheckIterator &)> &d, WireTypes type)
     {
-        serializers[qMetaTypeId<T*>()] = {
+        serializers[qMetaTypeId<T *>()] = {
             [s](const QVariant &value, int &fieldIndex) {
-                return s(*(value.value<T*>()), fieldIndex);
+                return s(*(value.value<T *>()), fieldIndex);
             },
             [d](SelfcheckIterator &it, QVariant &value){
                 value = d(it);
@@ -122,9 +122,9 @@ public:
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<void(SelfcheckIterator &it, QVariant &value)> &d, WireTypes type)
     {
-        serializers[qMetaTypeId<T*>()] = {
+        serializers[qMetaTypeId<T *>()] = {
             [s](const QVariant &value, int &fieldIndex) {
-                return s(*(value.value<T*>()), fieldIndex);
+                return s(*(value.value<T *>()), fieldIndex);
             },
             d,
             type
@@ -171,7 +171,7 @@ public:
 
         //Reserve required number of bytes
         QByteArray result(sizeof(V), '\0');
-        *reinterpret_cast<V*>(result.data()) = value;
+        *reinterpret_cast<V *>(result.data()) = value;
         return result;
     }
 
@@ -185,7 +185,7 @@ public:
 
         //Reserve required number of bytes
         QByteArray result(sizeof(V), '\0');
-        *reinterpret_cast<V*>(result.data()) = value;
+        *reinterpret_cast<V *>(result.data()) = value;
         return result;
     }
 
@@ -378,7 +378,7 @@ public:
         using ItType = typename QMap<K, QSharedPointer<V>>::const_iterator;
         QByteArray mapResult;
         auto kSerializer = serializers.at(qMetaTypeId<K>());//Throws exception if not found
-        auto vSerializer = serializers.at(qMetaTypeId<V*>());//Throws exception if not found
+        auto vSerializer = serializers.at(qMetaTypeId<V *>());//Throws exception if not found
 
         for ( ItType it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
             QByteArray result;
@@ -411,7 +411,7 @@ public:
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static QByteArray mapSerializeHelper(V *value, const SerializationHandlers &handlers) {
         int mapIndex = num;
-        QByteArray result = handlers.serializer(QVariant::fromValue<V*>(value), mapIndex);
+        QByteArray result = handlers.serializer(QVariant::fromValue<V *>(value), mapIndex);
         if (mapIndex != NotUsedFieldIndex
                 && handlers.type != UnknownWireType) {
             result.prepend(encodeHeader(mapIndex, handlers.type));
@@ -450,7 +450,7 @@ public:
     static QVariant deserializeBasic(SelfcheckIterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
-        QVariant newPropertyValue(QVariant::fromValue(*(V*)((QByteArray::const_iterator&)it)));
+        QVariant newPropertyValue(QVariant::fromValue(*(V *)((QByteArray::const_iterator&)it)));
         it += sizeof(V);
         return newPropertyValue;
     }
@@ -532,7 +532,7 @@ public:
     static QVariant deserializeList(SelfcheckIterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         QVariant newValue;
-        serializers.at(qMetaTypeId<V*>()).deserializer(it, newValue);//Throws exception if not found
+        serializers.at(qMetaTypeId<V *>()).deserializer(it, newValue);//Throws exception if not found
         return newValue;
     }
 
@@ -592,7 +592,7 @@ public:
         WireTypes type = WireTypes::UnknownWireType;
 
         K key;
-        V* value;
+        V *value;
 
         unsigned int count = deserializeBasic<uint32>(it).toUInt();
         qProtoDebug() << __func__ << "count:" << count;
@@ -647,7 +647,7 @@ public:
     static QVariant deserializeComplexType(SelfcheckIterator &it) {
         T *value = new T;
         value->deserialize(ProtobufObjectPrivate::deserializeLengthDelimited(it));
-        return QVariant::fromValue<T*>(value);
+        return QVariant::fromValue<T *>(value);
     }
 
     template <typename T,
@@ -662,7 +662,7 @@ public:
     static void deserializeComplexListType(SelfcheckIterator &it, QVariant &previous) {
         QList<QSharedPointer<T>> previousList = previous.value<QList<QSharedPointer<T>>>();
         QVariant newMember = ProtobufObjectPrivate::deserializeList<T>(it);
-        previousList.append(QSharedPointer<T>(newMember.value<T*>()));
+        previousList.append(QSharedPointer<T>(newMember.value<T *>()));
         previous.setValue(previousList);
     }
 
@@ -685,7 +685,7 @@ public:
     }
 
     template<typename T>
-    static void deserialize(QObject* object, const QByteArray &array) {
+    static void deserialize(QObject *object, const QByteArray &array) {
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
 
         for (SelfcheckIterator it(array); it != array.end();) {
@@ -744,7 +744,7 @@ public:
     }
 
     template<typename T>
-    static QQmlListProperty<T> constructQmlListProperty(QObject* p, QList<QSharedPointer<T>> *data)
+    static QQmlListProperty<T> constructQmlListProperty(QObject *p, QList<QSharedPointer<T>> *data)
     {
         return QQmlListProperty<T>(p, data, qmllistpropertyAppend<T>, qmllistpropertyCount<T>,
                                    qmllistpropertyAt<T>, qmllistpropertyReset<T>);

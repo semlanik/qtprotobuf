@@ -75,7 +75,7 @@ void ProtobufClassGenerator::printMoveSemantic()
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         if (isComplexType(field) || field->is_repeated()) {
             printField(field, Templates::MoveComplexFieldTemplate);
         } else {
@@ -95,7 +95,7 @@ void ProtobufClassGenerator::printMoveSemantic()
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         if (isComplexType(field) || field->is_repeated()) {
             printField(field, Templates::MoveComplexFieldTemplate);
         } else {
@@ -123,7 +123,7 @@ void ProtobufClassGenerator::printComparisonOperators()
         mPrinter.Print("true");
     }
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         if (producePropertyMap(field, properties)) {
             if (!isFirst) {
                 mPrinter.Print("\n&& ");
@@ -164,7 +164,7 @@ void ProtobufClassGenerator::printInclude(const FieldDescriptor *field, std::set
 {
     assert(field != nullptr);
     std::string newInclude;
-    const char* includeTemplate;
+    const char *includeTemplate;
     switch (field->type()) {
     case FieldDescriptor::TYPE_MESSAGE:
         if ( field->is_map() ) {
@@ -277,7 +277,7 @@ void ProtobufClassGenerator::printConstructor()
 {
     std::string parameterList;
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         std::string fieldTypeName = getTypeName(field, mMessage);
         std::string fieldName = field->name();
         fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
@@ -318,7 +318,7 @@ void ProtobufClassGenerator::printConstructor()
                     {"parameter_list", parameterList}}, Templates::ProtoConstructorTemplate);
 
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         std::string fieldName = field->name();
         fieldName[0] =  static_cast<char>(::tolower(fieldName[0]));
         mPrinter.Print({{"property_name", fieldName}}, Templates::PropertyInitializerTemplate);
@@ -330,7 +330,7 @@ void ProtobufClassGenerator::printMaps()
 {
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
 
         if (field->is_map()) {
             std::string keyType = getTypeName(field->message_type()->field(0), mMessage);
@@ -352,7 +352,7 @@ void ProtobufClassGenerator::printMaps()
 void ProtobufClassGenerator::printLocalEmumsMetaTypesDeclaration()
 {
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         if (field == nullptr || field->enum_type() == nullptr)
             continue;
 
@@ -367,7 +367,7 @@ void ProtobufClassGenerator::printLocalEmumsMetaTypesDeclaration()
 void ProtobufClassGenerator::printMapsMetaTypesDeclaration()
 {
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         if (field->is_map()) {
              mPrinter.Print({{"classname", field->message_type()->name()},
                              {"namespaces", mNamespacesColonDelimited + "::" + mClassName}}, Templates::DeclareMetaTypeTemplate);
@@ -381,8 +381,8 @@ void ProtobufClassGenerator::printProperties()
     //private section
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
-        const char* propertyTemplate = Templates::PropertyTemplate;
+        const FieldDescriptor *field = mMessage->field(i);
+        const char *propertyTemplate = Templates::PropertyTemplate;
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
             propertyTemplate = Templates::MessagePropertyTemplate;
         }
@@ -391,7 +391,7 @@ void ProtobufClassGenerator::printProperties()
 
     //Generate extra QmlListProperty that is mapped to list
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && field->is_repeated() && !field->is_map()) {
             printField(field, Templates::QmlListPropertyTemplate);
         }
@@ -413,7 +413,7 @@ void ProtobufClassGenerator::printProperties()
     printComparisonOperators();
 
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
             if (!field->is_map() && !field->is_repeated()) {
                 printField(field, Templates::GetterMessageTemplate);
@@ -462,13 +462,6 @@ void ProtobufClassGenerator::printListType()
 
 }
 
-void ProtobufClassGenerator::printFieldsOrderingDefinition()
-{
-    Indent();
-    mPrinter.Print(Templates::FieldsOrderingDefinitionContainerTemplate);
-    Outdent();
-}
-
 void ProtobufClassGenerator::printClassMembers()
 {
     Indent();
@@ -482,7 +475,7 @@ std::set<std::string> ProtobufClassGenerator::extractModels() const
 {
     std::set<std::string> extractedModels;
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor* field = mMessage->field(i);
+        const FieldDescriptor *field = mMessage->field(i);
         if (field->is_repeated()
                 && field->type() == FieldDescriptor::TYPE_MESSAGE) {
             std::string typeName = field->message_type()->name();
@@ -492,13 +485,6 @@ std::set<std::string> ProtobufClassGenerator::extractModels() const
     return extractedModels;
 }
 
-void ProtobufClassGenerator::printSerializers()
-{
-    Indent();
-    mPrinter.Print({{"classname", mClassName}}, Templates::SerializersTemplate);
-    Outdent();
-}
-
 void ProtobufClassGenerator::run()
 {
     printPreamble();
@@ -506,9 +492,6 @@ void ProtobufClassGenerator::run()
     printNamespaces();
     printClassDeclaration();
     printProperties();
-    printPublic();
-    printFieldsOrderingDefinition();
-    printSerializers();
     printPrivate();
     printClassMembers();
     encloseClass();

@@ -58,7 +58,7 @@ static void replace(std::string &data, const std::string &from, const std::strin
     }
 }
 
-static void tolower(std::string& str) {
+static void tolower(std::string &str) {
     std::transform(std::begin(str), std::end(str), std::begin(str), ::tolower);
 }
 

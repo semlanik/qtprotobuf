@@ -90,7 +90,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
     }
 
     for (int i = 0; i < file->service_count(); i++) {
-        const ServiceDescriptor* service = file->service(i);
+        const ServiceDescriptor *service = file->service(i);
         std::string baseFilename(service->name());
         utils::tolower(baseFilename);
 

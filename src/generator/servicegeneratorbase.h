@@ -41,16 +41,16 @@ namespace generator {
 class ServiceGeneratorBase : public ClassGeneratorBase
 {
 protected:
-    const ::google::protobuf::ServiceDescriptor* mService;
+    const ::google::protobuf::ServiceDescriptor *mService;
 
 public:
-    ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor* service,
+    ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor *service,
                          std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
     void run() = 0;
 
     void printIncludes();
     void printClassName();
-    void printMethodsDeclaration(const char* methodTemplate, const char* methodAsyncTemplate = "", const char *methodAsync2Template = "");
+    void printMethodsDeclaration(const char *methodTemplate, const char *methodAsyncTemplate = "", const char *methodAsync2Template = "");
 };
 
 } //namespace generator

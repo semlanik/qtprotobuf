@@ -27,5 +27,13 @@
 
 #include "qprotobufobject_p.h"
 
-#define Q_DECLARE_PROTOBUF_SERIALIZERS(T) QByteArray serialize() const { return qtprotobuf::ProtobufObjectPrivate::serialize<T>(this); } \
-    void deserialize(const QByteArray &array) { qtprotobuf::ProtobufObjectPrivate::deserialize<T>(this, array); }
+#define Q_DECLARE_PROTOBUF_SERIALIZERS(T)\
+    public:\
+        QByteArray serialize() const { return qtprotobuf::ProtobufObjectPrivate::serialize<T>(this); }\
+        void deserialize(const QByteArray &array) { qtprotobuf::ProtobufObjectPrivate::deserialize<T>(this, array); }\
+    private:
+
+#define Q_PROTOBUF_OBJECT\
+    public:\
+        static const std::unordered_map<int/*field number*/, int/*property number*/> propertyOrdering;\
+    private:

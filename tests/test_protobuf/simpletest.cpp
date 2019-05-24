@@ -98,7 +98,7 @@ public:
 
 TEST_F(SimpleTest, SimpleBoolMessageTest)
 {
-    const char* propertyName = "testFieldBool";
+    const char *propertyName = "testFieldBool";
     assertMessagePropertyRegistered<SimpleBoolMessage, bool>(1, "bool", propertyName);
 
     SimpleBoolMessage test;
@@ -109,7 +109,7 @@ TEST_F(SimpleTest, SimpleBoolMessageTest)
 
 TEST_F(SimpleTest, SimpleIntMessageTest)
 {
-    const char* propertyName = "testFieldInt";
+    const char *propertyName = "testFieldInt";
     assertMessagePropertyRegistered<SimpleIntMessage, int32>(1, "qtprotobuf::int32", propertyName);
 
     SimpleIntMessage test;
@@ -120,7 +120,7 @@ TEST_F(SimpleTest, SimpleIntMessageTest)
 
 TEST_F(SimpleTest, SimpleSIntMessageTest)
 {
-    const char* propertyName = "testFieldInt";
+    const char *propertyName = "testFieldInt";
     assertMessagePropertyRegistered<SimpleSIntMessage, sint32>(1, "qtprotobuf::sint32", propertyName);
 
     SimpleSIntMessage test;
@@ -131,7 +131,7 @@ TEST_F(SimpleTest, SimpleSIntMessageTest)
 
 TEST_F(SimpleTest, SimpleUIntMessageTest)
 {
-    const char* propertyName = "testFieldInt";
+    const char *propertyName = "testFieldInt";
     assertMessagePropertyRegistered<SimpleUIntMessage, uint32>(1, "qtprotobuf::uint32", propertyName);
 
     SimpleUIntMessage test;
@@ -142,7 +142,7 @@ TEST_F(SimpleTest, SimpleUIntMessageTest)
 
 TEST_F(SimpleTest, SimpleInt64MessageTest)
 {
-    const char* propertyName = "testFieldInt";
+    const char *propertyName = "testFieldInt";
     assertMessagePropertyRegistered<SimpleInt64Message, int64>(1, "qtprotobuf::int64", propertyName);
 
     SimpleInt64Message test;
@@ -153,7 +153,7 @@ TEST_F(SimpleTest, SimpleInt64MessageTest)
 
 TEST_F(SimpleTest, SimpleSInt64MessageTest)
 {
-    const char* propertyName = "testFieldInt";
+    const char *propertyName = "testFieldInt";
     assertMessagePropertyRegistered<SimpleSInt64Message, sint64>(1, "qtprotobuf::sint64", propertyName);
 
     SimpleSInt64Message test;
@@ -164,7 +164,7 @@ TEST_F(SimpleTest, SimpleSInt64MessageTest)
 
 TEST_F(SimpleTest, SimpleUInt64MessageTest)
 {
-    const char* propertyName = "testFieldInt";
+    const char *propertyName = "testFieldInt";
     assertMessagePropertyRegistered<SimpleUInt64Message, uint64>(1, "qtprotobuf::uint64", propertyName);
 
     SimpleUInt64Message test;
@@ -175,7 +175,7 @@ TEST_F(SimpleTest, SimpleUInt64MessageTest)
 
 TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
 {
-    const char* propertyName = "testFieldFixedInt32";
+    const char *propertyName = "testFieldFixedInt32";
     assertMessagePropertyRegistered<SimpleFixedInt32Message, fixed32>(1, "qtprotobuf::fixed32", propertyName);
 
     SimpleFixedInt32Message test;
@@ -186,7 +186,7 @@ TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
 
 TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
 {
-    const char* propertyName = "testFieldFixedInt64";
+    const char *propertyName = "testFieldFixedInt64";
     assertMessagePropertyRegistered<SimpleFixedInt64Message, fixed64>(1, "qtprotobuf::fixed64", propertyName);
 
     SimpleFixedInt64Message test;
@@ -197,7 +197,7 @@ TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
 
 TEST_F(SimpleTest, SimpleSFixedInt32MessageTest)
 {
-    const char* propertyName = "testFieldFixedInt32";
+    const char *propertyName = "testFieldFixedInt32";
     assertMessagePropertyRegistered<SimpleSFixedInt32Message, sfixed32>(1, "qtprotobuf::sfixed32", propertyName);
 
     SimpleSFixedInt32Message test;
@@ -208,7 +208,7 @@ TEST_F(SimpleTest, SimpleSFixedInt32MessageTest)
 
 TEST_F(SimpleTest, SimpleSFixedInt64MessageTest)
 {
-    const char* propertyName = "testFieldFixedInt64";
+    const char *propertyName = "testFieldFixedInt64";
     assertMessagePropertyRegistered<SimpleSFixedInt64Message, sfixed64>(1, "qtprotobuf::sfixed64", propertyName);
 
     SimpleSFixedInt64Message test;
@@ -219,7 +219,7 @@ TEST_F(SimpleTest, SimpleSFixedInt64MessageTest)
 
 TEST_F(SimpleTest, SimpleStringMessageTest)
 {
-    const char* propertyName = "testFieldString";
+    const char *propertyName = "testFieldString";
     SimpleStringMessage test;
     int propertyNumber = SimpleStringMessage::propertyOrdering.at(6); //See simpletest.proto
     ASSERT_EQ(SimpleStringMessage::staticMetaObject.property(propertyNumber).type(), QMetaType::QString);
@@ -231,7 +231,7 @@ TEST_F(SimpleTest, SimpleStringMessageTest)
 
 TEST_F(SimpleTest, SimpleFloatMessageTest)
 {
-    const char* propertyName = "testFieldFloat";
+    const char *propertyName = "testFieldFloat";
     SimpleFloatMessage test;
     int propertyNumber = SimpleFloatMessage::propertyOrdering.at(7); //See simpletest.proto
     ASSERT_EQ(SimpleFloatMessage::staticMetaObject.property(propertyNumber).type(), QMetaType::Float);
@@ -245,7 +245,7 @@ TEST_F(SimpleTest, SimpleFloatMessageTest)
 
 TEST_F(SimpleTest, SimpleDoubleMessageTest)
 {
-    const char* propertyName = "testFieldDouble";
+    const char *propertyName = "testFieldDouble";
     SimpleDoubleMessage test;
     int propertyNumber = SimpleDoubleMessage::propertyOrdering.at(8); //See simpletest.proto
     ASSERT_EQ(SimpleDoubleMessage::staticMetaObject.property(propertyNumber).type(), QMetaType::Double);
@@ -284,7 +284,7 @@ TEST_F(SimpleTest, SimpleLocalEnumListTest)
 {
     ASSERT_GT(SimpleEnumListMessage::staticMetaObject.enumeratorCount(), 0);
 
-    const char* propertyName = "localEnumList";
+    const char *propertyName = "localEnumList";
     assertMessagePropertyRegistered<SimpleEnumListMessage, SimpleEnumListMessage::LocalEnumList>(1,  "SimpleEnumListMessage::LocalEnumList", propertyName);
 
     SimpleEnumListMessage::LocalEnumList value({SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
@@ -302,7 +302,7 @@ TEST_F(SimpleTest, SimpleExternalEnumMessageTest)
 {
     using ExternalGlobalEnums = qtprotobufnamespace1::externaltests::GlobalEnums;
 
-    const char* propertyName = "externalEnum";
+    const char *propertyName = "externalEnum";
     assertMessagePropertyRegistered<SimpleExternalEnumMessage, ExternalGlobalEnums::ExternalTestEnum>(1, "qtprotobufnamespace1::externaltests::GlobalEnums::ExternalTestEnum", propertyName);
 
     SimpleExternalEnumMessage test;
@@ -338,7 +338,7 @@ TEST_F(SimpleTest, SimpleEnumsTest)
 
 TEST_F(SimpleTest, SimpleFileEnumsTest)
 {
-    const char* propertyName = "globalEnumList";
+    const char *propertyName = "globalEnumList";
     assertMessagePropertyRegistered<SimpleFileEnumMessage, GlobalEnums::TestEnumList>(2, "qtprotobufnamespace::tests::GlobalEnums::TestEnumList", propertyName);
 
     GlobalEnums::TestEnumList value({GlobalEnums::TEST_ENUM_VALUE1,
@@ -359,7 +359,7 @@ TEST_F(SimpleTest, ComplexMessageTest)
 
 TEST_F(SimpleTest, SimpleBytesMessageTest)
 {
-    const char* propertyName = "testFieldBytes";
+    const char *propertyName = "testFieldBytes";
     SimpleBytesMessage test;
     int propertyNumber = SimpleBytesMessage::propertyOrdering.at(1); //See simpletest.proto
     ASSERT_EQ(SimpleBytesMessage::staticMetaObject.property(propertyNumber).type(), QMetaType::QByteArray);
@@ -371,7 +371,7 @@ TEST_F(SimpleTest, SimpleBytesMessageTest)
 
 TEST_F(SimpleTest, SimpleExternalComplexMessageTest)
 {
-    const char* propertyName = "localList";
+    const char *propertyName = "localList";
     assertMessagePropertyRegistered<qtprotobufnamespace1::externaltests::SimpleExternalMessage, int32List>(
                 1, "qtprotobuf::int32List", propertyName);
 
@@ -383,7 +383,7 @@ TEST_F(SimpleTest, SimpleExternalComplexMessageTest)
 
 TEST_F(SimpleTest, RepeatedExternalComplexMessageTest)
 {
-    const char* propertyName = "testExternalComplex";
+    const char *propertyName = "testExternalComplex";
     assertMessagePropertyRegistered<RepeatedExternalComplexMessage, qtprotobufnamespace1::externaltests::ExternalComplexMessageList>(
                 1, "qtprotobufnamespace1::externaltests::ExternalComplexMessageList", propertyName);
 
@@ -404,7 +404,7 @@ TEST_F(SimpleTest, RepeatedExternalComplexMessageTest)
 
 TEST_F(SimpleTest, RepeatedStringMessageTest)
 {
-    const char* propertyName = "testRepeatedString";
+    const char *propertyName = "testRepeatedString";
     assertMessagePropertyRegistered<RepeatedStringMessage, QStringList>(1, "QStringList", propertyName);
 
     RepeatedStringMessage test;
@@ -415,7 +415,7 @@ TEST_F(SimpleTest, RepeatedStringMessageTest)
 
 TEST_F(SimpleTest, RepeatedIntMessageTest)
 {
-    const char* propertyName = "testRepeatedInt";
+    const char *propertyName = "testRepeatedInt";
     assertMessagePropertyRegistered<RepeatedIntMessage, int32List>(1, "qtprotobuf::int32List", propertyName);
 
     RepeatedIntMessage test;
@@ -432,7 +432,7 @@ TEST_F(SimpleTest, RepeatedIntMessageTest)
 
 TEST_F(SimpleTest, RepeatedDoubleMessageTest)
 {
-    const char* propertyName = "testRepeatedDouble";
+    const char *propertyName = "testRepeatedDouble";
     assertMessagePropertyRegistered<RepeatedDoubleMessage, DoubleList>(1, "qtprotobuf::DoubleList", propertyName);
 
     RepeatedDoubleMessage test;
@@ -449,7 +449,7 @@ TEST_F(SimpleTest, RepeatedDoubleMessageTest)
 
 TEST_F(SimpleTest, RepeatedFloatMessageTest)
 {
-    const char* propertyName = "testRepeatedFloat";
+    const char *propertyName = "testRepeatedFloat";
     assertMessagePropertyRegistered<RepeatedFloatMessage, FloatList>(1, "qtprotobuf::FloatList", propertyName);
 
     RepeatedFloatMessage test;
@@ -466,7 +466,7 @@ TEST_F(SimpleTest, RepeatedFloatMessageTest)
 
 TEST_F(SimpleTest, RepeatedBytesMessageTest)
 {
-    const char* propertyName = "testRepeatedBytes";
+    const char *propertyName = "testRepeatedBytes";
     assertMessagePropertyRegistered<RepeatedBytesMessage, QByteArrayList>(1, "QByteArrayList", propertyName);
 
     QByteArrayList bList;
@@ -489,7 +489,7 @@ TEST_F(SimpleTest, RepeatedBytesMessageTest)
 
 TEST_F(SimpleTest, RepeatedSIntMessageTest)
 {
-    const char* propertyName = "testRepeatedInt";
+    const char *propertyName = "testRepeatedInt";
     assertMessagePropertyRegistered<RepeatedSIntMessage, sint32List>(1, "qtprotobuf::sint32List", propertyName);
 
     RepeatedSIntMessage test;
@@ -506,7 +506,7 @@ TEST_F(SimpleTest, RepeatedSIntMessageTest)
 
 TEST_F(SimpleTest, RepeatedUIntMessageTest)
 {
-    const char* propertyName = "testRepeatedInt";
+    const char *propertyName = "testRepeatedInt";
     assertMessagePropertyRegistered<RepeatedUIntMessage, uint32List>(1, "qtprotobuf::uint32List", propertyName);
 
     RepeatedUIntMessage test;
@@ -523,7 +523,7 @@ TEST_F(SimpleTest, RepeatedUIntMessageTest)
 
 TEST_F(SimpleTest, RepeatedInt64MessageTest)
 {
-    const char* propertyName = "testRepeatedInt";
+    const char *propertyName = "testRepeatedInt";
     assertMessagePropertyRegistered<RepeatedInt64Message, int64List>(1, "qtprotobuf::int64List", propertyName);
 
     RepeatedInt64Message test;
@@ -540,7 +540,7 @@ TEST_F(SimpleTest, RepeatedInt64MessageTest)
 
 TEST_F(SimpleTest, RepeatedSInt64MessageTest)
 {
-    const char* propertyName = "testRepeatedInt";
+    const char *propertyName = "testRepeatedInt";
     assertMessagePropertyRegistered<RepeatedSInt64Message, sint64List>(1, "qtprotobuf::sint64List", propertyName);
 
     RepeatedSInt64Message test;
@@ -557,7 +557,7 @@ TEST_F(SimpleTest, RepeatedSInt64MessageTest)
 
 TEST_F(SimpleTest, RepeatedUInt64MessageTest)
 {
-    const char* propertyName = "testRepeatedInt";
+    const char *propertyName = "testRepeatedInt";
     assertMessagePropertyRegistered<RepeatedUInt64Message, uint64List>(1, "qtprotobuf::uint64List", propertyName);
 
     RepeatedUInt64Message test;
@@ -574,7 +574,7 @@ TEST_F(SimpleTest, RepeatedUInt64MessageTest)
 
 TEST_F(SimpleTest, RepeatedFixedIntMessageTest)
 {
-    const char* propertyName = "testRepeatedInt";
+    const char *propertyName = "testRepeatedInt";
     assertMessagePropertyRegistered<RepeatedFixedIntMessage, fixed32List>(1, "qtprotobuf::fixed32List", propertyName);
 
     RepeatedFixedIntMessage test;
@@ -591,7 +591,7 @@ TEST_F(SimpleTest, RepeatedFixedIntMessageTest)
 
 TEST_F(SimpleTest, RepeatedFixedInt64MessageTest)
 {
-    const char* propertyName = "testRepeatedInt";
+    const char *propertyName = "testRepeatedInt";
     assertMessagePropertyRegistered<RepeatedFixedInt64Message, fixed64List>(1, "qtprotobuf::fixed64List", propertyName);
 
     RepeatedFixedInt64Message test;
@@ -608,7 +608,7 @@ TEST_F(SimpleTest, RepeatedFixedInt64MessageTest)
 
 TEST_F(SimpleTest, RepeatedSFixedIntMessageTest)
 {
-    const char* propertyName = "testRepeatedInt";
+    const char *propertyName = "testRepeatedInt";
     assertMessagePropertyRegistered<RepeatedSFixedIntMessage, sfixed32List>(1, "qtprotobuf::sfixed32List", propertyName);
 
     RepeatedSFixedIntMessage test;
@@ -625,7 +625,7 @@ TEST_F(SimpleTest, RepeatedSFixedIntMessageTest)
 
 TEST_F(SimpleTest, RepeatedSFixedInt64MessageTest)
 {
-    const char* propertyName = "testRepeatedInt";
+    const char *propertyName = "testRepeatedInt";
     assertMessagePropertyRegistered<RepeatedSFixedInt64Message, qtprotobuf::sfixed64List>(1, "qtprotobuf::sfixed64List", propertyName);
 
     RepeatedSFixedInt64Message test;
@@ -642,7 +642,7 @@ TEST_F(SimpleTest, RepeatedSFixedInt64MessageTest)
 
 TEST_F(SimpleTest, StepChildEnumMessageTest)
 {
-    const char* propertyName = "localStepChildEnum";
+    const char *propertyName = "localStepChildEnum";
     assertMessagePropertyRegistered<StepChildEnumMessage, SimpleEnumMessage::LocalEnum>(1, "qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnum", propertyName);
 
     StepChildEnumMessage test;
@@ -653,7 +653,7 @@ TEST_F(SimpleTest, StepChildEnumMessageTest)
 
 TEST_F(SimpleTest, StepChildEnumListMessageTest)
 {
-    const char* propertyName = "localStepChildList";
+    const char *propertyName = "localStepChildList";
     assertMessagePropertyRegistered<StepChildEnumMessage, SimpleEnumMessage::LocalEnumList>(2, "qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnumList", propertyName);
 
     SimpleEnumMessage::LocalEnumList value({SimpleEnumMessage::LOCAL_ENUM_VALUE2,
@@ -669,7 +669,7 @@ TEST_F(SimpleTest, StepChildEnumListMessageTest)
 
 TEST_F(SimpleTest, SimpleSInt32StringMapMessageTest)
 {
-    const char* propertyName = "mapField";
+    const char *propertyName = "mapField";
     assertMessagePropertyRegistered<SimpleSInt32StringMapMessage, SimpleSInt32StringMapMessage::MapFieldEntry>(1, "SimpleSInt32StringMapMessage::MapFieldEntry", propertyName);
 
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleSInt32StringMapMessage::MapFieldEntry>()));
@@ -692,7 +692,7 @@ TEST_F(SimpleTest, SimpleSInt32StringMapMessageTest)
 
 TEST_F(SimpleTest, SimpleStringStringMapMessageTest)
 {
-    const char* propertyName = "mapField";
+    const char *propertyName = "mapField";
     assertMessagePropertyRegistered<SimpleStringStringMapMessage, SimpleStringStringMapMessage::MapFieldEntry>(13, "SimpleStringStringMapMessage::MapFieldEntry", propertyName);
 
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleStringStringMapMessage::MapFieldEntry>()));

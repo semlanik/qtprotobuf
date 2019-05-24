@@ -99,9 +99,9 @@ struct Http2ChannelPrivate {
     QNetworkAccessManager nm;
     AbstractCredentials credentials;
     QSslConfiguration sslConfig;
-    std::unordered_map<QNetworkReply*, ExpectedData> activeStreamReplies;
+    std::unordered_map<QNetworkReply *, ExpectedData> activeStreamReplies;
 
-    QNetworkReply* post(const QString &method, const QString &service, const QByteArray &args, bool stream = false) {
+    QNetworkReply *post(const QString &method, const QString &service, const QByteArray &args, bool stream = false) {
         QUrl callUrl = url;
         callUrl.setPath("/" + service + "/" + method);
 
@@ -120,28 +120,28 @@ struct Http2ChannelPrivate {
         request.setAttribute(QNetworkRequest::Http2DirectAttribute, true);
 
         QByteArray msg(5, '\0');
-        *(int*)(msg.data() + 1) = qToBigEndian(args.size());
+        *(int *)(msg.data() + 1) = qToBigEndian(args.size());
         msg += args;
         qProtoDebug() << "SEND: " << msg.size();
 
-        QNetworkReply* networkReply = nm.post(request, msg);
+        QNetworkReply *networkReply = nm.post(request, msg);
 
         if (!stream) {
             //TODO: Add configurable timeout logic
-            QTimer::singleShot(6000, networkReply, [networkReply, this]() {
+            QTimer::singleShot(6000, networkReply, [networkReply]() {
                 Http2ChannelPrivate::abortNetworkReply(networkReply);
             });
         }
         return networkReply;
     }
 
-    static void abortNetworkReply(QNetworkReply* networkReply) {
+    static void abortNetworkReply(QNetworkReply *networkReply) {
         if (networkReply->isRunning()) {
             networkReply->abort();
         }
     }
 
-    static QByteArray processReply(QNetworkReply* networkReply, AbstractChannel::StatusCodes& statusCode) {
+    static QByteArray processReply(QNetworkReply *networkReply, AbstractChannel::StatusCodes &statusCode) {
         //Check if no network error occured
         if (networkReply->error() != QNetworkReply::NoError) {
             qProtoWarning() << "Network error occured" << networkReply->errorString();
@@ -262,7 +262,7 @@ void Http2Channel::subscribe(const QString &method, const QString &service, cons
 
         if (replyIt == d->activeStreamReplies.end()) {
             qProtoDebug() << data.toHex();
-            int expectedDataSize = qFromBigEndian(*(int*)(data.data() + 1)) + 5;
+            int expectedDataSize = qFromBigEndian(*(int *)(data.data() + 1)) + 5;
             qProtoDebug() << "First chunk received: " << data.size() << " expectedDataSize: " << expectedDataSize;
 
             if (expectedDataSize == 0) {
@@ -286,7 +286,7 @@ void Http2Channel::subscribe(const QString &method, const QString &service, cons
         }
     });
 
-    QObject::connect(client, &AbstractClient::destroyed, networkReply, [client, networkReply, connection, this](){
+    QObject::connect(client, &AbstractClient::destroyed, networkReply, [networkReply, connection, this](){
         d->activeStreamReplies.erase(networkReply);
         QObject::disconnect(connection);
         Http2ChannelPrivate::abortNetworkReply(networkReply);

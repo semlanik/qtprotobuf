@@ -20,7 +20,7 @@ public:
     std::vector<::grpc::ServerAsyncWriter<Contacts> *> m_clients;
     std::vector<::grpc::ServerAsyncWriter<CallStatus> *> m_callClients;
     AddressBookService(): m_clients({}) {
-        Contact* contact = m_contacts.add_list();
+        Contact *contact = m_contacts.add_list();
         contact->set_firstname("John");
         contact->set_lastname("Doe");
         contact = m_contacts.add_list();
@@ -76,7 +76,7 @@ public:
         }
 
         std::cout << "addContact called" << std::endl;
-        Contact* newContact = m_contacts.add_list();
+        Contact *newContact = m_contacts.add_list();
         *newContact = *request;
         *response = m_contacts;
         updateContacts();
@@ -134,7 +134,7 @@ public:
 
 class ContactsHandler {
 public:
-    ContactsHandler(AddressBookService* service, ::grpc::ServerCompletionQueue* cq) :  tag_(0xdeadbeef)
+    ContactsHandler(AddressBookService *service, ::grpc::ServerCompletionQueue *cq) :  tag_(0xdeadbeef)
       , writer_(&ctx_)
       , cq_(cq)
     {
@@ -145,12 +145,12 @@ public:
     grpc::ServerContext ctx_;
     ListFrame request_;
     ::grpc::ServerAsyncWriter< ::qtprotobuf::examples::Contacts> writer_;
-    ::grpc::ServerCompletionQueue* cq_;
+    ::grpc::ServerCompletionQueue *cq_;
 };
 
 class CallHandler {
 public:
-    CallHandler(AddressBookService* service, ::grpc::ServerCompletionQueue* cq) :  tag_(0xdeadbeee)
+    CallHandler(AddressBookService *service, ::grpc::ServerCompletionQueue *cq) :  tag_(0xdeadbeee)
       , writer_(&ctx_)
       , cq_(cq)
     {
@@ -161,7 +161,7 @@ public:
     grpc::ServerContext ctx_;
     None request_;
     ::grpc::ServerAsyncWriter< ::qtprotobuf::examples::CallStatus> writer_;
-    ::grpc::ServerCompletionQueue* cq_;
+    ::grpc::ServerCompletionQueue *cq_;
 };
 
 void AddressBookService::registerWriter(ContactsHandler *handler)    {

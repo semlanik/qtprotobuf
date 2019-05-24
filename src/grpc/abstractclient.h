@@ -92,7 +92,7 @@ protected:
         subscribe_p(method, arg.serialize(), [this, signal](const QByteArray &data) {
             R ret;
             ret.deserialize(data);
-            C* client = static_cast<C*>(this);
+            C *client = static_cast<C *>(this);
             (client->*signal)(ret);
         });
     }
@@ -114,9 +114,9 @@ protected:
     }
 
 private:
-    bool call(const QString &method, const QByteArray& arg, QByteArray& ret);
-    AsyncReply *call(const QString &method, const QByteArray& arg);
-    void subscribe_p(const QString &method, const QByteArray& arg, const std::function<void(const QByteArray&)> &handler);
+    bool call(const QString &method, const QByteArray &arg, QByteArray &ret);
+    AsyncReply *call(const QString &method, const QByteArray &arg);
+    void subscribe_p(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray &)> &handler);
 
     Q_DISABLE_COPY(AbstractClient)
     AbstractClient(AbstractClient &&) = delete;

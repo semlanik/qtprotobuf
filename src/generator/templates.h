@@ -90,7 +90,6 @@ public:
     static const char *SetterTemplateMessageType;
     static const char *SignalsBlockTemplate;
     static const char *SignalTemplate;
-    static const char *FieldsOrderingDefinitionContainerTemplate;
     static const char *FieldsOrderingContainerTemplate;
     static const char *FieldOrderTemplate;
     static const char *EnumTemplate;
@@ -109,7 +108,6 @@ public:
     static const char *RegisterQmlListPropertyMetaTypeTemplate;
     static const char *QEnumTemplate;
     static const char *MapSerializationRegisterTemplate;
-    static const char *SerializersTemplate;
     static const char *RegisterSerializersTemplate;
     static const char *RegistratorTemplate;
     static const char *QmlRegisterTypeTemplate;

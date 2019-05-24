@@ -45,7 +45,7 @@ ClientSourceGenerator::ClientSourceGenerator(const google::protobuf::ServiceDesc
 void ClientSourceGenerator::printMethods()
 {
     for (int i = 0; i < mService->method_count(); i++) {
-        const MethodDescriptor* method = mService->method(i);
+        const MethodDescriptor *method = mService->method(i);
         std::map<std::string, std::string> parameters;
         getMethodParameters(method, parameters);
         if (method->server_streaming()) {

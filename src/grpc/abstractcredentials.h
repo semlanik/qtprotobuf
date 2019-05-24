@@ -65,8 +65,8 @@ public:
     }
 protected:
     AbstractCredentials() = default;
-    void setCallCredentials(const CredentialMap& credentialMap) { mCallCredentials = credentialMap; }
-    void setChannelCredentials(const CredentialMap& credentialMap) { mChannelCredentials = credentialMap; }
+    void setCallCredentials(const CredentialMap &credentialMap) { mCallCredentials = credentialMap; }
+    void setChannelCredentials(const CredentialMap &credentialMap) { mChannelCredentials = credentialMap; }
 
 private:
     CredentialMap mCallCredentials;
@@ -76,7 +76,7 @@ private:
 class QTGRPCSHARED_EXPORT CallCredentials : public AbstractCredentials
 {
 protected:
-    CallCredentials(const CredentialMap& credentialMap) {
+    CallCredentials(const CredentialMap &credentialMap) {
         setCallCredentials(credentialMap);
         setChannelCredentials(CredentialMap{});
     }
@@ -88,7 +88,7 @@ private:
 class QTGRPCSHARED_EXPORT ChannelCredentials : public AbstractCredentials
 {
 protected:
-    ChannelCredentials(const CredentialMap& credentialMap) {
+    ChannelCredentials(const CredentialMap &credentialMap) {
         setCallCredentials(CredentialMap{});
         setChannelCredentials(credentialMap);
     }

@@ -67,8 +67,10 @@ const char *Templates::NonProtoClassDefinitionTemplate = "\nclass $classname$ : 
                                                          "{\n"
                                                          "    Q_OBJECT\n";
 const char *Templates::ProtoClassDefinitionTemplate = "\nclass $classname$ : public QObject\n"
-                                                 "{\n"
-                                                 "    Q_OBJECT\n";
+                                                      "{\n"
+                                                      "    Q_OBJECT\n"
+                                                      "    Q_PROTOBUF_OBJECT\n"
+                                                      "    Q_DECLARE_PROTOBUF_SERIALIZERS($classname$)\n";
 
 const char *Templates::PropertyTemplate = "Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
 const char *Templates::MessagePropertyTemplate = "Q_PROPERTY($type$ *$property_name$ READ $property_name$_p WRITE set$property_name_cap$_p NOTIFY $property_name$Changed)\n";
@@ -146,17 +148,15 @@ const char *Templates::SetterTemplateSimpleType = "void set$property_name_cap$(c
 const char *Templates::SignalsBlockTemplate = "\nsignals:\n";
 const char *Templates::SignalTemplate = "void $property_name$Changed();\n";
 
-const char *Templates::FieldsOrderingDefinitionContainerTemplate = "static const std::unordered_map<int/*field number*/, int/*property number*/> propertyOrdering;\n";
-
 const char *Templates::FieldsOrderingContainerTemplate = "const std::unordered_map<int, int> $type$::propertyOrdering = {";
-const char *Templates::FieldOrderTemplate = "{$field_number$,$property_number$}";
+const char *Templates::FieldOrderTemplate = "{$field_number$, $property_number$}";
 
 const char *Templates::EnumTemplate = "$type$";
 
 const char *Templates::SimpleBlockEnclosureTemplate = "}\n\n";
 const char *Templates::SemicolonBlockEnclosureTemplate = "};\n";
 const char *Templates::EmptyBlockTemplate = "{}\n\n";
-const char *Templates::PropertyInitializerTemplate = "\n    ,m_$property_name$($property_name$)";
+const char *Templates::PropertyInitializerTemplate = "\n    , m_$property_name$($property_name$)";
 const char *Templates::ConstructorContentTemplate = "\n{\n}\n";
 
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n";
@@ -185,7 +185,7 @@ const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $
 const char *Templates::QObjectMacro = "Q_OBJECT";
 const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
 const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE qtprotobuf::AsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
-const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject* context, const std::function<void(qtprotobuf::AsyncReply*)> &callback);\n";
+const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(qtprotobuf::AsyncReply *)> &callback);\n";
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
 
@@ -200,15 +200,14 @@ const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nqtprotobuf::Asyn
                                                              "{\n"
                                                              "    return call(\"$method_name$\", $param_name$);\n"
                                                              "}\n";
-const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject* context, const std::function<void(AsyncReply*)> &callback)\n"
+const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(AsyncReply *)> &callback)\n"
                                                               "{\n"
-                                                              "    qtprotobuf::AsyncReply* reply = call(\"$method_name$\", $param_name$);\n"
+                                                              "    qtprotobuf::AsyncReply *reply = call(\"$method_name$\", $param_name$);\n"
                                                               "    QObject::connect(reply, &qtprotobuf::AsyncReply::finished, context, [reply, callback](){\n"
                                                               "        callback(reply);\n"
                                                               "    });\n"
                                                               "}\n";
 
-const char *Templates::SerializersTemplate = "Q_DECLARE_PROTOBUF_SERIALIZERS($classname$)\n";
 const char *Templates::RegisterSerializersTemplate = "qtprotobuf::ProtobufObjectPrivate::registerSerializers<$classname$>();\n";
 const char *Templates::RegistratorTemplate = "static qtprotobuf::RegistrationHelper helper(registerTypes);\n";
 const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\");\n";

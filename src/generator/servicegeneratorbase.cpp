@@ -41,7 +41,7 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 using namespace qtprotobuf::generator;
 
-ServiceGeneratorBase::ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor* service,
+ServiceGeneratorBase::ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor *service,
                                            std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out) :
     ClassGeneratorBase(service->full_name(), std::move(out))
   , mService(service)
@@ -53,7 +53,7 @@ void ServiceGeneratorBase::printIncludes()
     std::unordered_set<std::string> includeSet;
 
     for (int i = 0; i < mService->method_count(); i++) {
-        const MethodDescriptor* method = mService->method(i);
+        const MethodDescriptor *method = mService->method(i);
         std::string inputTypeName = method->input_type()->name();
         std::string outputTypeName = method->output_type()->name();
         utils::tolower(inputTypeName);
@@ -72,11 +72,11 @@ void ServiceGeneratorBase::printClassName()
     mPrinter.Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
 }
 
-void ServiceGeneratorBase::printMethodsDeclaration(const char* methodTemplate, const char* methodAsyncTemplate, const char* methodAsync2Template)
+void ServiceGeneratorBase::printMethodsDeclaration(const char *methodTemplate, const char *methodAsyncTemplate, const char *methodAsync2Template)
 {
     Indent();
     for (int i = 0; i < mService->method_count(); i++) {
-        const MethodDescriptor* method = mService->method(i);
+        const MethodDescriptor *method = mService->method(i);
         std::map<std::string, std::string> parameters;
         getMethodParameters(method, parameters);
         mPrinter.Print(parameters, methodTemplate);

@@ -60,7 +60,7 @@ TEST_F(ClientTest, CheckMethodsGeneration)
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
     testClient.testMethod(request, result);
     testClient.testMethod(request);
-    testClient.testMethod(request, &testClient, [](AsyncReply*){});
+    testClient.testMethod(request, &testClient, [](AsyncReply *){});
     delete result;
 }
 
@@ -85,7 +85,7 @@ TEST_F(ClientTest, StringEchoAsyncTest)
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
 
-    AsyncReply* reply = testClient.testMethod(request);
+    AsyncReply *reply = testClient.testMethod(request);
     QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
         if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
             result = reply->read<SimpleStringMessage>();
@@ -126,7 +126,7 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
     QEventLoop waiter;
 
     bool errorCalled = false;
-    AsyncReply* reply = testClient.testMethod(request);
+    AsyncReply *reply = testClient.testMethod(request);
     result.setTestFieldString("Result not changed by echo");
     QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
         if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
@@ -180,7 +180,7 @@ TEST_F(ClientTest, StringEchoStreamTest)
     QEventLoop waiter;
 
     int i = 0;
-    QObject::connect(&testClient, &TestServiceClient::testMethodServerStreamUpdated, &m_app, [&result, &i, &waiter](const SimpleStringMessage& ret) {
+    QObject::connect(&testClient, &TestServiceClient::testMethodServerStreamUpdated, &m_app, [&result, &i, &waiter](const SimpleStringMessage &ret) {
         ++i;
 
         result.setTestFieldString(result.testFieldString() + ret.testFieldString());
@@ -240,7 +240,7 @@ TEST_F(ClientTest, HugeBlobEchoStreamTest)
     QByteArray dataHash = QCryptographicHash::hash(request.testBytes(), QCryptographicHash::Sha256);
     QEventLoop waiter;
 
-    QObject::connect(&testClient, &TestServiceClient::testMethodBlobServerStreamUpdated, &m_app, [&result, &waiter](const BlobMessage& ret) {
+    QObject::connect(&testClient, &TestServiceClient::testMethodBlobServerStreamUpdated, &m_app, [&result, &waiter](const BlobMessage &ret) {
         result.setTestBytes(ret.testBytes());
         waiter.quit();
     });

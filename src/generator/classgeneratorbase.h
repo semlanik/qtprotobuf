@@ -121,7 +121,7 @@ protected:
     template<typename T>
     static std::string getNamespacesList(const T *message, std::vector<std::string> &container, const std::string &localNamespace);
     static EnumVisibility getEnumVisibility(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor);
-    void getMethodParameters(const ::google::protobuf::MethodDescriptor* method, std::map<std::string, std::string> &parameters);
+    void getMethodParameters(const ::google::protobuf::MethodDescriptor *method, std::map<std::string, std::string> &parameters);
 };
 
 } //namespace generator

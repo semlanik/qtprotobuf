@@ -89,7 +89,7 @@ public:
      * \param args
      * \param handler
      */
-    virtual void subscribe(const QString &method, const QString &service, const QByteArray &args, AbstractClient* client, const std::function<void(const QByteArray&)> &handler) = 0;
+    virtual void subscribe(const QString &method, const QString &service, const QByteArray &args, AbstractClient *client, const std::function<void(const QByteArray &)> &handler) = 0;
 protected:
     AbstractChannel() = default;
     virtual ~AbstractChannel() = default;
