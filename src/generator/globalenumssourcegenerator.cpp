@@ -55,7 +55,7 @@ void GlobalEnumsSourceGenerator::run() {
 void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDescriptor *> &list,
                                                    const std::vector<std::string> &namespaces)
 {
-    assert(list.size() > 0);
+    assert(!list.empty());
 
     std::string fullNamespace;
     for (auto name : namespaces) {

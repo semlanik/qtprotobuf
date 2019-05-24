@@ -66,6 +66,8 @@ protected:
 private:
     AsyncReply();
     Q_DISABLE_COPY(AsyncReply)
+    AsyncReply(AsyncReply &&) = delete;
+    AsyncReply &operator =(AsyncReply &&) = delete;
 
     friend class AbstractClient;
 

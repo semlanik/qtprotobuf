@@ -42,6 +42,7 @@ using namespace ::google::protobuf::compiler;
 
 ServerGenerator::ServerGenerator(const ServiceDescriptor *service, std::unique_ptr<io::ZeroCopyOutputStream> out) :
     ServiceGeneratorBase(service, std::move(out))
+  , mService(nullptr)
 {
     mClassName += "Server";
 }

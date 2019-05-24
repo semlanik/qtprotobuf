@@ -28,8 +28,10 @@
 #include <QTimer>
 
 namespace qtprotobuf {
-struct AbstractClientPrivate final {
-    AbstractClientPrivate(const QString &service) : service(service) {}
+class AbstractClientPrivate final {
+public:
+    AbstractClientPrivate(const QString &service) : service(service)
+    , lastError(AbstractChannel::StatusCodes::Ok) {}
 
     std::shared_ptr<AbstractChannel> channel;
     const QString service;
@@ -51,7 +53,7 @@ AbstractClient::~AbstractClient()
     delete d;
 }
 
-void AbstractClient::attachChannel(std::shared_ptr<AbstractChannel> channel)
+void AbstractClient::attachChannel(const std::shared_ptr<AbstractChannel> &channel)
 {
     d->channel = channel;
 }

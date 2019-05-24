@@ -40,16 +40,16 @@ namespace generator {
 
 class QtGenerator : public ::google::protobuf::compiler::CodeGenerator
 {
-    virtual bool Generate(const ::google::protobuf::FileDescriptor *file,
+    bool Generate(const ::google::protobuf::FileDescriptor *file,
                           const std::string &parameter,
                           ::google::protobuf::compiler::GeneratorContext *generatorContext,
                           std::string *error) const override;
 
-    virtual bool GenerateAll(const std::vector<const ::google::protobuf::FileDescriptor *> &files,
+    bool GenerateAll(const std::vector<const ::google::protobuf::FileDescriptor *> &files,
                              const std::string &parameter,
                              ::google::protobuf::compiler::GeneratorContext *generatorContext,
                              std::string *error) const override;
-      virtual bool HasGenerateAll() const override { return true; }
+    bool HasGenerateAll() const override { return true; }
 };
 
 } //namespace generator

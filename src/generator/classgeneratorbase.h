@@ -46,7 +46,7 @@ using PropertyMap = std::map<std::string, std::string>;
 class ClassGeneratorBase
 {
 public:
-    ClassGeneratorBase(std::string className, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
+    ClassGeneratorBase(const std::string &className, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
     virtual ~ClassGeneratorBase() = default;
     virtual void run() = 0;
 protected:

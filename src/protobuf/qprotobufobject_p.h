@@ -60,6 +60,8 @@ class QTPROTOBUFSHARED_EXPORT ProtobufObjectPrivate
     ProtobufObjectPrivate() = delete;
     ~ProtobufObjectPrivate() = delete;
     Q_DISABLE_COPY(ProtobufObjectPrivate)
+    ProtobufObjectPrivate(ProtobufObjectPrivate &&) = delete;
+    ProtobufObjectPrivate &operator =(ProtobufObjectPrivate &&) = delete;
 public:
     using Serializer = std::function<QByteArray(const QVariant &, int &)>;
     using Deserializer = std::function<void(SelfcheckIterator &, QVariant &)>;
@@ -75,7 +77,7 @@ public:
 
     template <typename T,
               typename std::enable_if_t<!std::is_base_of<QObject, T>::value, int> = 0>
-    static void wrapSerializer(std::function<QByteArray(const T &, int &)> s, std::function<QVariant(SelfcheckIterator &)> d, WireTypes type)
+    static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<QVariant(SelfcheckIterator &)> &d, WireTypes type)
     {
         serializers[qMetaTypeId<T>()] = {
             [s](const QVariant &value, int &fieldIndex) {
@@ -90,7 +92,7 @@ public:
 
     template <typename T,
               typename std::enable_if_t<!std::is_base_of<QObject, T>::value, int> = 0>
-    static void wrapSerializer(std::function<QByteArray(const T &, int &)> s, std::function<void(SelfcheckIterator &it, QVariant & value)> d, WireTypes type)
+    static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<void(SelfcheckIterator &it, QVariant & value)> &d, WireTypes type)
     {
         serializers[qMetaTypeId<T>()] = {
             [s](const QVariant &value, int &fieldIndex) {
@@ -103,7 +105,7 @@ public:
 
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
-    static void wrapSerializer(std::function<QByteArray(const T &, int &)> s, std::function<QVariant(SelfcheckIterator &)> d, WireTypes type)
+    static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<QVariant(SelfcheckIterator &)> &d, WireTypes type)
     {
         serializers[qMetaTypeId<T*>()] = {
             [s](const QVariant &value, int &fieldIndex) {
@@ -118,7 +120,7 @@ public:
 
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
-    static void wrapSerializer(std::function<QByteArray(const T &, int &)> s, std::function<void(SelfcheckIterator &it, QVariant &value)> d, WireTypes type)
+    static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<void(SelfcheckIterator &it, QVariant &value)> &d, WireTypes type)
     {
         serializers[qMetaTypeId<T*>()] = {
             [s](const QVariant &value, int &fieldIndex) {

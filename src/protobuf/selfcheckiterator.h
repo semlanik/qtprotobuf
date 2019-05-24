@@ -35,20 +35,24 @@ namespace qtprotobuf {
 class QTPROTOBUFSHARED_EXPORT SelfcheckIterator
 {
 public:
-    SelfcheckIterator(const QByteArray& container) : m_sizeLeft(container.size())
+    SelfcheckIterator(const QByteArray &container) : m_sizeLeft(container.size())
       , m_containerSize(container.size())
       , m_it(container.begin()){}
 
-    SelfcheckIterator(const SelfcheckIterator& other) : m_sizeLeft(other.m_sizeLeft)
-      ,m_containerSize(other.m_containerSize)
-      , m_it(other.m_it){}
+    SelfcheckIterator(const SelfcheckIterator &other) : m_sizeLeft(other.m_sizeLeft)
+      , m_containerSize(other.m_containerSize)
+      , m_it(other.m_it) {
+        if (m_sizeLeft >= m_containerSize) {
+            throw std::out_of_range("Container is less than required fields number. Deserialization failed");
+        }
+    }
 
     explicit operator QByteArray::const_iterator&() { return m_it; }
     explicit operator QByteArray::const_iterator() const { return m_it; }
 
     char operator *() { return *m_it; }
 
-    SelfcheckIterator& operator ++() {
+    SelfcheckIterator &operator ++() {
         --m_sizeLeft;
         if (m_sizeLeft < 0) {
             throw std::out_of_range("Container is less than required fields number. Deserialization failed");
@@ -57,7 +61,7 @@ public:
         return *this;
     }
 
-    SelfcheckIterator& operator --() {
+    SelfcheckIterator &operator --() {
         ++m_sizeLeft;
         if (m_sizeLeft >= m_containerSize) {
             throw std::out_of_range("Container is less than required fields number. Deserialization failed");
@@ -66,7 +70,7 @@ public:
         return *this;
     }
 
-    SelfcheckIterator& operator +=(int count) {
+    SelfcheckIterator &operator +=(int count) {
         m_sizeLeft -= count;
         if (m_sizeLeft < 0) {
             throw std::out_of_range("Container is less than required fields number. Deserialization failed");
@@ -75,7 +79,7 @@ public:
         return *this;
     }
 
-    SelfcheckIterator& operator -=(int count) {
+    SelfcheckIterator &operator -=(int count) {
         m_sizeLeft += count;
         if (m_sizeLeft >= m_containerSize) {
             throw std::out_of_range("Container is less than required fields number. Deserialization failed");
@@ -84,7 +88,7 @@ public:
         return *this;
     }
 
-    SelfcheckIterator& operator =(SelfcheckIterator& other) {
+    SelfcheckIterator &operator =(const SelfcheckIterator &other) {
         if (this == &other) {
             return *this;
         }
@@ -119,7 +123,7 @@ private:
     QByteArray::const_iterator m_it;
 };
 
-inline SelfcheckIterator operator +(const SelfcheckIterator& it, int lenght) {
+inline SelfcheckIterator operator +(const SelfcheckIterator &it, int lenght) {
     SelfcheckIterator itNew = it;
     return itNew += lenght;
 }

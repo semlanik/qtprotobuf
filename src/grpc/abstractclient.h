@@ -47,7 +47,7 @@ class AbstractClientPrivate;
 class QTGRPCSHARED_EXPORT AbstractClient : public QObject
 {
 public:
-    void attachChannel(std::shared_ptr<AbstractChannel> channel);
+    void attachChannel(const std::shared_ptr<AbstractChannel> &channel);
 
     AbstractChannel::StatusCodes lastError() const;
     QString lastErrorString() const;
@@ -119,6 +119,8 @@ private:
     void subscribe_p(const QString &method, const QByteArray& arg, const std::function<void(const QByteArray&)> &handler);
 
     Q_DISABLE_COPY(AbstractClient)
+    AbstractClient(AbstractClient &&) = delete;
+    AbstractClient &operator =(AbstractClient &&) = delete;
 
     AbstractClientPrivate *d;
 };

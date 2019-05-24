@@ -35,7 +35,7 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
-ClassSourceGeneratorBase::ClassSourceGeneratorBase(std::string fullClassName,
+ClassSourceGeneratorBase::ClassSourceGeneratorBase(const std::string &fullClassName,
                                                    std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out) :
     ClassGeneratorBase(fullClassName, std::move(out))
 {

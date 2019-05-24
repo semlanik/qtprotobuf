@@ -38,7 +38,7 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
-ClassGeneratorBase::ClassGeneratorBase(std::string fullClassName, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out) : mOutput(std::move(out))
+ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out) : mOutput(std::move(out))
   , mPrinter(mOutput.get(), '$')
 {
     mPrinter.Print(Templates::DisclaimerTemplate);
@@ -208,7 +208,7 @@ std::string ClassGeneratorBase::getNamespacesList(const T *message, std::vector<
         }
     }
 
-    if (container.size() > 0
+    if (!container.empty()
             && localNamespace != result) {
         result = result.append("::");
     } else {

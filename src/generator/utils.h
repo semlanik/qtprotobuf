@@ -50,7 +50,7 @@ static void split(const std::string &str, std::vector<std::string> &container, c
     }
 }
 
-static void replace(std::string & data, std::string from, std::string to) {
+static void replace(std::string &data, const std::string &from, const std::string &to) {
     size_t pos = data.find(from);
     while (pos != std::string::npos) {
         data.replace(pos, from.size(), to);

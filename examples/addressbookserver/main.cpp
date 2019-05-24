@@ -46,7 +46,7 @@ public:
         m_lastCallStatus.set_status(CallStatus::Inactive);
     }
 
-    ~AddressBookService() {}
+    ~AddressBookService() = default;
 
     void updateContacts() {
         for(unsigned int i = 0; i < (m_clients.size() - 1); i++) {
