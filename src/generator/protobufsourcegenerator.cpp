@@ -81,9 +81,7 @@ void ProtobufSourceGenerator::printRegisterBody()
     mPrinter.Print({{"classname", mClassName}}, Templates::RegisterSerializersTemplate);
     Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
-    Indent();
     printRegistrationHelperInvokation();
-    Outdent();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
 }
 
@@ -108,4 +106,57 @@ void ProtobufSourceGenerator::printFieldsOrdering() {
 void ProtobufSourceGenerator::printRegistrationHelperInvokation()
 {
     mPrinter.Print(Templates::RegistratorTemplate);
+}
+
+void ProtobufSourceGenerator::printConstructor()
+{
+    std::string parameterList;
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        const FieldDescriptor *field = mMessage->field(i);
+        std::string fieldTypeName = getTypeName(field, mMessage);
+        std::string fieldName = field->name();
+        fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
+        if (field->is_repeated() || field->is_map()) {
+            parameterList += "const " + fieldTypeName + " &" + fieldName;
+        } else {
+            switch (field->type()) {
+            case FieldDescriptor::TYPE_DOUBLE:
+            case FieldDescriptor::TYPE_FLOAT:
+                parameterList += fieldTypeName + " " + fieldName;
+                break;
+            case FieldDescriptor::TYPE_FIXED32:
+            case FieldDescriptor::TYPE_FIXED64:
+            case FieldDescriptor::TYPE_INT32:
+            case FieldDescriptor::TYPE_INT64:
+            case FieldDescriptor::TYPE_SINT32:
+            case FieldDescriptor::TYPE_SINT64:
+            case FieldDescriptor::TYPE_UINT32:
+            case FieldDescriptor::TYPE_UINT64:
+                parameterList += fieldTypeName + " " + fieldName;
+                break;
+            case FieldDescriptor::TYPE_BOOL:
+                parameterList += fieldTypeName + " " + fieldName;
+                break;
+            case FieldDescriptor::TYPE_BYTES:
+            case FieldDescriptor::TYPE_STRING:
+            case FieldDescriptor::TYPE_MESSAGE:
+                parameterList += "const " + fieldTypeName + " &" + fieldName;
+                break;
+            default:
+                parameterList += fieldTypeName + " " + fieldName;
+                break;
+            }
+        }
+        parameterList += ", ";
+    }
+    mPrinter.Print({{"classname", mClassName},
+                    {"parameter_list", parameterList}}, Templates::ProtoConstructorDefinitionTemplate);
+
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        const FieldDescriptor *field = mMessage->field(i);
+        std::string fieldName = field->name();
+        fieldName[0] =  static_cast<char>(::tolower(fieldName[0]));
+        mPrinter.Print({{"property_name", fieldName}}, Templates::PropertyInitializerTemplate);
+    }
+    mPrinter.Print(Templates::ConstructorContentTemplate);
 }

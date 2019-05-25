@@ -67,6 +67,7 @@ public:
     static const char *EnumDefinitionTemplate;
     static const char *EnumFieldTemplate;
     static const char *ProtoConstructorTemplate;
+    static const char *ProtoConstructorDefinitionTemplate;
     static const char *ConstructorTemplate;
     static const char *CopyConstructorTemplate;
     static const char *MoveConstructorTemplate;

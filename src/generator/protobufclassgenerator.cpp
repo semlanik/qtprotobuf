@@ -317,13 +317,6 @@ void ProtobufClassGenerator::printConstructor()
     mPrinter.Print({{"classname", mClassName},
                     {"parameter_list", parameterList}}, Templates::ProtoConstructorTemplate);
 
-    for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor *field = mMessage->field(i);
-        std::string fieldName = field->name();
-        fieldName[0] =  static_cast<char>(::tolower(fieldName[0]));
-        mPrinter.Print({{"property_name", fieldName}}, Templates::PropertyInitializerTemplate);
-    }
-    mPrinter.Print(Templates::ConstructorContentTemplate);
 }
 
 void ProtobufClassGenerator::printMaps()

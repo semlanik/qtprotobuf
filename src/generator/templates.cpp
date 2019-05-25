@@ -45,14 +45,14 @@ const char *Templates::ExternalIncludeTemplate = "#include <$include$>\n";
 const char *Templates::GlobalEnumIncludeTemplate = "#include <globalenums.h>\n";
 
 const char *Templates::UsingQtProtobufNamespaceTemplate = "\nusing namespace qtprotobuf;\n";
-const char *Templates::ComplexTypeRegistrationTemplate = "namespace {\n"
+const char *Templates::ComplexTypeRegistrationTemplate = "namespace $classname$Private {\n"
                                                          "void registerTypes()\n{\n"
                                                          "    qRegisterMetaType<$classname$>(\"$classname$\");\n"
                                                          "    qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
                                                          "    qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
                                                          "    qRegisterMetaType<$classname$List>(\"$namespaces$::$classname$List\");\n"
                                                          "";
-const char *Templates::ComplexGlobalEnumRegistrationTemplate = "namespace {\n"
+const char *Templates::ComplexGlobalEnumRegistrationTemplate = "namespace $classname$Private {\n"
                                                                "void registerTypes()\n{\n";
 const char *Templates::ComplexGlobalEnumFieldRegistrationTemplate = "qRegisterMetaType<$classname$::$enum$>(\"$namespaces$::$classname$::$enum$\");\n";
 const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<QSharedPointer<$classname$>>;\n";
@@ -82,7 +82,8 @@ const char *Templates::PublicBlockTemplate = "\npublic:\n";
 const char *Templates::PrivateBlockTemplate = "\nprivate:\n";
 const char *Templates::EnumDefinitionTemplate = "enum $enum$ {\n";
 const char *Templates::EnumFieldTemplate = "$enumvalue$ = $value$,\n";
-const char *Templates::ProtoConstructorTemplate = "$classname$($parameter_list$QObject *parent = nullptr) : QObject(parent)";
+const char *Templates::ProtoConstructorTemplate = "$classname$($parameter_list$QObject *parent = nullptr);\n";
+const char *Templates::ProtoConstructorDefinitionTemplate = "$classname$::$classname$($parameter_list$QObject *parent) : QObject(parent)";
 const char *Templates::ConstructorTemplate = "$classname$();\n";
 const char *Templates::ConstructorHeaderTemplate = "$classname$(){}\n";
 const char *Templates::CopyConstructorTemplate = "$classname$(const $classname$ &other) : QObject() {\n";

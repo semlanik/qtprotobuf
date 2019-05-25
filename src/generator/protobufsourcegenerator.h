@@ -38,6 +38,7 @@ public:
     void printRegisterBody();
     void printFieldsOrdering();
     void printRegistrationHelperInvokation();
+    void printConstructor();
 
     void run() override {
         printClassHeaderInclude();
@@ -45,6 +46,7 @@ public:
         printNamespaces();
         printFieldsOrdering();
         printRegisterBody();
+        printConstructor();
         encloseNamespaces();
     }
 };
