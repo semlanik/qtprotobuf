@@ -143,3 +143,41 @@ void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaPropert
     auto deserializer = serializers.at(userType).deserializer;//Throws exception if not found
     deserializer(it, out);
 }
+
+void ProtobufObjectPrivate::skipVarint(SelfcheckIterator &it) {
+    while (true) {
+        if (((*it) & 0x80) == 0) {
+            break;
+        }
+        ++it;
+    }
+    ++it;
+}
+
+void ProtobufObjectPrivate::skipLengthLimited(SelfcheckIterator &it) {
+    // return value intentionaly ignored
+    deserializeLengthDelimited(it);
+}
+
+long ProtobufObjectPrivate::skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type) {
+    const auto initialIt = QByteArray::const_iterator(it);
+    switch (type) {
+    case WireTypes::Varint:
+        skipVarint(it);
+        break;
+    case WireTypes::Fixed32:
+        it += sizeof(int32_t);
+        break;
+    case WireTypes::Fixed64:
+        it += sizeof(int64_t);
+        break;
+    case WireTypes::LengthDelimited:
+        skipLengthLimited(it);
+        break;
+    case WireTypes::UnknownWireType:
+    default:
+        throw std::invalid_argument("Cannot skip due to undefined length of the redundant field.");
+    }
+
+    return std::distance(initialIt, QByteArray::const_iterator(it));
+}

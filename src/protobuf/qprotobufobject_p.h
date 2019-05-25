@@ -684,6 +684,10 @@ public:
         return result;
     }
 
+    static void skipVarint(SelfcheckIterator &it);
+    static void skipLengthLimited(SelfcheckIterator &it);
+    static long skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type);
+
     template<typename T>
     static void deserialize(QObject *object, const QByteArray &array) {
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
@@ -699,16 +703,11 @@ public:
                                       "Seems stream is broken");
             }
 
-            //FIXME: This check is incorrect in protobuf syntax 3 perspective.
-            //It should be possible to process stream even if it contains field
-            //is not a part of the structure.
             auto propertyNumberIt = T::propertyOrdering.find(fieldNumber);
             if (propertyNumberIt == std::end(T::propertyOrdering)) {
-                qProtoCritical() << "Message received contains invalid field number. "
-                               "Trying next, but seems stream is broken";
-                throw std::invalid_argument("Message received contains invalid field number. "
-                                            "Seems stream is broken.\n"
-                                            "QtProtobuf doesn't support extra data for optional fields.");
+                auto bytesCount = skipSerializedFieldBytes(it, wireType);
+                qProtoWarning() << "Message received contains unexpected field. WireType:" << wireType << ", field number: " << fieldNumber << "Skipped:" << bytesCount << "B";
+                continue;
             }
 
             int propertyIndex = propertyNumberIt->second;

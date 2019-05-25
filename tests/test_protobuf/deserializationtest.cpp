@@ -858,29 +858,30 @@ TEST_F(DeserializationTest, SimpleUInt64ComplexMapCorruptedDeserializeTest)
     ASSERT_TRUE(test.mapField().isEmpty());
 }
 
-TEST_F(DeserializationTest, DISABLED_InvalidFieldIndexDeserializeTest)
+TEST_F(DeserializationTest, RedundantFieldIsIgnoredAtDeserializationTest)
 {
-    ComplexMessage test{0, QString{}};
-    test.deserialize(QByteArray::fromHex("60d3ffffffffffffffff0112083206717765727479"));
-    ASSERT_EQ(test.testFieldInt(), 0);
-    ASSERT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");
+    ComplexMessage test;
+    // the byte-array contains redundant bytes deserialazable to an additional field
+    ASSERT_NO_THROW(test.deserialize(QByteArray::fromHex("60d3ffffffffffffffff0112083206717765727479")));
+    EXPECT_EQ(test.testFieldInt(), 0);
+    EXPECT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");
 }
 
 TEST_F(DeserializationTest, FieldIndexRangeTest)
 {
-    FieldIndexTest1Message msg1({0});
+    FieldIndexTest1Message msg1(0);
     msg1.deserialize(QByteArray::fromHex("f80102"));
     ASSERT_EQ(msg1.testField(), 1);
 
-    FieldIndexTest2Message msg2({0});
+    FieldIndexTest2Message msg2(0);
     msg2.deserialize(QByteArray::fromHex("f8ff0302"));
     ASSERT_EQ(msg2.testField(), 1);
 
-    FieldIndexTest3Message msg3({0});
+    FieldIndexTest3Message msg3(0);
     msg3.deserialize(QByteArray::fromHex("f8ffff0702"));
     ASSERT_EQ(msg3.testField(), 1);
 
-    FieldIndexTest4Message msg4({0});
+    FieldIndexTest4Message msg4(0);
     msg4.deserialize(QByteArray::fromHex("f8ffffff0f02"));
     ASSERT_EQ(msg4.testField(), 1);
 }
