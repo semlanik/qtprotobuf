@@ -27,7 +27,6 @@
 #include "qprotobufobject.h"
 #include "registrationhelper.h"
 
-//registerProtobufType Not a part of API
 #define registerProtobufType(X) qRegisterMetaType<X>(# X);\
                                 qRegisterMetaType<X>("qtprotobuf::"# X);
 
