@@ -21,7 +21,7 @@ git submodule update --init --recursive
 mkdir build
 cd build
 cmake ..
-cmake --build . -j <N> [--config <RELEASE|DEBUG>]
+cmake --build . [--config <RELEASE|DEBUG>] -- -j<N>
 ```
 
 ## Windows Build
@@ -53,10 +53,15 @@ cd <directory with qtprotobuf project>
 mkdir build
 cd build
 cmake ..
-cmake --build . -j <N> [--config <RELEASE|DEBUG>]
+cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 ```
 
 ## Usage
 ```bash
 protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin>/qtprotobuf --qtprotobuf_out=<output_dir> <protofile>.proto [--qtprotobuf_opt=out=<output_dir>]
+```
+## Running tests
+```bash
+cd <build directory>
+ctest
 ```
