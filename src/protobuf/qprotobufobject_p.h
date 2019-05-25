@@ -685,8 +685,8 @@ public:
     }
 
     static void skipVarint(SelfcheckIterator &it);
-    static void skipLengthLimited(SelfcheckIterator &it);
-    static long skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type);
+    static void skipLengthDelimited(SelfcheckIterator &it);
+    static int skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type);
 
     template<typename T>
     static void deserialize(QObject *object, const QByteArray &array) {
@@ -706,7 +706,8 @@ public:
             auto propertyNumberIt = T::propertyOrdering.find(fieldNumber);
             if (propertyNumberIt == std::end(T::propertyOrdering)) {
                 auto bytesCount = skipSerializedFieldBytes(it, wireType);
-                qProtoWarning() << "Message received contains unexpected field. WireType:" << wireType << ", field number: " << fieldNumber << "Skipped:" << bytesCount << "B";
+                qProtoWarning() << "Message received contains unexpected/optional field. WireType:" << wireType
+                                << ", field number: " << fieldNumber << "Skipped:" << (bytesCount + 1) << "bytes";
                 continue;
             }
 

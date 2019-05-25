@@ -861,7 +861,22 @@ TEST_F(DeserializationTest, SimpleUInt64ComplexMapCorruptedDeserializeTest)
 TEST_F(DeserializationTest, RedundantFieldIsIgnoredAtDeserializationTest)
 {
     ComplexMessage test;
-    // the byte-array contains redundant bytes deserialazable to an additional field
+    //3206717765727479 length delimited field number 6
+    ASSERT_NO_THROW(test.deserialize(QByteArray::fromHex("120832067177657274793206717765727479")));
+    EXPECT_EQ(test.testFieldInt(), 0);
+    EXPECT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");
+
+    //3dcdcccc3d fixed32 field number 7
+    ASSERT_NO_THROW(test.deserialize(QByteArray::fromHex("120832067177657274793dcdcccc3d")));
+    EXPECT_EQ(test.testFieldInt(), 0);
+    EXPECT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");
+
+    //419a9999999999b93f fixed64 field number 8
+    ASSERT_NO_THROW(test.deserialize(QByteArray::fromHex("12083206717765727479419a9999999999b93f")));
+    EXPECT_EQ(test.testFieldInt(), 0);
+    EXPECT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");
+
+    //60d3ffffffffffffffff01 varint field number 12
     ASSERT_NO_THROW(test.deserialize(QByteArray::fromHex("60d3ffffffffffffffff0112083206717765727479")));
     EXPECT_EQ(test.testFieldInt(), 0);
     EXPECT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");

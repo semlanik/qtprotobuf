@@ -144,35 +144,36 @@ void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaPropert
     deserializer(it, out);
 }
 
-void ProtobufObjectPrivate::skipVarint(SelfcheckIterator &it) {
-    while (true) {
-        if (((*it) & 0x80) == 0) {
-            break;
-        }
+void ProtobufObjectPrivate::skipVarint(SelfcheckIterator &it)
+{
+    while ((*it) & 0x80) {
         ++it;
     }
     ++it;
 }
 
-void ProtobufObjectPrivate::skipLengthLimited(SelfcheckIterator &it) {
-    // return value intentionaly ignored
-    deserializeLengthDelimited(it);
+void ProtobufObjectPrivate::skipLengthDelimited(SelfcheckIterator &it)
+{
+    //Get length of lenght-delimited field
+    unsigned int length = deserializeBasic<uint32>(it).toUInt();
+    it += length;
 }
 
-long ProtobufObjectPrivate::skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type) {
+int ProtobufObjectPrivate::skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type)
+{
     const auto initialIt = QByteArray::const_iterator(it);
     switch (type) {
     case WireTypes::Varint:
         skipVarint(it);
         break;
     case WireTypes::Fixed32:
-        it += sizeof(int32_t);
+        it += sizeof(decltype(fixed32::_t));
         break;
     case WireTypes::Fixed64:
-        it += sizeof(int64_t);
+        it += sizeof(decltype(fixed64::_t));
         break;
     case WireTypes::LengthDelimited:
-        skipLengthLimited(it);
+        skipLengthDelimited(it);
         break;
     case WireTypes::UnknownWireType:
     default:
