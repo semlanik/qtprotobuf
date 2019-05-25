@@ -1,0 +1,4 @@
+module QtProtobuf
+plugin protobufquickplugin
+classname QtProtobufQuickPlugin
+

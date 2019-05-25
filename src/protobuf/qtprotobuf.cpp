@@ -66,14 +66,17 @@ void registerTypes() {
     QMetaType::registerConverter<int64, int64_t>(int64::toType);
     QMetaType::registerConverter<qint64, int64>(int64::fromType);
     QMetaType::registerConverter<int64, qint64>(int64::toType);
+    QMetaType::registerConverter<int32_t, int64>(int64::fromType);
 
     QMetaType::registerConverter<uint32_t, fixed32>(fixed32::fromType);
     QMetaType::registerConverter<fixed32, uint32_t>(fixed32::toType);
+    QMetaType::registerConverter<int32_t, fixed32>(fixed32::fromType);
 
     QMetaType::registerConverter<uint64_t, fixed64>(fixed64::fromType);
     QMetaType::registerConverter<fixed64, uint64_t>(fixed64::toType);
     QMetaType::registerConverter<quint64, fixed64>(fixed64::fromType);
     QMetaType::registerConverter<fixed64, quint64>(fixed64::toType);
+    QMetaType::registerConverter<int32_t, fixed64>(fixed64::fromType);
 
     QMetaType::registerConverter<int32_t, sfixed32>(sfixed32::fromType);
     QMetaType::registerConverter<sfixed32, int32_t>(sfixed32::toType);
@@ -82,6 +85,7 @@ void registerTypes() {
     QMetaType::registerConverter<sfixed64, int64_t>(sfixed64::toType);
     QMetaType::registerConverter<qint64, sfixed64>(sfixed64::fromType);
     QMetaType::registerConverter<sfixed64, qint64>(sfixed64::toType);
+    QMetaType::registerConverter<int32_t, sfixed64>(sfixed64::fromType);
     ProtobufObjectPrivate::registerSerializers();
 }
 }
