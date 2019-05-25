@@ -90,8 +90,6 @@ using namespace qtprotobufnamespace::tests;
 using namespace qtprotobuf::tests;
 using namespace qtprotobuf;
 
-DeserializationTest::DeserializationTest() = default;
-
 TEST_F(DeserializationTest, FixedInt32MessageDeserializeTest)
 {
     SimpleFixedInt32Message test;

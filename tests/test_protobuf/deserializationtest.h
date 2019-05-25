@@ -33,7 +33,7 @@ namespace tests {
 class DeserializationTest : public ::testing::Test
 {
 public:
-    DeserializationTest();
+    DeserializationTest() = default;
 };
 
 }

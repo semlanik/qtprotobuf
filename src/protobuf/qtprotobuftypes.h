@@ -48,6 +48,9 @@ struct transparent {
     operator T &(){ return _t; }
     operator T() const { return _t; }
     transparent &operator =(const T &t) { _t = t; return *this; }
+
+    static T toType( transparent t ) { return t._t; }
+    static transparent fromType( T _t ) { return transparent(_t); }
 };
 
 using int32 = transparent<int32_t>;
