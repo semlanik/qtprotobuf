@@ -143,6 +143,14 @@ public:
     //###########################################################################
     //                           Serialization helpers
     //###########################################################################
+
+    /**
+     * @brief Gets length of a byte-array and prepends to it its serialized length value
+     *      using the appropriate serialization algorithm
+     *
+     *
+     * @param[in, out] serializedList Byte-array to be prepended
+     */
     static void prependLengthDelimitedSize(QByteArray &serializedList)
     {
         int empty = NotUsedFieldIndex;
@@ -156,7 +164,7 @@ public:
 
     //----------------Serialize basic integral and floating point----------------
     /**
-     *@brief Serialization of fixed-length primitive types
+     * @brief Serialization of fixed-length primitive types
      *
      * Natural layout of bits is used: value is encoded in a byte array same way as it is located in memory
      *
@@ -175,6 +183,15 @@ public:
         return result;
     }
 
+    /**
+     * @brief Serialization of fixed length integral types
+     *
+     * @details Natural layout of bits is employed
+     *
+     * @param[in] value Value to serialize
+     * @param[out] outFieldIndex Index of the value in parent structure (ignored)
+     * @return Byte array with value encoded
+     */
     template <typename V,
               typename std::enable_if_t<std::is_same<V, fixed32>::value
                                         || std::is_same<V, fixed64>::value
@@ -244,9 +261,8 @@ public:
         //Reserve maximum required number of bytes
         result.reserve(sizeof(V));
         while (varint != 0) {
-            // NOTE: bin(0x7F) == "0111 1111" and bin(0x80) = "1000 0000"
-            //Put 7 bits to result buffer and mark as "not last"(0x80)
-            result.append((varint & 0x7F) | 0x80);
+            //Put 7 bits to result buffer and mark as "not last" (0b10000000)
+            result.append((varint & 0b01111111) | 0b10000000);
             //Divide values to chunks of 7 bits and move to next chunk
             varint >>= 7;
         }
@@ -262,8 +278,8 @@ public:
         if (result.size() == 0) {
             outFieldIndex = NotUsedFieldIndex;
         } else {
-            //Mark last chunk as last by removing(0x80)
-            result.data()[result.size() - 1] &= ~0x80;
+            //Mark last chunk as last by clearing last bit
+            result.data()[result.size() - 1] &= ~0b10000000;
         }
         return result;
     }
@@ -496,9 +512,9 @@ public:
         int k = 0;
         while (true) {
             uint64_t byte = static_cast<uint64_t>(*it);
-            value += (byte & 0x7f) << k;
+            value += (byte & 0b01111111) << k;
             k += 7;
-            if (((*it) & 0x80) == 0) {
+            if (((*it) & 0b10000000) == 0) {
                 break;
             }
             ++it;
@@ -666,12 +682,19 @@ public:
         previous.setValue(previousList);
     }
 
+    /**
+    * @brief Serialization of a registered qtproto message object into byte-array
+    *
+    *
+    * @param[out] object Pointer to QObject containing message to be serialized
+    * @result serialized message bytes
+    */
     template<typename T>
     static QByteArray serialize(const QObject *object) {
         qProtoDebug() << T::staticMetaObject.className() << "serialize";
 
         QByteArray result;
-        for (auto field : T::propertyOrdering) {
+        for (const auto field : T::propertyOrdering) {
             int propertyIndex = field.second;
             int fieldIndex = field.first;
             ASSERT_FIELD_NUMBER(fieldIndex);
@@ -684,10 +707,22 @@ public:
         return result;
     }
 
+    // this set of 3 methods is used to skip bytes corresponding to an unexpected property
+    // in a serialized message met while the message being serialized
     static void skipVarint(SelfcheckIterator &it);
     static void skipLengthDelimited(SelfcheckIterator &it);
     static int skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type);
 
+
+    /**
+    * @brief Deserialization of a byte-array into a registered qtproto message object
+    *
+    * @details Properties in a message are identified via ProtobufObjectPrivate::decodeHeader.
+    *          Bytes corresponding to unexpected properties are skipped without any exception
+    *
+    * @param[out] object Pointer to memory where result of deserialization should be injected
+    * @param[in] array Bytes with serialized message
+    */
     template<typename T>
     static void deserialize(QObject *object, const QByteArray &array) {
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
@@ -783,12 +818,12 @@ inline QByteArray ProtobufObjectPrivate::encodeHeader(int fieldIndex, WireTypes 
  */
 inline bool ProtobufObjectPrivate::decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType)
 {
-    // bin(0x07) == 0000 0111
     uint32_t header = deserializeVarintCommon<uint32_t>(it);
-    wireType = static_cast<WireTypes>(header & 0x07);
+    wireType = static_cast<WireTypes>(header & 0b00000111);
     fieldIndex = header >> 3;
 
-    return fieldIndex < 536870912 && fieldIndex > 0 && (wireType == Varint
+    constexpr int maxFieldIndex = (1 << 29) - 1;
+    return fieldIndex <= maxFieldIndex && fieldIndex > 0 && (wireType == Varint
                                                   || wireType == Fixed64
                                                   || wireType == Fixed32
                                                   || wireType == LengthDelimited);
