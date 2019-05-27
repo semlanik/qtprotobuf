@@ -27,10 +27,12 @@
 #include "http2channel.h"
 #include "insecurecredentials.h"
 #include "blobmessage.h"
+#include <sslcredentials.h>
 
 #include <QTimer>
 #include <QFile>
 #include <QCryptographicHash>
+#include <QSslConfiguration>
 
 #include <QCoreApplication>
 #include <gtest/gtest.h>

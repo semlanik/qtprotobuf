@@ -708,7 +708,7 @@ public:
     }
 
     // this set of 3 methods is used to skip bytes corresponding to an unexpected property
-    // in a serialized message met while the message being serialized
+    // in a serialized message met while the message being deserialized
     static void skipVarint(SelfcheckIterator &it);
     static void skipLengthDelimited(SelfcheckIterator &it);
     static int skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type);

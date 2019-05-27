@@ -126,6 +126,12 @@ struct Http2ChannelPrivate {
 
         QNetworkReply *networkReply = nm.post(request, msg);
 
+        QObject::connect(networkReply, &QNetworkReply::sslErrors, [networkReply](const QList<QSslError> &errors) {
+           qProtoCritical() << errors;
+           // TODO: filter out noncritical SSL handshake errors
+           Http2ChannelPrivate::abortNetworkReply(networkReply);
+        });
+
         if (!stream) {
             //TODO: Add configurable timeout logic
             QTimer::singleShot(6000, networkReply, [networkReply]() {

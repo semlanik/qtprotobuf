@@ -4,23 +4,25 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testfile ${CMAKE_CURRENT_BINARY_DIR}/
 
 include(${CMAKE_SOURCE_DIR}/cmake/QtProtobufCommon.cmake)
 
-set(TARGET qtgrpc_test)
 set(GENERATED_HEADERS
     simplestringmessage.h
     testserviceclient.h
     blobmessage.h
-#    testserviceserver.h
+#   testserviceserver.h
 )
 
-file(GLOB SOURCES main.cpp
-#    servertest.cpp
-    clienttest.cpp)
-
-add_test_target(TARGET ${TARGET}
+# clients
+add_test_target(TARGET qtgrpc_test
     GENERATED_HEADERS ${GENERATED_HEADERS}
-    SOURCES ${SOURCES})
+    SOURCES clienttest.cpp)
+    
+add_test_target(TARGET qtgrpc_secure_test
+    GENERATED_HEADERS ${GENERATED_HEADERS}
+    SOURCES sslclienttest.cpp)
 
+# servers
 add_subdirectory(echoserver)
+add_subdirectory(secureechoserver)
 
 add_test(NAME qtgrpc_echo_test
          COMMAND test_driver.sh ./tests/test_grpc/qtgrpc_test ./tests/test_grpc/echoserver/echoserver
