@@ -126,30 +126,27 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
     QEventLoop waiter;
-
-    bool errorCalled = false;
     AsyncReply *reply = testClient.testMethod(request);
+
     result.setTestFieldString("Result not changed by echo");
-    QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
-        if (testClient.lastError() == AbstractChannel::StatusCode::Ok) {
-            result = reply->read<SimpleStringMessage>();
-        }
+    QObject::connect(reply, &AsyncReply::finished, &m_app, [&waiter]() {
         waiter.quit();
     });
 
-    QObject::connect(reply, &AsyncReply::error, reply, [&errorCalled](AbstractChannel::StatusCode){
-        errorCalled = true;
+    AbstractChannel::StatusCode asyncStatus = AbstractChannel::StatusCode::Ok;
+    QObject::connect(reply, &AsyncReply::error, reply, [&asyncStatus](AbstractChannel::StatusCode code){
+        asyncStatus = code;
     });
     QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
     reply->abort();
 
     waiter.exec();
-    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
     ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCode::Aborted);
-    ASSERT_TRUE(errorCalled);
+    ASSERT_EQ(asyncStatus, AbstractChannel::StatusCode::Aborted);
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
 
-
-    errorCalled = false;
+    // What we check here?
+    bool errorCalled = false;
     reply = testClient.testMethod(request);
     QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
         if (testClient.lastError() == AbstractChannel::StatusCode::Ok) {

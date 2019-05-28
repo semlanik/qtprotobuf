@@ -157,7 +157,6 @@ struct Http2ChannelPrivate {
     static QByteArray processReply(QNetworkReply *networkReply, AbstractChannel::StatusCode &statusCode) {
         //Check if no network error occured
         if (networkReply->error() != QNetworkReply::NoError) {
-            qProtoWarning() << networkReply->error() << ":" << networkReply->errorString();
             statusCode = StatusCodeMap.at(networkReply->error());
             return {};
         }
@@ -165,7 +164,6 @@ struct Http2ChannelPrivate {
         //Check if server answer with error
         statusCode = static_cast<AbstractChannel::StatusCode>(networkReply->rawHeader(GrpcStatusHeader).toInt());
         if (statusCode != AbstractChannel::StatusCode::Ok) {
-            qProtoWarning() << "Protobuf server error occured" << networkReply->errorString();
             return {};
         }
 
@@ -246,6 +244,7 @@ void Http2Channel::call(const QString &method, const QString &service, const QBy
     auto connection = QObject::connect(networkReply, &QNetworkReply::finished, reply, [reply, networkReply]() {
         StatusCode grpcStatus = StatusCode::Unknown;
         QByteArray data = Http2ChannelPrivate::processReply(networkReply, grpcStatus);
+
         qProtoDebug() << "RECV: " << data;
         if (grpcStatus != StatusCode::Ok) {
             reply->setData({});
@@ -257,7 +256,7 @@ void Http2Channel::call(const QString &method, const QString &service, const QBy
         reply->finished();
     });
 
-    QObject::connect(reply, &AsyncReply::error, networkReply, [reply, networkReply, connection]() {
+    QObject::connect(reply, &AsyncReply::error, networkReply, [networkReply, connection](AbstractChannel::StatusCode code) {
         QObject::disconnect(connection);
         Http2ChannelPrivate::abortNetworkReply(networkReply);
     });

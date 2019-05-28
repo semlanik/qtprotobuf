@@ -60,40 +60,37 @@ void AbstractClient::attachChannel(const std::shared_ptr<AbstractChannel> &chann
 
 bool AbstractClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
 {
-    if (!d->channel) {
-        d->lastError = AbstractChannel::Unknown;
-        return false;
+    AbstractChannel::StatusCode callStatus = AbstractChannel::Unknown;
+    if (d->channel) {
+        callStatus = d->channel->call(method, d->service, arg, ret);
+    } else {
+        emit error(callStatus, QLatin1String("No channel(s) attached."));
     }
 
-    d->lastError = d->channel->call(method, d->service, arg, ret);
-    return d->lastError == AbstractChannel::Ok;
+    return AbstractChannel::Ok == callStatus;
 }
 
 AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
 {
-    AsyncReply *reply = new AsyncReply(d->channel, this);
+    AsyncReply *reply = nullptr;
+    if (d->channel) {
+        reply = new AsyncReply(d->channel, this);
 
-    if (!d->channel) {
-        d->lastError = AbstractChannel::Unknown;
-        d->lastErrorString = "No channel attached";
-        QTimer::singleShot(0, this, [reply]() {
-            reply->error(AbstractChannel::Unknown);
+        connect(reply, &AsyncReply::error, this, [this, reply](AbstractChannel::StatusCode statusCode) {
+            d->lastError = statusCode;
+            emit error(statusCode, QLatin1String("Connection has been aborted."));
             reply->deleteLater();
         });
-        return reply;
+
+        connect(reply, &AsyncReply::finished, this, [reply](){
+            reply->deleteLater();
+        });
+
+        d->channel->call(method, d->service, arg, reply);
+    } else {
+        emit error(AbstractChannel::Unknown, QLatin1String("No channel(s) attached."));
     }
 
-    connect(reply, &AsyncReply::error, this, [this, reply](AbstractChannel::StatusCode statusCode){
-        d->lastError = statusCode;
-        reply->deleteLater();
-    });
-
-    connect(reply, &AsyncReply::finished, this, [this, reply](){
-        reply->deleteLater();
-    });
-
-    d->lastError = AbstractChannel::Ok;//Assume that all is OK until something happened
-    d->channel->call(method, d->service, arg, reply);
     return reply;
 }
 
