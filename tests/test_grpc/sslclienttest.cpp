@@ -49,29 +49,21 @@ protected:
 
 int ClientTest::m_argc(0);
 QCoreApplication ClientTest::m_app(m_argc, nullptr);
-QUrl ClientTest::m_echoServerAddress("https://localhost:60051", QUrl::StrictMode);
 
 TEST_F(ClientTest, IncorrectSecureCredentialsTest)
 {
     //Prepare ssl configuration
     QSslConfiguration conf = QSslConfiguration::defaultConfiguration();
-
-    //NOTE: CA certificate setup is ommited on purpose
+    conf.setProtocol(QSsl::TlsV1_2);
+    // NOTE: CA certificate is not setup on purpose to induce the ssl handshake error
     //  QFile certFile("cert.pem");
     //  certFile.open(QIODevice::ReadOnly);
     //  QByteArray cert = certFile.readAll();
     //  conf.setCaCertificates({QSslCertificate(cert)});
 
-    conf.setProtocol(QSsl::TlsV1_2);
-    //conf.setAllowedNextProtocols({QSslConfiguration::ALPNProtocolHTTP2});
-
-    std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel(m_echoServerAddress, qtprotobuf::SslCredentials(conf)));
-
     TestServiceClient testClient;
-    testClient.attachChannel(channel);
+    testClient.attachChannel(std::make_shared<qtprotobuf::Http2Channel>(QUrl("https://localhost:60051", QUrl::StrictMode), qtprotobuf::SslCredentials(conf)));
 
-    QPointer<SimpleStringMessage> result(new SimpleStringMessage);
-    EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, result));
-
-    delete result;
+    std::unique_ptr<SimpleStringMessage> result = std::make_unique<SimpleStringMessage>();
+    EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, result.get()));
 }

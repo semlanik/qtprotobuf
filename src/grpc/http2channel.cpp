@@ -129,6 +129,7 @@ struct Http2ChannelPrivate {
         QObject::connect(networkReply, &QNetworkReply::sslErrors, [networkReply](const QList<QSslError> &errors) {
            qProtoCritical() << errors;
            // TODO: filter out noncritical SSL handshake errors
+           // FIXME: error due to ssl failure is not transferred to the client: last error will be Operation canceled
            Http2ChannelPrivate::abortNetworkReply(networkReply);
         });
 
@@ -150,7 +151,7 @@ struct Http2ChannelPrivate {
     static QByteArray processReply(QNetworkReply *networkReply, AbstractChannel::StatusCodes &statusCode) {
         //Check if no network error occured
         if (networkReply->error() != QNetworkReply::NoError) {
-            qProtoWarning() << "Network error occured" << networkReply->errorString();
+            qProtoWarning() << networkReply->error() << ":" << networkReply->errorString();
             statusCode = StatusCodeMap.at(networkReply->error());
             return {};
         }
