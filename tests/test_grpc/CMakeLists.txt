@@ -27,3 +27,7 @@ add_subdirectory(secureechoserver)
 add_test(NAME qtgrpc_echo_test
          COMMAND test_driver.sh ./tests/test_grpc/qtgrpc_test ./tests/test_grpc/echoserver/echoserver
 )
+
+add_test(NAME qtgrpc_secure_test
+         COMMAND test_driver.sh ./tests/test_grpc/qtgrpc_secure_test ./tests/test_grpc/echoserver/secureechoserver
+)

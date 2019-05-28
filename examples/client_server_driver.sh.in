@@ -1,0 +1,24 @@
+#! /bin/bash
+
+# go to server dir to make sure that certificates are successfuly loaded
+SERVER_DIR=$(dirname "@SERVER_EXEC_PATH@")
+cd $SERVER_DIR
+
+echo "SERVER: @SERVER_EXEC_PATH@ & sleep 0.2"
+# start server and detach console 
+"@SERVER_EXEC_PATH@" &
+# give server time to initialize
+sleep 0.5
+
+# run client provided in $1
+echo "CLIENT: @CLIENT_EXEC_PATH@"
+"@CLIENT_EXEC_PATH@"
+
+EXIT_CODE=$?
+
+echo "SERVER PID: $!"
+# kill background server process
+[[ @SERVER_EXEC_PATH@ ]] && kill $!
+
+exit $EXIT_CODE
+
