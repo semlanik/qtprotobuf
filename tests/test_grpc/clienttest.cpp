@@ -89,7 +89,7 @@ TEST_F(ClientTest, StringEchoAsyncTest)
 
     AsyncReply *reply = testClient.testMethod(request);
     QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
-        if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
+        if (testClient.lastError() == AbstractChannel::StatusCode::Ok) {
             result = reply->read<SimpleStringMessage>();
         }
         waiter.quit();
@@ -108,7 +108,7 @@ TEST_F(ClientTest, StringEchoAsync2Test)
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
     testClient.testMethod(request, &m_app, [&result, &waiter, &testClient](AsyncReply *reply) {
-        if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
+        if (testClient.lastError() == AbstractChannel::StatusCode::Ok) {
             result = reply->read<SimpleStringMessage>();
         }
         waiter.quit();
@@ -131,13 +131,13 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
     AsyncReply *reply = testClient.testMethod(request);
     result.setTestFieldString("Result not changed by echo");
     QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
-        if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
+        if (testClient.lastError() == AbstractChannel::StatusCode::Ok) {
             result = reply->read<SimpleStringMessage>();
         }
         waiter.quit();
     });
 
-    QObject::connect(reply, &AsyncReply::error, reply, [&errorCalled](AbstractChannel::StatusCodes){
+    QObject::connect(reply, &AsyncReply::error, reply, [&errorCalled](AbstractChannel::StatusCode){
         errorCalled = true;
     });
     QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
@@ -145,19 +145,19 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
 
     waiter.exec();
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
-    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Aborted);
+    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCode::Aborted);
     ASSERT_TRUE(errorCalled);
 
 
     errorCalled = false;
     reply = testClient.testMethod(request);
     QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
-        if (testClient.lastError() == AbstractChannel::StatusCodes::Ok) {
+        if (testClient.lastError() == AbstractChannel::StatusCode::Ok) {
             result = reply->read<SimpleStringMessage>();
         }
         waiter.quit();
     });
-    QObject::connect(reply, &AsyncReply::error, reply, [&errorCalled](AbstractChannel::StatusCodes){
+    QObject::connect(reply, &AsyncReply::error, reply, [&errorCalled](AbstractChannel::StatusCode){
         errorCalled = true;
     });
 
@@ -167,7 +167,7 @@ TEST_F(ClientTest, StringEchoAsyncAbortTest)
     waiter.exec();
 
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
-    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Aborted);
+    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCode::Aborted);
     ASSERT_TRUE(errorCalled);
 }
 
@@ -199,7 +199,7 @@ TEST_F(ClientTest, StringEchoStreamTest)
 
     ASSERT_EQ(i, 4);
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Stream1Stream2Stream3Stream4");
-    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Ok);
+    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCode::Ok);
 }
 
 TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
@@ -225,7 +225,7 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
 
     ASSERT_EQ(i, 4);
     ASSERT_STREQ(result->testFieldString().toStdString().c_str(), "Stream4");
-    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Ok);
+    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCode::Ok);
 }
 
 
@@ -254,5 +254,5 @@ TEST_F(ClientTest, HugeBlobEchoStreamTest)
 
     QByteArray returnDataHash = QCryptographicHash::hash(result.testBytes(), QCryptographicHash::Sha256);
     ASSERT_TRUE(returnDataHash == dataHash);
-    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCodes::Ok);
+    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCode::Ok);
 }

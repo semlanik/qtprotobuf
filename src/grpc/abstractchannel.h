@@ -40,9 +40,9 @@ class QTGRPCSHARED_EXPORT AbstractChannel
 {
 public:
     /*!
-     * \brief The Channel StatusCodes
+     * \brief Channel's status codes
      */
-    enum StatusCodes {
+    enum StatusCode {
         Ok = 0,                 //!< No error
         Cancelled = 1,          //!< The operation was cancelled, typically by the caller
         Unknown = 2,            //!< Unknown error
@@ -70,7 +70,7 @@ public:
      * \param ret
      * \return
      */
-    virtual StatusCodes call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) = 0;
+    virtual StatusCode call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) = 0;
 
     /*!
      * \brief call

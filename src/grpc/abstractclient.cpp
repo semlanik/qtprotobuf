@@ -31,11 +31,11 @@ namespace qtprotobuf {
 class AbstractClientPrivate final {
 public:
     AbstractClientPrivate(const QString &service) : service(service)
-    , lastError(AbstractChannel::StatusCodes::Ok) {}
+    , lastError(AbstractChannel::StatusCode::Ok) {}
 
     std::shared_ptr<AbstractChannel> channel;
     const QString service;
-    AbstractChannel::StatusCodes lastError;
+    AbstractChannel::StatusCode lastError;
     QString lastErrorString;
 };
 }
@@ -83,7 +83,7 @@ AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
         return reply;
     }
 
-    connect(reply, &AsyncReply::error, this, [this, reply](AbstractChannel::StatusCodes statusCode){
+    connect(reply, &AsyncReply::error, this, [this, reply](AbstractChannel::StatusCode statusCode){
         d->lastError = statusCode;
         reply->deleteLater();
     });
@@ -109,7 +109,7 @@ void AbstractClient::subscribe_p(const QString &method, const QByteArray &arg, c
     d->channel->subscribe(method, d->service, arg, this, handler);
 }
 
-AbstractChannel::StatusCodes AbstractClient::lastError() const
+AbstractChannel::StatusCode AbstractClient::lastError() const
 {
     return d->lastError;
 }

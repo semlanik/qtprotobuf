@@ -42,15 +42,21 @@
 namespace qtprotobuf {
 
 class AbstractChannel;
-class AbstractClientPrivate;
 
 class QTGRPCSHARED_EXPORT AbstractClient : public QObject
 {
 public:
     void attachChannel(const std::shared_ptr<AbstractChannel> &channel);
 
-    AbstractChannel::StatusCodes lastError() const;
+    [[deprecated]]
+    AbstractChannel::StatusCode lastError() const;
+
+    [[deprecated]]
     QString lastErrorString() const;
+
+signals:
+    // TODO: emit this signal instead of setting lastError
+    void error(AbstractChannel::StatusCode code, QString errorText);
 
 protected:
     AbstractClient(const QString &service, QObject *parent = nullptr);
@@ -122,7 +128,8 @@ private:
     AbstractClient(AbstractClient &&) = delete;
     AbstractClient &operator =(AbstractClient &&) = delete;
 
-    AbstractClientPrivate *d;
+    // PIMPL
+    class AbstractClientPrivate *d;
 };
 
 }

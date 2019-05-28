@@ -31,18 +31,17 @@
 
 namespace qtprotobuf {
 
-struct Http2ChannelPrivate;
 class AbstractCredentials;
 
 class QTGRPCSHARED_EXPORT Http2Channel final : public AbstractChannel
 {
 public:
-    // this contructor is obsolete and is going to be removed soon
+    [[deprecated ("This contructor is obsolete and is going to be removed soon. Use Http2Channel(const QUrl&, const AbstractCredentials&)")]]
     Http2Channel(const QString &addr, quint16 port, const AbstractCredentials &credentials);
     Http2Channel(const QUrl &url, const AbstractCredentials &credentials);
     ~Http2Channel();
 
-    StatusCodes call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
+    StatusCode call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
     void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *reply) override;
     void subscribe(const QString &method, const QString &service, const QByteArray &args, AbstractClient *client, const std::function<void (const QByteArray &)> &handler) override;
 
@@ -51,7 +50,9 @@ protected:
 
 private:
     Q_DISABLE_COPY(Http2Channel)
-    Http2ChannelPrivate *d;
+
+    // PIMPL
+    struct Http2ChannelPrivate *d;
 };
 
 }

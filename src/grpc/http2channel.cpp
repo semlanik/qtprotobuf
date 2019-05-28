@@ -47,7 +47,13 @@
 using namespace qtprotobuf;
 
 namespace  {
-const static std::unordered_map<QNetworkReply::NetworkError, AbstractChannel::StatusCodes> StatusCodeMap = { { QNetworkReply::ConnectionRefusedError, AbstractChannel::Unavailable },
+
+/**
+ * This QNetworkReply::NetworkError -> AbstractChannel::StatusCode mapping should be kept in sync with original
+ * <a href="https://github.com/grpc/grpc/blob/master/doc/statuscodes.md">gRPC status codes</a>
+ */
+const static std::unordered_map<QNetworkReply::NetworkError, AbstractChannel::StatusCode> StatusCodeMap = {
+                                                                { QNetworkReply::ConnectionRefusedError, AbstractChannel::Unavailable },
                                                                 { QNetworkReply::RemoteHostClosedError, AbstractChannel::Unavailable },
                                                                 { QNetworkReply::HostNotFoundError, AbstractChannel::Unavailable },
                                                                 { QNetworkReply::TimeoutError, AbstractChannel::DeadlineExceeded },
@@ -148,7 +154,7 @@ struct Http2ChannelPrivate {
         }
     }
 
-    static QByteArray processReply(QNetworkReply *networkReply, AbstractChannel::StatusCodes &statusCode) {
+    static QByteArray processReply(QNetworkReply *networkReply, AbstractChannel::StatusCode &statusCode) {
         //Check if no network error occured
         if (networkReply->error() != QNetworkReply::NoError) {
             qProtoWarning() << networkReply->error() << ":" << networkReply->errorString();
@@ -157,8 +163,8 @@ struct Http2ChannelPrivate {
         }
 
         //Check if server answer with error
-        statusCode = static_cast<AbstractChannel::StatusCodes>(networkReply->rawHeader(GrpcStatusHeader).toInt());
-        if (statusCode != AbstractChannel::StatusCodes::Ok) {
+        statusCode = static_cast<AbstractChannel::StatusCode>(networkReply->rawHeader(GrpcStatusHeader).toInt());
+        if (statusCode != AbstractChannel::StatusCode::Ok) {
             qProtoWarning() << "Protobuf server error occured" << networkReply->errorString();
             return {};
         }
@@ -214,7 +220,7 @@ Http2Channel::~Http2Channel()
     delete d;
 }
 
-AbstractChannel::StatusCodes Http2Channel::call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret)
+AbstractChannel::StatusCode Http2Channel::call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret)
 {
     QEventLoop loop;
 
@@ -226,7 +232,7 @@ AbstractChannel::StatusCodes Http2Channel::call(const QString &method, const QSt
         loop.exec();
     }
 
-    StatusCodes grpcStatus = StatusCodes::Unknown;
+    StatusCode grpcStatus = StatusCode::Unknown;
     ret = d->processReply(networkReply, grpcStatus);
 
     qProtoDebug() << __func__ << "RECV: " << ret.toHex() << "grpcStatus" << grpcStatus;
@@ -238,10 +244,10 @@ void Http2Channel::call(const QString &method, const QString &service, const QBy
     QNetworkReply *networkReply = d->post(method, service, args);
 
     auto connection = QObject::connect(networkReply, &QNetworkReply::finished, reply, [reply, networkReply]() {
-        StatusCodes grpcStatus = StatusCodes::Unknown;
+        StatusCode grpcStatus = StatusCode::Unknown;
         QByteArray data = Http2ChannelPrivate::processReply(networkReply, grpcStatus);
         qProtoDebug() << "RECV: " << data;
-        if (grpcStatus != StatusCodes::Ok) {
+        if (grpcStatus != StatusCode::Ok) {
             reply->setData({});
             reply->error(grpcStatus);
             reply->finished();
@@ -312,6 +318,6 @@ void Http2Channel::abort(AsyncReply *reply)
 {
     assert(reply != nullptr);
     reply->setData({});
-    reply->error(StatusCodes::Aborted);
+    reply->error(StatusCode::Aborted);
     reply->finished();
 }
