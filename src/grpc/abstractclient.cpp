@@ -71,7 +71,7 @@ bool AbstractClient::call(const QString &method, const QByteArray &arg, QByteArr
 
 AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
 {
-    AsyncReply *reply = new AsyncReply(d->channel);
+    AsyncReply *reply = new AsyncReply(d->channel, this);
 
     if (!d->channel) {
         d->lastError = AbstractChannel::Unknown;
