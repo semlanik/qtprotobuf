@@ -246,14 +246,13 @@ void Http2Channel::call(const QString &method, const QString &service, const QBy
         QByteArray data = Http2ChannelPrivate::processReply(networkReply, grpcStatus);
 
         qProtoDebug() << "RECV: " << data;
-        if (grpcStatus != StatusCode::Ok) {
+        if (StatusCode::Ok == grpcStatus ) {
+            reply->setData(data);
+            reply->finished();
+        } else {
             reply->setData({});
             reply->error(grpcStatus);
-            reply->finished();
-            return;
         }
-        reply->setData(data);
-        reply->finished();
     });
 
     QObject::connect(reply, &AsyncReply::error, networkReply, [networkReply, connection](AbstractChannel::StatusCode code) {
@@ -318,5 +317,4 @@ void Http2Channel::abort(AsyncReply *reply)
     assert(reply != nullptr);
     reply->setData({});
     reply->error(StatusCode::Aborted);
-    reply->finished();
 }
