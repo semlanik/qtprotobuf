@@ -49,15 +49,8 @@ class QTGRPCSHARED_EXPORT AbstractClient : public QObject
 public:
     void attachChannel(const std::shared_ptr<AbstractChannel> &channel);
 
-    [[deprecated]]
-    AbstractChannel::StatusCode lastError() const;
-
-    [[deprecated]]
-    QString lastErrorString() const;
-
 signals:
-    // TODO: emit this signal instead of setting lastError
-    void error(AbstractChannel::StatusCode code, QString errorText);
+    void error(AbstractChannel::StatusCode code, const QString &errorText);
 
 protected:
     AbstractClient(const QString &service, QObject *parent = nullptr);
@@ -78,7 +71,7 @@ protected:
         }
 
         QByteArray retData;
-        if (call(method, arg.serialize(), retData)) {
+        if (AbstractChannel::StatusCode::Ok == call(method, arg.serialize(), retData)) {
             try {
                 ret->deserialize(retData);
             } catch (std::invalid_argument &) {
@@ -128,7 +121,7 @@ protected:
     }
 
 private:
-    bool call(const QString &method, const QByteArray &arg, QByteArray &ret);
+    AbstractChannel::StatusCode call(const QString &method, const QByteArray &arg, QByteArray &ret);
     AsyncReply *call(const QString &method, const QByteArray &arg);
     void subscribe_p(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray &)> &handler);
 

@@ -30,13 +30,10 @@
 namespace qtprotobuf {
 class AbstractClientPrivate final {
 public:
-    AbstractClientPrivate(const QString &service) : service(service)
-    , lastError(AbstractChannel::StatusCode::Ok) {}
+    AbstractClientPrivate(const QString &service) : service(service) {}
 
     std::shared_ptr<AbstractChannel> channel;
     const QString service;
-    AbstractChannel::StatusCode lastError;
-    QString lastErrorString;
 };
 }
 
@@ -45,7 +42,6 @@ using namespace qtprotobuf;
 AbstractClient::AbstractClient(const QString &service, QObject *parent) : QObject(parent)
   , d(new AbstractClientPrivate(service))
 {
-
 }
 
 AbstractClient::~AbstractClient()
@@ -58,7 +54,7 @@ void AbstractClient::attachChannel(const std::shared_ptr<AbstractChannel> &chann
     d->channel = channel;
 }
 
-bool AbstractClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
+AbstractChannel::StatusCode AbstractClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
 {
     AbstractChannel::StatusCode callStatus = AbstractChannel::Unknown;
     if (d->channel) {
@@ -67,7 +63,7 @@ bool AbstractClient::call(const QString &method, const QByteArray &arg, QByteArr
         emit error(callStatus, QLatin1String("No channel(s) attached."));
     }
 
-    return AbstractChannel::Ok == callStatus;
+    return callStatus;
 }
 
 AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
@@ -77,7 +73,6 @@ AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
         reply = new AsyncReply(d->channel, this);
 
         connect(reply, &AsyncReply::error, this, [this, reply](AbstractChannel::StatusCode statusCode) {
-            d->lastError = statusCode;
             emit error(statusCode, QLatin1String("Connection has been aborted."));
             reply->deleteLater();
         });
@@ -96,22 +91,9 @@ AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
 
 void AbstractClient::subscribe_p(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray&)> &handler)
 {
-    d->lastError = AbstractChannel::Ok;
-    if (!d->channel) {
-        d->lastError = AbstractChannel::Unknown;
-        d->lastErrorString = "No channel attached";
-        return;
+    if (d->channel) {
+        d->channel->subscribe(method, d->service, arg, this, handler);
+    } else {
+        emit error(AbstractChannel::Unknown, QLatin1String("No channel(s) attached."));
     }
-
-    d->channel->subscribe(method, d->service, arg, this, handler);
-}
-
-AbstractChannel::StatusCode AbstractClient::lastError() const
-{
-    return d->lastError;
-}
-
-QString AbstractClient::lastErrorString() const
-{
-    return d->lastErrorString;
 }

@@ -88,10 +88,8 @@ TEST_F(ClientTest, StringEchoAsyncTest)
     QEventLoop waiter;
 
     AsyncReply *reply = testClient.testMethod(request);
-    QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
-        if (testClient.lastError() == AbstractChannel::StatusCode::Ok) {
-            result = reply->read<SimpleStringMessage>();
-        }
+    QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter]() {
+        result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
 
@@ -107,10 +105,8 @@ TEST_F(ClientTest, StringEchoAsync2Test)
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
-    testClient.testMethod(request, &m_app, [&result, &waiter, &testClient](AsyncReply *reply) {
-        if (testClient.lastError() == AbstractChannel::StatusCode::Ok) {
-            result = reply->read<SimpleStringMessage>();
-        }
+    testClient.testMethod(request, &m_app, [&result, &waiter](AsyncReply *reply) {
+        result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
 
@@ -167,7 +163,7 @@ TEST_F(ClientTest, StringEchoDeferredAsyncAbortTest)
     result.setTestFieldString("Result not changed by echo");
     bool errorCalled = false;
     reply = testClient.testMethod(request);
-    QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter, &testClient]() {
+    QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
@@ -181,7 +177,6 @@ TEST_F(ClientTest, StringEchoDeferredAsyncAbortTest)
     waiter.exec();
 
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
-    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCode::Aborted);
     ASSERT_TRUE(errorCalled);
 }
 
@@ -213,7 +208,6 @@ TEST_F(ClientTest, StringEchoStreamTest)
 
     ASSERT_EQ(i, 4);
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Stream1Stream2Stream3Stream4");
-    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCode::Ok);
 }
 
 TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
@@ -239,7 +233,6 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
 
     ASSERT_EQ(i, 4);
     ASSERT_STREQ(result->testFieldString().toStdString().c_str(), "Stream4");
-    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCode::Ok);
 }
 
 
@@ -268,5 +261,4 @@ TEST_F(ClientTest, HugeBlobEchoStreamTest)
 
     QByteArray returnDataHash = QCryptographicHash::hash(result.testBytes(), QCryptographicHash::Sha256);
     ASSERT_TRUE(returnDataHash == dataHash);
-    ASSERT_EQ(testClient.lastError(), AbstractChannel::StatusCode::Ok);
 }
