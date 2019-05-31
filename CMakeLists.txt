@@ -32,6 +32,7 @@ else()
     include("cmake/gRPCLookup.cmake")
 endif()
 
+set(gtest_force_shared_crt OFF)
 set(QTPROTOBUF_COMMON_NAMESPACE QtProtobufProject)
 set(GENERATOR_TARGET qtprotobufgen)
 set(QTPROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_FULL_BINDIR}/${GENERATOR_TARGET})
@@ -47,7 +48,7 @@ if(UNIX)
     endif()
 elseif(WIN32)
     if (${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
-        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "/WX /W4")
+        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "/WX /W4 /MD")
     else()
         message(WARNING "Only MSVC compilers family are supported for build")
     endif()
@@ -113,7 +114,7 @@ endif()
 
 if(MAKE_TESTS)
     find_package(GTest)
-    if (UNIX AND NOT GTest_FOUND)
+    if (NOT GTest_FOUND)
         include(cmake/DownloadProject.cmake)
         download_project(PROJ                GTest
             GIT_REPOSITORY      https://github.com/google/googletest.git
@@ -121,6 +122,7 @@ if(MAKE_TESTS)
             )
         # uncomment if gmock is going to be needed
         set(BUILD_GMOCK OFF CACHE BOOL "Disable gmock build functionality" FORCE)
+        set(gtest_force_shared_crt ON CACHE BOOL "Enable shared crt" FORCE)
         add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
     endif()
 
