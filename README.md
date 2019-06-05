@@ -38,7 +38,7 @@ Download and install:
 
 **Note:** All applications should be in PATH
 
-Clone grpc project from official repository to 3rdparty folder:
+Enter to 3rdparty folder and run command:
 
 ```bash
 git submodule update --init --recursive
@@ -58,7 +58,7 @@ cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 
 ## Usage
 ```bash
-protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin>/qtprotobuf --qtprotobuf_out=<output_dir> <protofile>.proto [--qtprotobuf_opt=out=<output_dir>]
+protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin>/qtprotobufgen --qtprotobuf_out=<output_dir> <protofile>.proto [--qtprotobuf_opt=out=<output_dir>]
 ```
 ## Running tests
 ```bash
