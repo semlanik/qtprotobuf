@@ -68,4 +68,5 @@ install(FILES "${CMAKE_BINARY_DIR}/QtProtobufGen.cmake" DESTINATION "${TARGET_CM
 configure_file("${CMAKE_SOURCE_DIR}/cmake/ProtobufLookup.cmake" "${CMAKE_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
 install(FILES "${CMAKE_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
 
+# TODO: keep quick plugin for future development, but it's useless for now
 add_subdirectory("quick")

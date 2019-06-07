@@ -43,7 +43,7 @@ endfunction(protobuf_generate_all)
 function(add_test_target)
     set(options)
     set(oneValueArgs TARGET)
-    set(multiValueArgs SOURCES GENERATED_HEADERS)
+    set(multiValueArgs SOURCES GENERATED_HEADERS PROTO_FILES)
     cmake_parse_arguments(add_test_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     ## test sources build
@@ -54,7 +54,11 @@ function(add_test_target)
 
     set(GENERATED_SOURCES_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 
-    file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto)
+    if(DEFINED add_test_target_PROTO_FILES)
+        file(GLOB PROTO_FILES ABSOLUTE ${add_test_target_PROTO_FILES})
+    else()
+        file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto)
+    endif()
 
     generate_qtprotobuf(TARGET ${add_test_target_TARGET}
         OUT_DIR ${GENERATED_SOURCES_DIR}
@@ -69,3 +73,21 @@ function(add_test_target)
     add_dependencies(${add_test_target_TARGET} ${QtProtobuf_GENERATED})
     target_link_libraries(${add_test_target_TARGET} gtest_main gtest ${QtProtobuf_GENERATED} ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf ${QTPROTOBUF_COMMON_NAMESPACE}::QtGrpc Qt5::Core Qt5::Qml Qt5::Network)
 endfunction(add_test_target)
+
+function(add_target_qml)
+    set(options)
+    set(oneValueArgs TARGET QMLDIR_FILE)
+    set(multiValueArgs QML_FILES)
+    cmake_parse_arguments(add_target_qml "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    add_custom_target(${add_target_qml_TARGET}_qml DEPENDS ${add_qml_QML_FILES} ${add_target_qml_QMLDIR_FILE})
+    foreach(QML_FILE IN LISTS add_target_qml_QML_FILES)
+        add_custom_command(TARGET ${add_target_qml_TARGET}_qml COMMAND ${CMAKE_COMMAND} -E copy ${QML_FILE}
+            ${CMAKE_CURRENT_BINARY_DIR})
+    endforeach()
+    if(DEFINED ${add_target_qml_QMLDIR_FILE})
+        add_custom_command(TARGET ${add_target_qml_TARGET}_qml COMMAND ${CMAKE_COMMAND} -E copy ${add_qml_QMLDIR_FILE}
+            ${CMAKE_CURRENT_BINARY_DIR})
+    endif()
+    add_dependencies(${add_target_qml_TARGET} ${add_target_qml_TARGET}_qml)
+endfunction()

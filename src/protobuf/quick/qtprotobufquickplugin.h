@@ -34,6 +34,6 @@ class QTPROTOBUFQUICKSHARED_EXPORT QtProtobufQuickPlugin : public QQmlExtensionP
     Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
 
 public:
-    ~QtProtobufQuickPlugin();
+    ~QtProtobufQuickPlugin() = default;
     void registerTypes(const char *) override;
 };

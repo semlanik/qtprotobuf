@@ -49,8 +49,10 @@ struct transparent {
     operator T() const { return _t; }
     transparent &operator =(const T &t) { _t = t; return *this; }
 
-    static T toType( transparent t ) { return t._t; }
-    static transparent fromType( T _t ) { return transparent(_t); }
+    static T toType(transparent t) { return t._t; }
+    static transparent fromType(T _t) { return transparent(_t); }
+
+    static QString toString(transparent t) { return QString::number(t._t); }
 };
 
 using int32 = transparent<int32_t>;

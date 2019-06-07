@@ -24,41 +24,9 @@
  */
 
 #include "qtprotobufquickplugin.h"
-#include "qtprotobufvaluetypes_p.h"
-#include <private/qqmlmetatype_p.h>
 #include <QDebug>
 
 void QtProtobufQuickPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("QtProtobuf"));
-    QQmlMetaType::registerCustomStringConverter(qMetaTypeId<qtprotobuf::int32>(), [](const QString &s)
-    {
-        return QVariant::fromValue(qtprotobuf::int32(s.toInt()));
-    });
-    QQmlMetaType::registerCustomStringConverter(qMetaTypeId<qtprotobuf::int64>(), [](const QString &s)
-    {
-        return QVariant::fromValue(qtprotobuf::int64(s.toLongLong()));
-    });
-    QQmlMetaType::registerCustomStringConverter(qMetaTypeId<qtprotobuf::fixed32>(), [](const QString &s)
-    {
-        return QVariant::fromValue(qtprotobuf::fixed32(s.toUInt()));
-    });
-    QQmlMetaType::registerCustomStringConverter(qMetaTypeId<qtprotobuf::fixed64>(), [](const QString &s)
-    {
-        return QVariant::fromValue(qtprotobuf::fixed64(s.toULongLong()));
-    });
-    QQmlMetaType::registerCustomStringConverter(qMetaTypeId<qtprotobuf::sfixed32>(), [](const QString &s)
-    {
-        return QVariant::fromValue(qtprotobuf::sfixed32(s.toInt()));
-    });
-    QQmlMetaType::registerCustomStringConverter(qMetaTypeId<qtprotobuf::sfixed64>(), [](const QString &s)
-    {
-        return QVariant::fromValue(qtprotobuf::sfixed64(s.toLongLong()));
-    });
-    qtprotobuf::registerValueTypes();
-}
-
-QtProtobufQuickPlugin::~QtProtobufQuickPlugin()
-{
-    qtprotobuf::releaseValueTypes();
 }

@@ -23,24 +23,41 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <QtQuickTest/quicktest.h>
 
-#include "qtprotobufquick_global.h"
-#include "qtprotobuftypes.h"
+#include "simpleboolmessage.h"
+#include "simplebytesmessage.h"
+#include "simpledoublemessage.h"
+#include "simplefloatmessage.h"
+#include "simplefixedint32message.h"
+#include "simplefixedint64message.h"
+#include "simplesfixedint32message.h"
+#include "simplesfixedint64message.h"
+#include "simpleintmessage.h"
+#include "simpleint64message.h"
+#include "simplesintmessage.h"
+#include "simplesint64message.h"
+#include "simpleuintmessage.h"
+#include "simpleuint64message.h"
+#include "simplestringmessage.h"
 
-#include <QtQml/private/qqmlvaluetype_p.h>
+using namespace qtprotobufnamespace::tests;
 
-namespace qtprotobuf {
-
-void registerValueTypes();
-void releaseValueTypes();
-
-class QTPROTOBUFQUICKSHARED_EXPORT QtProtobufFixed32ValueType
-{
-    fixed32 v;
-    Q_GADGET
+class TestSetup : public QObject {
 public:
-    Q_INVOKABLE QString toString() const;
+    TestSetup() {
+        SimpleBoolMessage();
+        SimpleBytesMessage();
+        SimpleDoubleMessage();
+        SimpleFloatMessage();
+        SimpleFixedInt32Message();
+        SimpleIntMessage();
+        SimpleSIntMessage();
+        SimpleUIntMessage();
+        SimpleStringMessage();
+        SimpleSFixedInt32Message();
+    }
+    ~TestSetup() = default;
 };
 
-}
+QUICK_TEST_MAIN_WITH_SETUP(qtprotobuf_qml_test, TestSetup)
