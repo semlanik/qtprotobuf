@@ -33,7 +33,6 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../addressbookserver/cert.pem DESTINATION 
 
 add_executable(${TARGET} ${SOURCES} resources.qrc)
 add_dependencies(${TARGET} ${QtProtobuf_GENERATED} examples_common)
-target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
 target_link_libraries(${TARGET} examples_common QtProtobufProject::QtProtobuf QtProtobufProject::QtGrpc ${QtProtobuf_GENERATED} Qt5::Quick Qt5::Qml)
 
 set(CLIENT_EXEC_PATH ${CMAKE_CURRENT_BINARY_DIR}/${TARGET} PARENT_SCOPE)
