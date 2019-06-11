@@ -37,7 +37,7 @@ namespace qtprotobuf {
 namespace  {
 
 template<typename T, typename std::enable_if_t<sizeof(T) == sizeof(int32_t)
-                                      && std::is_signed<decltype(T::_t)>::value, int> = 0>
+                                      && std::is_signed<T>::value, int> = 0>
 void registerBasicConverters() {
     QMetaType::registerConverter<int32_t, T>(T::fromType);
     QMetaType::registerConverter<T, int32_t>(T::toType);
@@ -47,7 +47,7 @@ void registerBasicConverters() {
 }
 
 template<typename T, typename std::enable_if_t<sizeof(T) == sizeof(int64_t)
-                                      && std::is_signed<decltype(T::_t)>::value, int> = 0>
+                                      && std::is_signed<T>::value, int> = 0>
 void registerBasicConverters() {
     QMetaType::registerConverter<int64_t, T>(T::fromType);
     QMetaType::registerConverter<T, int64_t>(T::toType);
@@ -58,7 +58,7 @@ void registerBasicConverters() {
 }
 
 template<typename T, typename std::enable_if_t<sizeof(T) == sizeof(int32_t)
-                                      && !std::is_signed<decltype(T::_t)>::value, int> = 0>
+                                      && !std::is_signed<T>::value, int> = 0>
 void registerBasicConverters() {
     QMetaType::registerConverter<uint32_t, T>(T::fromType);
     QMetaType::registerConverter<T, uint32_t>(T::toType);
@@ -70,7 +70,7 @@ void registerBasicConverters() {
 }
 
 template<typename T, typename std::enable_if_t<sizeof(T) == sizeof(int64_t)
-                                      && !std::is_signed<decltype(T::_t)>::value, int> = 0>
+                                      && !std::is_signed<T>::value, int> = 0>
 void registerBasicConverters() {
     QMetaType::registerConverter<uint64_t, T>(T::fromType);
     QMetaType::registerConverter<T, uint64_t>(T::toType);

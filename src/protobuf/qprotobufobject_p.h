@@ -46,15 +46,6 @@
 
 namespace qtprotobuf {
 
-template<typename V>
-struct make_unsigned { typedef typename std::make_unsigned<V>::type type; };
-
-template<>
-struct make_unsigned<int32> { typedef typename std::make_unsigned<decltype(int32::_t)>::type type; };
-
-template<>
-struct make_unsigned<int64> { typedef typename std::make_unsigned<decltype(int64::_t)>::type type; };
-
 class QTPROTOBUFSHARED_EXPORT ProtobufObjectPrivate
 {
     ProtobufObjectPrivate() = delete;
@@ -222,7 +213,7 @@ public:
                                         && std::is_signed<V>::value, int> = 0>
     static QByteArray serializeBasic(const V &value, int &outFieldIndex) {
         qProtoDebug() << __func__ << "value" << value;
-        using UV = typename qtprotobuf::make_unsigned<V>::type;
+        using UV = typename std::make_unsigned<V>::type;
         UV uValue = 0;
 
         //Use ZigZag convertion first and apply unsigned variant next
@@ -236,7 +227,7 @@ public:
                                         || std::is_same<V, int64>::value, int> = 0>
     static QByteArray serializeBasic(const V &value, int &outFieldIndex) {
         qProtoDebug() << __func__ << "value" << value;
-        using UV = typename qtprotobuf::make_unsigned<V>::type;
+        using UV = typename std::make_unsigned<V>::type;
         return serializeBasic(static_cast<UV>(value), outFieldIndex);
     }
 
@@ -485,7 +476,7 @@ public:
                                         && std::is_signed<V>::value,int> = 0>
     static QVariant deserializeBasic(SelfcheckIterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
-        using  UV = typename qtprotobuf::make_unsigned<V>::type;
+        using  UV = typename std::make_unsigned<V>::type;
         UV unsignedValue = deserializeVarintCommon<UV>(it);
         V value = (unsignedValue >> 1) ^ (-1 * (unsignedValue & 1));
         return QVariant::fromValue<V>(value);
@@ -496,7 +487,7 @@ public:
                                         || std::is_same<int64, V>::value, int> = 0>
     static QVariant deserializeBasic(SelfcheckIterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
-        using  UV = typename qtprotobuf::make_unsigned<V>::type;
+        using  UV = typename std::make_unsigned<V>::type;
         UV unsignedValue = deserializeVarintCommon<UV>(it);
         V value = static_cast<V>(unsignedValue);
         return QVariant::fromValue(value);
