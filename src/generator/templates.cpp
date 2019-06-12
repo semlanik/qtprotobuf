@@ -176,10 +176,7 @@ const char *Templates::RegisterQmlListPropertyMetaTypeTemplate = "qRegisterMetaT
 
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 
-const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::ProtobufObjectPrivate::wrapSerializer<$classname$::$type$>(\n"
-                                                          "qtprotobuf::ProtobufObjectPrivate::serializeMap<$key_type$, $value_type$>,\n"
-                                                          "qtprotobuf::ProtobufObjectPrivate::deserializeMap<$key_type$, $value_type$>\n"
-                                                          ", qtprotobuf::LengthDelimited);\n";
+const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::ProtobufObjectPrivate::registerMap<$key_type$, $value_type$>();";
 
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
