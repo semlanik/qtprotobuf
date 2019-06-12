@@ -94,34 +94,6 @@ public:
         };
     }
 
-    template <typename T,
-              typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
-    static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<QVariant(SelfcheckIterator &)> &d, WireTypes type)
-    {
-        serializers[qMetaTypeId<T *>()] = {
-            [s](const QVariant &value, int &fieldIndex) {
-                return s(*(value.value<T *>()), fieldIndex);
-            },
-            [d](SelfcheckIterator &it, QVariant &value){
-                value = d(it);
-            },
-            type
-        };
-    }
-
-    template <typename T,
-              typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
-    static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<void(SelfcheckIterator &it, QVariant &value)> &d, WireTypes type)
-    {
-        serializers[qMetaTypeId<T *>()] = {
-            [s](const QVariant &value, int &fieldIndex) {
-                return s(*(value.value<T *>()), fieldIndex);
-            },
-            d,
-            type
-        };
-    }
-
     static QByteArray encodeHeader(int fieldIndex, WireTypes wireType);
     static bool decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType);
 
@@ -638,23 +610,24 @@ public:
     //-----------------------Functions to work with objects------------------------
     template<typename T>
     static void registerSerializers() {
-        ProtobufObjectPrivate::wrapSerializer<T>(serializeComplexType<T>, deserializeComplexType<T>, LengthDelimited);
+        ProtobufObjectPrivate::serializers[qMetaTypeId<T *>()] = {ProtobufObjectPrivate::Serializer(serializeComplexType<T>),
+                ProtobufObjectPrivate::Deserializer(deserializeComplexType<T>), LengthDelimited};
         ProtobufObjectPrivate::serializers[qMetaTypeId<QList<QSharedPointer<T>>>()] = {ProtobufObjectPrivate::Serializer(serializeComplexListType<T>),
                 ProtobufObjectPrivate::Deserializer(deserializeComplexListType<T>), LengthDelimited};
     }
 
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
-    static QByteArray serializeComplexType(const T &value, int &/*outFieldIndex*/) {
-        return ProtobufObjectPrivate::serializeLengthDelimited(value.serialize());
+    static QByteArray serializeComplexType(const QVariant &value, int &/*outFieldIndex*/) {
+        return ProtobufObjectPrivate::serializeLengthDelimited(value.value<T *>()->serialize());
     }
 
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
-    static QVariant deserializeComplexType(SelfcheckIterator &it) {
+    static void deserializeComplexType(SelfcheckIterator &it, QVariant &to) {
         T *value = new T;
         value->deserialize(ProtobufObjectPrivate::deserializeLengthDelimited(it));
-        return QVariant::fromValue<T *>(value);
+        to = QVariant::fromValue<T *>(value);
     }
 
     template <typename T,
