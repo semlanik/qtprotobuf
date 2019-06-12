@@ -29,8 +29,8 @@
 
 #define Q_DECLARE_PROTOBUF_SERIALIZERS(T)\
     public:\
-        QByteArray serialize() const { return qtprotobuf::ProtobufObjectPrivate::serialize<T>(this); }\
-        void deserialize(const QByteArray &array) { qtprotobuf::ProtobufObjectPrivate::deserialize<T>(this, array); }\
+        QByteArray serialize() const { return qtprotobuf::ProtobufObjectPrivate::serializeObject<T>(this); }\
+        void deserialize(const QByteArray &array) { qtprotobuf::ProtobufObjectPrivate::deserializeObject<T>(this, array); }\
     private:
 
 #define Q_PROTOBUF_OBJECT\

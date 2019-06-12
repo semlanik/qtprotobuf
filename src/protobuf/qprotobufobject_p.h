@@ -321,9 +321,8 @@ public:
                 qProtoWarning() << "Null pointer in list";
                 continue;
             }
-            QByteArray serializedValue = serializeLengthDelimited(value->serialize());
-            serializedValue.prepend(encodeHeader(outFieldIndex, LengthDelimited));
-            serializedList.append(serializedValue);
+            serializedList.append(encodeHeader(outFieldIndex, LengthDelimited));
+            serializedList.append(serializeLengthDelimited(serializeObject<V>(value.data())));
         }
 
         outFieldIndex = NotUsedFieldIndex;
@@ -498,28 +497,44 @@ public:
 
     //-----------------------Deserialize lists of any type-----------------------
     template <typename V,
-              typename std::enable_if_t<std::is_same<V, QString>::value
-                                        || std::is_same<V, QByteArray>::value, int> = 0>
-    static QVariant deserializeList(SelfcheckIterator &it) {
+              typename std::enable_if_t<std::is_same<V, QByteArray>::value, int> = 0>
+    static void deserializeList(SelfcheckIterator &it, QVariant &previous) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
-        return QVariant::fromValue(deserializeLengthDelimited(it));
+        QByteArrayList list = previous.value<QByteArrayList>();
+        list.append(deserializeLengthDelimited(it));
+        previous.setValue(list);
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_same<V, QString>::value, int> = 0>
+    static void deserializeList(SelfcheckIterator &it, QVariant &previous) {
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
+
+        QStringList list = previous.value<QStringList>();
+        QByteArray value = deserializeLengthDelimited(it);
+        qCritical() << "!!!deserializeLengthDelimited(it)" << QString::fromUtf8(value);
+        list.append(QString::fromUtf8(value));
+        previous.setValue(list);
     }
 
     template <typename V,
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
-    static QVariant deserializeList(SelfcheckIterator &it) {
+    static void deserializeList(SelfcheckIterator &it, QVariant &previous) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
+
         QVariant newValue;
+        QList<QSharedPointer<V>> list = previous.value<QList<QSharedPointer<V>>>();
         serializers.at(qMetaTypeId<V *>()).deserializer(it, newValue);//Throws exception if not found
-        return newValue;
+        list.append(QSharedPointer<V>(newValue.value<V *>()));
+        previous.setValue(list);
     }
 
     template <typename V,
               typename std::enable_if_t<!(std::is_same<V, QString>::value
                                         || std::is_same<V, QByteArray>::value
                                         || std::is_base_of<QObject, V>::value), int> = 0>
-    static QVariant deserializeList(SelfcheckIterator &it) {
+    static void deserializeList(SelfcheckIterator &it, QVariant &previous) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         QList<V> out;
@@ -529,7 +544,7 @@ public:
             QVariant variant = deserializeBasic<V>(it);
             out.append(variant.value<V>());
         }
-        return QVariant::fromValue(out);
+        previous.setValue(out);
     }
 
     //-----------------------Deserialize maps of any type------------------------
@@ -619,14 +634,14 @@ public:
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static QByteArray serializeComplexType(const QVariant &value, int &/*outFieldIndex*/) {
-        return ProtobufObjectPrivate::serializeLengthDelimited(value.value<T *>()->serialize());
+        return ProtobufObjectPrivate::serializeLengthDelimited(serializeObject<T>(value.value<T *>()));
     }
 
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static void deserializeComplexType(SelfcheckIterator &it, QVariant &to) {
         T *value = new T;
-        value->deserialize(ProtobufObjectPrivate::deserializeLengthDelimited(it));
+        deserializeObject<T>(value, ProtobufObjectPrivate::deserializeLengthDelimited(it));
         to = QVariant::fromValue<T *>(value);
     }
 
@@ -640,21 +655,18 @@ public:
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static void deserializeComplexListType(SelfcheckIterator &it, QVariant &previous) {
-        QList<QSharedPointer<T>> previousList = previous.value<QList<QSharedPointer<T>>>();
-        QVariant newMember = ProtobufObjectPrivate::deserializeList<T>(it);
-        previousList.append(QSharedPointer<T>(newMember.value<T *>()));
-        previous.setValue(previousList);
+        ProtobufObjectPrivate::deserializeList<T>(it, previous);
     }
 
     /**
     * @brief Serialization of a registered qtproto message object into byte-array
     *
     *
-    * @param[out] object Pointer to QObject containing message to be serialized
+    * @param[in] object Pointer to QObject containing message to be serialized
     * @result serialized message bytes
     */
     template<typename T>
-    static QByteArray serialize(const QObject *object) {
+    static QByteArray serializeObject(const QObject *object) {
         qProtoDebug() << T::staticMetaObject.className() << "serialize";
 
         QByteArray result;
@@ -688,7 +700,7 @@ public:
     * @param[in] array Bytes with serialized message
     */
     template<typename T>
-    static void deserialize(QObject *object, const QByteArray &array) {
+    static void deserializeObject(QObject *object, const QByteArray &array) {
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
 
         for (SelfcheckIterator it(array); it != array.end();) {

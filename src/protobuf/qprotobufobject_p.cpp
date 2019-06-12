@@ -109,28 +109,11 @@ void ProtobufObjectPrivate::deserializeProperty(QObject *object, const QMetaProp
                   << "currentByte:" << QString::number((*it), 16);
 
     QVariant newPropertyValue;
-    //TODO: this switch should be removed in future and replaced by wrapped serializer
-    switch (metaProperty.userType()) {
-    case QMetaType::QByteArrayList: {
-        QByteArrayList currentValue = metaProperty.read(object).value<QByteArrayList>();
-        currentValue.append(deserializeLengthDelimited(it));
-        metaProperty.write(object, QVariant::fromValue<QByteArrayList>(currentValue));
-    }
-        return;
-    case QMetaType::QStringList: {
-        QStringList currentValue = metaProperty.read(object).value<QStringList>();
-        currentValue.append(QString::fromUtf8(deserializeLengthDelimited(it)));
-        metaProperty.write(object, currentValue);
-    }
-        return;
-    default:
-        if (metaProperty.isEnumType()) {
-            newPropertyValue = QVariant::fromValue(int32_t(deserializeBasic<int64>(it).value<int64>()._t));
-        } else {
-            newPropertyValue = metaProperty.read(object);
-            deserializeUserType(metaProperty, it, newPropertyValue);
-        }
-        break;
+    if (metaProperty.isEnumType()) {
+        newPropertyValue = QVariant::fromValue(int32_t(deserializeBasic<int64>(it).value<int64>()._t));
+    } else {
+        newPropertyValue = metaProperty.read(object);
+        deserializeUserType(metaProperty, it, newPropertyValue);
     }
     metaProperty.write(object, newPropertyValue);
 }

@@ -16,6 +16,7 @@ file(GLOB SOURCES
     qprotobufobject_p.cpp
     qtprotobuf.cpp
     qtprotobuflogging.cpp)
+#    qprotobufserializer.cpp)
 
 file(GLOB HEADERS
     qprotobufobject_p.h
