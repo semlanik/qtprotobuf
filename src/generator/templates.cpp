@@ -31,6 +31,7 @@ const char *Templates::DefaultProtobufIncludesTemplate = "#include <QMetaType>\n
                                                          "#include <QList>\n"
                                                          "#include <QtQml/QQmlListProperty>\n"
                                                          "#include <qprotobufobject.h>\n"
+                                                         "#include <qqmllistpropertyconstructor.h>\n"
                                                          "#include <unordered_map>\n"
                                                          "#include <QSharedPointer>\n\n";
 
@@ -117,7 +118,7 @@ const char *Templates::GetterContainerExtraTemplate = "$type$ &$property_name$()
                                         "}\n\n";
 
 const char *Templates::QmlListGetterTemplate = "QQmlListProperty<$type_nolist$> $property_name$_l() {\n"
-                                               "    return qtprotobuf::ProtobufObjectPrivate::constructQmlListProperty<$type_nolist$>(this, &m_$property_name$);\n"
+                                               "    return qtprotobuf::constructQmlListProperty<$type_nolist$>(this, &m_$property_name$);\n"
                                                "}\n\n";
 
 const char *Templates::SetterTemplateMessageType = "void set$property_name_cap$_p($type$ *$property_name$) {\n"
@@ -149,7 +150,7 @@ const char *Templates::SetterTemplateSimpleType = "void set$property_name_cap$(c
 const char *Templates::SignalsBlockTemplate = "\nsignals:\n";
 const char *Templates::SignalTemplate = "void $property_name$Changed();\n";
 
-const char *Templates::FieldsOrderingContainerTemplate = "const std::unordered_map<int, int> $type$::propertyOrdering = {";
+const char *Templates::FieldsOrderingContainerTemplate = "const qtprotobuf::QProtobufPropertyOrdering $type$::propertyOrdering = {";
 const char *Templates::FieldOrderTemplate = "{$field_number$, $property_number$}";
 
 const char *Templates::EnumTemplate = "$type$";
@@ -176,7 +177,7 @@ const char *Templates::RegisterQmlListPropertyMetaTypeTemplate = "qRegisterMetaT
 
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 
-const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::ProtobufObjectPrivate::registerMap<$key_type$, $value_type$>();";
+const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::QProtobufSerializerRegistry::registerMap<$key_type$, $value_type$>();\n";
 
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
@@ -206,7 +207,7 @@ const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname
                                                               "    });\n"
                                                               "}\n";
 
-const char *Templates::RegisterSerializersTemplate = "qtprotobuf::ProtobufObjectPrivate::registerSerializers<$classname$>();\n";
+const char *Templates::RegisterSerializersTemplate = "qtprotobuf::QProtobufSerializerRegistry::registerSerializers<$classname$>();\n";
 const char *Templates::RegistratorTemplate = "static qtprotobuf::RegistrationHelper helper(registerTypes);\n";
 const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\");\n";
 const char *Templates::QmlRegisterTypeUncreatableTemplate = "qmlRegisterUncreatableType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\", \"$namespaces$::$classname$ Could not be created from qml context\");\n";

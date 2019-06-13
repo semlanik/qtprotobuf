@@ -1,0 +1,94 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ *
+ * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+ * to permit persons to whom the Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies
+ * or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
+#pragma once
+
+#include <QObject>
+#include <QVariant>
+#include <QMetaObject>
+
+#include <unordered_map>
+#include <functional>
+
+#include "qtprotobuftypes.h"
+#include "qtprotobuflogging.h"
+#include "selfcheckiterator.h"
+
+#include "qtprotobuf_global.h"
+
+namespace qtprotobuf {
+
+class QTPROTOBUFSHARED_EXPORT QAbstractProtobufSerializer
+{
+public:
+    using Serializer = std::function<QByteArray(const QVariant &, int &)>;
+    using Deserializer = std::function<void(SelfcheckIterator &, QVariant &)>;
+    struct SerializationHandlers {
+        Serializer serializer;
+        Deserializer deserializer;
+        WireTypes type;
+    };
+    using SerializerRegistry = std::unordered_map<int/*metatypeid*/, SerializationHandlers>;
+
+    virtual ~QAbstractProtobufSerializer() = default;
+    virtual QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, bool isEnum) = 0;
+    virtual void deserializeProperty(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+
+    virtual QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+    virtual void deserializeObject(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+
+    virtual QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) = 0;
+    virtual void deserializeListObject(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+
+    virtual QByteArray serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) = 0;
+    virtual void deserializeMapPair(QVariant &key, QVariant &value, SelfcheckIterator &it) = 0;
+
+    QByteArray serializeObjectCommon(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject);
+    void deserializeObjectCommon(QObject *object, const QByteArray &array, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject);
+
+    SerializerRegistry serializers;
+};
+
+
+class QTPROTOBUFSHARED_EXPORT QProtobufSerializer : public QAbstractProtobufSerializer
+{
+public:
+    QProtobufSerializer();
+    ~QProtobufSerializer() = default;
+
+    QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, bool isEnum) override;
+    void deserializeProperty(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
+
+    QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
+    void deserializeObject(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
+
+    QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) override;
+    void deserializeListObject(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
+
+    QByteArray serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) override;
+    void deserializeMapPair(QVariant &key, QVariant &value, SelfcheckIterator &it) override;
+};
+
+}

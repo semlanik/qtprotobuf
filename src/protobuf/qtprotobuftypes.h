@@ -27,7 +27,8 @@
 
 #include <QList>
 #include <QMetaType>
-#include <QtQml/QJSValue>
+
+#include <unordered_map>
 
 namespace qtprotobuf {
 
@@ -144,3 +145,7 @@ template<>
 struct std::is_signed<qtprotobuf::sfixed32> : public is_signed<decltype(qtprotobuf::sfixed32::_t)> {};
 template<>
 struct std::is_signed<qtprotobuf::sfixed64> : public is_signed<decltype(qtprotobuf::sfixed64::_t)> {};
+
+namespace qtprotobuf {
+using QProtobufPropertyOrdering = std::unordered_map<int, int>;
+}

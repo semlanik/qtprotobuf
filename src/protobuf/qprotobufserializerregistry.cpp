@@ -23,18 +23,27 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
 #include "qprotobufserializerregistry.h"
-#include <unordered_map>
 
-#define Q_DECLARE_PROTOBUF_SERIALIZERS(T)\
-    public:\
-        QByteArray serialize() const { return qtprotobuf::QProtobufSerializerRegistry::serialize<T>(this); }\
-        void deserialize(const QByteArray &array) { qtprotobuf::QProtobufSerializerRegistry::deserialize<T>(this, array); }\
-    private:
+using namespace qtprotobuf;
 
-#define Q_PROTOBUF_OBJECT\
-    public:\
-        static const std::unordered_map<int/*field number*/, int/*property number*/> propertyOrdering;\
-    private:
+QAbstractProtobufSerializer::SerializerRegistry QProtobufSerializerRegistry::serializers = {};
+std::unique_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::basicSerializer = std::make_unique<QProtobufSerializer>();
+QAbstractProtobufSerializer::SerializationHandlers QProtobufSerializerRegistry::empty;
+
+const QAbstractProtobufSerializer::SerializationHandlers &QProtobufSerializerRegistry::handler(int userType)
+{
+    auto it = serializers.find(userType);
+    if (it != serializers.end()) {
+        return it->second;
+    }
+
+    if (basicSerializer != nullptr) {
+        it = basicSerializer->serializers.find(userType);
+        if (it != basicSerializer->serializers.end()) {
+            return it->second;
+        }
+    }
+
+    return empty;
+}

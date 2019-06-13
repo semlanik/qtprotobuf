@@ -23,18 +23,33 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <QMetaProperty>
+#include <QVariant>
+#include <QMetaObject>
 
-#include "qprotobufserializerregistry.h"
-#include <unordered_map>
+#include "qabstractprotobufserializer.h"
 
-#define Q_DECLARE_PROTOBUF_SERIALIZERS(T)\
-    public:\
-        QByteArray serialize() const { return qtprotobuf::QProtobufSerializerRegistry::serialize<T>(this); }\
-        void deserialize(const QByteArray &array) { qtprotobuf::QProtobufSerializerRegistry::deserialize<T>(this, array); }\
-    private:
+using namespace qtprotobuf;
 
-#define Q_PROTOBUF_OBJECT\
-    public:\
-        static const std::unordered_map<int/*field number*/, int/*property number*/> propertyOrdering;\
-    private:
+QByteArray QAbstractProtobufSerializer::serializeObjectCommon(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
+{
+    QByteArray result;
+    for (const auto &field : propertyOrdering) {
+        int propertyIndex = field.second;
+        int fieldIndex = field.first;
+        Q_ASSERT_X(fieldIndex < 536870912 && fieldIndex > 0, "", "fieldIndex is out of range");
+        QMetaProperty metaProperty = metaObject.property(propertyIndex);
+        const char *propertyName = metaProperty.name();
+        const QVariant &propertyValue = object->property(propertyName);
+        result.append(serializeProperty(propertyValue, fieldIndex, metaProperty.isEnumType()));
+    }
+
+    return result;
+}
+
+void QAbstractProtobufSerializer::deserializeObjectCommon(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
+{
+    for (SelfcheckIterator it(data); it != data.end();) {
+        deserializeProperty(object, it, propertyOrdering, metaObject);
+    }
+}

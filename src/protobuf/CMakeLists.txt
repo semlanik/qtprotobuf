@@ -13,18 +13,21 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 
 file(GLOB SOURCES
-    qprotobufobject_p.cpp
     qtprotobuf.cpp
-    qtprotobuflogging.cpp)
-#    qprotobufserializer.cpp)
+    qtprotobuflogging.cpp
+    qprotobufserializerregistry.cpp
+    qabstractprotobufserializer.cpp
+    qprotobufserializer.cpp)
 
 file(GLOB HEADERS
-    qprotobufobject_p.h
-    qprotobufobject.h
-    qtprotobuftypes.h
-    selfcheckiterator.h
-    qtprotobuflogging.h
     qtprotobuf_global.h
+    qtprotobuftypes.h
+    qtprotobuflogging.h
+    qprotobufobject.h
+    qprotobufserializerregistry.h
+    qqmllistpropertyconstructor.h
+    qabstractprotobufserializer.h
+    selfcheckiterator.h
     registrationhelper.h)
 
 add_library(${TARGET} SHARED ${SOURCES})

@@ -112,8 +112,6 @@ void registerTypes() {
     registerBasicConverters<sfixed64>();
     registerBasicConverters<fixed32>();
     registerBasicConverters<fixed64>();
-
-    ProtobufObjectPrivate::registerSerializers();
 }
 }
 

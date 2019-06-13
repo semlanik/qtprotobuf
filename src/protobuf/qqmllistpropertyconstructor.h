@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Viktor Kopp <vifactor@gmail.com>
  *
  * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -25,16 +25,37 @@
 
 #pragma once
 
-#include "qprotobufserializerregistry.h"
-#include <unordered_map>
+#include <QQmlListProperty>
+#include <QQmlEngine>
 
-#define Q_DECLARE_PROTOBUF_SERIALIZERS(T)\
-    public:\
-        QByteArray serialize() const { return qtprotobuf::QProtobufSerializerRegistry::serialize<T>(this); }\
-        void deserialize(const QByteArray &array) { qtprotobuf::QProtobufSerializerRegistry::deserialize<T>(this, array); }\
-    private:
+namespace qtprotobuf {
 
-#define Q_PROTOBUF_OBJECT\
-    public:\
-        static const std::unordered_map<int/*field number*/, int/*property number*/> propertyOrdering;\
-    private:
+template<typename T>
+static void qmllistpropertyAppend(QQmlListProperty<T> *p, T *v) {
+    QQmlEngine::setObjectOwnership(v, QQmlEngine::CppOwnership);
+    reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->append(QSharedPointer<T>(v));
+}
+
+template<typename T>
+static int qmllistpropertyCount(QQmlListProperty<T> *p) {
+    return reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->count();
+}
+
+template<typename T>
+static T * qmllistpropertyAt(QQmlListProperty<T> *p, int index) {
+    return reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->at(index).data();
+}
+
+template<typename T>
+static void qmllistpropertyReset(QQmlListProperty<T> *p){
+    reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->clear();
+}
+
+template<typename T>
+static QQmlListProperty<T> constructQmlListProperty(QObject *p, QList<QSharedPointer<T>> *data)
+{
+    return QQmlListProperty<T>(p, data, qmllistpropertyAppend<T>, qmllistpropertyCount<T>,
+                               qmllistpropertyAt<T>, qmllistpropertyReset<T>);
+}
+
+}
