@@ -1531,7 +1531,7 @@ TEST_F(SerializationTest, RepeatedComplexMessageTest)
     RepeatedComplexMessage test;
     test.setTestRepeatedComplex({msg, msg, msg});
     QByteArray result = test.serialize();
-    //qDebug() << "result " << result.toHex();
+    qDebug() << "result " << result.toHex();
 
     ASSERT_TRUE(result == QByteArray::fromHex("0a0c0819120832067177657274790a0c0819120832067177657274790a0c081912083206717765727479")
                 || result == QByteArray::fromHex("0a0c1208320671776572747908190a0c1208320671776572747908190a0c120832067177657274790819"));

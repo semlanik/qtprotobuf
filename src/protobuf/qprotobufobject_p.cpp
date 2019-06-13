@@ -65,40 +65,118 @@ void ProtobufObjectPrivate::registerSerializers()
     QProtobufSerializerPrivate::wrapSerializer<QByteArrayList>(QProtobufSerializerPrivate::serializeListType<QByteArray>, QProtobufSerializerPrivate::deserializeList<QByteArray>, LengthDelimited);
 }
 
-QByteArray ProtobufObjectPrivate::serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty)
+QByteArray ProtobufObjectPrivate::serializeProperty(const QVariant &propertyValue, int fieldIndex, bool isEnum)
 {
     qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex
-                  << "typeName" << metaProperty.typeName() << static_cast<QMetaType::Type>(propertyValue.type());
+                  << static_cast<QMetaType::Type>(propertyValue.type());
 
     QByteArray result;
     WireTypes type = UnknownWireType;
 
-    if (metaProperty.isEnumType()) {
-        type = Varint;
-        result.append(QProtobufSerializerPrivate::serializeBasic(int64(propertyValue.value<int32_t>()), fieldIndex));
-    } else {
-        result.append(serializeUserType(propertyValue, fieldIndex, type));
+    int userType = propertyValue.userType();
+    if (isEnum) {
+        userType = qMetaTypeId<int64>();
     }
+    auto serializer = serializers.at(userType);//Throws exception if not found
+    type = serializer.type;
+    result.append(serializer.serializer(propertyValue, fieldIndex));
 
     if (fieldIndex != NotUsedFieldIndex
             && type != UnknownWireType) {
-        result.prepend(encodeHeader(fieldIndex, type));
+        result.prepend(QProtobufSerializerPrivate::encodeHeader(fieldIndex, type));
     }
     return result;
 }
 
-QByteArray ProtobufObjectPrivate::serializeUserType(const QVariant &propertyValue, int &fieldIndex, WireTypes &type)
+QByteArray ProtobufObjectPrivate::serializeObjectCommon(const QObject *object, const std::unordered_map<int, int> &propertyOrdering, const QMetaObject &metaObject)
 {
-    qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex;
+    QByteArray result;
+    for (const auto &field : propertyOrdering) {
+        int propertyIndex = field.second;
+        int fieldIndex = field.first;
+        Q_ASSERT_X(fieldIndex < 536870912 && fieldIndex > 0, "", "fieldIndex is out of range");
+        QMetaProperty metaProperty = metaObject.property(propertyIndex);
+        const char *propertyName = metaProperty.name();
+        const QVariant &propertyValue = object->property(propertyName);
+        result.append(ProtobufObjectPrivate::serializeProperty(propertyValue, fieldIndex, metaProperty.isEnumType()));
+    }
 
-    int userType = propertyValue.userType();
-    auto serializer = serializers.at(userType);//Throws exception if not found
-    type = serializer.type;
-    return serializer.serializer(propertyValue, fieldIndex);
+    return result;
 }
 
-void ProtobufObjectPrivate::deserializeProperty(QObject *object, const QMetaProperty &metaProperty, SelfcheckIterator &it, WireTypes wireType)
+void ProtobufObjectPrivate::deserializeObjectCommon(QObject *object, const QByteArray &data, const std::unordered_map<int, int> &propertyOrdering, const QMetaObject &metaObject)
 {
+    for (SelfcheckIterator it(data); it != data.end();) {
+        deserializeProperty(object, it, propertyOrdering, metaObject);
+    }
+}
+
+QByteArray ProtobufObjectPrivate::serializeObject(const QObject *object, const std::unordered_map<int, int> &propertyOrdering, const QMetaObject &metaObject)
+{
+    return QProtobufSerializerPrivate::prependLengthDelimitedSize(serializeObjectCommon(object, propertyOrdering, metaObject));
+}
+
+void ProtobufObjectPrivate::deserializeObject(QObject *object, SelfcheckIterator &it, const std::unordered_map<int, int> &propertyOrdering, const QMetaObject &metaObject)
+{
+    QByteArray array = QProtobufSerializerPrivate::deserializeLengthDelimited(it);
+    deserializeObjectCommon(object, array, propertyOrdering, metaObject);
+}
+
+QByteArray ProtobufObjectPrivate::serializeListObject(const QObject *object, const std::unordered_map<int, int> &propertyOrdering, const QMetaObject &metaObject, int fieldIndex)
+{
+    QByteArray result = QProtobufSerializerPrivate::encodeHeader(fieldIndex, LengthDelimited);
+    result.append(serializeObject(object, propertyOrdering, metaObject));
+    return result;
+}
+
+QByteArray ProtobufObjectPrivate::serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex)
+{
+    QByteArray result = QProtobufSerializerPrivate::encodeHeader(fieldIndex, LengthDelimited);
+    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(serializeProperty(key, 1, false) + serializeProperty(value, 2, false)));
+    return result;
+}
+
+void ProtobufObjectPrivate::deserializeMapPair(QVariant &key, QVariant &value, SelfcheckIterator &it)
+{
+    int mapIndex = 0;
+    WireTypes type = WireTypes::UnknownWireType;
+    unsigned int count = QProtobufSerializerPrivate::deserializeVarintCommon<uint32>(it);
+    qProtoDebug() << __func__ << "count:" << count;
+    SelfcheckIterator last = it + count;
+    while (it != last) {
+        QProtobufSerializerPrivate::decodeHeader(it, mapIndex, type);
+        if(mapIndex == 1) {
+            deserializeMapField(key, it);
+        } else {
+            deserializeMapField(value, it);
+        }
+    }
+}
+
+
+void ProtobufObjectPrivate::deserializeProperty(QObject *object, SelfcheckIterator &it, const std::unordered_map<int, int> &propertyOrdering, const QMetaObject &metaObject)
+{
+    //Each iteration we expect iterator is setup to beginning of next chunk
+    int fieldNumber = NotUsedFieldIndex;
+    WireTypes wireType = UnknownWireType;
+    if (!QProtobufSerializerPrivate::decodeHeader(it, fieldNumber, wireType)) {
+        qProtoCritical() << "Message received doesn't contains valid header byte. "
+                            "Trying next, but seems stream is broken" << QString::number((*it), 16);
+        throw std::invalid_argument("Message received doesn't contains valid header byte. "
+                              "Seems stream is broken");
+    }
+
+    auto propertyNumberIt = propertyOrdering.find(fieldNumber);
+    if (propertyNumberIt == std::end(propertyOrdering)) {
+        auto bytesCount = QProtobufSerializerPrivate::skipSerializedFieldBytes(it, wireType);
+        qProtoWarning() << "Message received contains unexpected/optional field. WireType:" << wireType
+                        << ", field number: " << fieldNumber << "Skipped:" << (bytesCount + 1) << "bytes";
+        return;
+    }
+
+    int propertyIndex = propertyNumberIt->second;
+    QMetaProperty metaProperty = metaObject.property(propertyIndex);
+
     qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << metaProperty.typeName()
                   << "currentByte:" << QString::number((*it), 16);
 
@@ -107,55 +185,9 @@ void ProtobufObjectPrivate::deserializeProperty(QObject *object, const QMetaProp
         newPropertyValue = QVariant::fromValue(int32_t(QProtobufSerializerPrivate::deserializeBasic<int64>(it).value<int64>()._t));
     } else {
         newPropertyValue = metaProperty.read(object);
-        deserializeUserType(metaProperty, it, newPropertyValue);
+        int userType = metaProperty.userType();
+        auto deserializer = serializers.at(userType).deserializer;//Throws exception if not found
+        deserializer(it, newPropertyValue);
     }
     metaProperty.write(object, newPropertyValue);
-}
-
-void ProtobufObjectPrivate::deserializeUserType(const QMetaProperty &metaProperty, SelfcheckIterator &it, QVariant &out)
-{
-    qProtoDebug() << __func__ << "userType" << metaProperty.userType() << "typeName" << metaProperty.typeName()
-                  << "currentByte:" << QString::number((*it), 16);
-    int userType = metaProperty.userType();
-    auto deserializer = serializers.at(userType).deserializer;//Throws exception if not found
-    deserializer(it, out);
-}
-
-void ProtobufObjectPrivate::skipVarint(SelfcheckIterator &it)
-{
-    while ((*it) & 0x80) {
-        ++it;
-    }
-    ++it;
-}
-
-void ProtobufObjectPrivate::skipLengthDelimited(SelfcheckIterator &it)
-{
-    //Get length of lenght-delimited field
-    unsigned int length = QProtobufSerializerPrivate::deserializeBasic<uint32>(it).toUInt();
-    it += length;
-}
-
-int ProtobufObjectPrivate::skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type)
-{
-    const auto initialIt = QByteArray::const_iterator(it);
-    switch (type) {
-    case WireTypes::Varint:
-        skipVarint(it);
-        break;
-    case WireTypes::Fixed32:
-        it += sizeof(decltype(fixed32::_t));
-        break;
-    case WireTypes::Fixed64:
-        it += sizeof(decltype(fixed64::_t));
-        break;
-    case WireTypes::LengthDelimited:
-        skipLengthDelimited(it);
-        break;
-    case WireTypes::UnknownWireType:
-    default:
-        throw std::invalid_argument("Cannot skip due to undefined length of the redundant field.");
-    }
-
-    return std::distance(initialIt, QByteArray::const_iterator(it));
 }

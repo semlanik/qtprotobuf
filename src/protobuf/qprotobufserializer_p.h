@@ -38,6 +38,50 @@ class QProtobufSerializerPrivate {
     QProtobufSerializerPrivate(ProtobufObjectPrivate &&) = delete;
     QProtobufSerializerPrivate &operator =(QProtobufSerializerPrivate &&) = delete;
 public:
+    template <typename V,
+              typename std::enable_if_t<std::is_integral<V>::value
+                                        && std::is_unsigned<V>::value, int> = 0>
+    static QByteArray serializeVarintCommon(const V &value) {
+        qProtoDebug() << __func__ << "value" << value;
+        V varint = value;
+        QByteArray result;
+
+        while (varint != 0) {
+            //Put 7 bits to result buffer and mark as "not last" (0b10000000)
+            result.append((varint & 0b01111111) | 0b10000000);
+            //Divide values to chunks of 7 bits and move to next chunk
+            varint >>= 7;
+        }
+
+        if (result.isEmpty()) {
+            result.append('\0');
+        }
+
+        result.data()[result.size() - 1] &= ~0b10000000;
+        return result;
+    }
+
+    template <typename V,
+              typename std::enable_if_t<std::is_integral<V>::value
+                                        && std::is_unsigned<V>::value, int> = 0>
+    static V deserializeVarintCommon(SelfcheckIterator &it) {
+        qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
+
+        V value = 0;
+        int k = 0;
+        while (true) {
+            uint64_t byte = static_cast<uint64_t>(*it);
+            value += (byte & 0b01111111) << k;
+            k += 7;
+            if (((*it) & 0b10000000) == 0) {
+                break;
+            }
+            ++it;
+        }
+        ++it;
+        return value;
+    }
+
     template <typename T,
               typename std::enable_if_t<!std::is_base_of<QObject, T>::value, int> = 0>
     static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<QVariant(SelfcheckIterator &)> &d, WireTypes type)
@@ -269,7 +313,7 @@ public:
             serializedList.append(serializeBasic<V>(value, empty));
         }
         //If internal field type is not LengthDelimited, exact amount of fields to be specified
-        ProtobufObjectPrivate::prependLengthDelimitedSize(serializedList);
+        serializedList = prependLengthDelimitedSize(serializedList);
         return serializedList;
     }
 
@@ -285,7 +329,7 @@ public:
 
         QByteArray serializedList;
         for (auto &value : listValue) {
-            serializedList.append(ProtobufObjectPrivate::encodeHeader(outFieldIndex, LengthDelimited));
+            serializedList.append(QProtobufSerializerPrivate::encodeHeader(outFieldIndex, LengthDelimited));
             serializedList.append(serializeLengthDelimited(value.toUtf8()));
         }
 
@@ -305,7 +349,7 @@ public:
 
         QByteArray serializedList;
         for (auto &value : listValue) {
-            serializedList.append(ProtobufObjectPrivate::encodeHeader(outFieldIndex, LengthDelimited));
+            serializedList.append(QProtobufSerializerPrivate::encodeHeader(outFieldIndex, LengthDelimited));
             serializedList.append(serializeLengthDelimited(value));
         }
 
@@ -355,7 +399,7 @@ public:
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         unsigned int length = deserializeVarintCommon<uint32>(it);
-        QByteArray result((QByteArray::const_iterator&)it, length);
+        QByteArray result((QByteArray::const_iterator&)it, length); //TODO it's possible to void buffeer copying by setupimg new "end of QByteArray";
         it += length;
         return result;
     }
@@ -364,9 +408,113 @@ public:
         qProtoDebug() << __func__ << "data.size" << data.size() << "data" << data.toHex();
         QByteArray result(data);
         //Varint serialize field size and apply result as starting point
-        ProtobufObjectPrivate::prependLengthDelimitedSize(result);
+        result = prependLengthDelimitedSize(result);
         return result;
     }
+
+    static bool decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType);
+    static QByteArray encodeHeader(int fieldIndex, WireTypes wireType);
+
+    /**
+     * @brief Gets length of a byte-array and prepends to it its serialized length value
+     *      using the appropriate serialization algorithm
+     *
+     *
+     * @param[in, out] serializedList Byte-array to be prepended
+     */
+    static QByteArray prependLengthDelimitedSize(const QByteArray &data)
+    {
+        return serializeVarintCommon<uint32_t>(data.size()) + data;
+    }
+
+    // this set of 3 methods is used to skip bytes corresponding to an unexpected property
+    // in a serialized message met while the message being deserialized
+    static void skipVarint(SelfcheckIterator &it);
+    static void skipLengthDelimited(SelfcheckIterator &it);
+    static int skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type);
 };
 
+//###########################################################################
+//                             Common functions
+//###########################################################################
+
+/*! @brief Encode a property field index and its type into output bytes
+ *
+ * @details
+ * Header byte
+ *  Meaning    |  Field index  |  Type
+ *  ---------- | ------------- | --------
+ *  bit number | 7  6  5  4  3 | 2  1  0
+ * @param fieldIndex The index of a property in parent object
+ * @param wireType Serialization type used for the property with index @p fieldIndex
+ *
+ * @return Varint encoded fieldIndex and wireType
+ */
+inline QByteArray QProtobufSerializerPrivate::encodeHeader(int fieldIndex, WireTypes wireType)
+{
+    uint32_t header = (fieldIndex << 3) | wireType;
+    return serializeVarintCommon<uint32_t>(header);
 }
+
+/*! @brief Decode a property field index and its serialization type from input bytes
+ *
+ * @param[in] Iterator that points to header with encoded field index and serialization type
+ * @param[out] fieldIndex Decoded index of a property in parent object
+ * @param[out] wireType Decoded serialization type used for the property with index @p fieldIndex
+ *
+ * @return true if both decoded wireType and fieldIndex have "allowed" values and false, otherwise
+ */
+inline bool QProtobufSerializerPrivate::decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType)
+{
+    uint32_t header = deserializeVarintCommon<uint32_t>(it);
+    wireType = static_cast<WireTypes>(header & 0b00000111);
+    fieldIndex = header >> 3;
+
+    constexpr int maxFieldIndex = (1 << 29) - 1;
+    return fieldIndex <= maxFieldIndex && fieldIndex > 0 && (wireType == Varint
+                                                  || wireType == Fixed64
+                                                  || wireType == Fixed32
+                                                  || wireType == LengthDelimited);
+}
+
+void QProtobufSerializerPrivate::skipVarint(SelfcheckIterator &it)
+{
+    while ((*it) & 0x80) {
+        ++it;
+    }
+    ++it;
+}
+
+void QProtobufSerializerPrivate::skipLengthDelimited(SelfcheckIterator &it)
+{
+    //Get length of lenght-delimited field
+    unsigned int length = QProtobufSerializerPrivate::deserializeBasic<uint32>(it).toUInt();
+    it += length;
+}
+
+int QProtobufSerializerPrivate::skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type)
+{
+    const auto initialIt = QByteArray::const_iterator(it);
+    switch (type) {
+    case WireTypes::Varint:
+        skipVarint(it);
+        break;
+    case WireTypes::Fixed32:
+        it += sizeof(decltype(fixed32::_t));
+        break;
+    case WireTypes::Fixed64:
+        it += sizeof(decltype(fixed64::_t));
+        break;
+    case WireTypes::LengthDelimited:
+        skipLengthDelimited(it);
+        break;
+    case WireTypes::UnknownWireType:
+    default:
+        throw std::invalid_argument("Cannot skip due to undefined length of the redundant field.");
+    }
+
+    return std::distance(initialIt, QByteArray::const_iterator(it));
+}
+
+}
+

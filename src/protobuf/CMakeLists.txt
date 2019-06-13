@@ -70,4 +70,4 @@ configure_file("${CMAKE_SOURCE_DIR}/cmake/ProtobufLookup.cmake" "${CMAKE_BINARY_
 install(FILES "${CMAKE_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
 
 # TODO: keep quick plugin for future development, but it's useless for now
-add_subdirectory("quick")
+#add_subdirectory("quick")
