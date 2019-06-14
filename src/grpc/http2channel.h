@@ -30,9 +30,16 @@
 #include <QUrl>
 
 namespace qtprotobuf {
+/**
+*  \addtogroup QtGrpc
+*  @{
+*/
 
 class AbstractCredentials;
 
+/**
+ * @brief The Http2Channel class
+ */
 class QTGRPCSHARED_EXPORT Http2Channel final : public AbstractChannel
 {
 public:
@@ -54,5 +61,5 @@ private:
     // PIMPL
     struct Http2ChannelPrivate *d;
 };
-
+/** @} */
 }

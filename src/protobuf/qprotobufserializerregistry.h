@@ -38,6 +38,10 @@
 #include "qtprotobuf_global.h"
 
 namespace qtprotobuf {
+/**
+*  \addtogroup QtProtobuf
+*  @{
+*/
 
 /**
  * @brief The QProtobufSerializerRegistry class provides api to register serializers of QObjects
@@ -294,4 +298,5 @@ private:
     }
 };
 
+/** @} */
 }

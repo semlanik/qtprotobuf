@@ -35,7 +35,14 @@ namespace qtprotobuf {
 
 class AsyncReply;
 class AbstractClient;
+/**
+*  \addtogroup QtGrpc
+*  @{
+*/
 
+/**
+ * @brief The AbstractChannel class
+ */
 class QTGRPCSHARED_EXPORT AbstractChannel
 {
 public:
@@ -102,5 +109,5 @@ protected:
 private:
     Q_DISABLE_COPY(AbstractChannel)
 };
-
+/** @} */
 }

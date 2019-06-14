@@ -35,7 +35,14 @@
 #include "qtgrpc_global.h"
 
 namespace qtprotobuf {
+/**
+*  \addtogroup QtGrpc
+*  @{
+*/
 
+/**
+ * @brief The AsyncReply class
+ */
 class QTGRPCSHARED_EXPORT AsyncReply final : public QObject
 {
     Q_OBJECT
@@ -76,5 +83,5 @@ private:
 
     QMutex m_asyncLock;
 };
-
+/** @} */
 }

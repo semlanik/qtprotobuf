@@ -30,11 +30,18 @@
 #include "qtgrpc_global.h"
 
 namespace qtprotobuf {
+/**
+*  \addtogroup QtGrpc
+*  @{
+*/
 
+/**
+ * @brief The InsecureCredentials class
+ */
 class QTGRPCSHARED_EXPORT InsecureCredentials : public ChannelCredentials
 {
 public:
     InsecureCredentials() : ChannelCredentials(CredentialMap()) {}
 };
-
+/** @} */
 }

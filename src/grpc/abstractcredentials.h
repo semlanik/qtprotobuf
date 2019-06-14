@@ -34,10 +34,17 @@
 #include "qtgrpc_global.h"
 
 namespace qtprotobuf {
+/**
+*  \addtogroup QtGrpc
+*  @{
+*/
 
 class CallCredentials;
 class ChannelCredentials;
 
+/**
+ * @brief The AbstractCredentials class
+ */
 class QTGRPCSHARED_EXPORT AbstractCredentials
 {
 public:
@@ -73,6 +80,9 @@ private:
     CredentialMap mChannelCredentials;
 };
 
+/**
+ * @brief The CallCredentials class
+ */
 class QTGRPCSHARED_EXPORT CallCredentials : public AbstractCredentials
 {
 protected:
@@ -85,6 +95,9 @@ private:
     CallCredentials() = default;
 };
 
+/**
+ * @brief The ChannelCredentials class
+ */
 class QTGRPCSHARED_EXPORT ChannelCredentials : public AbstractCredentials
 {
 protected:
@@ -93,7 +106,9 @@ protected:
         setChannelCredentials(credentialMap);
     }
 };
+/** @} */
 
+//! @private
 template<typename Call, typename Channel,
          typename std::enable_if_t<std::is_base_of<qtprotobuf::CallCredentials, Call>::value
                                    && std::is_base_of<qtprotobuf::ChannelCredentials, Channel>::value, int> = 0>
@@ -103,6 +118,7 @@ AbstractCredentials::AbstractCredentials(const Call &call, const Channel &channe
     mChannelCredentials = channel.mChannelCredentials;
 }
 
+//! @private
 template<typename Call,
          typename std::enable_if_t<std::is_base_of<qtprotobuf::CallCredentials, Call>::value, int> = 0>
 AbstractCredentials::AbstractCredentials(const Call &call)
@@ -110,6 +126,7 @@ AbstractCredentials::AbstractCredentials(const Call &call)
     mCallCredentials = call.mCallCredentials;
 }
 
+//! @private
 template<typename Channel,
          typename std::enable_if_t<std::is_base_of<qtprotobuf::ChannelCredentials, Channel>::value, int> = 0>
 AbstractCredentials::AbstractCredentials(const Channel &channel)
@@ -118,6 +135,7 @@ AbstractCredentials::AbstractCredentials(const Channel &channel)
 }
 }
 
+//! @private
 template<typename Call, typename Channel,
          typename std::enable_if_t<std::is_base_of<qtprotobuf::CallCredentials, Call>::value
                                    && std::is_base_of<qtprotobuf::ChannelCredentials, Channel>::value, int> = 0>
@@ -126,6 +144,7 @@ qtprotobuf::AbstractCredentials operator|(const Call &call, const Channel &chann
     return qtprotobuf::AbstractCredentials(call, channel);
 }
 
+//! @private
 template<typename Call, typename Channel,
          typename std::enable_if_t<std::is_base_of<qtprotobuf::CallCredentials, Call>::value
                                    && std::is_base_of<qtprotobuf::ChannelCredentials, Channel>::value, int> = 0>
