@@ -26,11 +26,16 @@
 #pragma once
 
 #include <functional>
+
+/*!
+ * \private
+ * This class might be replaced by manual registration calls, because of issues related to static initialization in C++
+ */
 namespace qtprotobuf {
 
-class RegistrationHelper {
+class QProtobufRegistrationHelper {
 public:
-    RegistrationHelper(const std::function<void(void)> &registrator) {
+    QProtobufRegistrationHelper(const std::function<void(void)> &registrator) {
         registrator();
     }
 };

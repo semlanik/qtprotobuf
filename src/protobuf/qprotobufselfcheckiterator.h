@@ -32,14 +32,18 @@
 
 namespace qtprotobuf {
 
-class QTPROTOBUFSHARED_EXPORT SelfcheckIterator
+/*!
+ * \ingroup QtProtobuf
+ * \brief The QProtobufSelfcheckIterator class
+ */
+class QTPROTOBUFSHARED_EXPORT QProtobufSelfcheckIterator
 {
 public:
-    SelfcheckIterator(const QByteArray &container) : m_sizeLeft(container.size())
+    QProtobufSelfcheckIterator(const QByteArray &container) : m_sizeLeft(container.size())
       , m_containerSize(container.size())
       , m_it(container.begin()){}
 
-    SelfcheckIterator(const SelfcheckIterator &other) : m_sizeLeft(other.m_sizeLeft)
+    QProtobufSelfcheckIterator(const QProtobufSelfcheckIterator &other) : m_sizeLeft(other.m_sizeLeft)
       , m_containerSize(other.m_containerSize)
       , m_it(other.m_it) {
         if (m_sizeLeft >= m_containerSize) {
@@ -52,7 +56,7 @@ public:
 
     char operator *() { return *m_it; }
 
-    SelfcheckIterator &operator ++() {
+    QProtobufSelfcheckIterator &operator ++() {
         --m_sizeLeft;
         if (m_sizeLeft < 0) {
             throw std::out_of_range("Container is less than required fields number. Deserialization failed");
@@ -61,7 +65,7 @@ public:
         return *this;
     }
 
-    SelfcheckIterator &operator --() {
+    QProtobufSelfcheckIterator &operator --() {
         ++m_sizeLeft;
         if (m_sizeLeft >= m_containerSize) {
             throw std::out_of_range("Container is less than required fields number. Deserialization failed");
@@ -70,7 +74,7 @@ public:
         return *this;
     }
 
-    SelfcheckIterator &operator +=(int count) {
+    QProtobufSelfcheckIterator &operator +=(int count) {
         m_sizeLeft -= count;
         if (m_sizeLeft < 0) {
             throw std::out_of_range("Container is less than required fields number. Deserialization failed");
@@ -79,7 +83,7 @@ public:
         return *this;
     }
 
-    SelfcheckIterator &operator -=(int count) {
+    QProtobufSelfcheckIterator &operator -=(int count) {
         m_sizeLeft += count;
         if (m_sizeLeft >= m_containerSize) {
             throw std::out_of_range("Container is less than required fields number. Deserialization failed");
@@ -88,7 +92,7 @@ public:
         return *this;
     }
 
-    SelfcheckIterator &operator =(const SelfcheckIterator &other) {
+    QProtobufSelfcheckIterator &operator =(const QProtobufSelfcheckIterator &other) {
         if (this == &other) {
             return *this;
         }
@@ -102,11 +106,11 @@ public:
         return *this;
     }
 
-    bool operator ==(const SelfcheckIterator &other) const {
+    bool operator ==(const QProtobufSelfcheckIterator &other) const {
         return other.m_it == m_it;
     }
 
-    bool operator !=(const SelfcheckIterator &other) const {
+    bool operator !=(const QProtobufSelfcheckIterator &other) const {
         return other.m_it != m_it;
     }
 
@@ -123,8 +127,8 @@ private:
     QByteArray::const_iterator m_it;
 };
 
-inline SelfcheckIterator operator +(const SelfcheckIterator &it, int lenght) {
-    SelfcheckIterator itNew = it;
+inline QProtobufSelfcheckIterator operator +(const QProtobufSelfcheckIterator &it, int lenght) {
+    QProtobufSelfcheckIterator itNew = it;
     return itNew += lenght;
 }
 

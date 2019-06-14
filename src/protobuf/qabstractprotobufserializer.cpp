@@ -49,7 +49,7 @@ QByteArray QAbstractProtobufSerializer::serializeObjectCommon(const QObject *obj
 
 void QAbstractProtobufSerializer::deserializeObjectCommon(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
 {
-    for (SelfcheckIterator it(data); it != data.end();) {
+    for (QProtobufSelfcheckIterator it(data); it != data.end();) {
         deserializeProperty(object, it, propertyOrdering, metaObject);
     }
 }

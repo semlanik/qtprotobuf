@@ -34,7 +34,7 @@
 
 #include "qtprotobuftypes.h"
 #include "qtprotobuflogging.h"
-#include "selfcheckiterator.h"
+#include "qprotobufselfcheckiterator.h"
 
 #include "qtprotobuf_global.h"
 
@@ -60,7 +60,7 @@ public:
     /*!
      * \brief Deserializer is interface function for deserialize method
      */
-    using Deserializer = std::function<void(SelfcheckIterator &, QVariant &)>;
+    using Deserializer = std::function<void(QProtobufSelfcheckIterator &, QVariant &)>;
 
     /*!
      * \brief SerializationHandlers contains set of objects that required for class serializaion/deserialization
@@ -77,16 +77,16 @@ public:
 
     virtual ~QAbstractProtobufSerializer() = default;
     virtual QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, bool isEnum) = 0;
-    virtual void deserializeProperty(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+    virtual void deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
 
     virtual QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
-    virtual void deserializeObject(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+    virtual void deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
 
     virtual QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) = 0;
-    virtual void deserializeListObject(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+    virtual void deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
 
     virtual QByteArray serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) = 0;
-    virtual void deserializeMapPair(QVariant &key, QVariant &value, SelfcheckIterator &it) = 0;
+    virtual void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) = 0;
 
     QByteArray serializeObjectCommon(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject);
     void deserializeObjectCommon(QObject *object, const QByteArray &array, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject);
@@ -107,16 +107,16 @@ public:
     ~QProtobufSerializer() = default;
 
     QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, bool isEnum) override;
-    void deserializeProperty(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
+    void deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
 
     QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
-    void deserializeObject(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
+    void deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
 
     QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) override;
-    void deserializeListObject(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
+    void deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
 
     QByteArray serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) override;
-    void deserializeMapPair(QVariant &key, QVariant &value, SelfcheckIterator &it) override;
+    void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) override;
 };
 /*! \} */
 

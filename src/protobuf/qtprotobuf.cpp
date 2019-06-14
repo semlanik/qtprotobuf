@@ -25,7 +25,7 @@
 
 #include "qtprotobuftypes.h"
 #include "qprotobufobject.h"
-#include "registrationhelper.h"
+#include "qprotobufregistrationhelper.h"
 
 #include <type_traits>
 
@@ -115,5 +115,5 @@ void registerTypes() {
 }
 }
 
-static RegistrationHelper helper(registerTypes);
+static QProtobufRegistrationHelper helper(registerTypes);
 }

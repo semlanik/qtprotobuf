@@ -90,7 +90,7 @@ QByteArray QProtobufSerializer::serializeProperty(const QVariant &propertyValue,
     return result;
 }
 
-void QProtobufSerializer::deserializeProperty(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
+void QProtobufSerializer::deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
 {
     //Each iteration we expect iterator is setup to beginning of next chunk
     int fieldNumber = NotUsedFieldIndex;
@@ -133,7 +133,7 @@ QByteArray QProtobufSerializer::serializeObject(const QObject *object, const QPr
     return QProtobufSerializerPrivate::prependLengthDelimitedSize(serializeObjectCommon(object, propertyOrdering, metaObject));
 }
 
-void QProtobufSerializer::deserializeObject(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
+void QProtobufSerializer::deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
 {
     QByteArray array = QProtobufSerializerPrivate::deserializeLengthDelimited(it);
     deserializeObjectCommon(object, array, propertyOrdering, metaObject);
@@ -146,7 +146,7 @@ QByteArray QProtobufSerializer::serializeListObject(const QObject *object, const
     return result;
 }
 
-void QProtobufSerializer::deserializeListObject(QObject *object, SelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
+void QProtobufSerializer::deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
 {
     deserializeObject(object, it, propertyOrdering, metaObject);
 }
@@ -158,13 +158,13 @@ QByteArray QProtobufSerializer::serializeMapPair(const QVariant &key, const QVar
     return result;
 }
 
-void QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, SelfcheckIterator &it)
+void QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it)
 {
     int mapIndex = 0;
     WireTypes type = WireTypes::UnknownWireType;
     unsigned int count = QProtobufSerializerPrivate::deserializeVarintCommon<uint32>(it);
     qProtoDebug() << __func__ << "count:" << count;
-    SelfcheckIterator last = it + count;
+    QProtobufSelfcheckIterator last = it + count;
     while (it != last) {
         QProtobufSerializerPrivate::decodeHeader(it, mapIndex, type);
         if(mapIndex == 1) {
@@ -175,7 +175,7 @@ void QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, Sel
     }
 }
 
-void QProtobufSerializerPrivate::skipVarint(SelfcheckIterator &it)
+void QProtobufSerializerPrivate::skipVarint(QProtobufSelfcheckIterator &it)
 {
     while ((*it) & 0x80) {
         ++it;
@@ -183,14 +183,14 @@ void QProtobufSerializerPrivate::skipVarint(SelfcheckIterator &it)
     ++it;
 }
 
-void QProtobufSerializerPrivate::skipLengthDelimited(SelfcheckIterator &it)
+void QProtobufSerializerPrivate::skipLengthDelimited(QProtobufSelfcheckIterator &it)
 {
     //Get length of lenght-delimited field
     unsigned int length = QProtobufSerializerPrivate::deserializeBasic<uint32>(it).toUInt();
     it += length;
 }
 
-int QProtobufSerializerPrivate::skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type)
+int QProtobufSerializerPrivate::skipSerializedFieldBytes(QProtobufSelfcheckIterator &it, WireTypes type)
 {
     const auto initialIt = QByteArray::const_iterator(it);
     switch (type) {
@@ -214,7 +214,7 @@ int QProtobufSerializerPrivate::skipSerializedFieldBytes(SelfcheckIterator &it, 
     return std::distance(initialIt, QByteArray::const_iterator(it));
 }
 
-void QProtobufSerializerPrivate::deserializeMapField(QVariant &value, SelfcheckIterator &it)
+void QProtobufSerializerPrivate::deserializeMapField(QVariant &value, QProtobufSelfcheckIterator &it)
 {
     QProtobufSerializerRegistry::handler(value.userType()).deserializer(it, value);
 }

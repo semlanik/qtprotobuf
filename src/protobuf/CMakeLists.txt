@@ -27,8 +27,8 @@ file(GLOB HEADERS
     qprotobufserializerregistry.h
     qqmllistpropertyconstructor.h
     qabstractprotobufserializer.h
-    selfcheckiterator.h
-    registrationhelper.h)
+    qprotobufselfcheckiterator.h
+    qprotobufregistrationhelper.h)
 
 add_library(${TARGET} SHARED ${SOURCES})
 target_compile_definitions(${TARGET} PRIVATE QTPROTOBUF_LIB)

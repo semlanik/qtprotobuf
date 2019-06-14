@@ -26,7 +26,7 @@
 #include <QString>
 #include <QByteArray>
 
-#include "selfcheckiterator.h"
+#include "qprotobufselfcheckiterator.h"
 #include "qtprotobuftypes.h"
 #include "qtprotobuflogging.h"
 #include "qabstractprotobufserializer.h"
@@ -269,7 +269,7 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_integral<V>::value
                                         && std::is_unsigned<V>::value, int> = 0>
-    static V deserializeVarintCommon(SelfcheckIterator &it) {
+    static V deserializeVarintCommon(QProtobufSelfcheckIterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         V value = 0;
@@ -294,7 +294,7 @@ public:
                                         || std::is_same<V, fixed64>::value
                                         || std::is_same<V, sfixed32>::value
                                         || std::is_same<V, sfixed64>::value, int> = 0>
-    static QVariant deserializeBasic(SelfcheckIterator &it) {
+    static QVariant deserializeBasic(QProtobufSelfcheckIterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         QVariant newPropertyValue(QVariant::fromValue(*(V *)((QByteArray::const_iterator&)it)));
@@ -305,7 +305,7 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_integral<V>::value
                                         && std::is_unsigned<V>::value, int> = 0>
-    static QVariant deserializeBasic(SelfcheckIterator &it) {
+    static QVariant deserializeBasic(QProtobufSelfcheckIterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         return QVariant::fromValue(deserializeVarintCommon<V>(it));
@@ -314,7 +314,7 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_integral<V>::value
                                         && std::is_signed<V>::value,int> = 0>
-    static QVariant deserializeBasic(SelfcheckIterator &it) {
+    static QVariant deserializeBasic(QProtobufSelfcheckIterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         using  UV = typename std::make_unsigned<V>::type;
         UV unsignedValue = deserializeVarintCommon<UV>(it);
@@ -325,7 +325,7 @@ public:
     template <typename V,
               typename std::enable_if_t<std::is_same<int32, V>::value
                                         || std::is_same<int64, V>::value, int> = 0>
-    static QVariant deserializeBasic(SelfcheckIterator &it) {
+    static QVariant deserializeBasic(QProtobufSelfcheckIterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
         using  UV = typename std::make_unsigned<V>::type;
         UV unsignedValue = deserializeVarintCommon<UV>(it);
@@ -336,20 +336,20 @@ public:
     //-----------------QString and QByteArray types deserializers----------------
     template <typename V,
               typename std::enable_if_t<std::is_same<QByteArray, V>::value, int> = 0>
-    static QVariant deserializeBasic(SelfcheckIterator &it) {
+    static QVariant deserializeBasic(QProtobufSelfcheckIterator &it) {
         return QVariant::fromValue(deserializeLengthDelimited(it));
     }
 
     template <typename V,
               typename std::enable_if_t<std::is_same<QString, V>::value, int> = 0>
-    static QVariant deserializeBasic(SelfcheckIterator &it) {
+    static QVariant deserializeBasic(QProtobufSelfcheckIterator &it) {
         return QVariant::fromValue(QString::fromUtf8(deserializeLengthDelimited(it)));
     }
 
     //-------------------------List types deserializers--------------------------
     template <typename V,
               typename std::enable_if_t<std::is_same<V, QByteArray>::value, int> = 0>
-    static void deserializeList(SelfcheckIterator &it, QVariant &previous) {
+    static void deserializeList(QProtobufSelfcheckIterator &it, QVariant &previous) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         QByteArrayList list = previous.value<QByteArrayList>();
@@ -359,7 +359,7 @@ public:
 
     template <typename V,
               typename std::enable_if_t<std::is_same<V, QString>::value, int> = 0>
-    static void deserializeList(SelfcheckIterator &it, QVariant &previous) {
+    static void deserializeList(QProtobufSelfcheckIterator &it, QVariant &previous) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         QStringList list = previous.value<QStringList>();
@@ -372,12 +372,12 @@ public:
               typename std::enable_if_t<!(std::is_same<V, QString>::value
                                         || std::is_same<V, QByteArray>::value
                                         || std::is_base_of<QObject, V>::value), int> = 0>
-    static void deserializeList(SelfcheckIterator &it, QVariant &previous) {
+    static void deserializeList(QProtobufSelfcheckIterator &it, QVariant &previous) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         QList<V> out;
         unsigned int count = deserializeVarintCommon<uint32>(it);
-        SelfcheckIterator lastVarint = it + count;
+        QProtobufSelfcheckIterator lastVarint = it + count;
         while (it != lastVarint) {
             QVariant variant = deserializeBasic<V>(it);
             out.append(variant.value<V>());
@@ -388,7 +388,7 @@ public:
     //###########################################################################
     //                             Common functions
     //###########################################################################
-    static QByteArray deserializeLengthDelimited(SelfcheckIterator &it) {
+    static QByteArray deserializeLengthDelimited(QProtobufSelfcheckIterator &it) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         unsigned int length = deserializeVarintCommon<uint32>(it);
@@ -405,7 +405,7 @@ public:
         return result;
     }
 
-    static bool decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType);
+    static bool decodeHeader(QProtobufSelfcheckIterator &it, int &fieldIndex, WireTypes &wireType);
     static QByteArray encodeHeader(int fieldIndex, WireTypes wireType);
 
     /*!
@@ -422,19 +422,19 @@ public:
 
     // this set of 3 methods is used to skip bytes corresponding to an unexpected property
     // in a serialized message met while the message being deserialized
-    static int skipSerializedFieldBytes(SelfcheckIterator &it, WireTypes type);
+    static int skipSerializedFieldBytes(QProtobufSelfcheckIterator &it, WireTypes type);
 
-    static void deserializeMapField(QVariant &value, SelfcheckIterator &it);
+    static void deserializeMapField(QVariant &value, QProtobufSelfcheckIterator &it);
 
     template <typename T,
               typename std::enable_if_t<!std::is_base_of<QObject, T>::value, int> = 0>
-    static void wrapSerializer(QAbstractProtobufSerializer::SerializerRegistry &handlers, const std::function<QByteArray(const T &, int &)> &s, const std::function<QVariant(SelfcheckIterator &)> &d, WireTypes type)
+    static void wrapSerializer(QAbstractProtobufSerializer::SerializerRegistry &handlers, const std::function<QByteArray(const T &, int &)> &s, const std::function<QVariant(QProtobufSelfcheckIterator &)> &d, WireTypes type)
     {
         handlers[qMetaTypeId<T>()] = {
             [s](const QVariant &value, int &fieldIndex) {
                 return s(value.value<T>(), fieldIndex);
             },
-            [d](SelfcheckIterator &it, QVariant & value){
+            [d](QProtobufSelfcheckIterator &it, QVariant & value){
                 value = d(it);
             },
             type
@@ -443,7 +443,7 @@ public:
 
     template <typename T,
     typename std::enable_if_t<!std::is_base_of<QObject, T>::value, int> = 0>
-    static void wrapSerializer(QAbstractProtobufSerializer::SerializerRegistry &handlers, const std::function<QByteArray(const T &, int &)> &s, const std::function<void(SelfcheckIterator &it, QVariant & value)> &d, WireTypes type)
+    static void wrapSerializer(QAbstractProtobufSerializer::SerializerRegistry &handlers, const std::function<QByteArray(const T &, int &)> &s, const std::function<void(QProtobufSelfcheckIterator &it, QVariant & value)> &d, WireTypes type)
     {
         handlers[qMetaTypeId<T>()] = {
             [s](const QVariant &value, int &fieldIndex) {
@@ -454,8 +454,8 @@ public:
         };
     }
 protected:
-    static void skipVarint(SelfcheckIterator &it);
-    static void skipLengthDelimited(SelfcheckIterator &it);
+    static void skipVarint(QProtobufSelfcheckIterator &it);
+    static void skipLengthDelimited(QProtobufSelfcheckIterator &it);
 };
 
 //###########################################################################
@@ -488,7 +488,7 @@ inline QByteArray QProtobufSerializerPrivate::encodeHeader(int fieldIndex, WireT
  *
  * \return true if both decoded wireType and fieldIndex have "allowed" values and false, otherwise
  */
-inline bool QProtobufSerializerPrivate::decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType)
+inline bool QProtobufSerializerPrivate::decodeHeader(QProtobufSelfcheckIterator &it, int &fieldIndex, WireTypes &wireType)
 {
     uint32_t header = deserializeVarintCommon<uint32_t>(it);
     wireType = static_cast<WireTypes>(header & 0b00000111);

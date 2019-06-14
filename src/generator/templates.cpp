@@ -208,7 +208,7 @@ const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname
                                                               "}\n";
 
 const char *Templates::RegisterSerializersTemplate = "qtprotobuf::QProtobufSerializerRegistry::registerSerializers<$classname$>();\n";
-const char *Templates::RegistratorTemplate = "static qtprotobuf::RegistrationHelper helper(registerTypes);\n";
+const char *Templates::RegistratorTemplate = "static qtprotobuf::QProtobufRegistrationHelper helper(registerTypes);\n";
 const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\");\n";
 const char *Templates::QmlRegisterTypeUncreatableTemplate = "qmlRegisterUncreatableType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\", \"$namespaces$::$classname$ Could not be created from qml context\");\n";
 

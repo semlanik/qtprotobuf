@@ -42,7 +42,7 @@ public:
 
     void run() override {
         printClassHeaderInclude();
-        mPrinter.Print({{"include", "registrationhelper.h"}}, Templates::ExternalIncludeTemplate);
+        mPrinter.Print({{"include", "qprotobufregistrationhelper.h"}}, Templates::ExternalIncludeTemplate);
         printNamespaces();
         printFieldsOrdering();
         printRegisterBody();

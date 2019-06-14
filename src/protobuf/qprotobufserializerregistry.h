@@ -32,7 +32,7 @@
 #include <type_traits>
 
 #include "qtprotobuflogging.h"
-#include "selfcheckiterator.h"
+#include "qprotobufselfcheckiterator.h"
 #include "qabstractprotobufserializer.h"
 
 #include "qtprotobuf_global.h"
@@ -231,7 +231,7 @@ private:
      */
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
-    static void deserializeComplexType(SelfcheckIterator &it, QVariant &to) {
+    static void deserializeComplexType(QProtobufSelfcheckIterator &it, QVariant &to) {
         T *value = new T;
         basicSerializer->deserializeObject(value, it, T::propertyOrdering, T::staticMetaObject);
         to = QVariant::fromValue<T *>(value);
@@ -244,7 +244,7 @@ private:
      */
     template <typename V,
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
-    static void deserializeList(SelfcheckIterator &it, QVariant &previous) {
+    static void deserializeList(QProtobufSelfcheckIterator &it, QVariant &previous) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         V *newValue = new V;
@@ -261,7 +261,7 @@ private:
      */
     template <typename K, typename V,
               typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
-    static void deserializeMap(SelfcheckIterator &it, QVariant &previous) {
+    static void deserializeMap(QProtobufSelfcheckIterator &it, QVariant &previous) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         QMap<K, V> out = previous.value<QMap<K, V>>();
@@ -281,7 +281,7 @@ private:
      */
     template <typename K, typename V,
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
-    static void deserializeMap(SelfcheckIterator &it, QVariant &previous) {
+    static void deserializeMap(QProtobufSelfcheckIterator &it, QVariant &previous) {
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         auto out = previous.value<QMap<K, QSharedPointer<V>>>();
