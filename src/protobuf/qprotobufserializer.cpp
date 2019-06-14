@@ -33,36 +33,36 @@ using namespace qtprotobuf;
 
 QProtobufSerializer::QProtobufSerializer()
 {
-    QProtobufSerializerPrivate::wrapSerializer<float>(this, QProtobufSerializerPrivate::serializeBasic<float>, QProtobufSerializerPrivate::deserializeBasic<float>, Fixed32);
-    QProtobufSerializerPrivate::wrapSerializer<double>(this, QProtobufSerializerPrivate::serializeBasic<double>, QProtobufSerializerPrivate::deserializeBasic<double>, Fixed64);
-    QProtobufSerializerPrivate::wrapSerializer<int32>(this, QProtobufSerializerPrivate::serializeBasic<int32>, QProtobufSerializerPrivate::deserializeBasic<int32>, Varint);
-    QProtobufSerializerPrivate::wrapSerializer<int64>(this, QProtobufSerializerPrivate::serializeBasic<int64>, QProtobufSerializerPrivate::deserializeBasic<int64>, Varint);
-    QProtobufSerializerPrivate::wrapSerializer<uint32>(this, QProtobufSerializerPrivate::serializeBasic<uint32>, QProtobufSerializerPrivate::deserializeBasic<uint32>, Varint);
-    QProtobufSerializerPrivate::wrapSerializer<uint64>(this, QProtobufSerializerPrivate::serializeBasic<uint64>, QProtobufSerializerPrivate::deserializeBasic<uint64>, Varint);
-    QProtobufSerializerPrivate::wrapSerializer<sint32>(this, QProtobufSerializerPrivate::serializeBasic<sint32>, QProtobufSerializerPrivate::deserializeBasic<sint32>, Varint);
-    QProtobufSerializerPrivate::wrapSerializer<sint64>(this, QProtobufSerializerPrivate::serializeBasic<sint64>, QProtobufSerializerPrivate::deserializeBasic<sint64>, Varint);
-    QProtobufSerializerPrivate::wrapSerializer<fixed32>(this, QProtobufSerializerPrivate::serializeBasic<fixed32>, QProtobufSerializerPrivate::deserializeBasic<fixed32>, Fixed32);
-    QProtobufSerializerPrivate::wrapSerializer<fixed64>(this, QProtobufSerializerPrivate::serializeBasic<fixed64>, QProtobufSerializerPrivate::deserializeBasic<fixed64>, Fixed64);
-    QProtobufSerializerPrivate::wrapSerializer<sfixed32>(this, QProtobufSerializerPrivate::serializeBasic<sfixed32>, QProtobufSerializerPrivate::deserializeBasic<sfixed32>, Fixed32);
-    QProtobufSerializerPrivate::wrapSerializer<sfixed64>(this, QProtobufSerializerPrivate::serializeBasic<sfixed64>, QProtobufSerializerPrivate::deserializeBasic<sfixed64>, Fixed64);
-    QProtobufSerializerPrivate::wrapSerializer<bool>(this, QProtobufSerializerPrivate::serializeBasic<uint32>, QProtobufSerializerPrivate::deserializeBasic<uint32>, Varint);
-    QProtobufSerializerPrivate::wrapSerializer<QString>(this, QProtobufSerializerPrivate::serializeBasic<QString>, QProtobufSerializerPrivate::deserializeBasic<QString>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<QByteArray>(this, QProtobufSerializerPrivate::serializeBasic<QByteArray>, QProtobufSerializerPrivate::deserializeBasic<QByteArray>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<float>(m_handlers, QProtobufSerializerPrivate::serializeBasic<float>, QProtobufSerializerPrivate::deserializeBasic<float>, Fixed32);
+    QProtobufSerializerPrivate::wrapSerializer<double>(m_handlers, QProtobufSerializerPrivate::serializeBasic<double>, QProtobufSerializerPrivate::deserializeBasic<double>, Fixed64);
+    QProtobufSerializerPrivate::wrapSerializer<int32>(m_handlers, QProtobufSerializerPrivate::serializeBasic<int32>, QProtobufSerializerPrivate::deserializeBasic<int32>, Varint);
+    QProtobufSerializerPrivate::wrapSerializer<int64>(m_handlers, QProtobufSerializerPrivate::serializeBasic<int64>, QProtobufSerializerPrivate::deserializeBasic<int64>, Varint);
+    QProtobufSerializerPrivate::wrapSerializer<uint32>(m_handlers, QProtobufSerializerPrivate::serializeBasic<uint32>, QProtobufSerializerPrivate::deserializeBasic<uint32>, Varint);
+    QProtobufSerializerPrivate::wrapSerializer<uint64>(m_handlers, QProtobufSerializerPrivate::serializeBasic<uint64>, QProtobufSerializerPrivate::deserializeBasic<uint64>, Varint);
+    QProtobufSerializerPrivate::wrapSerializer<sint32>(m_handlers, QProtobufSerializerPrivate::serializeBasic<sint32>, QProtobufSerializerPrivate::deserializeBasic<sint32>, Varint);
+    QProtobufSerializerPrivate::wrapSerializer<sint64>(m_handlers, QProtobufSerializerPrivate::serializeBasic<sint64>, QProtobufSerializerPrivate::deserializeBasic<sint64>, Varint);
+    QProtobufSerializerPrivate::wrapSerializer<fixed32>(m_handlers, QProtobufSerializerPrivate::serializeBasic<fixed32>, QProtobufSerializerPrivate::deserializeBasic<fixed32>, Fixed32);
+    QProtobufSerializerPrivate::wrapSerializer<fixed64>(m_handlers, QProtobufSerializerPrivate::serializeBasic<fixed64>, QProtobufSerializerPrivate::deserializeBasic<fixed64>, Fixed64);
+    QProtobufSerializerPrivate::wrapSerializer<sfixed32>(m_handlers, QProtobufSerializerPrivate::serializeBasic<sfixed32>, QProtobufSerializerPrivate::deserializeBasic<sfixed32>, Fixed32);
+    QProtobufSerializerPrivate::wrapSerializer<sfixed64>(m_handlers, QProtobufSerializerPrivate::serializeBasic<sfixed64>, QProtobufSerializerPrivate::deserializeBasic<sfixed64>, Fixed64);
+    QProtobufSerializerPrivate::wrapSerializer<bool>(m_handlers, QProtobufSerializerPrivate::serializeBasic<uint32>, QProtobufSerializerPrivate::deserializeBasic<uint32>, Varint);
+    QProtobufSerializerPrivate::wrapSerializer<QString>(m_handlers, QProtobufSerializerPrivate::serializeBasic<QString>, QProtobufSerializerPrivate::deserializeBasic<QString>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<QByteArray>(m_handlers, QProtobufSerializerPrivate::serializeBasic<QByteArray>, QProtobufSerializerPrivate::deserializeBasic<QByteArray>, LengthDelimited);
 
-    QProtobufSerializerPrivate::wrapSerializer<FloatList>(this, QProtobufSerializerPrivate::serializeListType<float>, QProtobufSerializerPrivate::deserializeList<float>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<DoubleList>(this, QProtobufSerializerPrivate::serializeListType<double>, QProtobufSerializerPrivate::deserializeList<double>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<fixed32List>(this, QProtobufSerializerPrivate::serializeListType<fixed32>, QProtobufSerializerPrivate::deserializeList<fixed32>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<fixed64List>(this, QProtobufSerializerPrivate::serializeListType<fixed64>, QProtobufSerializerPrivate::deserializeList<fixed64>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<sfixed32List>(this, QProtobufSerializerPrivate::serializeListType<sfixed32>, QProtobufSerializerPrivate::deserializeList<sfixed32>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<sfixed64List>(this, QProtobufSerializerPrivate::serializeListType<sfixed64>, QProtobufSerializerPrivate::deserializeList<sfixed64>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<int32List>(this, QProtobufSerializerPrivate::serializeListType<int32>, QProtobufSerializerPrivate::deserializeList<int32>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<int64List>(this, QProtobufSerializerPrivate::serializeListType<int64>, QProtobufSerializerPrivate::deserializeList<int64>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<sint32List>(this, QProtobufSerializerPrivate::serializeListType<sint32>, QProtobufSerializerPrivate::deserializeList<sint32>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<sint64List>(this, QProtobufSerializerPrivate::serializeListType<sint64>, QProtobufSerializerPrivate::deserializeList<sint64>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<uint32List>(this, QProtobufSerializerPrivate::serializeListType<uint32>, QProtobufSerializerPrivate::deserializeList<uint32>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<uint64List>(this, QProtobufSerializerPrivate::serializeListType<uint64>, QProtobufSerializerPrivate::deserializeList<uint64>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<QStringList>(this, QProtobufSerializerPrivate::serializeListType<QString>, QProtobufSerializerPrivate::deserializeList<QString>, LengthDelimited);
-    QProtobufSerializerPrivate::wrapSerializer<QByteArrayList>(this, QProtobufSerializerPrivate::serializeListType<QByteArray>, QProtobufSerializerPrivate::deserializeList<QByteArray>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<FloatList>(m_handlers, QProtobufSerializerPrivate::serializeListType<float>, QProtobufSerializerPrivate::deserializeList<float>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<DoubleList>(m_handlers, QProtobufSerializerPrivate::serializeListType<double>, QProtobufSerializerPrivate::deserializeList<double>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<fixed32List>(m_handlers, QProtobufSerializerPrivate::serializeListType<fixed32>, QProtobufSerializerPrivate::deserializeList<fixed32>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<fixed64List>(m_handlers, QProtobufSerializerPrivate::serializeListType<fixed64>, QProtobufSerializerPrivate::deserializeList<fixed64>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<sfixed32List>(m_handlers, QProtobufSerializerPrivate::serializeListType<sfixed32>, QProtobufSerializerPrivate::deserializeList<sfixed32>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<sfixed64List>(m_handlers, QProtobufSerializerPrivate::serializeListType<sfixed64>, QProtobufSerializerPrivate::deserializeList<sfixed64>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<int32List>(m_handlers, QProtobufSerializerPrivate::serializeListType<int32>, QProtobufSerializerPrivate::deserializeList<int32>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<int64List>(m_handlers, QProtobufSerializerPrivate::serializeListType<int64>, QProtobufSerializerPrivate::deserializeList<int64>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<sint32List>(m_handlers, QProtobufSerializerPrivate::serializeListType<sint32>, QProtobufSerializerPrivate::deserializeList<sint32>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<sint64List>(m_handlers, QProtobufSerializerPrivate::serializeListType<sint64>, QProtobufSerializerPrivate::deserializeList<sint64>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<uint32List>(m_handlers, QProtobufSerializerPrivate::serializeListType<uint32>, QProtobufSerializerPrivate::deserializeList<uint32>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<uint64List>(m_handlers, QProtobufSerializerPrivate::serializeListType<uint64>, QProtobufSerializerPrivate::deserializeList<uint64>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<QStringList>(m_handlers, QProtobufSerializerPrivate::serializeListType<QString>, QProtobufSerializerPrivate::deserializeList<QString>, LengthDelimited);
+    QProtobufSerializerPrivate::wrapSerializer<QByteArrayList>(m_handlers, QProtobufSerializerPrivate::serializeListType<QByteArray>, QProtobufSerializerPrivate::deserializeList<QByteArray>, LengthDelimited);
 
 }
 

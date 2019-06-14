@@ -32,6 +32,12 @@
 
 namespace qtprotobuf {
 
+/**
+ * @brief The WireTypes enumeration reflects protobuf default wiretypes
+ *
+ * @details Look at https://developers.google.com/protocol-buffers/docs/encoding for details.
+ *
+ */
 enum WireTypes {
     UnknownWireType = -1,
     Varint = 0,
@@ -40,8 +46,17 @@ enum WireTypes {
     Fixed32 = 5
 };
 
+//! @private
+using QProtobufPropertyOrdering = std::unordered_map<int, int>;
+
+//! @private
 constexpr int NotUsedFieldIndex = -1;
 
+/**
+ * @private
+ *
+ * @brief the transparent class is template to define set of extra types for integral types, to cover protobuf needs
+ */
 template<typename T, int = 0>
 struct transparent {
     transparent(T t = T()) : _t(t){}
@@ -107,45 +122,59 @@ Q_DECLARE_METATYPE(qtprotobuf::sfixed64List)
 Q_DECLARE_METATYPE(qtprotobuf::FloatList)
 Q_DECLARE_METATYPE(qtprotobuf::DoubleList)
 
+//! @private
 template<>
 struct std::make_unsigned<qtprotobuf::int32> { typedef typename std::make_unsigned<decltype(qtprotobuf::int32::_t)>::type type; };
+//! @private
 template<>
 struct std::make_unsigned<qtprotobuf::int64> { typedef typename std::make_unsigned<decltype(qtprotobuf::int64::_t)>::type type; };
+//! @private
 template<>
 struct std::make_unsigned<qtprotobuf::fixed32> { typedef typename std::make_unsigned<decltype(qtprotobuf::fixed32::_t)>::type type; };
+//! @private
 template<>
 struct std::make_unsigned<qtprotobuf::fixed64> { typedef typename std::make_unsigned<decltype(qtprotobuf::fixed64::_t)>::type type; };
+//! @private
 template<>
 struct std::make_unsigned<qtprotobuf::sfixed32> { typedef typename std::make_unsigned<decltype(qtprotobuf::sfixed32::_t)>::type type; };
+//! @private
 template<>
 struct std::make_unsigned<qtprotobuf::sfixed64> { typedef typename std::make_unsigned<decltype(qtprotobuf::sfixed64::_t)>::type type; };
 
+//! @private
 template<>
 struct std::make_signed<qtprotobuf::int32> { typedef typename std::make_signed<decltype(qtprotobuf::int32::_t)>::type type; };
+//! @private
 template<>
 struct std::make_signed<qtprotobuf::int64> { typedef typename std::make_signed<decltype(qtprotobuf::int64::_t)>::type type; };
+//! @private
 template<>
 struct std::make_signed<qtprotobuf::fixed32> { typedef typename std::make_signed<decltype(qtprotobuf::fixed32::_t)>::type type; };
+//! @private
 template<>
 struct std::make_signed<qtprotobuf::fixed64> { typedef typename std::make_signed<decltype(qtprotobuf::fixed64::_t)>::type type; };
+//! @private
 template<>
 struct std::make_signed<qtprotobuf::sfixed32> { typedef typename std::make_signed<decltype(qtprotobuf::sfixed32::_t)>::type type; };
+//! @private
 template<>
 struct std::make_signed<qtprotobuf::sfixed64> { typedef typename std::make_signed<decltype(qtprotobuf::sfixed64::_t)>::type type; };
 
+//! @private
 template<>
 struct std::is_signed<qtprotobuf::int32> : public is_signed<decltype(qtprotobuf::int32::_t)> {};
+//! @private
 template<>
 struct std::is_signed<qtprotobuf::int64> : public is_signed<decltype(qtprotobuf::int64::_t)> {};
+//! @private
 template<>
 struct std::is_signed<qtprotobuf::fixed32> : public is_signed<decltype(qtprotobuf::fixed32::_t)> {};
+//! @private
 template<>
 struct std::is_signed<qtprotobuf::fixed64> : public is_signed<decltype(qtprotobuf::fixed64::_t)> {};
+//! @private
 template<>
 struct std::is_signed<qtprotobuf::sfixed32> : public is_signed<decltype(qtprotobuf::sfixed32::_t)> {};
+//! @private
 template<>
 struct std::is_signed<qtprotobuf::sfixed64> : public is_signed<decltype(qtprotobuf::sfixed64::_t)> {};
-
-namespace qtprotobuf {
-using QProtobufPropertyOrdering = std::unordered_map<int, int>;
-}

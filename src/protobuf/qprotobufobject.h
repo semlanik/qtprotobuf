@@ -36,5 +36,5 @@
 
 #define Q_PROTOBUF_OBJECT\
     public:\
-        static const std::unordered_map<int/*field number*/, int/*property number*/> propertyOrdering;\
+        static const qtprotobuf::QProtobufPropertyOrdering propertyOrdering;\
     private:

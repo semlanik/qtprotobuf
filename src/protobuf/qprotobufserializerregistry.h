@@ -39,26 +39,45 @@
 
 namespace qtprotobuf {
 
+/**
+ * @brief The QProtobufSerializerRegistry class provides api to register serializers of QObjects
+ *
+ * @details The QProtobufSerializerRegistry class registers serializers/deserializers for classes inherited of QObject.
+ *          To register serializers for user-defined class it has to be inherited of QObjec contain macro's.
+ *          @code{.cpp}
+ *          class MyType : public QObject
+ *          {
+ *              Q_OBJECT
+ *              Q_PROTOBUF_OBJECT
+ *              Q_PROPERTY(qprotobuf::sint32 prop READ prop WRITE setProp NOTIFY propChanged)
+ *              ...
+ *              Q_DECLARE_PROTOBUF_SERIALIZERS(MyType)
+ *          };
+ *          @endcode
+ *          Practically code above is generated automaticaly by running qtprotobufgenerator or using cmake build macro
+ *          generate_qtprotobuf, based on .proto files. But it's still possible to reuse manually written code if needed.
+ */
 class QTPROTOBUFSHARED_EXPORT QProtobufSerializerRegistry
 {
     QProtobufSerializerRegistry() = delete;
     ~QProtobufSerializerRegistry() = delete;
+
     Q_DISABLE_COPY(QProtobufSerializerRegistry)
     QProtobufSerializerRegistry(QProtobufSerializerRegistry &&) = delete;
     QProtobufSerializerRegistry &operator =(QProtobufSerializerRegistry &&) = delete;
-    static QAbstractProtobufSerializer::SerializerRegistry serializers;
 
+    static QAbstractProtobufSerializer::SerializerRegistry handlers;
     static std::unique_ptr<QAbstractProtobufSerializer> basicSerializer;
     static QAbstractProtobufSerializer::SerializationHandlers empty;
 public:
     static const QAbstractProtobufSerializer::SerializationHandlers &handler(int userType);
     /**
-    * @brief Serialization of a registered qtproto message object into byte-array
-    *
-    *
-    * @param[in] object Pointer to QObject containing message to be serialized
-    * @result serialized message bytes
-    */
+     * @brief Serialization of a registered qtproto message object into byte-array
+     *
+     *
+     * @param[in] object Pointer to QObject containing message to be serialized
+     * @result serialized message bytes
+     */
     template<typename T>
     static QByteArray serialize(const QObject *object) {
         qProtoDebug() << T::staticMetaObject.className() << "serialize";
@@ -66,54 +85,76 @@ public:
     }
 
     /**
-    * @brief Deserialization of a byte-array into a registered qtproto message object
-    *
-    * @details Properties in a message are identified via ProtobufObjectPrivate::decodeHeader.
-    *          Bytes corresponding to unexpected properties are skipped without any exception
-    *
-    * @param[out] object Pointer to memory where result of deserialization should be injected
-    * @param[in] array Bytes with serialized message
-    */
+     * @brief Deserialization of a byte-array into a registered qtproto message object
+     *
+     * @details Properties in a message are identified via ProtobufObjectPrivate::decodeHeader.
+     *          Bytes corresponding to unexpected properties are skipped without any exception
+     *
+     * @param[out] object Pointer to memory where result of deserialization should be injected
+     * @param[in] array Bytes with serialized message
+     */
     template<typename T>
     static void deserialize(QObject *object, const QByteArray &array) {
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
         basicSerializer->deserializeObjectCommon(object, array, T::propertyOrdering, T::staticMetaObject);
     }
 
-    //----------------------Functions to work with QObjects------------------------
+
+    /**
+     * @brief Registers serializers for type T in QProtobufSerializerRegistry
+     *
+     * @details generates default serializers for type T. Type T has to be inherited of QObject.
+     */
     template<typename T>
     static void registerSerializers() {
-        serializers[qMetaTypeId<T *>()] = { serializeComplexType<T>,
+        handlers[qMetaTypeId<T *>()] = { serializeComplexType<T>,
                 deserializeComplexType<T>, LengthDelimited };
-        serializers[qMetaTypeId<QList<QSharedPointer<T>>>()] = { serializeList<T>,
+        handlers[qMetaTypeId<QList<QSharedPointer<T>>>()] = { serializeList<T>,
                 deserializeList<T>, LengthDelimited };
     }
 
+    /**
+     * @brief Registers serializers for type QMap<K, V> in QProtobufSerializerRegistry
+     *
+     * @details generates default serializers for QMap<K, V>.
+     */
     template<typename K, typename V,
              typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
     static void registerMap() {
-        serializers[qMetaTypeId<QMap<K, V>>()] = { serializeMap<K, V>,
+        handlers[qMetaTypeId<QMap<K, V>>()] = { serializeMap<K, V>,
         deserializeMap<K, V>, LengthDelimited };
     }
 
+    /**
+     * @brief Registers serializers for type QMap<K, V> in QProtobufSerializerRegistry
+     *
+     * @details generates default serializers for QMap<K, V>. Specialization for V type
+     *          inherited of QObject.
+     */
     template<typename K, typename V,
              typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static void registerMap() {
-        serializers[qMetaTypeId<QMap<K, QSharedPointer<V>>>()] = { serializeMap<K, V>,
+        handlers[qMetaTypeId<QMap<K, QSharedPointer<V>>>()] = { serializeMap<K, V>,
         deserializeMap<K, V>, LengthDelimited };
     }
 
 private:
-    //###########################################################################
-    //                           Serialization helpers
-    //###########################################################################
+    /**
+     * @private
+     *
+     * @brief default serializer template for type T inherited of QObject
+     */
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static QByteArray serializeComplexType(const QVariant &value, int &/*outFieldIndex*/) {
         return basicSerializer->serializeObject(value.value<T *>(), T::propertyOrdering, T::staticMetaObject);
     }
 
-    //------------------Serialize lists of QObject based classes-----------------
+    /**
+     * @private
+     *
+     * @brief default serializer template for list of type T objects inherited of QObject
+     */
     template<typename V,
              typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static QByteArray serializeList(const QVariant &listValue, int &outFieldIndex) {
@@ -140,7 +181,11 @@ private:
         return serializedList;
     }
 
-    //-------------------------Serialize maps of any type------------------------
+    /**
+     * @private
+     *
+     * @brief default serializer template for map of key K, value V
+     */
     template<typename K, typename V,
              typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
     static QByteArray serializeMap(const QVariant &value, int &outFieldIndex) {
@@ -155,6 +200,12 @@ private:
         return mapResult;
     }
 
+    /**
+     * @private
+     *
+     * @brief default serializer template for map of type key K, value V. Specialization for V
+     *        inherited of QObject
+     */
     template<typename K, typename V,
              typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static QByteArray serializeMap(const QVariant &value, int &outFieldIndex) {
@@ -173,10 +224,24 @@ private:
         return mapResult;
     }
 
-    //###########################################################################
-    //                           Deserialization helpers
-    //###########################################################################
-    //-----------------Deserialize lists of QObject based classes----------------
+    /**
+     * @private
+     *
+     * @brief default deserializer template for type T inherited of QObject
+     */
+    template <typename T,
+              typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
+    static void deserializeComplexType(SelfcheckIterator &it, QVariant &to) {
+        T *value = new T;
+        basicSerializer->deserializeObject(value, it, T::propertyOrdering, T::staticMetaObject);
+        to = QVariant::fromValue<T *>(value);
+    }
+
+    /**
+     * @private
+     *
+     * @brief default deserializer template for list of type T objects inherited of QObject
+     */
     template <typename V,
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static void deserializeList(SelfcheckIterator &it, QVariant &previous) {
@@ -189,7 +254,11 @@ private:
         previous.setValue(list);
     }
 
-    //-----------------------Deserialize maps of any type------------------------
+    /**
+     * @private
+     *
+     * @brief default deserializer template for map of key K, value V
+     */
     template <typename K, typename V,
               typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
     static void deserializeMap(SelfcheckIterator &it, QVariant &previous) {
@@ -204,6 +273,12 @@ private:
         previous = QVariant::fromValue<QMap<K, V>>(out);
     }
 
+    /**
+     * @private
+     *
+     * @brief default deserializer template for map of type key K, value V. Specialization for V
+     *        inherited of QObject
+     */
     template <typename K, typename V,
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static void deserializeMap(SelfcheckIterator &it, QVariant &previous) {
@@ -216,14 +291,6 @@ private:
         basicSerializer->deserializeMapPair(key, value, it);
         out[key.value<K>()] = QSharedPointer<V>(value.value<V *>());
         previous = QVariant::fromValue<QMap<K, QSharedPointer<V>>>(out);
-    }
-
-    template <typename T,
-              typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
-    static void deserializeComplexType(SelfcheckIterator &it, QVariant &to) {
-        T *value = new T;
-        basicSerializer->deserializeObject(value, it, T::propertyOrdering, T::staticMetaObject);
-        to = QVariant::fromValue<T *>(value);
     }
 };
 

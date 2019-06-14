@@ -68,7 +68,10 @@ public:
     QByteArray serializeObjectCommon(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject);
     void deserializeObjectCommon(QObject *object, const QByteArray &array, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject);
 
-    SerializerRegistry serializers;
+    const SerializerRegistry& handlers() { return m_handlers; }
+
+protected:
+    SerializerRegistry m_handlers;//TODO: move to d-prointer
 };
 
 

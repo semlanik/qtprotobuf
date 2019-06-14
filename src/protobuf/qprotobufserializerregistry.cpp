@@ -27,23 +27,23 @@
 
 using namespace qtprotobuf;
 
-QAbstractProtobufSerializer::SerializerRegistry QProtobufSerializerRegistry::serializers = {};
+QAbstractProtobufSerializer::SerializerRegistry QProtobufSerializerRegistry::handlers = {};
 std::unique_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::basicSerializer = std::make_unique<QProtobufSerializer>();
 QAbstractProtobufSerializer::SerializationHandlers QProtobufSerializerRegistry::empty;
 
 const QAbstractProtobufSerializer::SerializationHandlers &QProtobufSerializerRegistry::handler(int userType)
 {
-    auto it = serializers.find(userType);
-    if (it != serializers.end()) {
+    QAbstractProtobufSerializer::SerializerRegistry::const_iterator it = handlers.find(userType);
+    if (it != handlers.end()) {
         return it->second;
     }
 
     if (basicSerializer != nullptr) {
-        it = basicSerializer->serializers.find(userType);
-        if (it != basicSerializer->serializers.end()) {
+        it = basicSerializer->handlers().find(userType);
+        if (it != basicSerializer->handlers().end()) {
             return it->second;
         }
     }
-
+    qProtoCritical() << "Serializer for user type: " << QMetaType::typeName(userType) << " is not found";
     return empty;
 }
