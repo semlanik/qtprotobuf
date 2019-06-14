@@ -29,7 +29,7 @@
 #include <QByteArray>
 #include <functional>
 
-#include "qtgrpc_global.h"
+#include "qtgrpcglobal.h"
 
 namespace qtprotobuf {
 
@@ -39,7 +39,7 @@ class AbstractClient;
  * \ingroup QtGrpc
  * \brief The AbstractChannel class
  */
-class QTGRPCSHARED_EXPORT AbstractChannel
+class Q_GRPC_EXPORT AbstractChannel
 {
 public:
     /*!

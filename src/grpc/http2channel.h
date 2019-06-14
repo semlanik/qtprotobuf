@@ -37,7 +37,7 @@ class AbstractCredentials;
  * \ingroup QtGrpc
  * \brief The Http2Channel class
  */
-class QTGRPCSHARED_EXPORT Http2Channel final : public AbstractChannel
+class Q_GRPC_EXPORT Http2Channel final : public AbstractChannel
 {
 public:
     [[deprecated ("This contructor is obsolete and is going to be removed soon. Use Http2Channel(const QUrl&, const AbstractCredentials&)")]]

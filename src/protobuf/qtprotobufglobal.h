@@ -27,8 +27,8 @@
 
 #include <QtCore/QtGlobal>
 
-#ifdef QTGRPC_LIB
-    #define QTGRPCSHARED_EXPORT Q_DECL_EXPORT
+#if defined(QT_BUILD_PROTOBUF_LIB)
+#  define Q_PROTOBUF_EXPORT Q_DECL_EXPORT
 #else
-    #define QTGRPCSHARED_EXPORT Q_DECL_IMPORT
+#  define Q_PROTOBUF_EXPORT Q_DECL_IMPORT
 #endif

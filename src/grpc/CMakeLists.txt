@@ -25,10 +25,10 @@ file(GLOB HEADERS asyncreply.h
     abstractcredentials.h
     sslcredentials.h
     insecurecredentials.h
-    qtgrpc_global.h)
+    qtgrpcglobal.h)
 
 add_library(${TARGET} SHARED ${SOURCES})
-target_compile_definitions(${TARGET} PRIVATE QTGRPC_LIB)
+target_compile_definitions(${TARGET} PRIVATE QT_BUILD_GRPC_LIB)
 
 add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
 set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})

@@ -26,7 +26,7 @@
 #include <QByteArray>
 #include <stdexcept>
 
-#include "qtprotobuf_global.h"
+#include "qtprotobufglobal.h"
 
 #pragma once
 
@@ -36,7 +36,7 @@ namespace qtprotobuf {
  * \ingroup QtProtobuf
  * \brief The QProtobufSelfcheckIterator class
  */
-class QTPROTOBUFSHARED_EXPORT QProtobufSelfcheckIterator
+class Q_PROTOBUF_EXPORT QProtobufSelfcheckIterator
 {
 public:
     QProtobufSelfcheckIterator(const QByteArray &container) : m_sizeLeft(container.size())

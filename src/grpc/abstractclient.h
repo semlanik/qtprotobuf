@@ -37,7 +37,7 @@
 #include "abstractchannel.h"
 #include "asyncreply.h"
 
-#include "qtgrpc_global.h"
+#include "qtgrpcglobal.h"
 
 namespace qtprotobuf {
 class AbstractChannel;
@@ -46,7 +46,7 @@ class AbstractChannel;
  * \ingroup QtGrpc
  * \brief The AbstractClient class
  */
-class QTGRPCSHARED_EXPORT AbstractClient : public QObject
+class Q_GRPC_EXPORT AbstractClient : public QObject
 {
     Q_OBJECT
 public:

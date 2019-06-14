@@ -35,7 +35,7 @@
 #include "qprotobufselfcheckiterator.h"
 #include "qabstractprotobufserializer.h"
 
-#include "qtprotobuf_global.h"
+#include "qtprotobufglobal.h"
 
 namespace qtprotobuf {
 /*!
@@ -57,7 +57,7 @@ namespace qtprotobuf {
  *          Practically code above is generated automaticaly by running qtprotobufgenerator or using cmake build macro
  *          generate_qtprotobuf, based on .proto files. But it's still possible to reuse manually written code if needed.
  */
-class QTPROTOBUFSHARED_EXPORT QProtobufSerializerRegistry
+class Q_PROTOBUF_EXPORT QProtobufSerializerRegistry
 {
     QProtobufSerializerRegistry() = delete;
     ~QProtobufSerializerRegistry() = delete;

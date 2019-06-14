@@ -29,14 +29,14 @@
 
 #include <QSslConfiguration>
 
-#include "qtgrpc_global.h"
+#include "qtgrpcglobal.h"
 
 namespace qtprotobuf {
 /*!
  * \ingroup QtGrpc
  * \brief The SslCredentials class
  */
-class QTGRPCSHARED_EXPORT SslCredentials : public ChannelCredentials
+class Q_GRPC_EXPORT SslCredentials : public ChannelCredentials
 {
 public:
     SslCredentials(const QSslConfiguration &configuation) :

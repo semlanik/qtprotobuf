@@ -36,7 +36,7 @@
 #include "qtprotobuflogging.h"
 #include "qprotobufselfcheckiterator.h"
 
-#include "qtprotobuf_global.h"
+#include "qtprotobufglobal.h"
 
 namespace qtprotobuf {
 /*!
@@ -50,7 +50,7 @@ namespace qtprotobuf {
  * \details This class is used by QProtobufSerializerRegistry to access basic serialization routines.
  *
  */
-class QTPROTOBUFSHARED_EXPORT QAbstractProtobufSerializer
+class Q_PROTOBUF_EXPORT QAbstractProtobufSerializer
 {
 public:
     /*!
@@ -100,7 +100,7 @@ protected:
 /*!
  * \brief The QProtobufSerializer class
  */
-class QTPROTOBUFSHARED_EXPORT QProtobufSerializer : public QAbstractProtobufSerializer
+class Q_PROTOBUF_EXPORT QProtobufSerializer : public QAbstractProtobufSerializer
 {
 public:
     QProtobufSerializer();

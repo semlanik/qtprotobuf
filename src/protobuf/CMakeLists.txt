@@ -20,7 +20,7 @@ file(GLOB SOURCES
     qprotobufserializer.cpp)
 
 file(GLOB HEADERS
-    qtprotobuf_global.h
+    qtprotobufglobal.h
     qtprotobuftypes.h
     qtprotobuflogging.h
     qprotobufobject.h
@@ -31,7 +31,7 @@ file(GLOB HEADERS
     qprotobufregistrationhelper.h)
 
 add_library(${TARGET} SHARED ${SOURCES})
-target_compile_definitions(${TARGET} PRIVATE QTPROTOBUF_LIB)
+target_compile_definitions(${TARGET} PRIVATE QT_BUILD_PROTOBUF_LIB)
 
 add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
 set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})
