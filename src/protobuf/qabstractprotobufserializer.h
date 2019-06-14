@@ -97,7 +97,9 @@ protected:
     SerializerRegistry m_handlers;//TODO: move to d-prointer
 };
 
-
+/*!
+ * \brief The QProtobufSerializer class
+ */
 class QTPROTOBUFSHARED_EXPORT QProtobufSerializer : public QAbstractProtobufSerializer
 {
 public:

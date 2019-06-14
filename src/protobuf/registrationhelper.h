@@ -23,6 +23,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#pragma once
+
 #include <functional>
 namespace qtprotobuf {
 

@@ -36,11 +36,7 @@
 
 namespace qtprotobuf {
 /*!
-*  \addtogroup QtGrpc
-*  \{
-*/
-
-/*!
+ * \ingroup QtGrpc
  * \brief The AsyncReply class
  */
 class QTGRPCSHARED_EXPORT AsyncReply final : public QObject
@@ -83,5 +79,4 @@ private:
 
     QMutex m_asyncLock;
 };
-/*! \} */
 }

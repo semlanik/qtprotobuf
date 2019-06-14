@@ -40,14 +40,10 @@
 #include "qtgrpc_global.h"
 
 namespace qtprotobuf {
-/*!
-*  \addtogroup QtGrpc
-*  \{
-*/
-
 class AbstractChannel;
 
 /*!
+ * \ingroup QtGrpc
  * \brief The AbstractClient class
  */
 class QTGRPCSHARED_EXPORT AbstractClient : public QObject
@@ -139,5 +135,4 @@ private:
     // PIMPL
     class AbstractClientPrivate *d;
 };
-/*! \} */
 }

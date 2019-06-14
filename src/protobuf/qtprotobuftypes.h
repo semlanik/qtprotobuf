@@ -39,17 +39,17 @@ namespace qtprotobuf {
 /*!
  * \brief The WireTypes enumeration reflects protobuf default wiretypes
  *
- * \details Look at https://developers.google.com/protocol-buffers/docs/encoding for details.
+ * \see https://developers.google.com/protocol-buffers/docs/encoding for details.
  *
  */
 enum WireTypes {
     UnknownWireType = -1, //!< Invalid wire type
-    Varint = 0, //!< int32, int64, uint32, uint64, sint32, sint64, bool, enum
-    Fixed64 = 1, //!< fixed64, sfixed64, double
-    LengthDelimited = 2, //!< string, bytes, embedded messages, packed repeated fields
-    StartGroup = 3, //!< groups \deprecated Is deprecated in proto syntax 3. Not supported by QtProtobuf
-    EndGroup = 4, //!< groups \deprecated Is deprecated in proto syntax 3. Not supported by QtProtobuf
-    Fixed32 = 5 //!< fixed32, sfixed32, float
+    Varint = 0,           //!< int32, int64, uint32, uint64, sint32, sint64, bool, enum
+    Fixed64 = 1,          //!< fixed64, sfixed64, double
+    LengthDelimited = 2,  //!< string, bytes, embedded messages, packed repeated fields
+    StartGroup = 3,       //!< groups \deprecated Is deprecated in proto syntax 3. Not supported by QtProtobuf
+    EndGroup = 4,         //!< groups \deprecated Is deprecated in proto syntax 3. Not supported by QtProtobuf
+    Fixed32 = 5           //!< fixed32, sfixed32, float
 };
 
 //! \private

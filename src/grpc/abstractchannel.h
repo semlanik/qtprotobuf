@@ -36,17 +36,14 @@ namespace qtprotobuf {
 class AsyncReply;
 class AbstractClient;
 /*!
-*  \addtogroup QtGrpc
-*  \{
-*/
-
-/*!
+ * \ingroup QtGrpc
  * \brief The AbstractChannel class
  */
 class QTGRPCSHARED_EXPORT AbstractChannel
 {
 public:
     /*!
+     * \enum StatusCode
      * \brief Channel's status codes
      */
     enum StatusCode {
@@ -109,5 +106,4 @@ protected:
 private:
     Q_DISABLE_COPY(AbstractChannel)
 };
-/*! \} */
 }

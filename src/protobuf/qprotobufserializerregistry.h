@@ -39,11 +39,7 @@
 
 namespace qtprotobuf {
 /*!
-*  \addtogroup QtProtobuf
-*  \{
-*/
-
-/*!
+ * \ingroup QtProtobuf
  * \brief The QProtobufSerializerRegistry class provides api to register serializers of QObjects
  *
  * \details The QProtobufSerializerRegistry class registers serializers/deserializers for classes inherited of QObject.
@@ -297,6 +293,4 @@ private:
         previous = QVariant::fromValue<QMap<K, QSharedPointer<V>>>(out);
     }
 };
-
-/*! \} */
 }

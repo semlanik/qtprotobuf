@@ -33,11 +33,7 @@
 
 namespace qtprotobuf {
 /*!
-*  \addtogroup QtGrpc
-*  \{
-*/
-
-/*!
+ * \ingroup QtGrpc
  * \brief The SslCredentials class
  */
 class QTGRPCSHARED_EXPORT SslCredentials : public ChannelCredentials
@@ -47,5 +43,4 @@ public:
         ChannelCredentials(CredentialMap{{QLatin1String("sslConfig"),
                            QVariant::fromValue<QSslConfiguration>(configuation)}}) {}
 };
-/*! \} */
 }

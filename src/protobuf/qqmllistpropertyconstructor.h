@@ -29,28 +29,32 @@
 #include <QQmlEngine>
 
 namespace qtprotobuf {
-
+//! \private
 template<typename T>
 static void qmllistpropertyAppend(QQmlListProperty<T> *p, T *v) {
     QQmlEngine::setObjectOwnership(v, QQmlEngine::CppOwnership);
     reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->append(QSharedPointer<T>(v));
 }
 
+//! \private
 template<typename T>
 static int qmllistpropertyCount(QQmlListProperty<T> *p) {
     return reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->count();
 }
 
+//! \private
 template<typename T>
 static T * qmllistpropertyAt(QQmlListProperty<T> *p, int index) {
     return reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->at(index).data();
 }
 
+//! \private
 template<typename T>
 static void qmllistpropertyReset(QQmlListProperty<T> *p){
     reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->clear();
 }
 
+//! \private
 template<typename T>
 static QQmlListProperty<T> constructQmlListProperty(QObject *p, QList<QSharedPointer<T>> *data)
 {
