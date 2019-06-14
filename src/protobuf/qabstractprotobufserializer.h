@@ -39,42 +39,39 @@
 #include "qtprotobuf_global.h"
 
 namespace qtprotobuf {
-/**
+/*!
 *  \addtogroup QtProtobuf
-*  @{
+*  \{
 */
 
-//! @private
-constexpr int NotUsedFieldIndex = -1;
-
-/**
- * @brief The QAbstractProtobufSerializer class is interface that represents basic functions for serialization/deserialization
+/*!
+ * \brief The QAbstractProtobufSerializer class is interface that represents basic functions for serialization/deserialization
  *
- * @details This class is used by QProtobufSerializerRegistry to access basic serialization routines.
+ * \details This class is used by QProtobufSerializerRegistry to access basic serialization routines.
  *
  */
 class QTPROTOBUFSHARED_EXPORT QAbstractProtobufSerializer
 {
 public:
-    /**
-     * @brief Serializer is interface function for serialize method
+    /*!
+     * \brief Serializer is interface function for serialize method
      */
     using Serializer = std::function<QByteArray(const QVariant &, int &)>;
-    /**
-     * @brief Deserializer is interface function for deserialize method
+    /*!
+     * \brief Deserializer is interface function for deserialize method
      */
     using Deserializer = std::function<void(SelfcheckIterator &, QVariant &)>;
 
-    /**
-     * @brief SerializationHandlers contains set of objects that required for class serializaion/deserialization
+    /*!
+     * \brief SerializationHandlers contains set of objects that required for class serializaion/deserialization
      */
     struct SerializationHandlers {
-        Serializer serializer; /**< serializer assigned to class */
-        Deserializer deserializer;/**< deserializer assigned to class */
-        WireTypes type;/**< Serialization WireType */
+        Serializer serializer; /*!< serializer assigned to class */
+        Deserializer deserializer;/*!< deserializer assigned to class */
+        WireTypes type;/*!< Serialization WireType */
     };
-    /**
-     * @brief SerializerRegistry is container to store mapping between metatype identifier and serialization handlers.
+    /*!
+     * \brief SerializerRegistry is container to store mapping between metatype identifier and serialization handlers.
      */
     using SerializerRegistry = std::unordered_map<int/*metatypeid*/, SerializationHandlers>;
 
@@ -119,5 +116,8 @@ public:
     QByteArray serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) override;
     void deserializeMapPair(QVariant &key, QVariant &value, SelfcheckIterator &it) override;
 };
-/** @} */
+/*! \} */
+
+//! \private
+constexpr int NotUsedFieldIndex = -1;
 }

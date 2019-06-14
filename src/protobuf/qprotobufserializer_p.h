@@ -33,10 +33,10 @@
 
 namespace qtprotobuf {
 
-/**
- * @private
+/*!
+ * \private
  *
- * @brief The QProtobufSerializerPrivate class
+ * \brief The QProtobufSerializerPrivate class
  */
 class QProtobufSerializerPrivate {
     QProtobufSerializerPrivate() = delete;
@@ -73,14 +73,14 @@ public:
     }
 
     //---------------Integral and floating point types serializers---------------
-    /**
-     * @brief Serialization of fixed-length primitive types
+    /*!
+     * \brief Serialization of fixed-length primitive types
      *
      * Natural layout of bits is used: value is encoded in a byte array same way as it is located in memory
      *
-     * @param[in] value Value to serialize
-     * @param[out] outFieldIndex Index of the value in parent structure (ignored)
-     * @return Byte array with value encoded
+     * \param[in] value Value to serialize
+     * \param[out] outFieldIndex Index of the value in parent structure (ignored)
+     * \return Byte array with value encoded
      */
     template <typename V,
               typename std::enable_if_t<std::is_floating_point<V>::value, int> = 0>
@@ -93,14 +93,14 @@ public:
         return result;
     }
 
-    /**
-     * @brief Serialization of fixed length integral types
+    /*!
+     * \brief Serialization of fixed length integral types
      *
-     * @details Natural layout of bits is employed
+     * \details Natural layout of bits is employed
      *
-     * @param[in] value Value to serialize
-     * @param[out] outFieldIndex Index of the value in parent structure (ignored)
-     * @return Byte array with value encoded
+     * \param[in] value Value to serialize
+     * \param[out] outFieldIndex Index of the value in parent structure (ignored)
+     * \return Byte array with value encoded
      */
     template <typename V,
               typename std::enable_if_t<std::is_same<V, fixed32>::value
@@ -116,16 +116,16 @@ public:
         return result;
     }
 
-    /**
-     *@brief Serialization of signed integral types
+    /*!
+     *\brief Serialization of signed integral types
      *
      * Use <a href="https://developers.google.com/protocol-buffers/docs/encoding">ZigZag encoding</a> first,
      * then apply serialization as for unsigned integral types
-     * @see serializeBasic\<typename V, typename std::enable_if_t\<std::is_integral\<V\>::value && std::is_unsigned\<V\>::value, int\> = 0\>(V, int)
+     * \see serializeBasic\<typename V, typename std::enable_if_t\<std::is_integral\<V\>::value && std::is_unsigned\<V\>::value, int\> = 0\>(V, int)
      *
-     * @param[in] value Value to serialize
-     * @param[out] outFieldIndex Index of the value in parent structure
-     * @return Byte array with value encoded
+     * \param[in] value Value to serialize
+     * \param[out] outFieldIndex Index of the value in parent structure
+     * \return Byte array with value encoded
      */
     template <typename V,
               typename std::enable_if_t<std::is_integral<V>::value
@@ -150,16 +150,16 @@ public:
         return serializeBasic(static_cast<UV>(value), outFieldIndex);
     }
 
-    /**
-    *@brief Serialization of unsigned integral types
+    /*!
+    *\brief Serialization of unsigned integral types
     *
     * Use <a href="https://developers.google.com/protocol-buffers/docs/encoding">Varint encoding</a>:
     * "Varints are a method of serializing integers using one or more bytes. Smaller numbers
     * [regardless its type] take a smaller number of bytes."
     *
-    * @param[in] value Value to serialize
-    * @param[out] outFieldIndex Index of the value in parent structure
-    * @return Byte array with value encoded
+    * \param[in] value Value to serialize
+    * \param[out] outFieldIndex Index of the value in parent structure
+    * \return Byte array with value encoded
     */
     template <typename V,
               typename std::enable_if_t<std::is_integral<V>::value
@@ -408,12 +408,12 @@ public:
     static bool decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType);
     static QByteArray encodeHeader(int fieldIndex, WireTypes wireType);
 
-    /**
-     * @brief Gets length of a byte-array and prepends to it its serialized length value
+    /*!
+     * \brief Gets length of a byte-array and prepends to it its serialized length value
      *      using the appropriate serialization algorithm
      *
      *
-     * @param[in, out] serializedList Byte-array to be prepended
+     * \param[in, out] serializedList Byte-array to be prepended
      */
     static QByteArray prependLengthDelimitedSize(const QByteArray &data)
     {
@@ -462,17 +462,17 @@ protected:
 //                             Common functions
 //###########################################################################
 
-/*! @brief Encode a property field index and its type into output bytes
+/*! \brief Encode a property field index and its type into output bytes
  *
- * @details
+ * \details
  * Header byte
  *  Meaning    |  Field index  |  Type
  *  ---------- | ------------- | --------
  *  bit number | 7  6  5  4  3 | 2  1  0
- * @param fieldIndex The index of a property in parent object
- * @param wireType Serialization type used for the property with index @p fieldIndex
+ * \param fieldIndex The index of a property in parent object
+ * \param wireType Serialization type used for the property with index @p fieldIndex
  *
- * @return Varint encoded fieldIndex and wireType
+ * \return Varint encoded fieldIndex and wireType
  */
 inline QByteArray QProtobufSerializerPrivate::encodeHeader(int fieldIndex, WireTypes wireType)
 {
@@ -480,13 +480,13 @@ inline QByteArray QProtobufSerializerPrivate::encodeHeader(int fieldIndex, WireT
     return serializeVarintCommon<uint32_t>(header);
 }
 
-/*! @brief Decode a property field index and its serialization type from input bytes
+/*! \brief Decode a property field index and its serialization type from input bytes
  *
- * @param[in] Iterator that points to header with encoded field index and serialization type
- * @param[out] fieldIndex Decoded index of a property in parent object
- * @param[out] wireType Decoded serialization type used for the property with index @p fieldIndex
+ * \param[in] Iterator that points to header with encoded field index and serialization type
+ * \param[out] fieldIndex Decoded index of a property in parent object
+ * \param[out] wireType Decoded serialization type used for the property with index @p fieldIndex
  *
- * @return true if both decoded wireType and fieldIndex have "allowed" values and false, otherwise
+ * \return true if both decoded wireType and fieldIndex have "allowed" values and false, otherwise
  */
 inline bool QProtobufSerializerPrivate::decodeHeader(SelfcheckIterator &it, int &fieldIndex, WireTypes &wireType)
 {

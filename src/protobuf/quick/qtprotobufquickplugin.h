@@ -28,6 +28,10 @@
 #include <QQmlExtensionPlugin>
 #include "qtprotobufquick_global.h"
 
+/*!
+ * \private
+ * \brief The QtProtobufQuickPlugin class
+ */
 class QTPROTOBUFQUICKSHARED_EXPORT QtProtobufQuickPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT

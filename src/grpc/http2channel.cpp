@@ -48,7 +48,7 @@ using namespace qtprotobuf;
 
 namespace  {
 
-/**
+/*!
  * This QNetworkReply::NetworkError -> AbstractChannel::StatusCode mapping should be kept in sync with original
  * <a href="https://github.com/grpc/grpc/blob/master/doc/statuscodes.md">gRPC status codes</a>
  */

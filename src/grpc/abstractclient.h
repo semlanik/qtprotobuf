@@ -40,15 +40,15 @@
 #include "qtgrpc_global.h"
 
 namespace qtprotobuf {
-/**
+/*!
 *  \addtogroup QtGrpc
-*  @{
+*  \{
 */
 
 class AbstractChannel;
 
-/**
- * @brief The AbstractClient class
+/*!
+ * \brief The AbstractClient class
  */
 class QTGRPCSHARED_EXPORT AbstractClient : public QObject
 {
@@ -63,12 +63,12 @@ protected:
     AbstractClient(const QString &service, QObject *parent = nullptr);
     virtual ~AbstractClient();
 
-    /**
-     * @brief A template of a sync RPC call
+    /*!
+     * \brief A template of a sync RPC call
      *
-     * @param method Name of the method to be called
-     * @param arg Arguments (proto-message) passed to the method called
-     * @param ret A pointer to memory with proto-message to write an RPC reply to
+     * \param method Name of the method to be called
+     * \param arg Arguments (proto-message) passed to the method called
+     * \param ret A pointer to memory with proto-message to write an RPC reply to
      */
     template<typename A, typename R>
     bool call(const QString &method, const A &arg, const QPointer<R> &ret) {
@@ -139,5 +139,5 @@ private:
     // PIMPL
     class AbstractClientPrivate *d;
 };
-/** @} */
+/*! \} */
 }

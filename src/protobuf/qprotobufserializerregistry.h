@@ -38,17 +38,17 @@
 #include "qtprotobuf_global.h"
 
 namespace qtprotobuf {
-/**
+/*!
 *  \addtogroup QtProtobuf
-*  @{
+*  \{
 */
 
-/**
- * @brief The QProtobufSerializerRegistry class provides api to register serializers of QObjects
+/*!
+ * \brief The QProtobufSerializerRegistry class provides api to register serializers of QObjects
  *
- * @details The QProtobufSerializerRegistry class registers serializers/deserializers for classes inherited of QObject.
+ * \details The QProtobufSerializerRegistry class registers serializers/deserializers for classes inherited of QObject.
  *          To register serializers for user-defined class it has to be inherited of QObjec contain macro's.
- *          @code{.cpp}
+ *          \code{.cpp}
  *          class MyType : public QObject
  *          {
  *              Q_OBJECT
@@ -57,7 +57,7 @@ namespace qtprotobuf {
  *              ...
  *              Q_DECLARE_PROTOBUF_SERIALIZERS(MyType)
  *          };
- *          @endcode
+ *          \endcode
  *          Practically code above is generated automaticaly by running qtprotobufgenerator or using cmake build macro
  *          generate_qtprotobuf, based on .proto files. But it's still possible to reuse manually written code if needed.
  */
@@ -75,11 +75,11 @@ class QTPROTOBUFSHARED_EXPORT QProtobufSerializerRegistry
     static QAbstractProtobufSerializer::SerializationHandlers empty;
 public:
     static const QAbstractProtobufSerializer::SerializationHandlers &handler(int userType);
-    /**
-     * @brief Serialization of a registered qtproto message object into byte-array
+    /*!
+     * \brief Serialization of a registered qtproto message object into byte-array
      *
      *
-     * @param[in] object Pointer to QObject containing message to be serialized
+     * \param[in] object Pointer to QObject containing message to be serialized
      * @result serialized message bytes
      */
     template<typename T>
@@ -88,14 +88,14 @@ public:
         return basicSerializer->serializeObjectCommon(object, T::propertyOrdering, T::staticMetaObject);
     }
 
-    /**
-     * @brief Deserialization of a byte-array into a registered qtproto message object
+    /*!
+     * \brief Deserialization of a byte-array into a registered qtproto message object
      *
-     * @details Properties in a message are identified via ProtobufObjectPrivate::decodeHeader.
+     * \details Properties in a message are identified via ProtobufObjectPrivate::decodeHeader.
      *          Bytes corresponding to unexpected properties are skipped without any exception
      *
-     * @param[out] object Pointer to memory where result of deserialization should be injected
-     * @param[in] array Bytes with serialized message
+     * \param[out] object Pointer to memory where result of deserialization should be injected
+     * \param[in] array Bytes with serialized message
      */
     template<typename T>
     static void deserialize(QObject *object, const QByteArray &array) {
@@ -104,10 +104,10 @@ public:
     }
 
 
-    /**
-     * @brief Registers serializers for type T in QProtobufSerializerRegistry
+    /*!
+     * \brief Registers serializers for type T in QProtobufSerializerRegistry
      *
-     * @details generates default serializers for type T. Type T has to be inherited of QObject.
+     * \details generates default serializers for type T. Type T has to be inherited of QObject.
      */
     template<typename T>
     static void registerSerializers() {
@@ -117,10 +117,10 @@ public:
                 deserializeList<T>, LengthDelimited };
     }
 
-    /**
-     * @brief Registers serializers for type QMap<K, V> in QProtobufSerializerRegistry
+    /*!
+     * \brief Registers serializers for type QMap<K, V> in QProtobufSerializerRegistry
      *
-     * @details generates default serializers for QMap<K, V>.
+     * \details generates default serializers for QMap<K, V>.
      */
     template<typename K, typename V,
              typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
@@ -129,10 +129,10 @@ public:
         deserializeMap<K, V>, LengthDelimited };
     }
 
-    /**
-     * @brief Registers serializers for type QMap<K, V> in QProtobufSerializerRegistry
+    /*!
+     * \brief Registers serializers for type QMap<K, V> in QProtobufSerializerRegistry
      *
-     * @details generates default serializers for QMap<K, V>. Specialization for V type
+     * \details generates default serializers for QMap<K, V>. Specialization for V type
      *          inherited of QObject.
      */
     template<typename K, typename V,
@@ -143,10 +143,10 @@ public:
     }
 
 private:
-    /**
-     * @private
+    /*!
+     * \private
      *
-     * @brief default serializer template for type T inherited of QObject
+     * \brief default serializer template for type T inherited of QObject
      */
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
@@ -154,10 +154,10 @@ private:
         return basicSerializer->serializeObject(value.value<T *>(), T::propertyOrdering, T::staticMetaObject);
     }
 
-    /**
-     * @private
+    /*!
+     * \private
      *
-     * @brief default serializer template for list of type T objects inherited of QObject
+     * \brief default serializer template for list of type T objects inherited of QObject
      */
     template<typename V,
              typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
@@ -185,10 +185,10 @@ private:
         return serializedList;
     }
 
-    /**
-     * @private
+    /*!
+     * \private
      *
-     * @brief default serializer template for map of key K, value V
+     * \brief default serializer template for map of key K, value V
      */
     template<typename K, typename V,
              typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
@@ -204,10 +204,10 @@ private:
         return mapResult;
     }
 
-    /**
-     * @private
+    /*!
+     * \private
      *
-     * @brief default serializer template for map of type key K, value V. Specialization for V
+     * \brief default serializer template for map of type key K, value V. Specialization for V
      *        inherited of QObject
      */
     template<typename K, typename V,
@@ -228,10 +228,10 @@ private:
         return mapResult;
     }
 
-    /**
-     * @private
+    /*!
+     * \private
      *
-     * @brief default deserializer template for type T inherited of QObject
+     * \brief default deserializer template for type T inherited of QObject
      */
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
@@ -241,10 +241,10 @@ private:
         to = QVariant::fromValue<T *>(value);
     }
 
-    /**
-     * @private
+    /*!
+     * \private
      *
-     * @brief default deserializer template for list of type T objects inherited of QObject
+     * \brief default deserializer template for list of type T objects inherited of QObject
      */
     template <typename V,
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
@@ -258,10 +258,10 @@ private:
         previous.setValue(list);
     }
 
-    /**
-     * @private
+    /*!
+     * \private
      *
-     * @brief default deserializer template for map of key K, value V
+     * \brief default deserializer template for map of key K, value V
      */
     template <typename K, typename V,
               typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
@@ -277,10 +277,10 @@ private:
         previous = QVariant::fromValue<QMap<K, V>>(out);
     }
 
-    /**
-     * @private
+    /*!
+     * \private
      *
-     * @brief default deserializer template for map of type key K, value V. Specialization for V
+     * \brief default deserializer template for map of type key K, value V. Specialization for V
      *        inherited of QObject
      */
     template <typename K, typename V,
@@ -298,5 +298,5 @@ private:
     }
 };
 
-/** @} */
+/*! \} */
 }
