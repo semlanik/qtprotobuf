@@ -25,9 +25,6 @@
 
 #include "http2channel.h"
 
-//FIXME: workaround for build issue
-#undef QT_LINKED_OPENSSL
-
 #include <QUrl>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
