@@ -40,7 +40,6 @@ if(WIN32)
     link_directories(${PROTOBUF_LIBRARIES_PATH} ${GRPC_LIBRARIES})
 endif()
 
-# TODO: include dirs should be attached to a corresponding target and this should not be required 
 if(DEFINED Protobuf_INCLUDE_DIRS)
     target_include_directories(${TARGET} PUBLIC ${Protobuf_INCLUDE_DIRS})
 endif()

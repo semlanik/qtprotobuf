@@ -104,10 +104,6 @@ elseif(NOT DEFINED MAKE_COVERAGE)
     set(MAKE_COVERAGE OFF)
 endif()
 
-if(MAKE_COVERAGE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-endif()
-
 if(NOT gRPC_FOUND)
     message(WARNING "gRPC not found: some tests and examples cannot be built.")
     message(STATUS "Force disable test")

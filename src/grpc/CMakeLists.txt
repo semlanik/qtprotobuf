@@ -10,6 +10,8 @@ set(TARGET_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+include(${CMAKE_SOURCE_DIR}/cmake/Coverage.cmake)
+
 file(GLOB SOURCES asyncreply.cpp
     abstractchannel.cpp
     http2channel.cpp
@@ -64,3 +66,5 @@ export(TARGETS ${TARGET} NAMESPACE ${QTPROTOBUF_COMMON_NAMESPACE}:: FILE ${TARGE
 
 configure_file("${CMAKE_SOURCE_DIR}/cmake/gRPCLookup.cmake" "${CMAKE_BINARY_DIR}/gRPCLookup.cmake" COPYONLY)
 install(FILES "${CMAKE_BINARY_DIR}/gRPCLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
+
+add_coverage_target(TARGET ${TARGET})

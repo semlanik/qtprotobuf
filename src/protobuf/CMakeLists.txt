@@ -12,6 +12,8 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 
+include(${CMAKE_SOURCE_DIR}/cmake/Coverage.cmake)
+
 file(GLOB SOURCES
     qtprotobuf.cpp
     qtprotobuflogging.cpp
@@ -74,3 +76,5 @@ install(FILES "${CMAKE_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_C
 
 # TODO: keep quick plugin for future development, but it's useless for now
 #add_subdirectory("quick")
+
+add_coverage_target(TARGET ${TARGET})
