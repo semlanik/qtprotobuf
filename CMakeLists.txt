@@ -98,12 +98,6 @@ elseif(NOT DEFINED MAKE_EXAMPLES)
     set(MAKE_EXAMPLES ON)
 endif()
 
-if(DEFINED $ENV{MAKE_COVERAGE})
-    set(MAKE_COVERAGE $ENV{MAKE_COVERAGE})
-elseif(NOT DEFINED MAKE_COVERAGE)
-    set(MAKE_COVERAGE OFF)
-endif()
-
 if(NOT gRPC_FOUND)
     message(WARNING "gRPC not found: some tests and examples cannot be built.")
     message(STATUS "Force disable test")

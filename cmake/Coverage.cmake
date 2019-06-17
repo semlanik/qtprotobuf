@@ -1,7 +1,7 @@
 if(DEFINED $ENV{MAKE_COVERAGE})
     set(MAKE_COVERAGE $ENV{MAKE_COVERAGE})
 elseif(NOT DEFINED MAKE_COVERAGE)
-    set(MAKE_COVERAGE ON)
+    set(MAKE_COVERAGE OFF)
 endif()
 
 if(MAKE_COVERAGE AND UNIX)
@@ -27,14 +27,15 @@ function(add_coverage_target)
         add_custom_target(${COVERAGE_TARGET} DEPENDS ${add_coverage_target_TARGET})
         add_custom_command(TARGET ${COVERAGE_TARGET} COMMAND ${GCOV_EXECUTABLE} ${OBJECTS_DIR}/*.o -b -c
             WORKING_DIRECTORY ${GCOV_OUTPUT_DIR})
-    endif()
 
-    find_program(GCOVR_EXECUTABLE "gcovr")
-    if(NOT GCOVR_EXECUTABLE STREQUAL GCOVR_EXECUTABLE-NOTFOUND)
-        set(GCOVR_OUTPUT_DIR ${GCOV_OUTPUT_DIR}/html)
-        file(MAKE_DIRECTORY ${GCOVR_OUTPUT_DIR})
-        add_custom_command(TARGET ${COVERAGE_TARGET} COMMAND ${GCOVR_EXECUTABLE} -g -k -r
-            ${CMAKE_SOURCE_DIR} --html --html-details -o ${GCOVR_OUTPUT_DIR}/${add_coverage_target_TARGET}.html ${OBJECTS_DIR} .
-            WORKING_DIRECTORY ${GCOV_OUTPUT_DIR})
+
+        find_program(GCOVR_EXECUTABLE "gcovr")
+        if(NOT GCOVR_EXECUTABLE STREQUAL GCOVR_EXECUTABLE-NOTFOUND)
+            set(GCOVR_OUTPUT_DIR ${GCOV_OUTPUT_DIR}/html)
+            file(MAKE_DIRECTORY ${GCOVR_OUTPUT_DIR})
+            add_custom_command(TARGET ${COVERAGE_TARGET} COMMAND ${GCOVR_EXECUTABLE} -g -k -r
+                ${CMAKE_SOURCE_DIR} --html --html-details -o ${GCOVR_OUTPUT_DIR}/${add_coverage_target_TARGET}.html ${OBJECTS_DIR} .
+                WORKING_DIRECTORY ${GCOV_OUTPUT_DIR})
+        endif()
     endif()
 endfunction(add_coverage_target)
