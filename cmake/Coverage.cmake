@@ -25,7 +25,7 @@ function(add_coverage_target)
         endif()
         file(MAKE_DIRECTORY ${GCOV_OUTPUT_DIR})
         add_custom_target(${COVERAGE_TARGET} DEPENDS ${add_coverage_target_TARGET})
-        add_custom_command(TARGET ${COVERAGE_TARGET} COMMAND ${GCOV_EXECUTABLE} ${OBJECTS_DIR}/*.o
+        add_custom_command(TARGET ${COVERAGE_TARGET} COMMAND ${GCOV_EXECUTABLE} ${OBJECTS_DIR}/*.o -b -c
             WORKING_DIRECTORY ${GCOV_OUTPUT_DIR})
     endif()
 
