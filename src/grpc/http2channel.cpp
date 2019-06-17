@@ -171,19 +171,6 @@ struct Http2ChannelPrivate {
         return networkReply->readAll().mid(5);
     }
 
-    Http2ChannelPrivate(const AbstractCredentials &credentials_) : credentials(credentials_) {
-        if (credentials.channelCredentials().contains(QLatin1String("sslConfig"))) {
-            sslConfig = credentials.channelCredentials().value(QLatin1String("sslConfig")).value<QSslConfiguration>();
-        }
-
-        if (sslConfig.isNull()) {
-            url.setScheme("http");
-        } else {
-            url.setScheme("https");
-        }
-    }
-
-
     Http2ChannelPrivate(const QUrl &_url, const AbstractCredentials &_credentials)
         : url(_url)
         , credentials(_credentials)
@@ -199,13 +186,6 @@ struct Http2ChannelPrivate {
     }
 };
 
-}
-
-Http2Channel::Http2Channel(const QString &addr, quint16 port, const AbstractCredentials &credentials) : AbstractChannel()
-  , d(new Http2ChannelPrivate(credentials))
-{
-    d->url.setHost(addr, QUrl::StrictMode);
-    d->url.setPort(port);
 }
 
 Http2Channel::Http2Channel(const QUrl &url, const AbstractCredentials &credentials) : AbstractChannel()

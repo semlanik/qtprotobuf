@@ -40,8 +40,6 @@ class AbstractCredentials;
 class Q_GRPC_EXPORT Http2Channel final : public AbstractChannel
 {
 public:
-    [[deprecated ("This contructor is obsolete and is going to be removed soon. Use Http2Channel(const QUrl&, const AbstractCredentials&)")]]
-    Http2Channel(const QString &addr, quint16 port, const AbstractCredentials &credentials);
     Http2Channel(const QUrl &url, const AbstractCredentials &credentials);
     ~Http2Channel();
 

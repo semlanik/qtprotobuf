@@ -58,7 +58,7 @@ AddressBookEngine::AddressBookEngine() : QObject()
     conf.setProtocol(QSsl::TlsV1_2);
     conf.setAllowedNextProtocols({QSslConfiguration::ALPNProtocolHTTP2});
 
-    std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel("localhost", 65001, qtprotobuf::SslCredentials(conf) |
+    std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel(QUrl("https://localhost:65001"), qtprotobuf::SslCredentials(conf) |
                                                                                       AuthCredentials("authorizedUser", QCryptographicHash::hash("test", QCryptographicHash::Md5).toHex())));
     m_client->attachChannel(channel);
     m_client->subscribeContactsUpdates(ListFrame());
