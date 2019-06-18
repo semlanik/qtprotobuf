@@ -6,14 +6,11 @@ project(QtProtobufProject VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
 include(GNUInstallDirs)
 
 find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
-if (Qt5Core_VERSION VERSION_LESS "5.11.0")
-    # grpc target requires QT version not less than 5.11
-    # earlier versions do not provide required Http2DirectAttribute: https://doc.qt.io/qt-5/whatsnew511.html
-    message(FATAL_ERROR "Required Qt version is 5.11+")
-endif()
-
-if (Qt5Core_VERSION VERSION_LESS "5.11.4" OR (Qt5Core_VERSION VERSION_GREATER "5.12.0" AND Qt5Core_VERSION VERSION_LESS "5.12.3"))
-    message(WARNING "Qt version<5.11.4 and (v5.12.0>=version<v5.12.3 has a bug in http2 connection handling. Tests using http2 feature and examples will not work!")
+if (Qt5Core_VERSION VERSION_LESS "5.12.3")
+    # grpc target requires QT version not less than 5.12.3
+    # earlier versions Http2DirectAttribute is broken: https://doc.qt.io/qt-5/whatsnew511.html
+    #                                                  https://bugreports.qt.io/browse/QTBUG-74765
+    message(FATAL_ERROR "Required Qt version is 5.12.3+")
 endif()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/grpc/CMakeLists.txt")
