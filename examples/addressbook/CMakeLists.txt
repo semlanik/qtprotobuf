@@ -29,9 +29,12 @@ generate_qtprotobuf(TARGET ${TARGET}
 file(GLOB SOURCES main.cpp
     addressbookengine.cpp)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../addressbookserver/cert.pem DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 add_executable(${TARGET} ${SOURCES} resources.qrc)
+add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/qml)
+
+add_custom_command(TARGET ${TARGET}
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/../addressbookserver/cert.pem $<TARGET_FILE_DIR:${TARGET}>)
+
 add_dependencies(${TARGET} ${QtProtobuf_GENERATED} examples_common)
 target_link_libraries(${TARGET} examples_common QtProtobufProject::QtProtobuf QtProtobufProject::QtGrpc ${QtProtobuf_GENERATED} Qt5::Quick Qt5::Qml)
 

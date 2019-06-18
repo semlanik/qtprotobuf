@@ -29,6 +29,8 @@ file(GLOB SOURCES main.cpp
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../simplechatserver/cert.pem DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(${TARGET} ${SOURCES} resources.qrc)
+add_target_windeployqt(TARGET ${TARGET})
+
 add_dependencies(${TARGET} ${QtProtobuf_GENERATED} examples_common)
 target_link_libraries(${TARGET} examples_common QtProtobufProject::QtProtobuf QtProtobufProject::QtGrpc ${QtProtobuf_GENERATED} Qt5::Quick Qt5::Qml)
 

@@ -12,5 +12,6 @@ add_executable(${TARGET} ${SOURCES} ${QML_FILES})
 target_link_libraries(${TARGET} Qt5::Core Qt5::Qml Qt5::Network Qt5::Quick Qt5::Test Qt5::QuickTest QtProtobufProject::QtProtobuf qtprotobuf_test_qtprotobuf_gen)
 
 add_target_qml(TARGET ${TARGET} QML_FILES ${QML_FILES})
+add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/qml)
 
 add_test(NAME ${TARGET} COMMAND ${TARGET})

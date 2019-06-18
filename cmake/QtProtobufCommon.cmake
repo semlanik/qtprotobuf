@@ -42,7 +42,7 @@ endfunction(protobuf_generate_all)
 
 function(add_test_target)
     set(options)
-    set(oneValueArgs TARGET)
+    set(oneValueArgs QML_DIR TARGET)
     set(multiValueArgs SOURCES GENERATED_HEADERS PROTO_FILES)
     cmake_parse_arguments(add_test_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -66,6 +66,7 @@ function(add_test_target)
         GENERATED_HEADERS ${add_test_target_GENERATED_HEADERS})
 
     add_executable(${add_test_target_TARGET} ${add_test_target_SOURCES})
+
     if(Qt5_POSITION_INDEPENDENT_CODE)
         set_target_properties(${add_test_target_TARGET} PROPERTIES POSITION_INDEPENDENT_CODE FALSE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -90,4 +91,24 @@ function(add_target_qml)
             ${CMAKE_CURRENT_BINARY_DIR})
     endif()
     add_dependencies(${add_target_qml_TARGET} ${add_target_qml_TARGET}_qml)
+endfunction()
+
+function(add_target_windeployqt)
+if(WIN32)
+    set(options)
+    set(oneValueArgs QML_DIR TARGET)
+    set(multiValueArgs)
+    cmake_parse_arguments(add_target_windeployqt "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    find_program(WINDEPLOYQT_EXECUTABLE "windeployqt" PATHS ${PATH})
+    if(WINDEPLOYQT_EXECUTABLE STREQUAL WINDEPLOYQT_EXECUTABLE-NOTFOUND)
+        message(WARNING "windeployqt is not found in specified PATH! Please, copy dependencies manually")
+    else()
+        if(DEFINED add_target_windeployqt_QML_DIR)
+            set(QML_DIR --qmldir ${add_target_windeployqt_QML_DIR})
+        endif()
+        add_custom_command(TARGET ${add_target_windeployqt_TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:QtProtobuf> $<TARGET_FILE_DIR:${add_target_windeployqt_TARGET}>
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:QtGrpc> $<TARGET_FILE_DIR:${add_target_windeployqt_TARGET}>
+            COMMAND ${WINDEPLOYQT_EXECUTABLE} ${QML_DIR} $<TARGET_FILE_DIR:${add_target_windeployqt_TARGET}>)
+endif()
 endfunction()
