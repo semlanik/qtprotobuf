@@ -34,13 +34,13 @@
 
 #include <qtprotobuflogging.h>
 
-#include "abstractchannel.h"
+#include "qabstractgrpcchannel.h"
 #include "asyncreply.h"
 
 #include "qtgrpcglobal.h"
 
 namespace qtprotobuf {
-class AbstractChannel;
+class QAbstractGrpcChannel;
 
 /*!
  * \ingroup QtGrpc
@@ -50,10 +50,10 @@ class Q_GRPC_EXPORT AbstractClient : public QObject
 {
     Q_OBJECT
 public:
-    void attachChannel(const std::shared_ptr<AbstractChannel> &channel);
+    void attachChannel(const std::shared_ptr<QAbstractGrpcChannel> &channel);
 
 signals:
-    void error(AbstractChannel::StatusCode code, const QString &errorText);
+    void error(QAbstractGrpcChannel::StatusCode code, const QString &errorText);
 
 protected:
     AbstractClient(const QString &service, QObject *parent = nullptr);
@@ -74,7 +74,7 @@ protected:
         }
 
         QByteArray retData;
-        if (AbstractChannel::StatusCode::Ok == call(method, arg.serialize(), retData)) {
+        if (QAbstractGrpcChannel::StatusCode::Ok == call(method, arg.serialize(), retData)) {
             try {
                 ret->deserialize(retData);
             } catch (std::invalid_argument &) {
@@ -124,7 +124,7 @@ protected:
     }
 
 private:
-    AbstractChannel::StatusCode call(const QString &method, const QByteArray &arg, QByteArray &ret);
+    QAbstractGrpcChannel::StatusCode call(const QString &method, const QByteArray &arg, QByteArray &ret);
     AsyncReply *call(const QString &method, const QByteArray &arg);
     void subscribe_p(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray &)> &handler);
 

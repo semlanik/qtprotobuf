@@ -24,7 +24,7 @@
  */
 
 #include "testserviceclient.h"
-#include "http2channel.h"
+#include "qgrpchttp2channel.h"
 #include "insecurecredentials.h"
 #include "blobmessage.h"
 #include <sslcredentials.h>
@@ -69,7 +69,7 @@ TEST_F(ClientTest, CheckMethodsGeneration)
 TEST_F(ClientTest, StringEchoTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage request;
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
     request.setTestFieldString("Hello beach!");
@@ -81,7 +81,7 @@ TEST_F(ClientTest, StringEchoTest)
 TEST_F(ClientTest, StringEchoAsyncTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage request;
     SimpleStringMessage result;
     request.setTestFieldString("Hello beach!");
@@ -100,7 +100,7 @@ TEST_F(ClientTest, StringEchoAsyncTest)
 TEST_F(ClientTest, StringEchoAsync2Test)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
@@ -117,7 +117,7 @@ TEST_F(ClientTest, StringEchoAsync2Test)
 TEST_F(ClientTest, StringEchoImmediateAsyncAbortTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
@@ -130,13 +130,13 @@ TEST_F(ClientTest, StringEchoImmediateAsyncAbortTest)
         waiter.quit();
     });
 
-    AbstractChannel::StatusCode asyncStatus = AbstractChannel::StatusCode::Ok;
-    QObject::connect(reply, &AsyncReply::error, reply, [&asyncStatus](AbstractChannel::StatusCode code){
+    QAbstractGrpcChannel::StatusCode asyncStatus = QAbstractGrpcChannel::StatusCode::Ok;
+    QObject::connect(reply, &AsyncReply::error, reply, [&asyncStatus](QAbstractGrpcChannel::StatusCode code){
         asyncStatus = code;
     });
 
-    AbstractChannel::StatusCode clientStatus = AbstractChannel::StatusCode::Ok;
-    QObject::connect(&testClient, &TestServiceClient::error, reply, [&clientStatus](AbstractChannel::StatusCode code, QString errMsg){
+    QAbstractGrpcChannel::StatusCode clientStatus = QAbstractGrpcChannel::StatusCode::Ok;
+    QObject::connect(&testClient, &TestServiceClient::error, reply, [&clientStatus](QAbstractGrpcChannel::StatusCode code, QString errMsg){
         clientStatus = code;
         std::cerr << code << ":" << errMsg.toStdString();
     });
@@ -145,15 +145,15 @@ TEST_F(ClientTest, StringEchoImmediateAsyncAbortTest)
     reply->abort();
     waiter.exec();
 
-    ASSERT_EQ(clientStatus, AbstractChannel::StatusCode::Aborted);
-    ASSERT_EQ(asyncStatus, AbstractChannel::StatusCode::Aborted);
+    ASSERT_EQ(clientStatus, QAbstractGrpcChannel::StatusCode::Aborted);
+    ASSERT_EQ(asyncStatus, QAbstractGrpcChannel::StatusCode::Aborted);
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
 }
 
 TEST_F(ClientTest, StringEchoDeferredAsyncAbortTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
@@ -167,7 +167,7 @@ TEST_F(ClientTest, StringEchoDeferredAsyncAbortTest)
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
-    QObject::connect(reply, &AsyncReply::error, reply, [&errorCalled](AbstractChannel::StatusCode){
+    QObject::connect(reply, &AsyncReply::error, reply, [&errorCalled](QAbstractGrpcChannel::StatusCode){
         errorCalled = true;
     });
 
@@ -183,7 +183,7 @@ TEST_F(ClientTest, StringEchoDeferredAsyncAbortTest)
 TEST_F(ClientTest, StringEchoStreamTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Stream");
@@ -213,7 +213,7 @@ TEST_F(ClientTest, StringEchoStreamTest)
 TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage request;
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
 
@@ -239,7 +239,7 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
 TEST_F(ClientTest, HugeBlobEchoStreamTest)
 {
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<Http2Channel>(m_echoServerAddress, InsecureCredentials()));
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     BlobMessage result;
     BlobMessage request;
     QFile testFile("testfile");

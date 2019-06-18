@@ -25,7 +25,7 @@
 
 #include "simplechatengine.h"
 
-#include <http2channel.h>
+#include <qgrpchttp2channel.h>
 #include <insecurecredentials.h>
 #include <sslcredentials.h>
 
@@ -75,7 +75,7 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
     conf.setAllowedNextProtocols({QSslConfiguration::ALPNProtocolHTTP2});
 
     QUrl url("https://localhost:65002");
-    std::shared_ptr<qtprotobuf::AbstractChannel> channel(new qtprotobuf::Http2Channel(url, qtprotobuf::SslCredentials(conf) |
+    std::shared_ptr<qtprotobuf::QAbstractGrpcChannel> channel(new qtprotobuf::QGrpcHttp2Channel(url, qtprotobuf::SslCredentials(conf) |
                                                                                       AuthCredentials(name, QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())));
 
     m_client->attachChannel(channel);

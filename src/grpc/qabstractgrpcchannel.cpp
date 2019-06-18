@@ -23,4 +23,4 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "abstractchannel.h"
+#include "qabstractgrpcchannel.h"

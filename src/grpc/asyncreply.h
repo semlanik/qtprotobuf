@@ -30,7 +30,7 @@
 #include <QMutex>
 #include <memory>
 
-#include "abstractchannel.h"
+#include "qabstractgrpcchannel.h"
 
 #include "qtgrpcglobal.h"
 
@@ -59,10 +59,10 @@ public:
 
 signals:
     void finished();
-    void error(AbstractChannel::StatusCode);
+    void error(QAbstractGrpcChannel::StatusCode);
 
 protected:
-    AsyncReply(const std::shared_ptr<AbstractChannel> &channel, QObject *parent = nullptr) : QObject(parent)
+    AsyncReply(const std::shared_ptr<QAbstractGrpcChannel> &channel, QObject *parent = nullptr) : QObject(parent)
     , m_channel(channel){}
     ~AsyncReply();
 
@@ -74,7 +74,7 @@ private:
 
     friend class AbstractClient;
 
-    std::shared_ptr<AbstractChannel> m_channel;
+    std::shared_ptr<QAbstractGrpcChannel> m_channel;
     QByteArray m_data;
 
     QMutex m_asyncLock;

@@ -13,16 +13,16 @@ set(CMAKE_AUTORCC ON)
 include(${CMAKE_SOURCE_DIR}/cmake/Coverage.cmake)
 
 file(GLOB SOURCES asyncreply.cpp
-    abstractchannel.cpp
-    http2channel.cpp
+    qabstractgrpcchannel.cpp
+    qgrpchttp2channel.cpp
     abstractclient.cpp
     abstractcredentials.cpp
     sslcredentials.cpp
     insecurecredentials.cpp)
 
 file(GLOB HEADERS asyncreply.h
-    abstractchannel.h
-    http2channel.h
+    qabstractgrpcchannel.h
+    qgrpchttp2channel.h
     abstractclient.h
     abstractcredentials.h
     sslcredentials.h

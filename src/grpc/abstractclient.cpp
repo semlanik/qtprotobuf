@@ -32,7 +32,7 @@ class AbstractClientPrivate final {
 public:
     AbstractClientPrivate(const QString &service) : service(service) {}
 
-    std::shared_ptr<AbstractChannel> channel;
+    std::shared_ptr<QAbstractGrpcChannel> channel;
     const QString service;
 };
 }
@@ -49,14 +49,14 @@ AbstractClient::~AbstractClient()
     delete d;
 }
 
-void AbstractClient::attachChannel(const std::shared_ptr<AbstractChannel> &channel)
+void AbstractClient::attachChannel(const std::shared_ptr<QAbstractGrpcChannel> &channel)
 {
     d->channel = channel;
 }
 
-AbstractChannel::StatusCode AbstractClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
+QAbstractGrpcChannel::StatusCode AbstractClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
 {
-    AbstractChannel::StatusCode callStatus = AbstractChannel::Unknown;
+    QAbstractGrpcChannel::StatusCode callStatus = QAbstractGrpcChannel::Unknown;
     if (d->channel) {
         callStatus = d->channel->call(method, d->service, arg, ret);
     } else {
@@ -72,7 +72,7 @@ AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
     if (d->channel) {
         reply = new AsyncReply(d->channel, this);
 
-        connect(reply, &AsyncReply::error, this, [this, reply](AbstractChannel::StatusCode statusCode) {
+        connect(reply, &AsyncReply::error, this, [this, reply](QAbstractGrpcChannel::StatusCode statusCode) {
             emit error(statusCode, QLatin1String("Connection has been aborted."));
             reply->deleteLater();
         });
@@ -83,7 +83,7 @@ AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
 
         d->channel->call(method, d->service, arg, reply);
     } else {
-        emit error(AbstractChannel::Unknown, QLatin1String("No channel(s) attached."));
+        emit error(QAbstractGrpcChannel::Unknown, QLatin1String("No channel(s) attached."));
     }
 
     return reply;
@@ -94,6 +94,6 @@ void AbstractClient::subscribe_p(const QString &method, const QByteArray &arg, c
     if (d->channel) {
         d->channel->subscribe(method, d->service, arg, this, handler);
     } else {
-        emit error(AbstractChannel::Unknown, QLatin1String("No channel(s) attached."));
+        emit error(QAbstractGrpcChannel::Unknown, QLatin1String("No channel(s) attached."));
     }
 }

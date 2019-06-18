@@ -24,7 +24,7 @@
  */
 
 #include "testserviceclient.h"
-#include "http2channel.h"
+#include "qgrpchttp2channel.h"
 #include "blobmessage.h"
 #include <sslcredentials.h>
 
@@ -62,7 +62,7 @@ TEST_F(ClientTest, IncorrectSecureCredentialsTest)
     //  conf.setCaCertificates({QSslCertificate(cert)});
 
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<qtprotobuf::Http2Channel>(QUrl("https://localhost:60051", QUrl::StrictMode), qtprotobuf::SslCredentials(conf)));
+    testClient.attachChannel(std::make_shared<qtprotobuf::QGrpcHttp2Channel>(QUrl("https://localhost:60051", QUrl::StrictMode), qtprotobuf::SslCredentials(conf)));
 
     std::unique_ptr<SimpleStringMessage> result = std::make_unique<SimpleStringMessage>();
     EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, result.get()));

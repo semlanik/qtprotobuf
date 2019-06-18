@@ -139,7 +139,7 @@ AbstractCredentials::AbstractCredentials(const Channel &channel)
 template<typename Call, typename Channel,
          typename std::enable_if_t<std::is_base_of<qtprotobuf::CallCredentials, Call>::value
                                    && std::is_base_of<qtprotobuf::ChannelCredentials, Channel>::value, int> = 0>
-qtprotobuf::AbstractCredentials operator|(const Call &call, const Channel &channel)
+qtprotobuf::AbstractCredentials operator |(const Call &call, const Channel &channel)
 {
     return qtprotobuf::AbstractCredentials(call, channel);
 }
@@ -148,7 +148,7 @@ qtprotobuf::AbstractCredentials operator|(const Call &call, const Channel &chann
 template<typename Call, typename Channel,
          typename std::enable_if_t<std::is_base_of<qtprotobuf::CallCredentials, Call>::value
                                    && std::is_base_of<qtprotobuf::ChannelCredentials, Channel>::value, int> = 0>
-qtprotobuf::AbstractCredentials operator|(const Channel &channel, const Call &call)
+qtprotobuf::AbstractCredentials operator |(const Channel &channel, const Call &call)
 {
     return qtprotobuf::AbstractCredentials(call, channel);
 }

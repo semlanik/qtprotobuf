@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "abstractchannel.h"
+#include "qabstractgrpcchannel.h"
 
 #include <QUrl>
 
@@ -35,13 +35,13 @@ class AbstractCredentials;
 
 /*!
  * \ingroup QtGrpc
- * \brief The Http2Channel class
+ * \brief The QGrpcHttp2Channel class
  */
-class Q_GRPC_EXPORT Http2Channel final : public AbstractChannel
+class Q_GRPC_EXPORT QGrpcHttp2Channel final : public QAbstractGrpcChannel
 {
 public:
-    Http2Channel(const QUrl &url, const AbstractCredentials &credentials);
-    ~Http2Channel();
+    QGrpcHttp2Channel(const QUrl &url, const AbstractCredentials &credentials);
+    ~QGrpcHttp2Channel();
 
     StatusCode call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
     void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *reply) override;
@@ -51,7 +51,7 @@ protected:
     void abort(AsyncReply *reply) override;
 
 private:
-    Q_DISABLE_COPY(Http2Channel)
+    Q_DISABLE_COPY(QGrpcHttp2Channel)
 
     // PIMPL
     struct Http2ChannelPrivate *d;

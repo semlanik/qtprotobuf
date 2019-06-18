@@ -37,14 +37,17 @@ class AsyncReply;
 class AbstractClient;
 /*!
  * \ingroup QtGrpc
- * \brief The AbstractChannel class
+ * \brief The QAbstractGrpcChannel class is interface that represents common gRPC channel functionality.
+ *        You may implement this interface to create own channels for gRPC transport.
  */
-class Q_GRPC_EXPORT AbstractChannel
+class Q_GRPC_EXPORT QAbstractGrpcChannel
 {
 public:
     /*!
      * \enum StatusCode
      * \brief Channel's status codes
+     *
+     * \see <a href="https://github.com/grpc/grpc/blob/master/doc/statuscodes.md">gRPC status codes</a>
      */
     enum StatusCode {
         Ok = 0,                 //!< No error
@@ -67,43 +70,53 @@ public:
     };
 
     /*!
-     * \brief call
-     * \param method
-     * \param service
-     * \param args
-     * \param ret
-     * \return
+     * \brief Calls \p method synchronously with given serialized messge \p args and write result of call to \p ret.
+     *        \note This method is synchronous, that means it doesn't returns until call complete or aborted by timeout if it's
+     *        implemented in inherited channel.
+     * \param[in] method remote method is called
+     * \param[in] service service identified in URL path format
+     * \param[in] args serialized argument message
+     * \param[out] ret output bytearray to collect returned message
+     * \return returns gRPC QAbstractGrpcChannel::Status code for operation
      */
     virtual StatusCode call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) = 0;
 
     /*!
-     * \brief call
-     * \param method
-     * \param service
-     * \param args
-     * \param ret AsyncReply that will be returned to end-point user to read data once ready. AsyncReply owned by AbstractClient only.
-     * \return
+     * \brief Calls \p method asynchronously with given serialized messge \p args. Result of method call is written to AsyncReply.
+     *        \note This method is asynchronous, that means it returns control imediately after it is called.
+     * \param[in] method remote method is called
+     * \param[in] service service identified in URL path format
+     * \param[in] args serialized argument message
+     * \param[out] ret AsyncReply that will be returned to end-point user to read data once call complete.
+     *            AsyncReply lifecycle is managed by AbstractClient only.
+     *            \see AsyncReply for details
      */
     virtual void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *ret) = 0;
 
     /*!
-     * \brief subscribe
-     * \param method
-     * \param service
-     * \param args
-     * \param handler
+     * \brief Subscribes to server-side stream to receive updates for given \p method.
+     * \param[in] method remote method is called
+     * \param[in] service service identified in URL path format
+     * \param[in] args serialized argument message
+     * \param[in] handler callback that will be called when message recevied from the server-stream
      */
     virtual void subscribe(const QString &method, const QString &service, const QByteArray &args, AbstractClient *client, const std::function<void(const QByteArray &)> &handler) = 0;
 protected:
-    AbstractChannel() = default;
-    virtual ~AbstractChannel() = default;
+    QAbstractGrpcChannel() = default;
+    virtual ~QAbstractGrpcChannel() = default;
 
-    virtual void abort(AsyncReply *) {
+    /*!
+     * \brief aborts async call for given \p reply
+     *        \note by default abort is explicitly not supported by QAbstractGrpcChannel and throws assert when called
+     * \param[in] reply returned by asynchronous QAbstractGrpcChannel::call() method
+     */
+    virtual void abort(AsyncReply *reply) {
+        Q_UNUSED(reply)
         assert("Abort is not supported by used channel");
     }
 
     friend class AsyncReply;
 private:
-    Q_DISABLE_COPY(AbstractChannel)
+    Q_DISABLE_COPY(QAbstractGrpcChannel)
 };
 }
