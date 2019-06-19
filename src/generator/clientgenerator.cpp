@@ -48,7 +48,7 @@ ClientGenerator::ClientGenerator(const ServiceDescriptor *service, std::unique_p
 
 void ClientGenerator::printClientClass()
 {
-    mPrinter.Print({{"classname", mClassName}, {"parent_class", "qtprotobuf::AbstractClient"}}, Templates::ClassDefinitionTemplate);
+    mPrinter.Print({{"classname", mClassName}, {"parent_class", "qtprotobuf::QAbstractGrpcClient"}}, Templates::ClassDefinitionTemplate);
     mPrinter.Print(Templates::QObjectMacro);
 }
 
@@ -64,7 +64,7 @@ void ClientGenerator::printClientIncludes()
     printIncludes();
 
     std::unordered_set<std::string> includeSet;
-    includeSet.insert("abstractclient");
+    includeSet.insert("qabstractgrpcclient");
     includeSet.insert("asyncreply");
     for (auto type : includeSet) {
         mPrinter.Print({{"include", type}}, Templates::InternalIncludeTemplate);

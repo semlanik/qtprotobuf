@@ -34,7 +34,7 @@
 #include <QtEndian>
 
 #include "asyncreply.h"
-#include "abstractclient.h"
+#include "qabstractgrpcclient.h"
 #include "abstractcredentials.h"
 
 #include <unordered_map>
@@ -92,7 +92,7 @@ const char *GrpcStatusHeader = "grpc-status";
 
 namespace qtprotobuf {
 
-struct Http2ChannelPrivate {
+struct QGrpcHttp2ChannelPrivate {
     struct ExpectedData {
         int expectedSize;
         QByteArray container;
@@ -133,13 +133,13 @@ struct Http2ChannelPrivate {
            qProtoCritical() << errors;
            // TODO: filter out noncritical SSL handshake errors
            // FIXME: error due to ssl failure is not transferred to the client: last error will be Operation canceled
-           Http2ChannelPrivate::abortNetworkReply(networkReply);
+           QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
         });
 
         if (!stream) {
             //TODO: Add configurable timeout logic
             QTimer::singleShot(6000, networkReply, [networkReply]() {
-                Http2ChannelPrivate::abortNetworkReply(networkReply);
+                QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
             });
         }
         return networkReply;
@@ -168,7 +168,7 @@ struct Http2ChannelPrivate {
         return networkReply->readAll().mid(5);
     }
 
-    Http2ChannelPrivate(const QUrl &_url, const AbstractCredentials &_credentials)
+    QGrpcHttp2ChannelPrivate(const QUrl &_url, const AbstractCredentials &_credentials)
         : url(_url)
         , credentials(_credentials)
     {
@@ -186,7 +186,7 @@ struct Http2ChannelPrivate {
 }
 
 QGrpcHttp2Channel::QGrpcHttp2Channel(const QUrl &url, const AbstractCredentials &credentials) : QAbstractGrpcChannel()
-  , d(new Http2ChannelPrivate(url, credentials))
+  , d(new QGrpcHttp2ChannelPrivate(url, credentials))
 {
 }
 
@@ -220,7 +220,7 @@ void QGrpcHttp2Channel::call(const QString &method, const QString &service, cons
 
     auto connection = QObject::connect(networkReply, &QNetworkReply::finished, reply, [reply, networkReply]() {
         StatusCode grpcStatus = StatusCode::Unknown;
-        QByteArray data = Http2ChannelPrivate::processReply(networkReply, grpcStatus);
+        QByteArray data = QGrpcHttp2ChannelPrivate::processReply(networkReply, grpcStatus);
 
         qProtoDebug() << "RECV: " << data;
         if (StatusCode::Ok == grpcStatus ) {
@@ -234,11 +234,11 @@ void QGrpcHttp2Channel::call(const QString &method, const QString &service, cons
 
     QObject::connect(reply, &AsyncReply::error, networkReply, [networkReply, connection](QAbstractGrpcChannel::StatusCode code) {
         QObject::disconnect(connection);
-        Http2ChannelPrivate::abortNetworkReply(networkReply);
+        QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
     });
 }
 
-void QGrpcHttp2Channel::subscribe(const QString &method, const QString &service, const QByteArray &args, AbstractClient *client, const std::function<void (const QByteArray &)> &handler)
+void QGrpcHttp2Channel::subscribe(const QString &method, const QString &service, const QByteArray &args, QAbstractGrpcClient *client, const std::function<void (const QByteArray &)> &handler)
 {
     QNetworkReply *networkReply = d->post(method, service, args, true);
 
@@ -258,12 +258,12 @@ void QGrpcHttp2Channel::subscribe(const QString &method, const QString &service,
                 return;
             }
 
-            Http2ChannelPrivate::ExpectedData dataContainer{expectedDataSize, QByteArray{}};
+            QGrpcHttp2ChannelPrivate::ExpectedData dataContainer{expectedDataSize, QByteArray{}};
             d->activeStreamReplies.insert({networkReply, dataContainer});
             replyIt = d->activeStreamReplies.find(networkReply);
         }
 
-        Http2ChannelPrivate::ExpectedData &dataContainer = replyIt->second;
+        QGrpcHttp2ChannelPrivate::ExpectedData &dataContainer = replyIt->second;
         dataContainer.container.append(data);
 
         qProtoDebug() << "Proceed chunk: " << data.size() << " dataContainer: " << dataContainer.container.size() << " capacity: " << dataContainer.expectedSize;
@@ -274,10 +274,10 @@ void QGrpcHttp2Channel::subscribe(const QString &method, const QString &service,
         }
     });
 
-    QObject::connect(client, &AbstractClient::destroyed, networkReply, [networkReply, connection, this](){
+    QObject::connect(client, &QAbstractGrpcClient::destroyed, networkReply, [networkReply, connection, this](){
         d->activeStreamReplies.erase(networkReply);
         QObject::disconnect(connection);
-        Http2ChannelPrivate::abortNetworkReply(networkReply);
+        QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
     });
 
     //TODO: seems this connection might be invalid in case if this destroyed.
@@ -285,7 +285,7 @@ void QGrpcHttp2Channel::subscribe(const QString &method, const QString &service,
     QObject::connect(networkReply, &QNetworkReply::finished, [networkReply, this]() {
         d->activeStreamReplies.erase(networkReply);
         //TODO: implement error handling and subscription recovery here
-        Http2ChannelPrivate::abortNetworkReply(networkReply);
+        QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
     });
 }
 

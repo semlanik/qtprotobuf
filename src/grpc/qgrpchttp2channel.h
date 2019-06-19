@@ -45,7 +45,7 @@ public:
 
     StatusCode call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
     void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *reply) override;
-    void subscribe(const QString &method, const QString &service, const QByteArray &args, AbstractClient *client, const std::function<void (const QByteArray &)> &handler) override;
+    void subscribe(const QString &method, const QString &service, const QByteArray &args, QAbstractGrpcClient *client, const std::function<void (const QByteArray &)> &handler) override;
 
 protected:
     void abort(AsyncReply *reply) override;
@@ -54,6 +54,6 @@ private:
     Q_DISABLE_COPY(QGrpcHttp2Channel)
 
     // PIMPL
-    struct Http2ChannelPrivate *d;
+    struct QGrpcHttp2ChannelPrivate *d;
 };
 }

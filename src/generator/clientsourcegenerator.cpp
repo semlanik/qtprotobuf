@@ -62,6 +62,6 @@ void ClientSourceGenerator::printMethods()
 void ClientSourceGenerator::printConstructor()
 {
     mPrinter.Print({ {"classname", mClassName},
-                     {"parent_class", "AbstractClient"},
+                     {"parent_class", "QAbstractGrpcClient"},
                      {"service_name", mService->full_name()} }, Templates::ConstructorDefinitionSyncTemplate);
 }

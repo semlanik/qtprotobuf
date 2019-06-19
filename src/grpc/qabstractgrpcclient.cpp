@@ -23,14 +23,14 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "abstractclient.h"
+#include "qabstractgrpcclient.h"
 
 #include <QTimer>
 
 namespace qtprotobuf {
-class AbstractClientPrivate final {
+class QAbstractGrpcClientPrivate final {
 public:
-    AbstractClientPrivate(const QString &service) : service(service) {}
+    QAbstractGrpcClientPrivate(const QString &service) : service(service) {}
 
     std::shared_ptr<QAbstractGrpcChannel> channel;
     const QString service;
@@ -39,41 +39,41 @@ public:
 
 using namespace qtprotobuf;
 
-AbstractClient::AbstractClient(const QString &service, QObject *parent) : QObject(parent)
-  , d(new AbstractClientPrivate(service))
+QAbstractGrpcClient::QAbstractGrpcClient(const QString &service, QObject *parent) : QObject(parent)
+  , d(new QAbstractGrpcClientPrivate(service))
 {
 }
 
-AbstractClient::~AbstractClient()
+QAbstractGrpcClient::~QAbstractGrpcClient()
 {
     delete d;
 }
 
-void AbstractClient::attachChannel(const std::shared_ptr<QAbstractGrpcChannel> &channel)
+void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChannel> &channel)
 {
     d->channel = channel;
 }
 
-QAbstractGrpcChannel::StatusCode AbstractClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
+QAbstractGrpcChannel::StatusCode QAbstractGrpcClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
 {
     QAbstractGrpcChannel::StatusCode callStatus = QAbstractGrpcChannel::Unknown;
     if (d->channel) {
         callStatus = d->channel->call(method, d->service, arg, ret);
     } else {
-        emit error(callStatus, QLatin1String("No channel(s) attached."));
+        error(callStatus, QLatin1String("No channel(s) attached."));
     }
 
     return callStatus;
 }
 
-AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
+AsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArray &arg)
 {
     AsyncReply *reply = nullptr;
     if (d->channel) {
         reply = new AsyncReply(d->channel, this);
 
         connect(reply, &AsyncReply::error, this, [this, reply](QAbstractGrpcChannel::StatusCode statusCode) {
-            emit error(statusCode, QLatin1String("Connection has been aborted."));
+            error(statusCode, QLatin1String("Connection has been aborted."));
             reply->deleteLater();
         });
 
@@ -83,17 +83,17 @@ AsyncReply *AbstractClient::call(const QString &method, const QByteArray &arg)
 
         d->channel->call(method, d->service, arg, reply);
     } else {
-        emit error(QAbstractGrpcChannel::Unknown, QLatin1String("No channel(s) attached."));
+        error(QAbstractGrpcChannel::Unknown, QLatin1String("No channel(s) attached."));
     }
 
     return reply;
 }
 
-void AbstractClient::subscribe_p(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray&)> &handler)
+void QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray&)> &handler)
 {
     if (d->channel) {
         d->channel->subscribe(method, d->service, arg, this, handler);
     } else {
-        emit error(QAbstractGrpcChannel::Unknown, QLatin1String("No channel(s) attached."));
+        error(QAbstractGrpcChannel::Unknown, QLatin1String("No channel(s) attached."));
     }
 }

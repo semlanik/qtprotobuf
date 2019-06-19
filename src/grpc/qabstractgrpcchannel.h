@@ -34,7 +34,7 @@
 namespace qtprotobuf {
 
 class AsyncReply;
-class AbstractClient;
+class QAbstractGrpcClient;
 /*!
  * \ingroup QtGrpc
  * \brief The QAbstractGrpcChannel class is interface that represents common gRPC channel functionality.
@@ -88,7 +88,7 @@ public:
      * \param[in] service service identified in URL path format
      * \param[in] args serialized argument message
      * \param[out] ret AsyncReply that will be returned to end-point user to read data once call complete.
-     *            AsyncReply lifecycle is managed by AbstractClient only.
+     *            AsyncReply lifecycle is managed by QAbstractGrpcClient only.
      *            \see AsyncReply for details
      */
     virtual void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *ret) = 0;
@@ -100,7 +100,7 @@ public:
      * \param[in] args serialized argument message
      * \param[in] handler callback that will be called when message recevied from the server-stream
      */
-    virtual void subscribe(const QString &method, const QString &service, const QByteArray &args, AbstractClient *client, const std::function<void(const QByteArray &)> &handler) = 0;
+    virtual void subscribe(const QString &method, const QString &service, const QByteArray &args, QAbstractGrpcClient *client, const std::function<void(const QByteArray &)> &handler) = 0;
 protected:
     QAbstractGrpcChannel() = default;
     virtual ~QAbstractGrpcChannel() = default;

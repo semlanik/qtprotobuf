@@ -72,7 +72,7 @@ private:
     AsyncReply(AsyncReply &&) = delete;
     AsyncReply &operator =(AsyncReply &&) = delete;
 
-    friend class AbstractClient;
+    friend class QAbstractGrpcClient;
 
     std::shared_ptr<QAbstractGrpcChannel> m_channel;
     QByteArray m_data;

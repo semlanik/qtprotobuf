@@ -15,7 +15,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/Coverage.cmake)
 file(GLOB SOURCES asyncreply.cpp
     qabstractgrpcchannel.cpp
     qgrpchttp2channel.cpp
-    abstractclient.cpp
+    qabstractgrpcclient.cpp
     abstractcredentials.cpp
     sslcredentials.cpp
     insecurecredentials.cpp)
@@ -23,7 +23,7 @@ file(GLOB SOURCES asyncreply.cpp
 file(GLOB HEADERS asyncreply.h
     qabstractgrpcchannel.h
     qgrpchttp2channel.h
-    abstractclient.h
+    qabstractgrpcclient.h
     abstractcredentials.h
     sslcredentials.h
     insecurecredentials.h
