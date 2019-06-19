@@ -66,18 +66,18 @@ QAbstractGrpcChannel::StatusCode QAbstractGrpcClient::call(const QString &method
     return callStatus;
 }
 
-AsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArray &arg)
+QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArray &arg)
 {
-    AsyncReply *reply = nullptr;
+    QGrpcAsyncReply *reply = nullptr;
     if (d->channel) {
-        reply = new AsyncReply(d->channel, this);
+        reply = new QGrpcAsyncReply(d->channel, this);
 
-        connect(reply, &AsyncReply::error, this, [this, reply](QAbstractGrpcChannel::StatusCode statusCode) {
-            error(statusCode, QLatin1String("Connection has been aborted."));
+        connect(reply, &QGrpcAsyncReply::error, this, [this, reply](QAbstractGrpcChannel::StatusCode statusCode, const QString &errorMessage) {
+            error(statusCode, errorMessage);
             reply->deleteLater();
         });
 
-        connect(reply, &AsyncReply::finished, this, [reply](){
+        connect(reply, &QGrpcAsyncReply::finished, this, [reply](){
             reply->deleteLater();
         });
 

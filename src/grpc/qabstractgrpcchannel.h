@@ -33,7 +33,7 @@
 
 namespace qtprotobuf {
 
-class AsyncReply;
+class QGrpcAsyncReply;
 class QAbstractGrpcClient;
 /*!
  * \ingroup QtGrpc
@@ -82,16 +82,16 @@ public:
     virtual StatusCode call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) = 0;
 
     /*!
-     * \brief Calls \p method asynchronously with given serialized messge \p args. Result of method call is written to AsyncReply.
+     * \brief Calls \p method asynchronously with given serialized messge \p args. Result of method call is written to QGrpcAsyncReply.
      *        \note This method is asynchronous, that means it returns control imediately after it is called.
      * \param[in] method remote method is called
      * \param[in] service service identified in URL path format
      * \param[in] args serialized argument message
-     * \param[out] ret AsyncReply that will be returned to end-point user to read data once call complete.
-     *            AsyncReply lifecycle is managed by QAbstractGrpcClient only.
-     *            \see AsyncReply for details
+     * \param[out] ret QGrpcAsyncReply that will be returned to end-point user to read data once call complete.
+     *            QGrpcAsyncReply lifecycle is managed by QAbstractGrpcClient only.
+     *            \see QGrpcAsyncReply for details
      */
-    virtual void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *ret) = 0;
+    virtual void call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::QGrpcAsyncReply *ret) = 0;
 
     /*!
      * \brief Subscribes to server-side stream to receive updates for given \p method.
@@ -110,12 +110,12 @@ protected:
      *        \note by default abort is explicitly not supported by QAbstractGrpcChannel and throws assert when called
      * \param[in] reply returned by asynchronous QAbstractGrpcChannel::call() method
      */
-    virtual void abort(AsyncReply *reply) {
+    virtual void abort(QGrpcAsyncReply *reply) {
         Q_UNUSED(reply)
         assert("Abort is not supported by used channel");
     }
 
-    friend class AsyncReply;
+    friend class QGrpcAsyncReply;
 private:
     Q_DISABLE_COPY(QAbstractGrpcChannel)
 };

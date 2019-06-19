@@ -33,7 +33,7 @@
 #include <QTimer>
 #include <QtEndian>
 
-#include "asyncreply.h"
+#include "qgrpcasyncreply.h"
 #include "qabstractgrpcclient.h"
 #include "abstractcredentials.h"
 
@@ -214,7 +214,7 @@ QAbstractGrpcChannel::StatusCode QGrpcHttp2Channel::call(const QString &method, 
     return grpcStatus;
 }
 
-void QGrpcHttp2Channel::call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::AsyncReply *reply)
+void QGrpcHttp2Channel::call(const QString &method, const QString &service, const QByteArray &args, qtprotobuf::QGrpcAsyncReply *reply)
 {
     QNetworkReply *networkReply = d->post(method, service, args);
 
@@ -223,16 +223,16 @@ void QGrpcHttp2Channel::call(const QString &method, const QString &service, cons
         QByteArray data = QGrpcHttp2ChannelPrivate::processReply(networkReply, grpcStatus);
 
         qProtoDebug() << "RECV: " << data;
-        if (StatusCode::Ok == grpcStatus ) {
+        if (StatusCode::Ok == grpcStatus) {
             reply->setData(data);
             reply->finished();
         } else {
             reply->setData({});
-            reply->error(grpcStatus);
+            reply->error(grpcStatus, QString()); //TODO: read error message from reply
         }
     });
 
-    QObject::connect(reply, &AsyncReply::error, networkReply, [networkReply, connection](QAbstractGrpcChannel::StatusCode code) {
+    QObject::connect(reply, &QGrpcAsyncReply::error, networkReply, [networkReply, connection]() {
         QObject::disconnect(connection);
         QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
     });
@@ -289,9 +289,9 @@ void QGrpcHttp2Channel::subscribe(const QString &method, const QString &service,
     });
 }
 
-void QGrpcHttp2Channel::abort(AsyncReply *reply)
+void QGrpcHttp2Channel::abort(QGrpcAsyncReply *reply)
 {
     assert(reply != nullptr);
     reply->setData({});
-    reply->error(StatusCode::Aborted);
+    reply->error(StatusCode::Aborted, QLatin1String("Call aborted by user or timeout"));
 }

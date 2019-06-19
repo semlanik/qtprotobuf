@@ -65,7 +65,7 @@ void ClientGenerator::printClientIncludes()
 
     std::unordered_set<std::string> includeSet;
     includeSet.insert("qabstractgrpcclient");
-    includeSet.insert("asyncreply");
+    includeSet.insert("qgrpcasyncreply");
     for (auto type : includeSet) {
         mPrinter.Print({{"include", type}}, Templates::InternalIncludeTemplate);
     }

@@ -183,8 +183,8 @@ const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $
                                                  "{\n";
 const char *Templates::QObjectMacro = "Q_OBJECT";
 const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
-const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE qtprotobuf::AsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
-const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(qtprotobuf::AsyncReply *)> &callback);\n";
+const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE qtprotobuf::QGrpcAsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(qtprotobuf::QGrpcAsyncReply *)> &callback);\n";
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
 
@@ -195,14 +195,14 @@ const char *Templates::ClientMethodDefinitionSyncTemplate = "\nbool $classname$:
                                                             "{\n"
                                                             "    return call(\"$method_name$\", $param_name$, $return_name$);\n"
                                                             "}\n";
-const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nqtprotobuf::AsyncReply *$classname$::$method_name$(const $param_type$ &$param_name$)\n"
+const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nqtprotobuf::QGrpcAsyncReply *$classname$::$method_name$(const $param_type$ &$param_name$)\n"
                                                              "{\n"
                                                              "    return call(\"$method_name$\", $param_name$);\n"
                                                              "}\n";
-const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(AsyncReply *)> &callback)\n"
+const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QGrpcAsyncReply *)> &callback)\n"
                                                               "{\n"
-                                                              "    qtprotobuf::AsyncReply *reply = call(\"$method_name$\", $param_name$);\n"
-                                                              "    QObject::connect(reply, &qtprotobuf::AsyncReply::finished, context, [reply, callback](){\n"
+                                                              "    qtprotobuf::QGrpcAsyncReply *reply = call(\"$method_name$\", $param_name$);\n"
+                                                              "    QObject::connect(reply, &qtprotobuf::QGrpcAsyncReply::finished, context, [reply, callback](){\n"
                                                               "        callback(reply);\n"
                                                               "    });\n"
                                                               "}\n";

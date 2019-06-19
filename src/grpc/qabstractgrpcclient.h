@@ -35,7 +35,7 @@
 #include <qtprotobuflogging.h>
 
 #include "qabstractgrpcchannel.h"
-#include "asyncreply.h"
+#include "qgrpcasyncreply.h"
 
 #include "qtgrpcglobal.h"
 
@@ -101,7 +101,7 @@ protected:
      * \param[in] arg Protobuf message argument for \p method
      */
     template<typename A>
-    AsyncReply *call(const QString &method, const A &arg) {
+    QGrpcAsyncReply *call(const QString &method, const A &arg) {
         return call(method, arg.serialize());
     }
 
@@ -163,7 +163,7 @@ private:
     /*!
      * \private
      */
-    AsyncReply *call(const QString &method, const QByteArray &arg);
+    QGrpcAsyncReply *call(const QString &method, const QByteArray &arg);
 
     /*!
      * \private
@@ -189,7 +189,7 @@ private:
             qProtoCritical() << outOfRangeErrorMessage;
             return false;
         } catch (...) {
-            error(QAbstractGrpcChannel::OutOfRange, QLatin1String("Unknown exception caught during deserialization"));
+            error(QAbstractGrpcChannel::Internal, QLatin1String("Unknown exception caught during deserialization"));
             return false;
         }
         return true;

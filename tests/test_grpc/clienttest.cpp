@@ -62,7 +62,7 @@ TEST_F(ClientTest, CheckMethodsGeneration)
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
     testClient.testMethod(request, result);
     testClient.testMethod(request);
-    testClient.testMethod(request, &testClient, [](AsyncReply *){});
+    testClient.testMethod(request, &testClient, [](QGrpcAsyncReply *){});
     delete result;
 }
 
@@ -87,8 +87,8 @@ TEST_F(ClientTest, StringEchoAsyncTest)
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
 
-    AsyncReply *reply = testClient.testMethod(request);
-    QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter]() {
+    QGrpcAsyncReply *reply = testClient.testMethod(request);
+    QObject::connect(reply, &QGrpcAsyncReply::finished, &m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
@@ -105,7 +105,7 @@ TEST_F(ClientTest, StringEchoAsync2Test)
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
-    testClient.testMethod(request, &m_app, [&result, &waiter](AsyncReply *reply) {
+    testClient.testMethod(request, &m_app, [&result, &waiter](QGrpcAsyncReply *reply) {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
@@ -122,16 +122,16 @@ TEST_F(ClientTest, StringEchoImmediateAsyncAbortTest)
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
     QEventLoop waiter;
-    AsyncReply *reply = testClient.testMethod(request);
+    QGrpcAsyncReply *reply = testClient.testMethod(request);
 
     result.setTestFieldString("Result not changed by echo");
-    QObject::connect(reply, &AsyncReply::finished, &m_app, [&waiter, &result, reply]() {
+    QObject::connect(reply, &QGrpcAsyncReply::finished, &m_app, [&waiter, &result, reply]() {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
 
     QAbstractGrpcChannel::StatusCode asyncStatus = QAbstractGrpcChannel::StatusCode::Ok;
-    QObject::connect(reply, &AsyncReply::error, reply, [&asyncStatus](QAbstractGrpcChannel::StatusCode code){
+    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&asyncStatus](QAbstractGrpcChannel::StatusCode code){
         asyncStatus = code;
     });
 
@@ -158,20 +158,20 @@ TEST_F(ClientTest, StringEchoDeferredAsyncAbortTest)
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
     QEventLoop waiter;
-    AsyncReply *reply = testClient.testMethod(request);
+    QGrpcAsyncReply *reply = testClient.testMethod(request);
 
     result.setTestFieldString("Result not changed by echo");
     bool errorCalled = false;
     reply = testClient.testMethod(request);
-    QObject::connect(reply, &AsyncReply::finished, &m_app, [reply, &result, &waiter]() {
+    QObject::connect(reply, &QGrpcAsyncReply::finished, &m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
-    QObject::connect(reply, &AsyncReply::error, reply, [&errorCalled](QAbstractGrpcChannel::StatusCode){
+    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&errorCalled](QAbstractGrpcChannel::StatusCode){
         errorCalled = true;
     });
 
-    QTimer::singleShot(2000, reply, &AsyncReply::abort);
+    QTimer::singleShot(2000, reply, &QGrpcAsyncReply::abort);
     QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
 
     waiter.exec();

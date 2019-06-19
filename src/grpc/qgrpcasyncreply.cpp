@@ -23,60 +23,15 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include "qgrpcasyncreply.h"
+#include <qtprotobuflogging.h>
 
-#include <functional>
-#include <QPointer>
-#include <QMutex>
-#include <memory>
+using namespace qtprotobuf;
 
-#include "qabstractgrpcchannel.h"
-
-#include "qtgrpcglobal.h"
-
-namespace qtprotobuf {
-/*!
- * \ingroup QtGrpc
- * \brief The AsyncReply class
- */
-class Q_GRPC_EXPORT AsyncReply final : public QObject
+QGrpcAsyncReply::~QGrpcAsyncReply()
 {
-    Q_OBJECT
-public:
-    void abort() {
-        m_channel->abort(this);
-    }
-
-    template <typename T>
-    T read() {
-        QMutexLocker locker(&m_asyncLock);
-        T value;
-        value.deserialize(m_data);
-        return value;
-    }
-
-    void setData(const QByteArray &data) { m_data = data; }
-
-signals:
-    void finished();
-    void error(QAbstractGrpcChannel::StatusCode);
-
-protected:
-    AsyncReply(const std::shared_ptr<QAbstractGrpcChannel> &channel, QObject *parent = nullptr) : QObject(parent)
-    , m_channel(channel){}
-    ~AsyncReply();
-
-private:
-    AsyncReply();
-    Q_DISABLE_COPY(AsyncReply)
-    AsyncReply(AsyncReply &&) = delete;
-    AsyncReply &operator =(AsyncReply &&) = delete;
-
-    friend class QAbstractGrpcClient;
-
-    std::shared_ptr<QAbstractGrpcChannel> m_channel;
-    QByteArray m_data;
-
-    QMutex m_asyncLock;
-};
+    qProtoDebug() << "Trying ~QGrpcAsyncReply" << this;
+    QMutexLocker locker(&m_asyncLock);
+    qProtoDebug() << "~QGrpcAsyncReply" << this;
+    (void)locker;
 }
