@@ -10,4 +10,5 @@ service TestService {
   rpc testMethodClientStream(stream SimpleStringMessage) returns (SimpleStringMessage) {}
   rpc testMethodBiStream(stream SimpleStringMessage) returns (stream SimpleStringMessage) {}
   rpc testMethodBlobServerStream(BlobMessage) returns (stream BlobMessage) {}
+  rpc testMethodStatusMessage(SimpleStringMessage) returns (SimpleStringMessage) {}
 } 

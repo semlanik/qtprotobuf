@@ -56,6 +56,13 @@ public:
         writer->Write(msg);
         return ::grpc::Status();
     }
+
+    ::grpc::Status testMethodStatusMessage(::grpc::ServerContext*,
+                                                   const ::qtprotobufnamespace::tests::SimpleStringMessage* request,
+                                                   ::qtprotobufnamespace::tests::SimpleStringMessage*) override
+    {
+        return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, request->testfieldstring());
+    }
 };
 
 int main(int, char *[])

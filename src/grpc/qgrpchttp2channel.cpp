@@ -88,6 +88,7 @@ const char *GrpcAcceptEncodingHeader = "grpc-accept-encoding";
 const char *AcceptEncodingHeader = "accept-encoding";
 const char *TEHeader = "te";
 const char *GrpcStatusHeader = "grpc-status";
+const char *GrpcStatusMessage = "grpc-message";
 }
 
 namespace qtprotobuf {
@@ -228,7 +229,7 @@ void QGrpcHttp2Channel::call(const QString &method, const QString &service, cons
             reply->finished();
         } else {
             reply->setData({});
-            reply->error(grpcStatus, QString()); //TODO: read error message from reply
+            reply->error(grpcStatus, QString::fromUtf8(networkReply->rawHeader(GrpcStatusMessage)));
         }
     });
 
@@ -282,9 +283,10 @@ void QGrpcHttp2Channel::subscribe(const QString &method, const QString &service,
 
     //TODO: seems this connection might be invalid in case if this destroyed.
     //Think about correct handling of this situation
-    QObject::connect(networkReply, &QNetworkReply::finished, [networkReply, this]() {
+    QObject::connect(networkReply, &QNetworkReply::finished, [networkReply, connection, this]() {
         d->activeStreamReplies.erase(networkReply);
         //TODO: implement error handling and subscription recovery here
+        QObject::disconnect(connection);
         QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
     });
 }

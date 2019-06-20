@@ -262,3 +262,72 @@ TEST_F(ClientTest, HugeBlobEchoStreamTest)
     QByteArray returnDataHash = QCryptographicHash::hash(result.testBytes(), QCryptographicHash::Sha256);
     ASSERT_TRUE(returnDataHash == dataHash);
 }
+
+TEST_F(ClientTest, StatusMessageAsyncTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
+    SimpleStringMessage request(QString{"Some status message"});
+    QAbstractGrpcChannel::StatusCode asyncStatus = QAbstractGrpcChannel::StatusCode::Ok;
+    QEventLoop waiter;
+    QString statusMessage;
+
+    QGrpcAsyncReply* reply = testClient.testMethodStatusMessage(request);
+    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&asyncStatus, &waiter, &statusMessage](QAbstractGrpcChannel::StatusCode code, const QString &msg) {
+        asyncStatus = code;
+        statusMessage = msg;
+        waiter.quit();
+    });
+
+    QTimer::singleShot(20000, &waiter, &QEventLoop::quit);
+    waiter.exec();
+
+    ASSERT_STREQ(statusMessage.toStdString().c_str(), request.testFieldString().toStdString().c_str());
+}
+
+TEST_F(ClientTest, StatusMessageClientAsyncTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
+    SimpleStringMessage request(QString{"Some status message"});
+    QAbstractGrpcChannel::StatusCode asyncStatus = QAbstractGrpcChannel::StatusCode::Ok;
+    QEventLoop waiter;
+    QString statusMessage;
+
+    QObject::connect(&testClient, &TestServiceClient::error, [&asyncStatus, &waiter, &statusMessage](QAbstractGrpcChannel::StatusCode code, const QString &msg) {
+        asyncStatus = code;
+        statusMessage = msg;
+        waiter.quit();
+    });
+
+    testClient.testMethodStatusMessage(request);
+
+    QTimer::singleShot(20000, &waiter, &QEventLoop::quit);
+    waiter.exec();
+
+    ASSERT_STREQ(statusMessage.toStdString().c_str(), request.testFieldString().toStdString().c_str());
+}
+
+TEST_F(ClientTest, DISABLED_StatusMessageClientSyncTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
+    SimpleStringMessage request(QString{"Some status message"});
+    QPointer<SimpleStringMessage> ret(new SimpleStringMessage);
+    QAbstractGrpcChannel::StatusCode asyncStatus = QAbstractGrpcChannel::StatusCode::Ok;
+    QEventLoop waiter;
+    QString statusMessage;
+
+    QObject::connect(&testClient, &TestServiceClient::error, [&asyncStatus, &waiter, &statusMessage](QAbstractGrpcChannel::StatusCode code, const QString &msg) {
+        asyncStatus = code;
+        statusMessage = msg;
+        waiter.quit();
+    });
+
+    testClient.testMethodStatusMessage(request, ret);
+    QTimer::singleShot(20000, &waiter, &QEventLoop::quit);
+    waiter.exec();
+
+    ASSERT_STREQ(statusMessage.toStdString().c_str(), request.testFieldString().toStdString().c_str());
+    delete ret;
+}
