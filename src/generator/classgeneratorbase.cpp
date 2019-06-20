@@ -149,7 +149,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
         namespaceTypeName = getNamespacesList(enumType, typeNamespace, mNamespacesColonDelimited);
         EnumVisibility visibility = getEnumVisibility(field, messageFor);
         if (visibility == LOCAL_ENUM) {
-            if(field->is_repeated()) {
+            if (field->is_repeated()) {
                 typeName = typeName.append(mClassName + "::" + enumType->name());
             } else {
                 typeName = typeName.append(enumType->name());

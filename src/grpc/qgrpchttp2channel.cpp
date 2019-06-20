@@ -275,7 +275,7 @@ void QGrpcHttp2Channel::subscribe(const QString &method, const QString &service,
         }
     });
 
-    QObject::connect(client, &QAbstractGrpcClient::destroyed, networkReply, [networkReply, connection, this](){
+    QObject::connect(client, &QAbstractGrpcClient::destroyed, networkReply, [networkReply, connection, this]() {
         d->activeStreamReplies.erase(networkReply);
         QObject::disconnect(connection);
         QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);

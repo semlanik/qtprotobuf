@@ -49,7 +49,7 @@ public:
     ~AddressBookService() = default;
 
     void updateContacts() {
-        for(unsigned int i = 0; i < (m_clients.size() - 1); i++) {
+        for (unsigned int i = 0; i < (m_clients.size() - 1); i++) {
             m_clients[i]->Write(m_contacts, nullptr);
         }
     }
@@ -86,7 +86,7 @@ public:
     ::grpc::Status makeCall(grpc::ServerContext *, const PhoneNumber *request, CallStatus *response) override
     {
         m_lastPhone = *request;
-        for(unsigned int i = 0; i < (m_callClients.size() - 1); i++) {
+        for (unsigned int i = 0; i < (m_callClients.size() - 1); i++) {
             response->set_status(CallStatus::Active);
             PhoneNumber *phoneNumber = new PhoneNumber(*request);
             response->set_allocated_phonenumber(phoneNumber);
@@ -104,7 +104,7 @@ public:
 
         std::cout << "Call ended" << std::endl;
         m_lastCallStatus.set_status(CallStatus::Ended);
-        for(unsigned int i = 0; i < (m_callClients.size() - 1); i++) {
+        for (unsigned int i = 0; i < (m_callClients.size() - 1); i++) {
             m_callClients[i]->Write(m_lastCallStatus, nullptr);
         }
 
@@ -112,7 +112,7 @@ public:
 
         std::cout << "Call ended" << std::endl;
         m_lastCallStatus.set_status(CallStatus::Inactive);
-        for(unsigned int i = 0; i < (m_callClients.size() - 1); i++) {
+        for (unsigned int i = 0; i < (m_callClients.size() - 1); i++) {
             m_callClients[i]->Write(m_lastCallStatus, nullptr);
         }
         return ::grpc::Status();

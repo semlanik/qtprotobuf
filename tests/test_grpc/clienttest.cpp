@@ -62,7 +62,7 @@ TEST_F(ClientTest, CheckMethodsGeneration)
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
     testClient.testMethod(request, result);
     testClient.testMethod(request);
-    testClient.testMethod(request, &testClient, [](QGrpcAsyncReply *){});
+    testClient.testMethod(request, &testClient, [](QGrpcAsyncReply *) {});
     delete result;
 }
 
@@ -131,12 +131,12 @@ TEST_F(ClientTest, StringEchoImmediateAsyncAbortTest)
     });
 
     QAbstractGrpcChannel::StatusCode asyncStatus = QAbstractGrpcChannel::StatusCode::Ok;
-    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&asyncStatus](QAbstractGrpcChannel::StatusCode code){
+    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&asyncStatus](QAbstractGrpcChannel::StatusCode code) {
         asyncStatus = code;
     });
 
     QAbstractGrpcChannel::StatusCode clientStatus = QAbstractGrpcChannel::StatusCode::Ok;
-    QObject::connect(&testClient, &TestServiceClient::error, reply, [&clientStatus](QAbstractGrpcChannel::StatusCode code, QString errMsg){
+    QObject::connect(&testClient, &TestServiceClient::error, reply, [&clientStatus](QAbstractGrpcChannel::StatusCode code, QString errMsg) {
         clientStatus = code;
         std::cerr << code << ":" << errMsg.toStdString();
     });
@@ -167,7 +167,7 @@ TEST_F(ClientTest, StringEchoDeferredAsyncAbortTest)
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
-    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&errorCalled](QAbstractGrpcChannel::StatusCode){
+    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&errorCalled](QAbstractGrpcChannel::StatusCode) {
         errorCalled = true;
     });
 

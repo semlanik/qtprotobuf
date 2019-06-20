@@ -54,7 +54,7 @@ public:
 SimpleChatEngine::SimpleChatEngine(QObject *parent) : QObject(parent), m_client(new SimpleChatClient)
   , m_clipBoard(QGuiApplication::clipboard())
 {
-    if(m_clipBoard) {
+    if (m_clipBoard) {
         connect(m_clipBoard, &QClipboard::dataChanged, this, &SimpleChatEngine::clipBoardContentTypeChanged);
     }
 }
@@ -80,7 +80,7 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
 
     m_client->attachChannel(channel);
     m_client->subscribeMessageListUpdates(None());
-    QObject::connect(m_client, &SimpleChatClient::messageListUpdated, this, [this, name](const qtprotobuf::examples::ChatMessages &messages){
+    QObject::connect(m_client, &SimpleChatClient::messageListUpdated, this, [this, name](const qtprotobuf::examples::ChatMessages &messages) {
         if (m_userName != name) {
             m_userName = name;
             userNameChanged();
@@ -97,7 +97,7 @@ void SimpleChatEngine::sendMessage(const QString &content)
 
 qtprotobuf::examples::ChatMessage::ContentType SimpleChatEngine::clipBoardContentType() const
 {
-    if(m_clipBoard != nullptr) {
+    if (m_clipBoard != nullptr) {
         const QMimeData *mime = m_clipBoard->mimeData();
         if (mime != nullptr) {
             if (mime->hasImage() || mime->hasUrls()) {
@@ -112,27 +112,27 @@ qtprotobuf::examples::ChatMessage::ContentType SimpleChatEngine::clipBoardConten
 
 void SimpleChatEngine::sendImageFromClipboard()
 {
-    if(m_clipBoard == nullptr) {
+    if (m_clipBoard == nullptr) {
         return;
     }
 
     QByteArray imgData;
     const QMimeData *mime = m_clipBoard->mimeData();
     if (mime != nullptr) {
-        if(mime->hasImage()) {
+        if (mime->hasImage()) {
             QImage img = mime->imageData().value<QImage>();
             QBuffer buffer(&imgData);
             buffer.open(QIODevice::WriteOnly);
             img.save(&buffer, "PNG");
             buffer.close();
-        } else if(mime->hasUrls()) {
+        } else if (mime->hasUrls()) {
             QUrl imgUrl = mime->urls().first();
             if (!imgUrl.isLocalFile()) {
                 qWarning() << "Only supports transfer of local images";
                 return;
             }
             QImage img(imgUrl.toLocalFile());
-            if(img.isNull()) {
+            if (img.isNull()) {
                 qWarning() << "Invalid image format";
                 return;
             }
@@ -144,7 +144,7 @@ void SimpleChatEngine::sendImageFromClipboard()
         }
     }
 
-    if(imgData.isEmpty()) {
+    if (imgData.isEmpty()) {
         return;
     }
 

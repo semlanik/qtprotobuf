@@ -12,7 +12,7 @@ public:
     {
         std::cerr << "testMethod called" << std::endl << request->testfieldstring() << std::endl;
         response->set_testfieldstring(request->testfieldstring());
-        if(request->testfieldstring() == "sleep") {
+        if (request->testfieldstring() == "sleep") {
             std::this_thread::sleep_for(std::chrono::seconds(3));
         }
         return ::grpc::Status();

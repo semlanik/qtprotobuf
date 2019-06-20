@@ -62,9 +62,9 @@ using QProtobufPropertyOrdering = std::unordered_map<int, int>;
  */
 template<typename T, int = 0>
 struct transparent {
-    transparent(T t = T()) : _t(t){}
+    transparent(T t = T()) : _t(t) {}
     T _t;
-    operator T &(){ return _t; }
+    operator T &() { return _t; }
     operator T() const { return _t; }
     transparent &operator =(const T &t) { _t = t; return *this; }
 

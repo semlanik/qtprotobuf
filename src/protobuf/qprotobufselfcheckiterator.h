@@ -41,7 +41,7 @@ class Q_PROTOBUF_EXPORT QProtobufSelfcheckIterator
 public:
     QProtobufSelfcheckIterator(const QByteArray &container) : m_sizeLeft(container.size())
       , m_containerSize(container.size())
-      , m_it(container.begin()){}
+      , m_it(container.begin()) {}
 
     QProtobufSelfcheckIterator(const QProtobufSelfcheckIterator &other) : m_sizeLeft(other.m_sizeLeft)
       , m_containerSize(other.m_containerSize)

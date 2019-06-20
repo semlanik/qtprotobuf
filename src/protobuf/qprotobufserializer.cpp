@@ -167,7 +167,7 @@ void QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, QPr
     QProtobufSelfcheckIterator last = it + count;
     while (it != last) {
         QProtobufSerializerPrivate::decodeHeader(it, mapIndex, type);
-        if(mapIndex == 1) {
+        if (mapIndex == 1) {
             QProtobufSerializerPrivate::deserializeMapField(key, it);
         } else {
             QProtobufSerializerPrivate::deserializeMapField(value, it);

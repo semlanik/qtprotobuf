@@ -434,7 +434,7 @@ public:
             [s](const QVariant &value, int &fieldIndex) {
                 return s(value.value<T>(), fieldIndex);
             },
-            [d](QProtobufSelfcheckIterator &it, QVariant & value){
+            [d](QProtobufSelfcheckIterator &it, QVariant & value) {
                 value = d(it);
             },
             type

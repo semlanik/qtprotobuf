@@ -1,6 +1,6 @@
 include("${CMAKE_CURRENT_LIST_DIR}/ProtobufLookup.cmake")
 
-if (NOT TARGET @TARGET@ AND NOT @TARGET@_BINARY_DIR)
+if(NOT TARGET @TARGET@ AND NOT @TARGET@_BINARY_DIR)
     include("${CMAKE_CURRENT_LIST_DIR}/@TARGET_EXPORT@.cmake")
 endif()
 

@@ -103,7 +103,7 @@ signals:
 protected:
     //! \private
     QGrpcAsyncReply(const std::shared_ptr<QAbstractGrpcChannel> &channel, QObject *parent = nullptr) : QObject(parent)
-    , m_channel(channel){}
+    , m_channel(channel) {}
     //! \private
     ~QGrpcAsyncReply();
 

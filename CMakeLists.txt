@@ -6,7 +6,7 @@ project(QtProtobufProject VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
 include(GNUInstallDirs)
 
 find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
-if (Qt5Core_VERSION VERSION_LESS "5.12.3")
+if(Qt5Core_VERSION VERSION_LESS "5.12.3")
     # grpc target requires QT version not less than 5.12.3
     # earlier versions Http2DirectAttribute is broken: https://doc.qt.io/qt-5/whatsnew511.html
     #                                                  https://bugreports.qt.io/browse/QTBUG-74765
@@ -36,15 +36,15 @@ set(QTPROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_FULL_BINDIR}/${GENERATOR_TARGE
 set(QTPROTOBUF_EXECUTABLE $<TARGET_FILE:${GENERATOR_TARGET}>)
 
 if(UNIX)
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
       # using Clang
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-pessimizing-move -Wno-mismatched-tags -Wno-unused-private-field")
-    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
       # using GCC
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-error=deprecated-declarations")
     endif()
 elseif(WIN32)
-    if (${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
+    if(${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "/WX /W4 /MD")
     else()
         message(WARNING "Only MSVC compilers family are supported for build")
@@ -105,7 +105,7 @@ endif()
 
 if(MAKE_TESTS)
     find_package(GTest)
-    if (NOT GTest_FOUND)
+    if(NOT GTest_FOUND)
         include(cmake/DownloadProject.cmake)
         download_project(PROJ                GTest
             GIT_REPOSITORY      https://github.com/google/googletest.git

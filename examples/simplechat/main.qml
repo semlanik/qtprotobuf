@@ -54,12 +54,12 @@ ApplicationWindow {
                 scEngine.login(_loginField.text, _passwordField.text)
             }
             onVisibleChanged: {
-                if(visible) {
+                if (visible) {
                     _loginField.forceActiveFocus()
                 }
             }
             Component.onCompleted: {
-                if(visible) {
+                if (visible) {
                     _loginField.forceActiveFocus()
                 }
             }

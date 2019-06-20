@@ -50,7 +50,7 @@ static T * qmllistpropertyAt(QQmlListProperty<T> *p, int index) {
 
 //! \private
 template<typename T>
-static void qmllistpropertyReset(QQmlListProperty<T> *p){
+static void qmllistpropertyReset(QQmlListProperty<T> *p) {
     reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->clear();
 }
 

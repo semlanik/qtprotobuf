@@ -40,19 +40,19 @@ public:
     void loginUser(MessageListHandler *userHandler);
 
     void updateActiveUsers() {
-        for(unsigned int i = 0; i < (m_activeUserListClients.size() - 1); i++) {
+        for (unsigned int i = 0; i < (m_activeUserListClients.size() - 1); i++) {
             m_activeUserListClients[i]->Write(m_usersOnline, nullptr);
         }
     }
 
     void updateMessages() {
-        for(unsigned int i = 0; i < (m_activeClients.size() - 1); i++) {
+        for (unsigned int i = 0; i < (m_activeClients.size() - 1); i++) {
             m_activeClients[i]->Write(m_messages, nullptr);
         }
     }
 
     bool checkUserCredentials(const std::string &name, const std::string &password) {
-        for(int i = 0; i < m_usersDatabase.users_size(); i++) {
+        for (int i = 0; i < m_usersDatabase.users_size(); i++) {
             if (m_usersDatabase.users(i).name() == name && m_usersDatabase.users(i).password() == password) {
                 return true;
             }

@@ -77,7 +77,7 @@ QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArr
             reply->deleteLater();
         });
 
-        connect(reply, &QGrpcAsyncReply::finished, this, [reply](){
+        connect(reply, &QGrpcAsyncReply::finished, this, [reply]() {
             reply->deleteLater();
         });
 

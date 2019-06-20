@@ -86,7 +86,7 @@ const char *Templates::EnumFieldTemplate = "$enumvalue$ = $value$,\n";
 const char *Templates::ProtoConstructorTemplate = "$classname$($parameter_list$QObject *parent = nullptr);\n";
 const char *Templates::ProtoConstructorDefinitionTemplate = "$classname$::$classname$($parameter_list$QObject *parent) : QObject(parent)";
 const char *Templates::ConstructorTemplate = "$classname$();\n";
-const char *Templates::ConstructorHeaderTemplate = "$classname$(){}\n";
+const char *Templates::ConstructorHeaderTemplate = "$classname$() {}\n";
 const char *Templates::CopyConstructorTemplate = "$classname$(const $classname$ &other) : QObject() {\n";
 const char *Templates::MoveConstructorTemplate = "$classname$($classname$ &&other) : QObject() {\n";
 const char *Templates::DeletedCopyConstructorTemplate = "$classname$(const $classname$ &) = delete;\n";
@@ -202,7 +202,7 @@ const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nQtProtobuf::QGrp
 const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QGrpcAsyncReply *)> &callback)\n"
                                                               "{\n"
                                                               "    QtProtobuf::QGrpcAsyncReply *reply = call(\"$method_name$\", $param_name$);\n"
-                                                              "    QObject::connect(reply, &QtProtobuf::QGrpcAsyncReply::finished, context, [reply, callback](){\n"
+                                                              "    QObject::connect(reply, &QtProtobuf::QGrpcAsyncReply::finished, context, [reply, callback]() {\n"
                                                               "        callback(reply);\n"
                                                               "    });\n"
                                                               "}\n";

@@ -193,7 +193,7 @@ void ProtobufClassGenerator::printInclude(const FieldDescriptor *field, std::set
         EnumVisibility enumVisibily = getEnumVisibility(field, mMessage);
         if (enumVisibily == GLOBAL_ENUM) {
             includeTemplate = Templates::GlobalEnumIncludeTemplate;
-        } else if (enumVisibily == NEIGHBOUR_ENUM){
+        } else if (enumVisibily == NEIGHBOUR_ENUM) {
             includeTemplate = Templates::InternalIncludeTemplate;
             std::string fullEnumName = field->enum_type()->full_name();
             std::vector<std::string> fullEnumNameParts;
@@ -330,7 +330,7 @@ void ProtobufClassGenerator::printMaps()
             std::string valueType = getTypeName(field->message_type()->field(1), mMessage);
             const char *mapTemplate = Templates::MapTypeUsingTemplate;
 
-            if(field->message_type()->field(1)->type() == FieldDescriptor::TYPE_MESSAGE) {
+            if (field->message_type()->field(1)->type() == FieldDescriptor::TYPE_MESSAGE) {
                 mapTemplate = Templates::MessageMapTypeUsingTemplate;
             }
 
@@ -424,7 +424,7 @@ void ProtobufClassGenerator::printProperties()
         auto field = mMessage->field(i);
         switch (field->type()) {
         case FieldDescriptor::TYPE_MESSAGE:
-            if(!field->is_map() && !field->is_repeated()) {
+            if (!field->is_map() && !field->is_repeated()) {
                 printField(field, Templates::SetterTemplateMessageType);
             }
             printField(field, Templates::SetterTemplateComplexType);

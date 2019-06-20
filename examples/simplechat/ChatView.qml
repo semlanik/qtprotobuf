@@ -7,7 +7,7 @@ Rectangle {
     anchors.fill: parent
     color: "#303030"
     onVisibleChanged: {
-        if(visible) {
+        if (visible) {
             _inputField.forceActiveFocus()
         }
     }
