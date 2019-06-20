@@ -51,15 +51,22 @@ public:
     template<typename Call, typename Channel,
              typename std::enable_if_t<std::is_base_of<QtProtobuf::CallCredentials, Call>::value
                                        && std::is_base_of<QtProtobuf::ChannelCredentials, Channel>::value, int> = 0>
-    AbstractCredentials(const Call &call, const Channel &channel);
+    AbstractCredentials(const Call &call, const Channel &channel) {
+        mCallCredentials = call.mCallCredentials;
+        mChannelCredentials = channel.mChannelCredentials;
+    }
 
     template<typename Call,
              typename std::enable_if_t<std::is_base_of<QtProtobuf::CallCredentials, Call>::value, int> = 0>
-    AbstractCredentials(const Call &call);
+    AbstractCredentials(const Call &call) {
+        mCallCredentials = call.mCallCredentials;
+    }
 
     template<typename Channel,
              typename std::enable_if_t<std::is_base_of<QtProtobuf::ChannelCredentials, Channel>::value, int> = 0>
-    AbstractCredentials(const Channel &channel);
+    AbstractCredentials(const Channel &channel) {
+        mChannelCredentials = channel.mChannelCredentials;
+    }
 
     using CredentialMap = QHash<QLatin1String, QVariant>;
 
@@ -107,32 +114,6 @@ protected:
     }
 };
 /*! \} */
-
-//! \private
-template<typename Call, typename Channel,
-         typename std::enable_if_t<std::is_base_of<QtProtobuf::CallCredentials, Call>::value
-                                   && std::is_base_of<QtProtobuf::ChannelCredentials, Channel>::value, int> = 0>
-AbstractCredentials::AbstractCredentials(const Call &call, const Channel &channel)
-{
-    mCallCredentials = call.mCallCredentials;
-    mChannelCredentials = channel.mChannelCredentials;
-}
-
-//! \private
-template<typename Call,
-         typename std::enable_if_t<std::is_base_of<QtProtobuf::CallCredentials, Call>::value, int> = 0>
-AbstractCredentials::AbstractCredentials(const Call &call)
-{
-    mCallCredentials = call.mCallCredentials;
-}
-
-//! \private
-template<typename Channel,
-         typename std::enable_if_t<std::is_base_of<QtProtobuf::ChannelCredentials, Channel>::value, int> = 0>
-AbstractCredentials::AbstractCredentials(const Channel &channel)
-{
-    mChannelCredentials = channel.mChannelCredentials;
-}
 }
 
 //! \private
