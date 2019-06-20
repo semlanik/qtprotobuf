@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Viktor Kopp <vifactor@gmail.com>
  *
- * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
+ * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -73,7 +73,7 @@
 
 using namespace qtprotobufnamespace::tests;
 
-namespace qtprotobuf {
+namespace QtProtobuf {
 namespace tests {
 
 class SimpleTest : public ::testing::Test
@@ -110,7 +110,7 @@ TEST_F(SimpleTest, SimpleBoolMessageTest)
 TEST_F(SimpleTest, SimpleIntMessageTest)
 {
     const char *propertyName = "testFieldInt";
-    assertMessagePropertyRegistered<SimpleIntMessage, int32>(1, "qtprotobuf::int32", propertyName);
+    assertMessagePropertyRegistered<SimpleIntMessage, int32>(1, "QtProtobuf::int32", propertyName);
 
     SimpleIntMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int32>(1)));
@@ -121,7 +121,7 @@ TEST_F(SimpleTest, SimpleIntMessageTest)
 TEST_F(SimpleTest, SimpleSIntMessageTest)
 {
     const char *propertyName = "testFieldInt";
-    assertMessagePropertyRegistered<SimpleSIntMessage, sint32>(1, "qtprotobuf::sint32", propertyName);
+    assertMessagePropertyRegistered<SimpleSIntMessage, sint32>(1, "QtProtobuf::sint32", propertyName);
 
     SimpleSIntMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sint32>(1)));
@@ -132,7 +132,7 @@ TEST_F(SimpleTest, SimpleSIntMessageTest)
 TEST_F(SimpleTest, SimpleUIntMessageTest)
 {
     const char *propertyName = "testFieldInt";
-    assertMessagePropertyRegistered<SimpleUIntMessage, uint32>(1, "qtprotobuf::uint32", propertyName);
+    assertMessagePropertyRegistered<SimpleUIntMessage, uint32>(1, "QtProtobuf::uint32", propertyName);
 
     SimpleUIntMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<uint32>(1)));
@@ -143,7 +143,7 @@ TEST_F(SimpleTest, SimpleUIntMessageTest)
 TEST_F(SimpleTest, SimpleInt64MessageTest)
 {
     const char *propertyName = "testFieldInt";
-    assertMessagePropertyRegistered<SimpleInt64Message, int64>(1, "qtprotobuf::int64", propertyName);
+    assertMessagePropertyRegistered<SimpleInt64Message, int64>(1, "QtProtobuf::int64", propertyName);
 
     SimpleInt64Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int64>(1)));
@@ -154,7 +154,7 @@ TEST_F(SimpleTest, SimpleInt64MessageTest)
 TEST_F(SimpleTest, SimpleSInt64MessageTest)
 {
     const char *propertyName = "testFieldInt";
-    assertMessagePropertyRegistered<SimpleSInt64Message, sint64>(1, "qtprotobuf::sint64", propertyName);
+    assertMessagePropertyRegistered<SimpleSInt64Message, sint64>(1, "QtProtobuf::sint64", propertyName);
 
     SimpleSInt64Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sint64>(1)));
@@ -165,7 +165,7 @@ TEST_F(SimpleTest, SimpleSInt64MessageTest)
 TEST_F(SimpleTest, SimpleUInt64MessageTest)
 {
     const char *propertyName = "testFieldInt";
-    assertMessagePropertyRegistered<SimpleUInt64Message, uint64>(1, "qtprotobuf::uint64", propertyName);
+    assertMessagePropertyRegistered<SimpleUInt64Message, uint64>(1, "QtProtobuf::uint64", propertyName);
 
     SimpleUInt64Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<uint64>(1)));
@@ -176,7 +176,7 @@ TEST_F(SimpleTest, SimpleUInt64MessageTest)
 TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
 {
     const char *propertyName = "testFieldFixedInt32";
-    assertMessagePropertyRegistered<SimpleFixedInt32Message, fixed32>(1, "qtprotobuf::fixed32", propertyName);
+    assertMessagePropertyRegistered<SimpleFixedInt32Message, fixed32>(1, "QtProtobuf::fixed32", propertyName);
 
     SimpleFixedInt32Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<fixed32>(1)));
@@ -187,7 +187,7 @@ TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
 TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
 {
     const char *propertyName = "testFieldFixedInt64";
-    assertMessagePropertyRegistered<SimpleFixedInt64Message, fixed64>(1, "qtprotobuf::fixed64", propertyName);
+    assertMessagePropertyRegistered<SimpleFixedInt64Message, fixed64>(1, "QtProtobuf::fixed64", propertyName);
 
     SimpleFixedInt64Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<fixed64>(1)));
@@ -198,7 +198,7 @@ TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
 TEST_F(SimpleTest, SimpleSFixedInt32MessageTest)
 {
     const char *propertyName = "testFieldFixedInt32";
-    assertMessagePropertyRegistered<SimpleSFixedInt32Message, sfixed32>(1, "qtprotobuf::sfixed32", propertyName);
+    assertMessagePropertyRegistered<SimpleSFixedInt32Message, sfixed32>(1, "QtProtobuf::sfixed32", propertyName);
 
     SimpleSFixedInt32Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sfixed32>(1)));
@@ -209,7 +209,7 @@ TEST_F(SimpleTest, SimpleSFixedInt32MessageTest)
 TEST_F(SimpleTest, SimpleSFixedInt64MessageTest)
 {
     const char *propertyName = "testFieldFixedInt64";
-    assertMessagePropertyRegistered<SimpleSFixedInt64Message, sfixed64>(1, "qtprotobuf::sfixed64", propertyName);
+    assertMessagePropertyRegistered<SimpleSFixedInt64Message, sfixed64>(1, "QtProtobuf::sfixed64", propertyName);
 
     SimpleSFixedInt64Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sfixed64>(1)));
@@ -373,7 +373,7 @@ TEST_F(SimpleTest, SimpleExternalComplexMessageTest)
 {
     const char *propertyName = "localList";
     assertMessagePropertyRegistered<qtprotobufnamespace1::externaltests::SimpleExternalMessage, int32List>(
-                1, "qtprotobuf::int32List", propertyName);
+                1, "QtProtobuf::int32List", propertyName);
 
     qtprotobufnamespace1::externaltests::SimpleExternalMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int32List>({1, 2, 3, 4, 5})));
@@ -416,7 +416,7 @@ TEST_F(SimpleTest, RepeatedStringMessageTest)
 TEST_F(SimpleTest, RepeatedIntMessageTest)
 {
     const char *propertyName = "testRepeatedInt";
-    assertMessagePropertyRegistered<RepeatedIntMessage, int32List>(1, "qtprotobuf::int32List", propertyName);
+    assertMessagePropertyRegistered<RepeatedIntMessage, int32List>(1, "QtProtobuf::int32List", propertyName);
 
     RepeatedIntMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int32List>({1, 2, 3, 4, 5})));
@@ -433,35 +433,35 @@ TEST_F(SimpleTest, RepeatedIntMessageTest)
 TEST_F(SimpleTest, RepeatedDoubleMessageTest)
 {
     const char *propertyName = "testRepeatedDouble";
-    assertMessagePropertyRegistered<RepeatedDoubleMessage, DoubleList>(1, "qtprotobuf::DoubleList", propertyName);
+    assertMessagePropertyRegistered<RepeatedDoubleMessage, DoubleList>(1, "QtProtobuf::DoubleList", propertyName);
 
     RepeatedDoubleMessage test;
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobuf::DoubleList>({1.0, 2.3, 3, 4.7, 5.9})));
-    ASSERT_TRUE(test.property(propertyName).value<qtprotobuf::DoubleList>() == qtprotobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
-    ASSERT_TRUE(test.testRepeatedDouble() == qtprotobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<QtProtobuf::DoubleList>({1.0, 2.3, 3, 4.7, 5.9})));
+    ASSERT_TRUE(test.property(propertyName).value<QtProtobuf::DoubleList>() == QtProtobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
+    ASSERT_TRUE(test.testRepeatedDouble() == QtProtobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
 
     test.testRepeatedDouble().append(6.6);
-    ASSERT_TRUE(test.testRepeatedDouble() == qtprotobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9, 6.6}));
+    ASSERT_TRUE(test.testRepeatedDouble() == QtProtobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9, 6.6}));
 
     test.testRepeatedDouble().pop_back();
-    ASSERT_TRUE(test.testRepeatedDouble() == qtprotobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
+    ASSERT_TRUE(test.testRepeatedDouble() == QtProtobuf::DoubleList({1.0, 2.3, 3, 4.7, 5.9}));
 }
 
 TEST_F(SimpleTest, RepeatedFloatMessageTest)
 {
     const char *propertyName = "testRepeatedFloat";
-    assertMessagePropertyRegistered<RepeatedFloatMessage, FloatList>(1, "qtprotobuf::FloatList", propertyName);
+    assertMessagePropertyRegistered<RepeatedFloatMessage, FloatList>(1, "QtProtobuf::FloatList", propertyName);
 
     RepeatedFloatMessage test;
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobuf::FloatList>({1.0f, 2.3f, 3, 4.7f, 5.9f})));
-    ASSERT_TRUE(test.property(propertyName).value<qtprotobuf::FloatList>() == qtprotobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
-    ASSERT_TRUE(test.testRepeatedFloat() == qtprotobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<QtProtobuf::FloatList>({1.0f, 2.3f, 3, 4.7f, 5.9f})));
+    ASSERT_TRUE(test.property(propertyName).value<QtProtobuf::FloatList>() == QtProtobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
+    ASSERT_TRUE(test.testRepeatedFloat() == QtProtobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
 
     test.testRepeatedFloat().append(6.6f);
-    ASSERT_TRUE(test.testRepeatedFloat() == qtprotobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f, 6.6f}));
+    ASSERT_TRUE(test.testRepeatedFloat() == QtProtobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f, 6.6f}));
 
     test.testRepeatedFloat().pop_back();
-    ASSERT_TRUE(test.testRepeatedFloat() == qtprotobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
+    ASSERT_TRUE(test.testRepeatedFloat() == QtProtobuf::FloatList({1.0f, 2.3f, 3, 4.7f, 5.9f}));
 }
 
 TEST_F(SimpleTest, RepeatedBytesMessageTest)
@@ -490,7 +490,7 @@ TEST_F(SimpleTest, RepeatedBytesMessageTest)
 TEST_F(SimpleTest, RepeatedSIntMessageTest)
 {
     const char *propertyName = "testRepeatedInt";
-    assertMessagePropertyRegistered<RepeatedSIntMessage, sint32List>(1, "qtprotobuf::sint32List", propertyName);
+    assertMessagePropertyRegistered<RepeatedSIntMessage, sint32List>(1, "QtProtobuf::sint32List", propertyName);
 
     RepeatedSIntMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sint32List>({1, 2, 3, 4, 5})));
@@ -507,7 +507,7 @@ TEST_F(SimpleTest, RepeatedSIntMessageTest)
 TEST_F(SimpleTest, RepeatedUIntMessageTest)
 {
     const char *propertyName = "testRepeatedInt";
-    assertMessagePropertyRegistered<RepeatedUIntMessage, uint32List>(1, "qtprotobuf::uint32List", propertyName);
+    assertMessagePropertyRegistered<RepeatedUIntMessage, uint32List>(1, "QtProtobuf::uint32List", propertyName);
 
     RepeatedUIntMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<uint32List>({1, 2, 3, 4, 5})));
@@ -524,7 +524,7 @@ TEST_F(SimpleTest, RepeatedUIntMessageTest)
 TEST_F(SimpleTest, RepeatedInt64MessageTest)
 {
     const char *propertyName = "testRepeatedInt";
-    assertMessagePropertyRegistered<RepeatedInt64Message, int64List>(1, "qtprotobuf::int64List", propertyName);
+    assertMessagePropertyRegistered<RepeatedInt64Message, int64List>(1, "QtProtobuf::int64List", propertyName);
 
     RepeatedInt64Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int64List>({1, 2, 3, 4, 5})));
@@ -541,7 +541,7 @@ TEST_F(SimpleTest, RepeatedInt64MessageTest)
 TEST_F(SimpleTest, RepeatedSInt64MessageTest)
 {
     const char *propertyName = "testRepeatedInt";
-    assertMessagePropertyRegistered<RepeatedSInt64Message, sint64List>(1, "qtprotobuf::sint64List", propertyName);
+    assertMessagePropertyRegistered<RepeatedSInt64Message, sint64List>(1, "QtProtobuf::sint64List", propertyName);
 
     RepeatedSInt64Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sint64List>({1, 2, 3, 4, 5})));
@@ -558,7 +558,7 @@ TEST_F(SimpleTest, RepeatedSInt64MessageTest)
 TEST_F(SimpleTest, RepeatedUInt64MessageTest)
 {
     const char *propertyName = "testRepeatedInt";
-    assertMessagePropertyRegistered<RepeatedUInt64Message, uint64List>(1, "qtprotobuf::uint64List", propertyName);
+    assertMessagePropertyRegistered<RepeatedUInt64Message, uint64List>(1, "QtProtobuf::uint64List", propertyName);
 
     RepeatedUInt64Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<uint64List>({1, 2, 3, 4, 5})));
@@ -575,7 +575,7 @@ TEST_F(SimpleTest, RepeatedUInt64MessageTest)
 TEST_F(SimpleTest, RepeatedFixedIntMessageTest)
 {
     const char *propertyName = "testRepeatedInt";
-    assertMessagePropertyRegistered<RepeatedFixedIntMessage, fixed32List>(1, "qtprotobuf::fixed32List", propertyName);
+    assertMessagePropertyRegistered<RepeatedFixedIntMessage, fixed32List>(1, "QtProtobuf::fixed32List", propertyName);
 
     RepeatedFixedIntMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<fixed32List>({1, 2, 3, 4, 5})));
@@ -592,7 +592,7 @@ TEST_F(SimpleTest, RepeatedFixedIntMessageTest)
 TEST_F(SimpleTest, RepeatedFixedInt64MessageTest)
 {
     const char *propertyName = "testRepeatedInt";
-    assertMessagePropertyRegistered<RepeatedFixedInt64Message, fixed64List>(1, "qtprotobuf::fixed64List", propertyName);
+    assertMessagePropertyRegistered<RepeatedFixedInt64Message, fixed64List>(1, "QtProtobuf::fixed64List", propertyName);
 
     RepeatedFixedInt64Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<fixed64List>({1, 2, 3, 4, 5})));
@@ -609,7 +609,7 @@ TEST_F(SimpleTest, RepeatedFixedInt64MessageTest)
 TEST_F(SimpleTest, RepeatedSFixedIntMessageTest)
 {
     const char *propertyName = "testRepeatedInt";
-    assertMessagePropertyRegistered<RepeatedSFixedIntMessage, sfixed32List>(1, "qtprotobuf::sfixed32List", propertyName);
+    assertMessagePropertyRegistered<RepeatedSFixedIntMessage, sfixed32List>(1, "QtProtobuf::sfixed32List", propertyName);
 
     RepeatedSFixedIntMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sfixed32List>({1, 2, 3, 4, 5})));
@@ -626,7 +626,7 @@ TEST_F(SimpleTest, RepeatedSFixedIntMessageTest)
 TEST_F(SimpleTest, RepeatedSFixedInt64MessageTest)
 {
     const char *propertyName = "testRepeatedInt";
-    assertMessagePropertyRegistered<RepeatedSFixedInt64Message, qtprotobuf::sfixed64List>(1, "qtprotobuf::sfixed64List", propertyName);
+    assertMessagePropertyRegistered<RepeatedSFixedInt64Message, QtProtobuf::sfixed64List>(1, "QtProtobuf::sfixed64List", propertyName);
 
     RepeatedSFixedInt64Message test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sfixed64List>({1, 2, 3, 4, 5})));

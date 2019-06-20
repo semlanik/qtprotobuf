@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
- * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
+ * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -36,7 +36,7 @@ namespace google { namespace protobuf {
 class FileDescriptor;
 }}
 
-namespace qtprotobuf {
+namespace QtProtobuf {
 namespace generator {
 class utils {
 public:
@@ -69,4 +69,4 @@ static void tolower(std::string &str) {
 using PackagesList = std::unordered_map<std::string/*package*/, std::list<const ::google::protobuf::FileDescriptor *>>;
 
 } //namespace generator
-} //namespace qtprotobuf
+} //namespace QtProtobuf

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Tatyana Borisova <tanusshhka@mail.ru>
  *
- * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
+ * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -28,7 +28,7 @@
 #include "classgeneratorbase.h"
 #include "utils.h"
 
-namespace qtprotobuf {
+namespace QtProtobuf {
 namespace generator {
 
 class GlobalEnumsSourceGenerator : public ClassGeneratorBase
@@ -45,5 +45,5 @@ public:
 };
 
 } //namespace generator
-} //namespace qtprotobuf
+} //namespace QtProtobuf
 

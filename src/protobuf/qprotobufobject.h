@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
- * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
+ * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -40,8 +40,8 @@
 
 #define Q_DECLARE_PROTOBUF_SERIALIZERS(T)\
     public:\
-        QByteArray serialize() const { return qtprotobuf::QProtobufSerializerRegistry::serialize<T>(this); }\
-        void deserialize(const QByteArray &array) { qtprotobuf::QProtobufSerializerRegistry::deserialize<T>(this, array); }\
+        QByteArray serialize() const { return QtProtobuf::QProtobufSerializerRegistry::serialize<T>(this); }\
+        void deserialize(const QByteArray &array) { QtProtobuf::QProtobufSerializerRegistry::deserialize<T>(this, array); }\
     private:
 
 /*!
@@ -51,7 +51,7 @@
 
 #define Q_PROTOBUF_OBJECT\
     public:\
-        static const qtprotobuf::QProtobufPropertyOrdering propertyOrdering;\
+        static const QtProtobuf::QProtobufPropertyOrdering propertyOrdering;\
     private:
 
 /*! \} */

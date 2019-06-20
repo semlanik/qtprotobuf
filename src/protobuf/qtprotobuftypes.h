@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
- * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
+ * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -30,7 +30,7 @@
 
 #include <unordered_map>
 
-namespace qtprotobuf {
+namespace QtProtobuf {
 /*!
 *  \addtogroup QtProtobuf
 *  \{
@@ -159,146 +159,146 @@ using sfixed32 = transparent<int32_t, 1>;
 using sfixed64 = transparent<int64_t, 1>;
 
 /*!
- * \brief alias for list of qtprotobuf::int32
+ * \brief alias for list of QtProtobuf::int32
  */
 using int32List = QList<int32>;
 
 /*!
- * \brief alias for list of qtprotobuf::int64
+ * \brief alias for list of QtProtobuf::int64
  */
 using int64List = QList<int64>;
 
 /*!
- * \brief alias for list of qtprotobuf::uint32
+ * \brief alias for list of QtProtobuf::uint32
  */
 using uint32List = QList<uint32>;
 
 /*!
- * \brief alias for list of qtprotobuf::uint64
+ * \brief alias for list of QtProtobuf::uint64
  */
 using uint64List = QList<uint64>;
 
 /*!
- * \brief alias for list of qtprotobuf::sint32
+ * \brief alias for list of QtProtobuf::sint32
  */
 using sint32List = QList<sint32>;
 
 /*!
- * \brief alias for list of qtprotobuf::sint64
+ * \brief alias for list of QtProtobuf::sint64
  */
 using sint64List = QList<sint64>;
 
 /*!
- * \brief alias for list of qtprotobuf::fixed32
+ * \brief alias for list of QtProtobuf::fixed32
  */
 using fixed32List = QList<fixed32>;
 
 /*!
- * \brief alias for list of qtprotobuf::fixed64
+ * \brief alias for list of QtProtobuf::fixed64
  */
 using fixed64List = QList<fixed64>;
 
 /*!
- * \brief alias for list of qtprotobuf::sfixed32
+ * \brief alias for list of QtProtobuf::sfixed32
  */
 using sfixed32List = QList<sfixed32>;
 
 /*!
- * \brief alias for list of qtprotobuf::sfixed64
+ * \brief alias for list of QtProtobuf::sfixed64
  */
 using sfixed64List = QList<sfixed64>;
 
 /*!
- * \brief alias for list of qtprotobuf::float
+ * \brief alias for list of QtProtobuf::float
  */
 using FloatList = QList<float>;
 
 /*!
- * \brief alias for list of qtprotobuf::double
+ * \brief alias for list of QtProtobuf::double
  */
 using DoubleList = QList<double>;
 
 /*! \} */
 }
 
-Q_DECLARE_METATYPE(qtprotobuf::int32)
-Q_DECLARE_METATYPE(qtprotobuf::int64)
-Q_DECLARE_METATYPE(qtprotobuf::sint32)
-Q_DECLARE_METATYPE(qtprotobuf::sint64)
-Q_DECLARE_METATYPE(qtprotobuf::uint32)
-Q_DECLARE_METATYPE(qtprotobuf::uint64)
-Q_DECLARE_METATYPE(qtprotobuf::fixed32)
-Q_DECLARE_METATYPE(qtprotobuf::fixed64)
-Q_DECLARE_METATYPE(qtprotobuf::sfixed32)
-Q_DECLARE_METATYPE(qtprotobuf::sfixed64)
+Q_DECLARE_METATYPE(QtProtobuf::int32)
+Q_DECLARE_METATYPE(QtProtobuf::int64)
+Q_DECLARE_METATYPE(QtProtobuf::sint32)
+Q_DECLARE_METATYPE(QtProtobuf::sint64)
+Q_DECLARE_METATYPE(QtProtobuf::uint32)
+Q_DECLARE_METATYPE(QtProtobuf::uint64)
+Q_DECLARE_METATYPE(QtProtobuf::fixed32)
+Q_DECLARE_METATYPE(QtProtobuf::fixed64)
+Q_DECLARE_METATYPE(QtProtobuf::sfixed32)
+Q_DECLARE_METATYPE(QtProtobuf::sfixed64)
 
-Q_DECLARE_METATYPE(qtprotobuf::int32List)
-Q_DECLARE_METATYPE(qtprotobuf::int64List)
-Q_DECLARE_METATYPE(qtprotobuf::sint32List)
-Q_DECLARE_METATYPE(qtprotobuf::sint64List)
-Q_DECLARE_METATYPE(qtprotobuf::uint32List)
-Q_DECLARE_METATYPE(qtprotobuf::uint64List)
-Q_DECLARE_METATYPE(qtprotobuf::fixed32List)
-Q_DECLARE_METATYPE(qtprotobuf::fixed64List)
-Q_DECLARE_METATYPE(qtprotobuf::sfixed32List)
-Q_DECLARE_METATYPE(qtprotobuf::sfixed64List)
+Q_DECLARE_METATYPE(QtProtobuf::int32List)
+Q_DECLARE_METATYPE(QtProtobuf::int64List)
+Q_DECLARE_METATYPE(QtProtobuf::sint32List)
+Q_DECLARE_METATYPE(QtProtobuf::sint64List)
+Q_DECLARE_METATYPE(QtProtobuf::uint32List)
+Q_DECLARE_METATYPE(QtProtobuf::uint64List)
+Q_DECLARE_METATYPE(QtProtobuf::fixed32List)
+Q_DECLARE_METATYPE(QtProtobuf::fixed64List)
+Q_DECLARE_METATYPE(QtProtobuf::sfixed32List)
+Q_DECLARE_METATYPE(QtProtobuf::sfixed64List)
 
-Q_DECLARE_METATYPE(qtprotobuf::FloatList)
-Q_DECLARE_METATYPE(qtprotobuf::DoubleList)
-
-//! \private
-template<>
-struct std::make_unsigned<qtprotobuf::int32> { typedef typename std::make_unsigned<decltype(qtprotobuf::int32::_t)>::type type; };
-//! \private
-template<>
-struct std::make_unsigned<qtprotobuf::int64> { typedef typename std::make_unsigned<decltype(qtprotobuf::int64::_t)>::type type; };
-//! \private
-template<>
-struct std::make_unsigned<qtprotobuf::fixed32> { typedef typename std::make_unsigned<decltype(qtprotobuf::fixed32::_t)>::type type; };
-//! \private
-template<>
-struct std::make_unsigned<qtprotobuf::fixed64> { typedef typename std::make_unsigned<decltype(qtprotobuf::fixed64::_t)>::type type; };
-//! \private
-template<>
-struct std::make_unsigned<qtprotobuf::sfixed32> { typedef typename std::make_unsigned<decltype(qtprotobuf::sfixed32::_t)>::type type; };
-//! \private
-template<>
-struct std::make_unsigned<qtprotobuf::sfixed64> { typedef typename std::make_unsigned<decltype(qtprotobuf::sfixed64::_t)>::type type; };
+Q_DECLARE_METATYPE(QtProtobuf::FloatList)
+Q_DECLARE_METATYPE(QtProtobuf::DoubleList)
 
 //! \private
 template<>
-struct std::make_signed<qtprotobuf::int32> { typedef typename std::make_signed<decltype(qtprotobuf::int32::_t)>::type type; };
+struct std::make_unsigned<QtProtobuf::int32> { typedef typename std::make_unsigned<decltype(QtProtobuf::int32::_t)>::type type; };
 //! \private
 template<>
-struct std::make_signed<qtprotobuf::int64> { typedef typename std::make_signed<decltype(qtprotobuf::int64::_t)>::type type; };
+struct std::make_unsigned<QtProtobuf::int64> { typedef typename std::make_unsigned<decltype(QtProtobuf::int64::_t)>::type type; };
 //! \private
 template<>
-struct std::make_signed<qtprotobuf::fixed32> { typedef typename std::make_signed<decltype(qtprotobuf::fixed32::_t)>::type type; };
+struct std::make_unsigned<QtProtobuf::fixed32> { typedef typename std::make_unsigned<decltype(QtProtobuf::fixed32::_t)>::type type; };
 //! \private
 template<>
-struct std::make_signed<qtprotobuf::fixed64> { typedef typename std::make_signed<decltype(qtprotobuf::fixed64::_t)>::type type; };
+struct std::make_unsigned<QtProtobuf::fixed64> { typedef typename std::make_unsigned<decltype(QtProtobuf::fixed64::_t)>::type type; };
 //! \private
 template<>
-struct std::make_signed<qtprotobuf::sfixed32> { typedef typename std::make_signed<decltype(qtprotobuf::sfixed32::_t)>::type type; };
+struct std::make_unsigned<QtProtobuf::sfixed32> { typedef typename std::make_unsigned<decltype(QtProtobuf::sfixed32::_t)>::type type; };
 //! \private
 template<>
-struct std::make_signed<qtprotobuf::sfixed64> { typedef typename std::make_signed<decltype(qtprotobuf::sfixed64::_t)>::type type; };
+struct std::make_unsigned<QtProtobuf::sfixed64> { typedef typename std::make_unsigned<decltype(QtProtobuf::sfixed64::_t)>::type type; };
 
 //! \private
 template<>
-struct std::is_signed<qtprotobuf::int32> : public is_signed<decltype(qtprotobuf::int32::_t)> {};
+struct std::make_signed<QtProtobuf::int32> { typedef typename std::make_signed<decltype(QtProtobuf::int32::_t)>::type type; };
 //! \private
 template<>
-struct std::is_signed<qtprotobuf::int64> : public is_signed<decltype(qtprotobuf::int64::_t)> {};
+struct std::make_signed<QtProtobuf::int64> { typedef typename std::make_signed<decltype(QtProtobuf::int64::_t)>::type type; };
 //! \private
 template<>
-struct std::is_signed<qtprotobuf::fixed32> : public is_signed<decltype(qtprotobuf::fixed32::_t)> {};
+struct std::make_signed<QtProtobuf::fixed32> { typedef typename std::make_signed<decltype(QtProtobuf::fixed32::_t)>::type type; };
 //! \private
 template<>
-struct std::is_signed<qtprotobuf::fixed64> : public is_signed<decltype(qtprotobuf::fixed64::_t)> {};
+struct std::make_signed<QtProtobuf::fixed64> { typedef typename std::make_signed<decltype(QtProtobuf::fixed64::_t)>::type type; };
 //! \private
 template<>
-struct std::is_signed<qtprotobuf::sfixed32> : public is_signed<decltype(qtprotobuf::sfixed32::_t)> {};
+struct std::make_signed<QtProtobuf::sfixed32> { typedef typename std::make_signed<decltype(QtProtobuf::sfixed32::_t)>::type type; };
 //! \private
 template<>
-struct std::is_signed<qtprotobuf::sfixed64> : public is_signed<decltype(qtprotobuf::sfixed64::_t)> {};
+struct std::make_signed<QtProtobuf::sfixed64> { typedef typename std::make_signed<decltype(QtProtobuf::sfixed64::_t)>::type type; };
+
+//! \private
+template<>
+struct std::is_signed<QtProtobuf::int32> : public is_signed<decltype(QtProtobuf::int32::_t)> {};
+//! \private
+template<>
+struct std::is_signed<QtProtobuf::int64> : public is_signed<decltype(QtProtobuf::int64::_t)> {};
+//! \private
+template<>
+struct std::is_signed<QtProtobuf::fixed32> : public is_signed<decltype(QtProtobuf::fixed32::_t)> {};
+//! \private
+template<>
+struct std::is_signed<QtProtobuf::fixed64> : public is_signed<decltype(QtProtobuf::fixed64::_t)> {};
+//! \private
+template<>
+struct std::is_signed<QtProtobuf::sfixed32> : public is_signed<decltype(QtProtobuf::sfixed32::_t)> {};
+//! \private
+template<>
+struct std::is_signed<QtProtobuf::sfixed64> : public is_signed<decltype(QtProtobuf::sfixed64::_t)> {};

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
- * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
+ * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -27,7 +27,7 @@
 
 #include <QTimer>
 
-namespace qtprotobuf {
+namespace QtProtobuf {
 class QAbstractGrpcClientPrivate final {
 public:
     QAbstractGrpcClientPrivate(const QString &service) : service(service) {}
@@ -37,7 +37,7 @@ public:
 };
 }
 
-using namespace qtprotobuf;
+using namespace QtProtobuf;
 
 QAbstractGrpcClient::QAbstractGrpcClient(const QString &service, QObject *parent) : QObject(parent)
   , d(new QAbstractGrpcClientPrivate(service))

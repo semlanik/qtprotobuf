@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
- * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
+ * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -37,7 +37,7 @@
 #include <gtest/gtest.h>
 
 using namespace qtprotobufnamespace::tests;
-using namespace qtprotobuf;
+using namespace QtProtobuf;
 
 class ClientTest : public ::testing::Test
 {
@@ -62,7 +62,7 @@ TEST_F(ClientTest, IncorrectSecureCredentialsTest)
     //  conf.setCaCertificates({QSslCertificate(cert)});
 
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<qtprotobuf::QGrpcHttp2Channel>(QUrl("https://localhost:60051", QUrl::StrictMode), qtprotobuf::SslCredentials(conf)));
+    testClient.attachChannel(std::make_shared<QtProtobuf::QGrpcHttp2Channel>(QUrl("https://localhost:60051", QUrl::StrictMode), QtProtobuf::SslCredentials(conf)));
 
     std::unique_ptr<SimpleStringMessage> result = std::make_unique<SimpleStringMessage>();
     EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, result.get()));

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
- * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
+ * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -25,7 +25,7 @@
 
 #include "templates.h"
 
-using namespace qtprotobuf::generator;
+using namespace QtProtobuf::generator;
 
 const char *Templates::DefaultProtobufIncludesTemplate = "#include <QMetaType>\n"
                                                          "#include <QList>\n"
@@ -45,7 +45,7 @@ const char *Templates::InternalIncludeTemplate =  "#include \"$include$.h\"\n";
 const char *Templates::ExternalIncludeTemplate = "#include <$include$>\n";
 const char *Templates::GlobalEnumIncludeTemplate = "#include <globalenums.h>\n";
 
-const char *Templates::UsingQtProtobufNamespaceTemplate = "\nusing namespace qtprotobuf;\n";
+const char *Templates::UsingQtProtobufNamespaceTemplate = "\nusing namespace QtProtobuf;\n";
 const char *Templates::ComplexTypeRegistrationTemplate = "namespace $classname$Private {\n"
                                                          "void registerTypes()\n{\n"
                                                          "    qRegisterMetaType<$classname$>(\"$classname$\");\n"
@@ -118,7 +118,7 @@ const char *Templates::GetterContainerExtraTemplate = "$type$ &$property_name$()
                                         "}\n\n";
 
 const char *Templates::QmlListGetterTemplate = "QQmlListProperty<$type_nolist$> $property_name$_l() {\n"
-                                               "    return qtprotobuf::constructQmlListProperty<$type_nolist$>(this, &m_$property_name$);\n"
+                                               "    return QtProtobuf::constructQmlListProperty<$type_nolist$>(this, &m_$property_name$);\n"
                                                "}\n\n";
 
 const char *Templates::SetterTemplateMessageType = "void set$property_name_cap$_p($type$ *$property_name$) {\n"
@@ -150,7 +150,7 @@ const char *Templates::SetterTemplateSimpleType = "void set$property_name_cap$(c
 const char *Templates::SignalsBlockTemplate = "\nsignals:\n";
 const char *Templates::SignalTemplate = "void $property_name$Changed();\n";
 
-const char *Templates::FieldsOrderingContainerTemplate = "const qtprotobuf::QProtobufPropertyOrdering $type$::propertyOrdering = {";
+const char *Templates::FieldsOrderingContainerTemplate = "const QtProtobuf::QProtobufPropertyOrdering $type$::propertyOrdering = {";
 const char *Templates::FieldOrderTemplate = "{$field_number$, $property_number$}";
 
 const char *Templates::EnumTemplate = "$type$";
@@ -177,14 +177,14 @@ const char *Templates::RegisterQmlListPropertyMetaTypeTemplate = "qRegisterMetaT
 
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 
-const char *Templates::MapSerializationRegisterTemplate = "qtprotobuf::QProtobufSerializerRegistry::registerMap<$key_type$, $value_type$>();\n";
+const char *Templates::MapSerializationRegisterTemplate = "QtProtobuf::QProtobufSerializerRegistry::registerMap<$key_type$, $value_type$>();\n";
 
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
 const char *Templates::QObjectMacro = "Q_OBJECT";
 const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
-const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE qtprotobuf::QGrpcAsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
-const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(qtprotobuf::QGrpcAsyncReply *)> &callback);\n";
+const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE QtProtobuf::QGrpcAsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcAsyncReply *)> &callback);\n";
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
 
@@ -195,20 +195,20 @@ const char *Templates::ClientMethodDefinitionSyncTemplate = "\nbool $classname$:
                                                             "{\n"
                                                             "    return call(\"$method_name$\", $param_name$, $return_name$);\n"
                                                             "}\n";
-const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nqtprotobuf::QGrpcAsyncReply *$classname$::$method_name$(const $param_type$ &$param_name$)\n"
+const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nQtProtobuf::QGrpcAsyncReply *$classname$::$method_name$(const $param_type$ &$param_name$)\n"
                                                              "{\n"
                                                              "    return call(\"$method_name$\", $param_name$);\n"
                                                              "}\n";
 const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QGrpcAsyncReply *)> &callback)\n"
                                                               "{\n"
-                                                              "    qtprotobuf::QGrpcAsyncReply *reply = call(\"$method_name$\", $param_name$);\n"
-                                                              "    QObject::connect(reply, &qtprotobuf::QGrpcAsyncReply::finished, context, [reply, callback](){\n"
+                                                              "    QtProtobuf::QGrpcAsyncReply *reply = call(\"$method_name$\", $param_name$);\n"
+                                                              "    QObject::connect(reply, &QtProtobuf::QGrpcAsyncReply::finished, context, [reply, callback](){\n"
                                                               "        callback(reply);\n"
                                                               "    });\n"
                                                               "}\n";
 
-const char *Templates::RegisterSerializersTemplate = "qtprotobuf::QProtobufSerializerRegistry::registerSerializers<$classname$>();\n";
-const char *Templates::RegistratorTemplate = "static qtprotobuf::QProtobufRegistrationHelper helper(registerTypes);\n";
+const char *Templates::RegisterSerializersTemplate = "QtProtobuf::QProtobufSerializerRegistry::registerSerializers<$classname$>();\n";
+const char *Templates::RegistratorTemplate = "static QtProtobuf::QProtobufRegistrationHelper helper(registerTypes);\n";
 const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\");\n";
 const char *Templates::QmlRegisterTypeUncreatableTemplate = "qmlRegisterUncreatableType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\", \"$namespaces$::$classname$ Could not be created from qml context\");\n";
 

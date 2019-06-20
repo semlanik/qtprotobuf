@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
- * This file is part of qtprotobuf project https://git.semlanik.org/semlanik/qtprotobuf
+ * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -36,7 +36,7 @@
 
 using namespace qtprotobuf::examples;
 
-class AuthCredentials : public qtprotobuf::CallCredentials
+class AuthCredentials : public QtProtobuf::CallCredentials
 {
 public:
     AuthCredentials(const QString &userName, const QString &password) :
@@ -58,7 +58,7 @@ AddressBookEngine::AddressBookEngine() : QObject()
     conf.setProtocol(QSsl::TlsV1_2);
     conf.setAllowedNextProtocols({QSslConfiguration::ALPNProtocolHTTP2});
 
-    std::shared_ptr<qtprotobuf::QAbstractGrpcChannel> channel(new qtprotobuf::QGrpcHttp2Channel(QUrl("https://localhost:65001"), qtprotobuf::SslCredentials(conf) |
+    std::shared_ptr<QtProtobuf::QAbstractGrpcChannel> channel(new QtProtobuf::QGrpcHttp2Channel(QUrl("https://localhost:65001"), QtProtobuf::SslCredentials(conf) |
                                                                                       AuthCredentials("authorizedUser", QCryptographicHash::hash("test", QCryptographicHash::Md5).toHex())));
     m_client->attachChannel(channel);
     m_client->subscribeContactsUpdates(ListFrame());
