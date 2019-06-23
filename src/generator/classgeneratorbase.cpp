@@ -259,3 +259,13 @@ void ClassGeneratorBase::getMethodParameters(const MethodDescriptor *method, std
                   {"return_name", "ret"}
                  };
 }
+
+bool ClassGeneratorBase::hasGlobalEnum(const std::list<const FileDescriptor *> &list)
+{
+    for (auto file : list) {
+        if (file->enum_type_count() <= 0) {
+            return false;
+        }
+    }
+    return true;
+}

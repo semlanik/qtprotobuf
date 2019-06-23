@@ -72,6 +72,7 @@ protected:
     void printMetaTypeDeclaration();
     void encloseNamespaces();
     void encloseNamespaces(int count);
+    bool hasGlobalEnum(const std::list<const ::google::protobuf::FileDescriptor *> &list);
 
     template<typename T>
     void printQEnums(const T *message) {

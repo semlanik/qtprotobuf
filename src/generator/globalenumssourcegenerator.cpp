@@ -44,6 +44,9 @@ void GlobalEnumsSourceGenerator::run() {
 
     std::vector<std::string> namespaces;
     for (auto package : mPackageList) {
+        if (!hasGlobalEnum(package.second)) {
+            continue;
+        }
         utils::split(package.first, namespaces, '.');
 
         printNamespaces(namespaces);
