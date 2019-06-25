@@ -27,6 +27,7 @@
 
 #include <google/protobuf/io/printer.h>
 #include <memory>
+#include <list>
 
 #include "templates.h"
 
