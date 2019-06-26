@@ -130,23 +130,23 @@ TEST_F(ClientTest, StringEchoImmediateAsyncAbortTest)
         waiter.quit();
     });
 
-    QAbstractGrpcChannel::StatusCode asyncStatus = QAbstractGrpcChannel::StatusCode::Ok;
-    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&asyncStatus](QAbstractGrpcChannel::StatusCode code) {
-        asyncStatus = code;
+    QGrpcStatus::StatusCode asyncStatus = QGrpcStatus::StatusCode::Ok;
+    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&asyncStatus](const QGrpcStatus &status) {
+        asyncStatus = status.code();
     });
 
-    QAbstractGrpcChannel::StatusCode clientStatus = QAbstractGrpcChannel::StatusCode::Ok;
-    QObject::connect(&testClient, &TestServiceClient::error, reply, [&clientStatus](QAbstractGrpcChannel::StatusCode code, QString errMsg) {
-        clientStatus = code;
-        std::cerr << code << ":" << errMsg.toStdString();
+    QGrpcStatus::StatusCode clientStatus = QGrpcStatus::StatusCode::Ok;
+    QObject::connect(&testClient, &TestServiceClient::error, reply, [&clientStatus](const QGrpcStatus &status) {
+        clientStatus = status.code();
+        std::cerr << status.code() << ":" << status.message().toStdString();
     });
 
     QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
     reply->abort();
     waiter.exec();
 
-    ASSERT_EQ(clientStatus, QAbstractGrpcChannel::StatusCode::Aborted);
-    ASSERT_EQ(asyncStatus, QAbstractGrpcChannel::StatusCode::Aborted);
+    ASSERT_EQ(clientStatus, QGrpcStatus::StatusCode::Aborted);
+    ASSERT_EQ(asyncStatus, QGrpcStatus::StatusCode::Aborted);
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Result not changed by echo");
 }
 
@@ -167,7 +167,7 @@ TEST_F(ClientTest, StringEchoDeferredAsyncAbortTest)
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
-    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&errorCalled](QAbstractGrpcChannel::StatusCode) {
+    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&errorCalled]() {
         errorCalled = true;
     });
 
@@ -268,14 +268,14 @@ TEST_F(ClientTest, StatusMessageAsyncTest)
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage request(QString{"Some status message"});
-    QAbstractGrpcChannel::StatusCode asyncStatus = QAbstractGrpcChannel::StatusCode::Ok;
+    QGrpcStatus::StatusCode asyncStatus = QGrpcStatus::StatusCode::Ok;
     QEventLoop waiter;
     QString statusMessage;
 
     QGrpcAsyncReply* reply = testClient.testMethodStatusMessage(request);
-    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&asyncStatus, &waiter, &statusMessage](QAbstractGrpcChannel::StatusCode code, const QString &msg) {
-        asyncStatus = code;
-        statusMessage = msg;
+    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&asyncStatus, &waiter, &statusMessage](const QGrpcStatus &status) {
+        asyncStatus = status.code();
+        statusMessage = status.message();
         waiter.quit();
     });
 
@@ -290,13 +290,13 @@ TEST_F(ClientTest, StatusMessageClientAsyncTest)
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage request(QString{"Some status message"});
-    QAbstractGrpcChannel::StatusCode asyncStatus = QAbstractGrpcChannel::StatusCode::Ok;
+    QGrpcStatus::StatusCode asyncStatus = QGrpcStatus::StatusCode::Ok;
     QEventLoop waiter;
     QString statusMessage;
 
-    QObject::connect(&testClient, &TestServiceClient::error, [&asyncStatus, &waiter, &statusMessage](QAbstractGrpcChannel::StatusCode code, const QString &msg) {
-        asyncStatus = code;
-        statusMessage = msg;
+    QObject::connect(&testClient, &TestServiceClient::error, [&asyncStatus, &waiter, &statusMessage](const QGrpcStatus &status) {
+        asyncStatus = status.code();
+        statusMessage = status.message();
         waiter.quit();
     });
 
@@ -314,13 +314,13 @@ TEST_F(ClientTest, DISABLED_StatusMessageClientSyncTest)
     testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
     SimpleStringMessage request(QString{"Some status message"});
     QPointer<SimpleStringMessage> ret(new SimpleStringMessage);
-    QAbstractGrpcChannel::StatusCode asyncStatus = QAbstractGrpcChannel::StatusCode::Ok;
+    QGrpcStatus::StatusCode asyncStatus = QGrpcStatus::StatusCode::Ok;
     QEventLoop waiter;
     QString statusMessage;
 
-    QObject::connect(&testClient, &TestServiceClient::error, [&asyncStatus, &waiter, &statusMessage](QAbstractGrpcChannel::StatusCode code, const QString &msg) {
-        asyncStatus = code;
-        statusMessage = msg;
+    QObject::connect(&testClient, &TestServiceClient::error, [&asyncStatus, &waiter, &statusMessage](const QGrpcStatus &status) {
+        asyncStatus = status.code();
+        statusMessage = status.message();
         waiter.quit();
     });
 

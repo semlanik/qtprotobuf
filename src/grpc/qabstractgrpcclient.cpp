@@ -54,13 +54,13 @@ void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChann
     d->channel = channel;
 }
 
-QAbstractGrpcChannel::StatusCode QAbstractGrpcClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
+QGrpcStatus QAbstractGrpcClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
 {
-    QAbstractGrpcChannel::StatusCode callStatus = QAbstractGrpcChannel::Unknown;
+    QGrpcStatus callStatus{QGrpcStatus::Unknown};
     if (d->channel) {
         callStatus = d->channel->call(method, d->service, arg, ret);
     } else {
-        error(callStatus, QLatin1String("No channel(s) attached."));
+        error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});
     }
 
     return callStatus;
@@ -72,8 +72,8 @@ QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArr
     if (d->channel) {
         reply = new QGrpcAsyncReply(d->channel, this);
 
-        connect(reply, &QGrpcAsyncReply::error, this, [this, reply](QAbstractGrpcChannel::StatusCode statusCode, const QString &errorMessage) {
-            error(statusCode, errorMessage);
+        connect(reply, &QGrpcAsyncReply::error, this, [this, reply](const QGrpcStatus &status) {
+            error(status);
             reply->deleteLater();
         });
 
@@ -83,7 +83,7 @@ QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArr
 
         d->channel->call(method, d->service, arg, reply);
     } else {
-        error(QAbstractGrpcChannel::Unknown, QLatin1String("No channel(s) attached."));
+        error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});
     }
 
     return reply;
@@ -94,6 +94,6 @@ void QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg
     if (d->channel) {
         d->channel->subscribe(method, d->service, arg, this, handler);
     } else {
-        error(QAbstractGrpcChannel::Unknown, QLatin1String("No channel(s) attached."));
+        error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});
     }
 }

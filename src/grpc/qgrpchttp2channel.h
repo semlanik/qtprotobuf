@@ -43,7 +43,7 @@ public:
     QGrpcHttp2Channel(const QUrl &url, const AbstractCredentials &credentials);
     ~QGrpcHttp2Channel();
 
-    StatusCode call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
+    QGrpcStatus call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
     void call(const QString &method, const QString &service, const QByteArray &args, QtProtobuf::QGrpcAsyncReply *reply) override;
     void subscribe(const QString &method, const QString &service, const QByteArray &args, QAbstractGrpcClient *client, const std::function<void (const QByteArray &)> &handler) override;
 

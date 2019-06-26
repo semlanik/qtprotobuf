@@ -13,6 +13,7 @@ set(CMAKE_AUTORCC ON)
 include(${CMAKE_SOURCE_DIR}/cmake/Coverage.cmake)
 
 file(GLOB SOURCES qgrpcasyncreply.cpp
+    qgrpcstatus.cpp
     qabstractgrpcchannel.cpp
     qgrpchttp2channel.cpp
     qabstractgrpcclient.cpp
@@ -21,6 +22,7 @@ file(GLOB SOURCES qgrpcasyncreply.cpp
     insecurecredentials.cpp)
 
 file(GLOB HEADERS qgrpcasyncreply.h
+    qgrpcstatus.h
     qabstractgrpcchannel.h
     qgrpchttp2channel.h
     qabstractgrpcclient.h

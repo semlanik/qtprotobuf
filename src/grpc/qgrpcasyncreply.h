@@ -58,12 +58,12 @@ public:
             value.deserialize(m_data);
         } catch (std::invalid_argument &) {
             static const QLatin1String invalidArgumentErrorMessage("Response deserialization failed invalid field found");
-            error(QAbstractGrpcChannel::InvalidArgument, invalidArgumentErrorMessage);
+            error({QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage});
         } catch (std::out_of_range &) {
             static const QLatin1String outOfRangeErrorMessage("Invalid size of received buffer");
-            error(QAbstractGrpcChannel::OutOfRange, outOfRangeErrorMessage);
+            error({QGrpcStatus::OutOfRange, outOfRangeErrorMessage});
         } catch (...) {
-            error(QAbstractGrpcChannel::Internal, QLatin1String("Unknown exception caught during deserialization"));
+            error({QGrpcStatus::Internal, QLatin1String("Unknown exception caught during deserialization")});
         }
         return value;
     }
@@ -95,10 +95,10 @@ signals:
 
     /*!
      * \brief The signal is emitted when error happend in channel or during serialization
-     * \param code gRPC channel QAbstractGrpcChannel::StatusCode
+     * \param code gRPC channel QGrpcStatus::StatusCode
      * \param errorMessage Description of error occured
      */
-    void error(QAbstractGrpcChannel::StatusCode code, const QString &errorMessage);
+    void error(const QGrpcStatus &status);
 
 protected:
     //! \private

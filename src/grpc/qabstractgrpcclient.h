@@ -65,7 +65,7 @@ signals:
      * \param[out] code gRPC channel StatusCode
      * \param[out] errorText Error description from channel or from QGrpc
      */
-    void error(QAbstractGrpcChannel::StatusCode code, const QString &errorText);
+    void error(const QGrpcStatus &status);
 
 protected:
     QAbstractGrpcClient(const QString &service, QObject *parent = nullptr);
@@ -82,13 +82,13 @@ protected:
     bool call(const QString &method, const A &arg, const QPointer<R> &ret) {
         if (ret.isNull()) {
             static const QString errorString("Unable to call method: %1. Pointer to return data is null");
-            error(QAbstractGrpcChannel::InvalidArgument, errorString.arg(method));
+            error({QGrpcStatus::InvalidArgument, errorString.arg(method)});
             qProtoCritical() << errorString.arg(method);
             return false;
         }
 
         QByteArray retData;
-        if (QAbstractGrpcChannel::StatusCode::Ok == call(method, arg.serialize(), retData)) {
+        if (call(method, arg.serialize(), retData) == QGrpcStatus::StatusCode::Ok) {
             return tryDeserialize(*ret, retData);
         }
         return false;
@@ -138,7 +138,7 @@ protected:
     void subscribe(const QString &method, const A &arg, const QPointer<R> &ret) {
         if (ret.isNull()) {
             static const QString nullPointerError("Unable to subscribe method: %1. Pointer to return data is null");
-            error(QAbstractGrpcChannel::InvalidArgument, nullPointerError.arg(method));
+            error({QGrpcStatus::InvalidArgument, nullPointerError.arg(method)});
             qProtoCritical() << nullPointerError.arg(method);
             return;
         }
@@ -148,7 +148,7 @@ protected:
                 tryDeserialize(*ret, data);
             } else {
                 static const QLatin1String nullPointerError("Pointer to return data is null while subscription update received");
-                error(QAbstractGrpcChannel::InvalidArgument, nullPointerError);
+                error({QGrpcStatus::InvalidArgument, nullPointerError});
                 qProtoCritical() << nullPointerError;
             }
         });
@@ -158,7 +158,7 @@ private:
     /*!
      * \private
      */
-    QAbstractGrpcChannel::StatusCode call(const QString &method, const QByteArray &arg, QByteArray &ret);
+    QGrpcStatus call(const QString &method, const QByteArray &arg, QByteArray &ret);
 
     /*!
      * \private
@@ -180,16 +180,16 @@ private:
             ret.deserialize(retData);
         } catch (std::invalid_argument &) {
             static const QLatin1String invalidArgumentErrorMessage("Response deserialization failed invalid field found");
-            error(QAbstractGrpcChannel::InvalidArgument, invalidArgumentErrorMessage);
+            error({QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage});
             qProtoCritical() << invalidArgumentErrorMessage;
             return false;
         } catch (std::out_of_range &) {
             static const QLatin1String outOfRangeErrorMessage("Invalid size of received buffer");
-            error(QAbstractGrpcChannel::OutOfRange, outOfRangeErrorMessage);
+            error({QGrpcStatus::OutOfRange, outOfRangeErrorMessage});
             qProtoCritical() << outOfRangeErrorMessage;
             return false;
         } catch (...) {
-            error(QAbstractGrpcChannel::Internal, QLatin1String("Unknown exception caught during deserialization"));
+            error({QGrpcStatus::Internal, QLatin1String("Unknown exception caught during deserialization")});
             return false;
         }
         return true;
