@@ -187,17 +187,14 @@ private:
             status = {QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage};
             error(status);
             qProtoCritical() << invalidArgumentErrorMessage;
-            return status;
         } catch (std::out_of_range &) {
             static const QLatin1String outOfRangeErrorMessage("Invalid size of received buffer");
             status = {QGrpcStatus::OutOfRange, outOfRangeErrorMessage};
             error(status);
             qProtoCritical() << outOfRangeErrorMessage;
-            return status;
         } catch (...) {
             status = {QGrpcStatus::Internal, QLatin1String("Unknown exception caught during deserialization")};
             error(status);
-            return status;
         }
         return status;
     }
