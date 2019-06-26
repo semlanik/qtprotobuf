@@ -73,7 +73,7 @@ TEST_F(ClientTest, StringEchoTest)
     SimpleStringMessage request;
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
     request.setTestFieldString("Hello beach!");
-    ASSERT_TRUE(testClient.testMethod(request, result));
+    ASSERT_TRUE(testClient.testMethod(request, result) == QGrpcStatus::Ok);
     ASSERT_STREQ(result->testFieldString().toStdString().c_str(), "Hello beach!");
     delete result;
 }
@@ -308,7 +308,7 @@ TEST_F(ClientTest, StatusMessageClientAsyncTest)
     ASSERT_STREQ(statusMessage.toStdString().c_str(), request.testFieldString().toStdString().c_str());
 }
 
-TEST_F(ClientTest, DISABLED_StatusMessageClientSyncTest)
+TEST_F(ClientTest, StatusMessageClientSyncTest)
 {
     TestServiceClient testClient;
     testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
@@ -331,3 +331,56 @@ TEST_F(ClientTest, DISABLED_StatusMessageClientSyncTest)
     ASSERT_STREQ(statusMessage.toStdString().c_str(), request.testFieldString().toStdString().c_str());
     delete ret;
 }
+
+TEST_F(ClientTest, StatusMessageClientSyncTestReturnedStatus)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
+    SimpleStringMessage request(QString{"Some status message"});
+    QPointer<SimpleStringMessage> ret(new SimpleStringMessage);
+    QEventLoop waiter;
+    QString statusMessage;
+
+    QGrpcStatus status = testClient.testMethodStatusMessage(request, ret);
+
+    ASSERT_STREQ(status.message().toStdString().c_str(), request.testFieldString().toStdString().c_str());
+    delete ret;
+}
+
+
+TEST_F(ClientTest, ClientSyncTestUnattachedChannel)
+{
+    TestServiceClient testClient;
+    SimpleStringMessage request(QString{"Some status message"});
+    QPointer<SimpleStringMessage> ret(new SimpleStringMessage);
+    QEventLoop waiter;
+
+    QGrpcStatus status = testClient.testMethodStatusMessage(request, ret);
+
+    ASSERT_EQ(status.code(), QGrpcStatus::Unknown);
+    ASSERT_STREQ("No channel(s) attached.", status.message().toStdString().c_str());
+    delete ret;
+}
+
+TEST_F(ClientTest, ClientSyncTestUnattachedChannelSignal)
+{
+    TestServiceClient testClient;
+    SimpleStringMessage request(QString{"Some status message"});
+    QPointer<SimpleStringMessage> ret(new SimpleStringMessage);
+    QGrpcStatus asyncStatus(QGrpcStatus::StatusCode::Ok);
+    QEventLoop waiter;
+
+    QObject::connect(&testClient, &TestServiceClient::error, [&asyncStatus, &waiter](const QGrpcStatus &status) {
+        asyncStatus = status;
+        waiter.quit();
+    });
+
+    testClient.testMethodStatusMessage(request, ret);
+    QTimer::singleShot(20000, &waiter, &QEventLoop::quit);
+    waiter.exec();
+
+    ASSERT_EQ(asyncStatus, QGrpcStatus::Unknown);
+    ASSERT_STREQ("No channel(s) attached.", asyncStatus.message().toStdString().c_str());
+    delete ret;
+}
+

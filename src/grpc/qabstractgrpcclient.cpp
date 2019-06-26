@@ -60,7 +60,11 @@ QGrpcStatus QAbstractGrpcClient::call(const QString &method, const QByteArray &a
     if (d->channel) {
         callStatus = d->channel->call(method, d->service, arg, ret);
     } else {
-        error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});
+        callStatus = QGrpcStatus{QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")};
+    }
+
+    if (callStatus != QGrpcStatus::Ok) {
+        error(callStatus);
     }
 
     return callStatus;

@@ -79,19 +79,22 @@ protected:
      * \param[out] ret A pointer to memory with protobuf message to write an gRPC reply to
      */
     template<typename A, typename R>
-    bool call(const QString &method, const A &arg, const QPointer<R> &ret) {
+    QGrpcStatus call(const QString &method, const A &arg, const QPointer<R> &ret) {
+        QGrpcStatus status{QGrpcStatus::Ok};
         if (ret.isNull()) {
             static const QString errorString("Unable to call method: %1. Pointer to return data is null");
-            error({QGrpcStatus::InvalidArgument, errorString.arg(method)});
+            status = QGrpcStatus{QGrpcStatus::InvalidArgument, errorString.arg(method)};
+            error(status);
             qProtoCritical() << errorString.arg(method);
-            return false;
+            return status;
         }
 
         QByteArray retData;
-        if (call(method, arg.serialize(), retData) == QGrpcStatus::StatusCode::Ok) {
+        status = call(method, arg.serialize(), retData);
+        if (status == QGrpcStatus::StatusCode::Ok) {
             return tryDeserialize(*ret, retData);
         }
-        return false;
+        return status;
     }
 
     /*!
@@ -175,24 +178,28 @@ private:
      * \brief Deserialization helper
      */
     template<typename R>
-    bool tryDeserialize(R &ret, const QByteArray &retData) {
+    QGrpcStatus tryDeserialize(R &ret, const QByteArray &retData) {
+        QGrpcStatus status{QGrpcStatus::Ok};
         try {
             ret.deserialize(retData);
         } catch (std::invalid_argument &) {
             static const QLatin1String invalidArgumentErrorMessage("Response deserialization failed invalid field found");
-            error({QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage});
+            status = {QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage};
+            error(status);
             qProtoCritical() << invalidArgumentErrorMessage;
-            return false;
+            return status;
         } catch (std::out_of_range &) {
             static const QLatin1String outOfRangeErrorMessage("Invalid size of received buffer");
-            error({QGrpcStatus::OutOfRange, outOfRangeErrorMessage});
+            status = {QGrpcStatus::OutOfRange, outOfRangeErrorMessage};
+            error(status);
             qProtoCritical() << outOfRangeErrorMessage;
-            return false;
+            return status;
         } catch (...) {
-            error({QGrpcStatus::Internal, QLatin1String("Unknown exception caught during deserialization")});
-            return false;
+            status = {QGrpcStatus::Internal, QLatin1String("Unknown exception caught during deserialization")};
+            error(status);
+            return status;
         }
-        return true;
+        return status;
     }
 
     Q_DISABLE_COPY(QAbstractGrpcClient)

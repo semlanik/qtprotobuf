@@ -33,7 +33,9 @@ namespace QtProtobuf {
 
 /*!
  * \ingroup QtGrpc
- * \brief The QGrpcStatus class
+ * \brief The QGrpcStatus class contains information about last gRPC operation. In case of error in call/subscription
+ *        processing QGrpcStatus will contain code any of non-Ok QGrpcStatus::StatusCode.
+ *        This class combines QGrpcStatus::StatusCode and message returned from channel or QGrpc framework.
  */
 class QGrpcStatus final {
 public:
@@ -67,18 +69,17 @@ public:
     ~QGrpcStatus();
 
     /*!
-     * \brief code
-     * \return
+     * \brief code getter for QGrpcStatus::StatusCode stored in QGrpcStatus
      */
     StatusCode code() const;
 
     /*!
-     * \brief message
-     * \return
+     * \brief message getter for status message stored in QGrpcStatus
      */
     QString message() const;
 
     bool operator ==(StatusCode code) const;
+    bool operator !=(StatusCode code) const;
     bool operator ==(const QGrpcStatus &other) const;
 
     QGrpcStatus(const QGrpcStatus &other);
@@ -94,3 +95,4 @@ private:
 }
 
 bool operator ==(QtProtobuf::QGrpcStatus::StatusCode code, const QtProtobuf::QGrpcStatus &status);
+bool operator !=(QtProtobuf::QGrpcStatus::StatusCode code, const QtProtobuf::QGrpcStatus &status);

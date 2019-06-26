@@ -182,7 +182,7 @@ const char *Templates::MapSerializationRegisterTemplate = "QtProtobuf::QProtobuf
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
 const char *Templates::QObjectMacro = "Q_OBJECT";
-const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE bool $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
+const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE QtProtobuf::QGrpcStatus $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
 const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE QtProtobuf::QGrpcAsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
 const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcAsyncReply *)> &callback);\n";
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
@@ -191,7 +191,7 @@ const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $r
 const char *Templates::ConstructorDefinitionSyncTemplate = "\n$classname$::$classname$() : $parent_class$(\"$service_name$\")\n"
                                                            "{\n"
                                                            "}\n";
-const char *Templates::ClientMethodDefinitionSyncTemplate = "\nbool $classname$::$method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
+const char *Templates::ClientMethodDefinitionSyncTemplate = "\nQtProtobuf::QGrpcStatus $classname$::$method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
                                                             "{\n"
                                                             "    return call(\"$method_name$\", $param_name$, $return_name$);\n"
                                                             "}\n";

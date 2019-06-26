@@ -82,6 +82,11 @@ bool QGrpcStatus::operator ==(StatusCode code) const
     return d->m_code == code;
 }
 
+bool QGrpcStatus::operator !=(StatusCode code) const
+{
+    return d->m_code != code;
+}
+
 bool QGrpcStatus::operator ==(const QGrpcStatus &other) const
 {
     return d->m_code == other.d->m_code;
@@ -92,4 +97,8 @@ bool QGrpcStatus::operator ==(const QGrpcStatus &other) const
 bool operator ==(QtProtobuf::QGrpcStatus::StatusCode code, const QtProtobuf::QGrpcStatus &status)
 {
     return status == code;
+}
+bool operator !=(QtProtobuf::QGrpcStatus::StatusCode code, const QtProtobuf::QGrpcStatus &status)
+{
+    return status != code;
 }
