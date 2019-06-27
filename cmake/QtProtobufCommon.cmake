@@ -110,5 +110,6 @@ if(WIN32)
             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:QtProtobuf> $<TARGET_FILE_DIR:${add_target_windeployqt_TARGET}>
             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:QtGrpc> $<TARGET_FILE_DIR:${add_target_windeployqt_TARGET}>
             COMMAND ${WINDEPLOYQT_EXECUTABLE} ${QML_DIR} $<TARGET_FILE_DIR:${add_target_windeployqt_TARGET}>)
+    endif()
 endif()
 endfunction()
