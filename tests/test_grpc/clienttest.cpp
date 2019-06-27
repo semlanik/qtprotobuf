@@ -233,6 +233,7 @@ TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
 
     ASSERT_EQ(i, 4);
     ASSERT_STREQ(result->testFieldString().toStdString().c_str(), "Stream4");
+    delete result;
 }
 
 

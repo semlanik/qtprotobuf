@@ -40,14 +40,12 @@ public:
 using namespace QtProtobuf;
 
 QAbstractGrpcClient::QAbstractGrpcClient(const QString &service, QObject *parent) : QObject(parent)
-  , d(new QAbstractGrpcClientPrivate(service))
+  , d(std::make_unique<QAbstractGrpcClientPrivate>(service))
 {
 }
 
 QAbstractGrpcClient::~QAbstractGrpcClient()
-{
-    delete d;
-}
+{}
 
 void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChannel> &channel)
 {

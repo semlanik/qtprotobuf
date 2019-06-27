@@ -41,7 +41,7 @@
 
 namespace QtProtobuf {
 class QAbstractGrpcChannel;
-
+class QAbstractGrpcClientPrivate;
 /*!
  * \ingroup QtGrpc
  * \brief The QAbstractGrpcClient class is bridge between gRPC clients and channels. QAbstractGrpcClient provides set of
@@ -204,6 +204,6 @@ private:
     QAbstractGrpcClient &operator =(QAbstractGrpcClient &&) = delete;
 
     // PIMPL
-    class QAbstractGrpcClientPrivate *d;
+    std::unique_ptr<QAbstractGrpcClientPrivate> d;
 };
 }

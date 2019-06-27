@@ -28,11 +28,12 @@
 #include "qabstractgrpcchannel.h"
 
 #include <QUrl>
+#include <memory>
 
 namespace QtProtobuf {
 
 class AbstractCredentials;
-
+struct QGrpcHttp2ChannelPrivate;
 /*!
  * \ingroup QtGrpc
  * \brief The QGrpcHttp2Channel class
@@ -52,8 +53,10 @@ protected:
 
 private:
     Q_DISABLE_COPY(QGrpcHttp2Channel)
+    QGrpcHttp2Channel(QGrpcHttp2Channel &&) = delete;
+    QGrpcHttp2Channel &operator =(QGrpcHttp2Channel &&) = delete;
 
     // PIMPL
-    struct QGrpcHttp2ChannelPrivate *d;
+    std::unique_ptr<QGrpcHttp2ChannelPrivate> d;
 };
 }

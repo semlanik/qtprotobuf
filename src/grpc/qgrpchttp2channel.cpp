@@ -187,13 +187,12 @@ struct QGrpcHttp2ChannelPrivate {
 }
 
 QGrpcHttp2Channel::QGrpcHttp2Channel(const QUrl &url, const AbstractCredentials &credentials) : QAbstractGrpcChannel()
-  , d(new QGrpcHttp2ChannelPrivate(url, credentials))
+  , d(std::make_unique<QGrpcHttp2ChannelPrivate>(url, credentials))
 {
 }
 
 QGrpcHttp2Channel::~QGrpcHttp2Channel()
 {
-    delete d;
 }
 
 QGrpcStatus QGrpcHttp2Channel::call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret)

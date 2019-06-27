@@ -29,23 +29,25 @@ namespace QtProtobuf {
 
 class QGrpcStatusPrivate {
 public:
-    QGrpcStatusPrivate(QGrpcStatus::StatusCode code, QString message) : m_code(code)
+    QGrpcStatusPrivate(QGrpcStatus::StatusCode code, const QString &message) : m_code(code)
       , m_message(message)
     {}
+
+    ~QGrpcStatusPrivate() = default;
 
     QGrpcStatus::StatusCode m_code;
     QString m_message;
 };
 
-QGrpcStatus::QGrpcStatus(StatusCode code, QString message) : d(new QGrpcStatusPrivate(code, message))
+QGrpcStatus::QGrpcStatus(StatusCode code, const QString &message) :
+    d(std::make_unique<QGrpcStatusPrivate>(code, message))
 {}
 
-QGrpcStatus::QGrpcStatus(const QGrpcStatus &other) : d(new QGrpcStatusPrivate(other.d->m_code, other.d->m_message))
+QGrpcStatus::QGrpcStatus(const QGrpcStatus &other) : d(std::make_unique<QGrpcStatusPrivate>(other.d->m_code, other.d->m_message))
 {}
 
-QGrpcStatus::QGrpcStatus(QGrpcStatus &&other) : d(other.d)
+QGrpcStatus::QGrpcStatus(QGrpcStatus &&other) : d(std::move(other.d))
 {
-    other.d = nullptr;
 }
 
 QGrpcStatus &QGrpcStatus::operator =(const QGrpcStatus &other)
@@ -57,15 +59,12 @@ QGrpcStatus &QGrpcStatus::operator =(const QGrpcStatus &other)
 
 QGrpcStatus &QGrpcStatus::operator =(QGrpcStatus &&other)
 {
-    d = other.d;
-    other.d = nullptr;
+    d = std::move(other.d);
     return *this;
 }
 
 QGrpcStatus::~QGrpcStatus()
-{
-    delete d;
-}
+{}
 
 QString QGrpcStatus::message() const
 {

@@ -28,8 +28,11 @@
 #include <QString>
 
 #include "qtgrpcglobal.h"
+#include <memory>
 
 namespace QtProtobuf {
+
+class QGrpcStatusPrivate;
 
 /*!
  * \ingroup QtGrpc
@@ -65,7 +68,7 @@ public:
         DataLoss = 15,          //!< Unrecoverable data loss or corruption
     };
 
-    QGrpcStatus(StatusCode code = StatusCode::Ok, QString message = QString());
+    QGrpcStatus(StatusCode code = StatusCode::Ok, const QString &message = QString());
     ~QGrpcStatus();
 
     /*!
@@ -89,7 +92,7 @@ public:
     QGrpcStatus &operator =(QGrpcStatus &&other);
 
 private:
-    class QGrpcStatusPrivate *d;
+    std::unique_ptr<QGrpcStatusPrivate> d;
 };
 }
 
