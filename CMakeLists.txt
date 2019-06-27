@@ -6,17 +6,11 @@ project(QtProtobufProject VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
 include(GNUInstallDirs)
 
 find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
-if (Qt5Core_VERSION VERSION_LESS "5.12.3")
+if(Qt5Core_VERSION VERSION_LESS "5.12.3")
     # grpc target requires QT version not less than 5.12.3
     # earlier versions Http2DirectAttribute is broken: https://doc.qt.io/qt-5/whatsnew511.html
     #                                                  https://bugreports.qt.io/browse/QTBUG-74765
     message(FATAL_ERROR "Required Qt version is 5.12.3+")
-endif()
-
-if(WIN32)
-    if(CMAKE_CL_64)
-        message(FATAL_ERROR "WIN64 build is unsupported yet")
-    endif()
 endif()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/grpc/CMakeLists.txt")
@@ -50,6 +44,9 @@ if(UNIX)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-error=deprecated-declarations")
     endif()
 elseif(WIN32)
+    if(CMAKE_CL_64)
+        message(FATAL_ERROR "WIN64 build is unsupported yet")
+    endif()
     if(${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "/WX /W4 /MD")
     else()

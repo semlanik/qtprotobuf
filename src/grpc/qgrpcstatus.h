@@ -37,7 +37,7 @@ namespace QtProtobuf {
  *        processing QGrpcStatus will contain code any of non-Ok QGrpcStatus::StatusCode.
  *        This class combines QGrpcStatus::StatusCode and message returned from channel or QGrpc framework.
  */
-class QGrpcStatus final {
+class Q_GRPC_EXPORT QGrpcStatus final {
 public:
     /*!
      * \enum StatusCode
@@ -89,7 +89,6 @@ public:
     QGrpcStatus &operator =(QGrpcStatus &&other);
 
 private:
-    QGrpcStatus();
     class QGrpcStatusPrivate *d;
 };
 }
