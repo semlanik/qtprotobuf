@@ -34,12 +34,6 @@ file(GLOB HEADERS classgeneratorbase.h
 
 add_executable(${TARGET} ${SOURCES})
 
-if(WIN32)
-    include_directories(${PROTOBUF_INSTALATION_PATH}/include)
-    set(PROTOBUF_LIBRARIES_PATH ${PROTOBUF_INSTALATION_PATH}/lib)
-    link_directories(${PROTOBUF_LIBRARIES_PATH} ${GRPC_LIBRARIES})
-endif()
-
 if(DEFINED Protobuf_INCLUDE_DIRS)
     target_include_directories(${TARGET} PUBLIC ${Protobuf_INCLUDE_DIRS})
 endif()
