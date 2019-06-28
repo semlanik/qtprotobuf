@@ -80,8 +80,9 @@ using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf::tests;
 using namespace QtProtobuf;
 
-SerializationTest::SerializationTest()
+void SerializationTest::SetUp()
 {
+    QProtobufSerializerRegistry::setupSerializer<QProtobufSerializer>();
 }
 
 TEST_F(SerializationTest, IntMessageSerializeTest)

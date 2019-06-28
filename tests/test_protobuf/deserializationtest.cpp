@@ -86,9 +86,16 @@
 #include "fieldindextest3message.h"
 #include "fieldindextest4message.h"
 
+#include "qabstractprotobufserializer.h"
+
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf::tests;
 using namespace QtProtobuf;
+
+void DeserializationTest::SetUp()
+{
+    QProtobufSerializerRegistry::setupSerializer<QProtobufSerializer>();
+}
 
 TEST_F(DeserializationTest, FixedInt32MessageDeserializeTest)
 {

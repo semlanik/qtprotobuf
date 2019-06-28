@@ -41,7 +41,7 @@ QByteArray QAbstractProtobufSerializer::serializeObjectCommon(const QObject *obj
         QMetaProperty metaProperty = metaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
         const QVariant &propertyValue = object->property(propertyName);
-        result.append(serializeProperty(propertyValue, fieldIndex, metaProperty.isEnumType()));
+        result.append(serializeProperty(propertyValue, fieldIndex, metaProperty));
     }
 
     return result;

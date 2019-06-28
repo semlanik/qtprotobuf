@@ -11,7 +11,7 @@ Check installation of protobuf and grpc in your system. Minimum required version
 #### All-in-one build
 If required versions of libraries are not found in your system, you may use all-in-one build procedure for prerequesties
 
-Clone grpc project from official repository to 3rdparty folder:
+Update submodules to fetch 3rdparty dependencies:
 
 ```bash
 git submodule update --init --recursive
@@ -38,7 +38,7 @@ Download and install:
 
 **Note:** All applications should be in PATH
 
-Enter to 3rdparty folder and run command:
+Update submodules to fetch 3rdparty dependencies:
 
 ```bash
 git submodule update --init --recursive
@@ -48,13 +48,14 @@ git submodule update --init --recursive
 Open Qt MSVC command line and follow steps:
 
 ```bash
-"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
+"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
 cd <directory with qtprotobuf project>
 mkdir build
 cd build
 cmake ..
 cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 ```
+**Note:** 64-bit build is not supported yet
 
 ## Usage
 ```bash

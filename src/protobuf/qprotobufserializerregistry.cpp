@@ -28,7 +28,7 @@
 using namespace QtProtobuf;
 
 QAbstractProtobufSerializer::SerializerRegistry QProtobufSerializerRegistry::handlers = {};
-std::unique_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::basicSerializer = std::make_unique<QProtobufSerializer>();
+std::unique_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::basicSerializer;
 QAbstractProtobufSerializer::SerializationHandlers QProtobufSerializerRegistry::empty;
 
 const QAbstractProtobufSerializer::SerializationHandlers &QProtobufSerializerRegistry::handler(int userType)

@@ -66,7 +66,7 @@ QProtobufSerializer::QProtobufSerializer()
 
 }
 
-QByteArray QProtobufSerializer::serializeProperty(const QVariant &propertyValue, int fieldIndex, bool isEnum)
+QByteArray QProtobufSerializer::serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty)
 {
     qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex
                   << static_cast<QMetaType::Type>(propertyValue.type());
@@ -75,7 +75,7 @@ QByteArray QProtobufSerializer::serializeProperty(const QVariant &propertyValue,
     WireTypes type = UnknownWireType;
 
     int userType = propertyValue.userType();
-    if (isEnum) {
+    if (metaProperty.isEnumType()) {
         userType = qMetaTypeId<int64>();
     }
 
@@ -154,7 +154,7 @@ void QProtobufSerializer::deserializeListObject(QObject *object, QProtobufSelfch
 QByteArray QProtobufSerializer::serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex)
 {
     QByteArray result = QProtobufSerializerPrivate::encodeHeader(fieldIndex, LengthDelimited);
-    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(serializeProperty(key, 1, false) + serializeProperty(value, 2, false)));
+    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(serializeProperty(key, 1, QMetaProperty()) + serializeProperty(value, 2, QMetaProperty())));
     return result;
 }
 

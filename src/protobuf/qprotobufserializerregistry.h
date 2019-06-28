@@ -70,6 +70,18 @@ class Q_PROTOBUF_EXPORT QProtobufSerializerRegistry
     static std::unique_ptr<QAbstractProtobufSerializer> basicSerializer;
     static QAbstractProtobufSerializer::SerializationHandlers empty;
 public:
+
+    /*!
+     * \brief QProtobufSerializerRegistry holds application-wide serializers set. Basic types are serialized by
+     *        QAbstractProtobufSerializer, that should be setup using this function. In most cases serializer is
+     *        selected according to channel preferences.
+     */
+    template<typename T,
+             std::enable_if_t<std::is_base_of<QAbstractProtobufSerializer, T>::value, int> = 0>
+    static void setupSerializer() {
+        basicSerializer.reset(new T);
+    }
+
     static const QAbstractProtobufSerializer::SerializationHandlers &handler(int userType);
     /*!
      * \brief Serialization of a registered qtproto message object into byte-array
@@ -80,6 +92,7 @@ public:
      */
     template<typename T>
     static QByteArray serialize(const QObject *object) {
+        Q_ASSERT_X(basicSerializer, "QProtobufSerializerRegistry", "Serializers set is not setup");
         qProtoDebug() << T::staticMetaObject.className() << "serialize";
         return basicSerializer->serializeObjectCommon(object, T::propertyOrdering, T::staticMetaObject);
     }
@@ -95,10 +108,10 @@ public:
      */
     template<typename T>
     static void deserialize(QObject *object, const QByteArray &array) {
+        Q_ASSERT_X(basicSerializer, "QProtobufSerializerRegistry", "Serializers set is not setup");
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
         basicSerializer->deserializeObjectCommon(object, array, T::propertyOrdering, T::staticMetaObject);
     }
-
 
     /*!
      * \brief Registers serializers for type T in QProtobufSerializerRegistry
@@ -147,6 +160,7 @@ private:
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static QByteArray serializeComplexType(const QVariant &value, int &/*outFieldIndex*/) {
+        Q_ASSERT_X(basicSerializer, "QProtobufSerializerRegistry", "Serializers set is not setup");
         return basicSerializer->serializeObject(value.value<T *>(), T::propertyOrdering, T::staticMetaObject);
     }
 
@@ -158,6 +172,7 @@ private:
     template<typename V,
              typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static QByteArray serializeList(const QVariant &listValue, int &outFieldIndex) {
+        Q_ASSERT_X(basicSerializer, "QProtobufSerializerRegistry", "Serializers set is not setup");
         QList<QSharedPointer<V>> list = listValue.value<QList<QSharedPointer<V>>>();
 
         qProtoDebug() << __func__ << "listValue.count" << list.count() << "outFiledIndex" << outFieldIndex;
@@ -189,6 +204,7 @@ private:
     template<typename K, typename V,
              typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
     static QByteArray serializeMap(const QVariant &value, int &outFieldIndex) {
+        Q_ASSERT_X(basicSerializer, "QProtobufSerializerRegistry", "Serializers set is not setup");
         QMap<K,V> mapValue = value.value<QMap<K,V>>();
         using ItType = typename QMap<K,V>::const_iterator;
         QByteArray mapResult;
@@ -209,6 +225,7 @@ private:
     template<typename K, typename V,
              typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static QByteArray serializeMap(const QVariant &value, int &outFieldIndex) {
+        Q_ASSERT_X(basicSerializer, "QProtobufSerializerRegistry", "Serializers set is not setup");
         QMap<K, QSharedPointer<V>> mapValue = value.value<QMap<K, QSharedPointer<V>>>();
         using ItType = typename QMap<K, QSharedPointer<V>>::const_iterator;
         QByteArray mapResult;
@@ -232,6 +249,7 @@ private:
     template <typename T,
               typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
     static void deserializeComplexType(QProtobufSelfcheckIterator &it, QVariant &to) {
+        Q_ASSERT_X(basicSerializer, "QProtobufSerializerRegistry", "Serializers set is not setup");
         T *value = new T;
         basicSerializer->deserializeObject(value, it, T::propertyOrdering, T::staticMetaObject);
         to = QVariant::fromValue<T *>(value);
@@ -245,6 +263,7 @@ private:
     template <typename V,
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static void deserializeList(QProtobufSelfcheckIterator &it, QVariant &previous) {
+        Q_ASSERT_X(basicSerializer, "QProtobufSerializerRegistry", "Serializers set is not setup");
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         V *newValue = new V;
@@ -262,6 +281,7 @@ private:
     template <typename K, typename V,
               typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
     static void deserializeMap(QProtobufSelfcheckIterator &it, QVariant &previous) {
+        Q_ASSERT_X(basicSerializer, "QProtobufSerializerRegistry", "Serializers set is not setup");
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         QMap<K, V> out = previous.value<QMap<K, V>>();
@@ -282,6 +302,7 @@ private:
     template <typename K, typename V,
               typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
     static void deserializeMap(QProtobufSelfcheckIterator &it, QVariant &previous) {
+        Q_ASSERT_X(basicSerializer, "QProtobufSerializerRegistry", "Serializers set is not setup");
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         auto out = previous.value<QMap<K, QSharedPointer<V>>>();

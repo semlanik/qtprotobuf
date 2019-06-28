@@ -19,6 +19,7 @@ file(GLOB SOURCES
     qtprotobuflogging.cpp
     qprotobufserializerregistry.cpp
     qabstractprotobufserializer.cpp
+    qprotobufjsonserializer.cpp
     qprotobufserializer.cpp)
 
 file(GLOB HEADERS
@@ -29,6 +30,7 @@ file(GLOB HEADERS
     qprotobufserializerregistry.h
     qqmllistpropertyconstructor.h
     qabstractprotobufserializer.h
+    qprotobufjsonserializer.h
     qprotobufselfcheckiterator.h
     qprotobufregistrationhelper.h)
 

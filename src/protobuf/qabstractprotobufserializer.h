@@ -81,10 +81,10 @@ public:
      * \brief serializeProperty Method called on property serialization cycle.
      * \param[in] propertyValue Value of property and metainformation stored in QVariant
      * \param[in] fieldIndex index of property in message
-     * \param[in] isEnum Flag that indicates property of enum type
+     * \param[in] metaProperty meta information about property to be serialized
      * \return Raw serialized data represented as byte array
      */
-    virtual QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, bool isEnum) = 0;
+    virtual QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) = 0;
 
     /*!
      * \brief deserializeProperty Method called on property deserialization cycle
@@ -201,7 +201,7 @@ public:
     QProtobufSerializer();
     ~QProtobufSerializer() = default;
 
-    QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, bool isEnum) override;
+    QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) override;
     void deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
 
     QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;

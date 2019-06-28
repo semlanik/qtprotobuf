@@ -34,6 +34,7 @@ class DeserializationTest : public ::testing::Test
 {
 public:
     DeserializationTest() = default;
+    void SetUp() override;
 };
 
 }

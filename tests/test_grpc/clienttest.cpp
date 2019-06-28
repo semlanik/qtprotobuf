@@ -57,6 +57,7 @@ QUrl ClientTest::m_echoServerAddress("http://localhost:50051", QUrl::StrictMode)
 TEST_F(ClientTest, CheckMethodsGeneration)
 {
     //Dummy compile time check of functions generation and interface compatibility
+    QProtobufSerializerRegistry::setupSerializer<QProtobufSerializer>();
     TestServiceClient testClient;
     SimpleStringMessage request;
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);

@@ -33,7 +33,8 @@ namespace tests {
 class SerializationTest : public ::testing::Test
 {
 public:
-    SerializationTest();
+    SerializationTest() = default;
+    void SetUp() override;
 };
 
 }
