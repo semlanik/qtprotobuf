@@ -31,6 +31,7 @@
 
 #include <unordered_map>
 #include <functional>
+#include <memory>
 
 #include "qtprotobuftypes.h"
 #include "qtprotobuflogging.h"
@@ -47,35 +48,76 @@ namespace QtProtobuf {
 /*!
  * \brief The QAbstractProtobufSerializer class is interface that represents basic functions for serialization/deserialization
  *
- * \details This class is used by QProtobufSerializerRegistry to access basic serialization routines.
+ * \details The QAbstractProtobufSerializer class registers serializers/deserializers for classes inherited of QObject.
+ *          To register serializers for user-defined class it has to be inherited of QObject and contains
+ *          Q_DECLARE_PROTOBUF_SERIALIZERS macro's.
+ *          \code{.cpp}
+ *          class MyType : public QObject
+ *          {
+ *              Q_OBJECT
+ *              Q_PROTOBUF_OBJECT
+ *              Q_PROPERTY(qprotobuf::sint32 prop READ prop WRITE setProp NOTIFY propChanged)
+ *              ...
+ *              Q_DECLARE_PROTOBUF_SERIALIZERS(MyType)
+ *          };
+ *          \endcode
+ *          Practically code above is generated automaticaly by running qtprotobufgenerator or using cmake build macro
+ *          generate_qtprotobuf, based on .proto files. But it's still possible to reuse manually written code if needed.
  *
+ *          This class should be used as base for specific serializers. The handlers property contains all
+ *          message-specific serializers and should be used while serialization/deserialization. Inherited classes should reimplement
+ *          scope of virtual methods that used by registred message serialization/deserialization functions.
  */
 class Q_PROTOBUF_EXPORT QAbstractProtobufSerializer
 {
 public:
     /*!
-     * \brief Serializer is interface function for serialize method
+     * \brief Serialization of a registered qtproto message object into byte-array
+     *
+     *
+     * \param[in] object Pointer to QObject containing message to be serialized
+     * \result serialized message bytes
      */
-    using Serializer = std::function<QByteArray(const QVariant &, int &)>;
-    /*!
-     * \brief Deserializer is interface function for deserialize method
-     */
-    using Deserializer = std::function<void(QProtobufSelfcheckIterator &, QVariant &)>;
+    template<typename T>
+    QByteArray serialize(const QObject *object) {
+        qProtoDebug() << T::staticMetaObject.className() << "serialize";
+        return serializeMessage(object, T::propertyOrdering, T::staticMetaObject);
+    }
 
     /*!
-     * \brief SerializationHandlers contains set of objects that required for class serializaion/deserialization
+     * \brief Deserialization of a byte-array into a registered qtproto message object
+     *
+     * \details Properties in a message are identified via ProtobufObjectPrivate::decodeHeader.
+     *          Bytes corresponding to unexpected properties are skipped without any exception
+     *
+     * \param[out] object Pointer to memory where result of deserialization should be injected
+     * \param[in] array Bytes with serialized message
      */
-    struct SerializationHandlers {
-        Serializer serializer; /*!< serializer assigned to class */
-        Deserializer deserializer;/*!< deserializer assigned to class */
-        WireTypes type;/*!< Serialization WireType */
-    };
-    /*!
-     * \brief SerializerRegistry is container to store mapping between metatype identifier and serialization handlers.
-     */
-    using SerializerRegistry = std::unordered_map<int/*metatypeid*/, SerializationHandlers>;
+    template<typename T>
+    void deserialize(QObject *object, const QByteArray &array) {
+        qProtoDebug() << T::staticMetaObject.className() << "deserialize";
+        deserializeMessage(object, array, T::propertyOrdering, T::staticMetaObject);
+    }
 
     virtual ~QAbstractProtobufSerializer() = default;
+
+    /*!
+     * \brief serializeMessage
+     * \param object
+     * \param propertyOrdering
+     * \param metaObject
+     * \return
+     */
+    virtual QByteArray serializeMessage(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
+
+    /*!
+     * \brief serializeMessage
+     * \param object
+     * \param propertyOrdering
+     * \param metaObject
+     * \return
+     */
+    virtual void deserializeMessage(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
 
     /*!
      * \brief serializeProperty Method called on property serialization cycle.
@@ -84,7 +126,7 @@ public:
      * \param[in] metaProperty meta information about property to be serialized
      * \return Raw serialized data represented as byte array
      */
-    virtual QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) = 0;
+    virtual QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) const = 0;
 
     /*!
      * \brief deserializeProperty Method called on property deserialization cycle
@@ -94,7 +136,7 @@ public:
      * \param[in] metaObject Static meta object of given \a object. Static meta object usualy is used to get actual
      *            property value and write new property to \a object
      */
-    virtual void deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+    virtual void deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
 
     /*!
      * \brief serializeObject Serializes complete \a object according given \a propertyOrdering and \a metaObject
@@ -104,7 +146,7 @@ public:
      * \param[in] metaObject Meta object information for given \a object
      * \return Raw serialized data represented as byte array
      */
-    virtual QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+    virtual QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
 
     /*!
      * \brief deserializeObject Deserializes buffer to an \a object
@@ -114,7 +156,7 @@ public:
      * \param[in] metaObject Static meta object of given \a object. Static meta object usualy is used to get actual
      *        property value and write new property to \a object
      */
-    virtual void deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+    virtual void deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
 
     /*!
      * \brief serializeListObject Method called to serialize \a object as a part of list property
@@ -124,7 +166,7 @@ public:
      * \param[in] fieldIndex Index of list property in target message
      * \return Raw serialized data represented as byte array
      */
-    virtual QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) = 0;
+    virtual QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) const = 0;
 
     /*!
      * \brief deserializeListObject Deserializes an \a object from byte stream as part of list property
@@ -134,7 +176,7 @@ public:
      * \param[in] metaObject Static meta object of given \a object. Static meta object usualy is used to get actual
      *        property value and write new property to \a object
      */
-    virtual void deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) = 0;
+    virtual void deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
 
     /*!
      * \brief serializeMapPair Serializes QMap pair of \a key and \a value to raw data buffer
@@ -145,7 +187,7 @@ public:
      *
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
      */
-    virtual QByteArray serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) = 0;
+    virtual QByteArray serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) const = 0;
 
     /*!
      * \brief deserializeMapPair Deserializes QMap pair of \a key and \a value from raw data
@@ -157,64 +199,69 @@ public:
      *
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
      */
-    virtual void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) = 0;
+    virtual void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const = 0;
 
+protected:
     /*!
      * \brief serializeObjectCommon Common routine to iterate object properties. Could be used in serializer
-     *        implementations. But in practice is private interface for QProtobufSerializerRegistry
+     *        implementations. But in practice is private interface for QAbstractProtobufSerializer
      * \param[in] object Pointer to object to be serialized
      * \param[in] propertyOrdering Ordering of properties for given \a object
      * \param[in] metaObject Static meta object of given \a object.
      * \return Raw serialized data represented as byte array
      */
-    QByteArray serializeObjectCommon(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject);
+    QByteArray serializeObjectCommon(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const;
 
     /*!
      * \brief deserializeObjectCommon Common routine to iterate object properties. Could be used in serializer
-     *        implementations. But in practice is private interface for QProtobufSerializerRegistry
+     *        implementations. But in practice is private interface for QAbstractProtobufSerializer
      * \param[out] object Pointer to allocated object
      * \param[in] array Complete message buffer received from transport stream
      * \param[in] propertyOrdering Ordering of properties for given \a object
      * \param[in] metaObject Static meta object of given \a object. Static meta object usualy is used to get actual
      *        property value and write new property to \a object
      */
-    void deserializeObjectCommon(QObject *object, const QByteArray &array, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject);
-
-    /*!
-     * \brief handlers Method to access serializers set provided by serializer
-     * \return Serializers set provided by serializer
-     *
-     * \note In practice this method is interface for QProtobufSerializerRegistry
-     */
-    const SerializerRegistry& handlers() { return m_handlers; }
-
-protected:
-    SerializerRegistry m_handlers;//TODO: move to d-prointer
-};
-
-/*!
- * \brief The QProtobufSerializer class
- */
-class Q_PROTOBUF_EXPORT QProtobufSerializer : public QAbstractProtobufSerializer
-{
-public:
-    QProtobufSerializer();
-    ~QProtobufSerializer() = default;
-
-    QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) override;
-    void deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
-
-    QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
-    void deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
-
-    QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) override;
-    void deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) override;
-
-    QByteArray serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) override;
-    void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) override;
+    void deserializeObjectCommon(QObject *object, const QByteArray &array, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const;
 };
 /*! \} */
+}
 
-//! \private
-constexpr int NotUsedFieldIndex = -1;
+#include "qabstractprotobufserializer_p.h"
+
+/*!
+ * \brief Registers serializers for type T in QtProtobuf global serializers registry
+ *
+ * \details generates default serializers for type T. Type T has to be inherited of QObject.
+ */
+template<typename T>
+static void qRegisterProtobufType() {
+    QtProtobufPrivate::registerHandler(qMetaTypeId<T *>(), { QtProtobufPrivate::serializeComplexType<T>,
+            QtProtobufPrivate::deserializeComplexType<T>, QtProtobuf::LengthDelimited });
+    QtProtobufPrivate::registerHandler(qMetaTypeId<QList<QSharedPointer<T>>>(), { QtProtobufPrivate::serializeList<T>,
+            QtProtobufPrivate::deserializeList<T>, QtProtobuf::LengthDelimited });
+}
+
+/*!
+ * \brief Registers serializers for type QMap<K, V> in QtProtobuf global serializers registry
+ *
+ * \details generates default serializers for QMap<K, V>.
+ */
+template<typename K, typename V,
+         typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
+inline void qRegisterProtobufMapType() {
+    QtProtobufPrivate::registerHandler(qMetaTypeId<QMap<K, V>>(), { QtProtobufPrivate::serializeMap<K, V>,
+    QtProtobufPrivate::deserializeMap<K, V>, QtProtobuf::LengthDelimited });
+}
+
+/*!
+ * \brief Registers serializers for type QMap<K, V> in QtProtobuf global serializers registry
+ *
+ * \details generates default serializers for QMap<K, V>. Specialization for V type
+ *          inherited of QObject.
+ */
+template<typename K, typename V,
+         typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
+inline void qRegisterProtobufMapType() {
+    QtProtobufPrivate::registerHandler(qMetaTypeId<QMap<K, QSharedPointer<V>>>(), { QtProtobufPrivate::serializeMap<K, V>,
+    QtProtobufPrivate::deserializeMap<K, V>, QtProtobuf::LengthDelimited });
 }

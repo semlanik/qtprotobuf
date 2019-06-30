@@ -38,13 +38,36 @@ namespace QtProtobuf {
  *
  * \brief The QProtobufSerializerPrivate class
  */
-class QProtobufSerializerPrivate {
-    QProtobufSerializerPrivate() = delete;
-    ~QProtobufSerializerPrivate() = delete;
+class QProtobufSerializer;
+
+class QProtobufSerializerPrivate final {
     Q_DISABLE_COPY(QProtobufSerializerPrivate)
     QProtobufSerializerPrivate(QProtobufSerializerPrivate &&) = delete;
     QProtobufSerializerPrivate &operator =(QProtobufSerializerPrivate &&) = delete;
 public:
+
+    /*!
+     * \brief Serializer is interface function for serialize method
+     */
+    using Serializer = std::function<QByteArray(const QVariant &, int &)>;
+    /*!
+     * \brief Deserializer is interface function for deserialize method
+     */
+    using Deserializer = std::function<void(QProtobufSelfcheckIterator &, QVariant &)>;
+
+    /*!
+     * \brief SerializationHandlers contains set of objects that required for class serializaion/deserialization
+     */
+    struct SerializationHandlers {
+        Serializer serializer; /*!< serializer assigned to class */
+        Deserializer deserializer;/*!< deserializer assigned to class */
+        WireTypes type;/*!< Serialization WireType */
+    };
+
+    using SerializerRegistry = std::unordered_map<int/*metatypeid*/, SerializationHandlers>;
+
+    QProtobufSerializerPrivate();
+    ~QProtobufSerializerPrivate() = default;
     //###########################################################################
     //                               Serializers
     //###########################################################################
@@ -179,7 +202,7 @@ public:
         // Invalidate field index in case if serialized result is empty
         // NOTE: the field will not be sent if its index is equal to NotUsedFieldIndex
         if (result.size() == 0) {
-            outFieldIndex = NotUsedFieldIndex;
+            outFieldIndex = QtProtobufPrivate::NotUsedFieldIndex;
         } else {
             //Mark last chunk as last by clearing last bit
             result.data()[result.size() - 1] &= ~0b10000000;
@@ -209,11 +232,11 @@ public:
         qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
 
         if (listValue.count() <= 0) {
-            outFieldIndex = NotUsedFieldIndex;
+            outFieldIndex = QtProtobufPrivate::NotUsedFieldIndex;
             return QByteArray();
         }
 
-        int empty = NotUsedFieldIndex;
+        int empty = QtProtobufPrivate::NotUsedFieldIndex;
         QByteArray serializedList;
         for (auto &value : listValue) {
             serializedList.append(serializeBasic<V>(value, empty));
@@ -229,7 +252,7 @@ public:
         qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
 
         if (listValue.count() <= 0) {
-            outFieldIndex = NotUsedFieldIndex;
+            outFieldIndex = QtProtobufPrivate::NotUsedFieldIndex;
             return QByteArray();
         }
 
@@ -239,7 +262,7 @@ public:
             serializedList.append(serializeLengthDelimited(value.toUtf8()));
         }
 
-        outFieldIndex = NotUsedFieldIndex;
+        outFieldIndex = QtProtobufPrivate::NotUsedFieldIndex;
         return serializedList;
     }
 
@@ -249,7 +272,7 @@ public:
         qProtoDebug() << __func__ << "listValue.count" << listValue.count() << "outFiledIndex" << outFieldIndex;
 
         if (listValue.count() <= 0) {
-            outFieldIndex = NotUsedFieldIndex;
+            outFieldIndex = QtProtobufPrivate::NotUsedFieldIndex;
             return QByteArray();
         }
 
@@ -259,7 +282,7 @@ public:
             serializedList.append(serializeLengthDelimited(value));
         }
 
-        outFieldIndex = NotUsedFieldIndex;
+        outFieldIndex = QtProtobufPrivate::NotUsedFieldIndex;
         return serializedList;
     }
 
@@ -424,11 +447,9 @@ public:
     // in a serialized message met while the message being deserialized
     static int skipSerializedFieldBytes(QProtobufSelfcheckIterator &it, WireTypes type);
 
-    static void deserializeMapField(QVariant &value, QProtobufSelfcheckIterator &it);
-
     template <typename T,
               typename std::enable_if_t<!std::is_base_of<QObject, T>::value, int> = 0>
-    static void wrapSerializer(QAbstractProtobufSerializer::SerializerRegistry &handlers, const std::function<QByteArray(const T &, int &)> &s, const std::function<QVariant(QProtobufSelfcheckIterator &)> &d, WireTypes type)
+    static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<QVariant(QProtobufSelfcheckIterator &)> &d, WireTypes type)
     {
         handlers[qMetaTypeId<T>()] = {
             [s](const QVariant &value, int &fieldIndex) {
@@ -443,7 +464,7 @@ public:
 
     template <typename T,
     typename std::enable_if_t<!std::is_base_of<QObject, T>::value, int> = 0>
-    static void wrapSerializer(QAbstractProtobufSerializer::SerializerRegistry &handlers, const std::function<QByteArray(const T &, int &)> &s, const std::function<void(QProtobufSelfcheckIterator &it, QVariant & value)> &d, WireTypes type)
+    static void wrapSerializer(const std::function<QByteArray(const T &, int &)> &s, const std::function<void(QProtobufSelfcheckIterator &it, QVariant & value)> &d, WireTypes type)
     {
         handlers[qMetaTypeId<T>()] = {
             [s](const QVariant &value, int &fieldIndex) {
@@ -453,7 +474,8 @@ public:
             type
         };
     }
-protected:
+
+    static SerializerRegistry handlers;
     static void skipVarint(QProtobufSelfcheckIterator &it);
     static void skipLengthDelimited(QProtobufSelfcheckIterator &it);
 };

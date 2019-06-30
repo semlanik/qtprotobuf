@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "qprotobufserializerregistry.h"
+#include "qabstractprotobufserializer.h"
 #include <unordered_map>
 
 /*!
@@ -40,8 +40,8 @@
 
 #define Q_DECLARE_PROTOBUF_SERIALIZERS(T)\
     public:\
-        QByteArray serialize() const { return QtProtobuf::QProtobufSerializerRegistry::serialize<T>(this); }\
-        void deserialize(const QByteArray &array) { QtProtobuf::QProtobufSerializerRegistry::deserialize<T>(this, array); }\
+        QByteArray serialize(QtProtobuf::QAbstractProtobufSerializer *serializer) const { return serializer->serialize<T>(this); }\
+        void deserialize(QtProtobuf::QAbstractProtobufSerializer *serializer, const QByteArray &array) { serializer->deserialize<T>(this, array); }\
     private:
 
 /*!

@@ -23,22 +23,38 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
 #include <gtest/gtest.h>
-#include <qprotobufserializer.h>
+#include <QByteArray>
+#include <QString>
+#include <simplefixedint32message.h>
+#include <qprotobufjsonserializer.h>
+
+using namespace qtprotobufnamespace::tests;
 
 namespace QtProtobuf {
 namespace tests {
 
-class DeserializationTest : public ::testing::Test
+class JsonSerializationTest : public ::testing::Test
 {
 public:
-    DeserializationTest() = default;
+    JsonSerializationTest() = default;
     void SetUp() override;
 protected:
-    std::unique_ptr<QProtobufSerializer> serializer;
+    std::unique_ptr<QProtobufJsonSerializer> serializer;
 };
+
+void JsonSerializationTest::SetUp() {
+    serializer.reset(new QProtobufJsonSerializer);
+}
+
+TEST_F(JsonSerializationTest, FixedInt32MessageDeserializeTest)
+{
+    SimpleFixedInt32Message msg;
+    msg.setTestFieldFixedInt32(555);
+    QByteArray result = msg.serialize(serializer.get());
+    ASSERT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"testFieldFixedInt32\":555}");
+}
+
 
 }
 }

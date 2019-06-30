@@ -177,7 +177,7 @@ const char *Templates::RegisterQmlListPropertyMetaTypeTemplate = "qRegisterMetaT
 
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 
-const char *Templates::MapSerializationRegisterTemplate = "QtProtobuf::QProtobufSerializerRegistry::registerMap<$key_type$, $value_type$>();\n";
+const char *Templates::MapSerializationRegisterTemplate = "qRegisterProtobufMapType<$key_type$, $value_type$>();\n";
 
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
@@ -207,7 +207,7 @@ const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname
                                                               "    });\n"
                                                               "}\n";
 
-const char *Templates::RegisterSerializersTemplate = "QtProtobuf::QProtobufSerializerRegistry::registerSerializers<$classname$>();\n";
+const char *Templates::RegisterSerializersTemplate = "qRegisterProtobufType<$classname$>();\n";
 const char *Templates::RegistratorTemplate = "static QtProtobuf::QProtobufRegistrationHelper helper(registerTypes);\n";
 const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\");\n";
 const char *Templates::QmlRegisterTypeUncreatableTemplate = "qmlRegisterUncreatableType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\", \"$namespaces$::$classname$ Could not be created from qml context\");\n";

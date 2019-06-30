@@ -26,6 +26,7 @@
 #pragma once
 
 #include <gtest/gtest.h>
+#include <qprotobufserializer.h>
 
 namespace QtProtobuf {
 namespace tests {
@@ -35,6 +36,8 @@ class SerializationTest : public ::testing::Test
 public:
     SerializationTest() = default;
     void SetUp() override;
+protected:
+    std::unique_ptr<QProtobufSerializer> serializer;
 };
 
 }

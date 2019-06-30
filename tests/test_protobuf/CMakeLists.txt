@@ -143,7 +143,8 @@ file(GLOB SOURCES
     serializationtest.cpp
     deserializationtest.cpp
     serializationcomplexmessagemap.cpp
-    converterstest.cpp)
+    converterstest.cpp
+    jsonserializationtest.cpp)
 
 add_test_target(TARGET ${TARGET}
     GENERATED_HEADERS ${GENERATED_HEADERS}

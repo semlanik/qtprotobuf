@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "qabstractgrpcchannel.h"
+#include "qabstractgrpcclient.h"
 
 #include "qtgrpcglobal.h"
 
@@ -55,7 +56,7 @@ public:
         QMutexLocker locker(&m_asyncLock);
         T value;
         try {
-            value.deserialize(m_data);
+            value.deserialize(static_cast<QAbstractGrpcClient*>(parent())->serializer(), m_data);
         } catch (std::invalid_argument &) {
             static const QLatin1String invalidArgumentErrorMessage("Response deserialization failed invalid field found");
             error({QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage});
@@ -102,7 +103,7 @@ signals:
 
 protected:
     //! \private
-    QGrpcAsyncReply(const std::shared_ptr<QAbstractGrpcChannel> &channel, QObject *parent = nullptr) : QObject(parent)
+    QGrpcAsyncReply(const std::shared_ptr<QAbstractGrpcChannel> &channel, QAbstractGrpcClient *parent = nullptr) : QObject(parent)
     , m_channel(channel) {}
     //! \private
     ~QGrpcAsyncReply();

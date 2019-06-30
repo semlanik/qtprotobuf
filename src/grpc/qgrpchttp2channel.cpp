@@ -40,7 +40,7 @@
 #include <unordered_map>
 
 #include "qtprotobuflogging.h"
-#include "qprotobufserializerregistry.h"
+#include <qprotobufserializer.h>
 
 using namespace QtProtobuf;
 
@@ -190,7 +190,6 @@ struct QGrpcHttp2ChannelPrivate {
 QGrpcHttp2Channel::QGrpcHttp2Channel(const QUrl &url, const AbstractCredentials &credentials) : QAbstractGrpcChannel()
   , d(std::make_unique<QGrpcHttp2ChannelPrivate>(url, credentials))
 {
-    QProtobufSerializerRegistry::setupSerializer<QProtobufSerializer>();
 }
 
 QGrpcHttp2Channel::~QGrpcHttp2Channel()

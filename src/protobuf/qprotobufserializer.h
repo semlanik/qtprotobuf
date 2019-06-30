@@ -23,22 +23,26 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#pragma once
+
 #include "qabstractprotobufserializer.h"
 #include "qtprotobufglobal.h"
 
 namespace QtProtobuf {
+
+class QProtobufSerializerPrivate;
 /*!
-*  \ingroup QtProtobuf
- * \brief The QProtobufJsonSerializer class
+ * \ingroup QtProtobuf
+ * \brief The QProtobufSerializer class
  */
-class Q_PROTOBUF_EXPORT QProtobufJsonSerializer : public QAbstractProtobufSerializer
+class Q_PROTOBUF_EXPORT QProtobufSerializer : public QAbstractProtobufSerializer
 {
 public:
-    QProtobufJsonSerializer();
-    ~QProtobufJsonSerializer() = default;
+    QProtobufSerializer();
+    ~QProtobufSerializer();
 
 protected:
-    QByteArray serializeMessage(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const  override;
+    QByteArray serializeMessage(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const override;
     void deserializeMessage(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const override;
 
     QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) const override;
@@ -52,6 +56,9 @@ protected:
 
     QByteArray serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) const override;
     void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const override;
+
+private:
+    std::unique_ptr<QProtobufSerializerPrivate> d;
 };
 
 }

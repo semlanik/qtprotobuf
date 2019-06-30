@@ -25,15 +25,22 @@
 
 #include "qabstractgrpcclient.h"
 
+#include "qprotobufserializer.h"
+#include "qgrpcasyncreply.h"
+
 #include <QTimer>
 
 namespace QtProtobuf {
 class QAbstractGrpcClientPrivate final {
 public:
-    QAbstractGrpcClientPrivate(const QString &service) : service(service) {}
+    QAbstractGrpcClientPrivate(const QString &service) : service(service) {
+        //TODO: probably this variable should be initialized by default serializer from registry
+        serializer.reset(new QProtobufSerializer);
+    }
 
     std::shared_ptr<QAbstractGrpcChannel> channel;
     const QString service;
+    std::unique_ptr<QAbstractProtobufSerializer> serializer;
 };
 }
 
@@ -50,6 +57,8 @@ QAbstractGrpcClient::~QAbstractGrpcClient()
 void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChannel> &channel)
 {
     d->channel = channel;
+    //TODO: construct serializer based on information recevied from channel
+    d->serializer.reset(new QProtobufSerializer);
 }
 
 QGrpcStatus QAbstractGrpcClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
@@ -99,3 +108,9 @@ void QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg
         error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});
     }
 }
+
+QAbstractProtobufSerializer *QAbstractGrpcClient::serializer() const
+{
+    return d->serializer.get();
+}
+

@@ -31,7 +31,30 @@
 
 using namespace QtProtobuf;
 
-QByteArray QAbstractProtobufSerializer::serializeObjectCommon(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
+namespace  {
+/*
+ * SerializerRegistry is container to store mapping between metatype identifier and serialization handlers.
+ */
+using SerializerRegistry = std::unordered_map<int/*metatypeid*/, QtProtobufPrivate::SerializationHandler>;
+static SerializerRegistry registry;
+static QtProtobufPrivate::SerializationHandler empty;
+}
+
+void QtProtobufPrivate::registerHandler(int userType, const QtProtobufPrivate::SerializationHandler &handlers)
+{
+    registry[userType] = handlers;
+}
+
+QtProtobufPrivate::SerializationHandler &QtProtobufPrivate::findHandler(int userType)
+{
+    auto it = registry.find(userType);
+    if (it != registry.end()) {
+        return it->second;
+    }
+    return empty;
+}
+
+QByteArray QAbstractProtobufSerializer::serializeObjectCommon(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
 {
     QByteArray result;
     for (const auto &field : propertyOrdering) {
@@ -47,7 +70,7 @@ QByteArray QAbstractProtobufSerializer::serializeObjectCommon(const QObject *obj
     return result;
 }
 
-void QAbstractProtobufSerializer::deserializeObjectCommon(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
+void QAbstractProtobufSerializer::deserializeObjectCommon(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
 {
     for (QProtobufSelfcheckIterator it(data); it != data.end();) {
         deserializeProperty(object, it, propertyOrdering, metaObject);

@@ -26,24 +26,3 @@
 #include "qprotobufserializerregistry.h"
 
 using namespace QtProtobuf;
-
-QAbstractProtobufSerializer::SerializerRegistry QProtobufSerializerRegistry::handlers = {};
-std::unique_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::basicSerializer;
-QAbstractProtobufSerializer::SerializationHandlers QProtobufSerializerRegistry::empty;
-
-const QAbstractProtobufSerializer::SerializationHandlers &QProtobufSerializerRegistry::handler(int userType)
-{
-    QAbstractProtobufSerializer::SerializerRegistry::const_iterator it = handlers.find(userType);
-    if (it != handlers.end()) {
-        return it->second;
-    }
-
-    if (basicSerializer != nullptr) {
-        it = basicSerializer->handlers().find(userType);
-        if (it != basicSerializer->handlers().end()) {
-            return it->second;
-        }
-    }
-    qProtoCritical() << "Serializer for user type: " << QMetaType::typeName(userType) << " is not found";
-    return empty;
-}

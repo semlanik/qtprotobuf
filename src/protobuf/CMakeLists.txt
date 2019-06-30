@@ -30,6 +30,8 @@ file(GLOB HEADERS
     qprotobufserializerregistry.h
     qqmllistpropertyconstructor.h
     qabstractprotobufserializer.h
+    qabstractprotobufserializer_p.h
+    qprotobufserializer.h
     qprotobufjsonserializer.h
     qprotobufselfcheckiterator.h
     qprotobufregistrationhelper.h)

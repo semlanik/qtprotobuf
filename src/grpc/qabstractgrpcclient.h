@@ -33,13 +33,15 @@
 #include <QByteArray>
 
 #include <qtprotobuflogging.h>
+#include <qabstractprotobufserializer.h>
 
 #include "qabstractgrpcchannel.h"
-#include "qgrpcasyncreply.h"
 
 #include "qtgrpcglobal.h"
 
 namespace QtProtobuf {
+
+class QGrpcAsyncReply;
 class QAbstractGrpcChannel;
 class QAbstractGrpcClientPrivate;
 /*!
@@ -90,7 +92,7 @@ protected:
         }
 
         QByteArray retData;
-        status = call(method, arg.serialize(), retData);
+        status = call(method, arg.serialize(serializer()), retData);
         if (status == QGrpcStatus::StatusCode::Ok) {
             return tryDeserialize(*ret, retData);
         }
@@ -105,7 +107,7 @@ protected:
      */
     template<typename A>
     QGrpcAsyncReply *call(const QString &method, const A &arg) {
-        return call(method, arg.serialize());
+        return call(method, arg.serialize(serializer()));
     }
 
     /*!
@@ -119,7 +121,7 @@ protected:
     template<typename A, typename R, typename C,
              typename std::enable_if_t<std::is_base_of<QAbstractGrpcClient, C>::value, int> = 0>
     void subscribe(const QString &method, const A &arg, void(C::*signal)(const R &)) {
-        subscribe(method, arg.serialize(), [this, signal](const QByteArray &data) {
+        subscribe(method, arg.serialize(serializer()), [this, signal](const QByteArray &data) {
             R ret;
             tryDeserialize(ret, data);
             C *client = static_cast<C *>(this);
@@ -146,7 +148,7 @@ protected:
             return;
         }
 
-        subscribe(method, arg.serialize(), [ret, this](const QByteArray &data) {
+        subscribe(method, arg.serialize(serializer()), [ret, this](const QByteArray &data) {
             if (!ret.isNull()) {
                 tryDeserialize(*ret, data);
             } else {
@@ -157,6 +159,9 @@ protected:
         });
     }
 
+    QAbstractProtobufSerializer *serializer() const;
+
+    friend class QGrpcAsyncReply;
 private:
     /*!
      * \private
@@ -181,7 +186,7 @@ private:
     QGrpcStatus tryDeserialize(R &ret, const QByteArray &retData) {
         QGrpcStatus status{QGrpcStatus::Ok};
         try {
-            ret.deserialize(retData);
+            ret.deserialize(serializer(), retData);
         } catch (std::invalid_argument &) {
             static const QLatin1String invalidArgumentErrorMessage("Response deserialization failed invalid field found");
             status = {QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage};

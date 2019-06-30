@@ -37,6 +37,8 @@
 #include <QCoreApplication>
 #include <gtest/gtest.h>
 
+#include <qprotobufserializer.h>
+
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf;
 
@@ -57,8 +59,8 @@ QUrl ClientTest::m_echoServerAddress("http://localhost:50051", QUrl::StrictMode)
 TEST_F(ClientTest, CheckMethodsGeneration)
 {
     //Dummy compile time check of functions generation and interface compatibility
-    QProtobufSerializerRegistry::setupSerializer<QProtobufSerializer>();
     TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(QUrl(), InsecureCredentials()));
     SimpleStringMessage request;
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
     testClient.testMethod(request, result);
