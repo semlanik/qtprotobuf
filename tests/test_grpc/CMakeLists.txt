@@ -15,10 +15,14 @@ set(GENERATED_HEADERS
 add_test_target(TARGET qtgrpc_test
     GENERATED_HEADERS ${GENERATED_HEADERS}
     SOURCES clienttest.cpp)
-    
+add_target_windeployqt(TARGET qtgrpc_test
+    QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
 add_test_target(TARGET qtgrpc_secure_test
     GENERATED_HEADERS ${GENERATED_HEADERS}
     SOURCES sslclienttest.cpp)
+add_target_windeployqt(TARGET qtgrpc_secure_test
+    QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # servers
 add_subdirectory(echoserver)
