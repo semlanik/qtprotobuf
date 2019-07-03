@@ -130,7 +130,7 @@ TestCase {
         uint32Msg.testFieldInt = 2147483647;
         compare(uint32Msg.testFieldInt == 2147483647, true, "SimpleUIntMessage == 2147483647")
         uint32Msg.testFieldInt = 4294967295;
-        compare(uint32Msg.testFieldInt == 4294967295, true, "SimpleUIntMessage == 2147483647")
+        compare(uint32Msg.testFieldInt == 4294967295, true, "SimpleUIntMessage == 4294967295")
     }
 
     function test_simplefixed32message() {
@@ -147,7 +147,7 @@ TestCase {
         fixed32Msg.testFieldFixedInt32 = 2147483647;
         compare(fixed32Msg.testFieldFixedInt32 == 2147483647, true, "SimpleFixedInt32Message == 2147483647")
         fixed32Msg.testFieldFixedInt32 = 4294967295;
-        compare(fixed32Msg.testFieldFixedInt32 == 4294967295, true, "SimpleFixedInt32Message == 2147483647")
+        compare(fixed32Msg.testFieldFixedInt32 == 4294967295, true, "SimpleFixedInt32Message == 4294967295")
     }
 
     function test_simplesfixed32message() {
