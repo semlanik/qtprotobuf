@@ -26,6 +26,7 @@
 import QtQuick 2.12
 import QtTest 1.0
 
+import QtProtobuf 0.1
 import qtprotobufnamespace.tests 1.0
 
 TestCase {
@@ -67,6 +68,7 @@ TestCase {
     }
 
     function test_simpleintmessage() {
+        compare(int32Msg.testFieldInt == 2147483647, true, "SimpleIntMessage.testFieldInt: 2147483647: " + int32Msg.testFieldInt)
         int32Msg.testFieldInt = 0;
         compare(int32Msg.testFieldInt == 0, true, "SimpleIntMessage == 0")
         int32Msg.testFieldInt = -128;
@@ -92,6 +94,7 @@ TestCase {
     }
 
     function test_simplesintmessage() {
+        compare(sint32Msg.testFieldInt == 2147483647, true, "SimpleSIntMessage.testFieldInt: 2147483647: " + sint32Msg.testFieldInt)
         sint32Msg.testFieldInt = 0;
         compare(sint32Msg.testFieldInt, 0, "SimpleSIntMessage == 0")
         sint32Msg.testFieldInt = -128;
@@ -117,6 +120,7 @@ TestCase {
     }
 
     function test_simpleuintmessage() {
+        compare(uint32Msg.testFieldInt == 4294967295, true, "SimpleUIntMessage.testFieldInt: 4294967295: " + uint32Msg.testFieldInt)
         uint32Msg.testFieldInt = 0;
         compare(uint32Msg.testFieldInt == 0, true, "SimpleUIntMessage == 0")
         uint32Msg.testFieldInt = 127;
@@ -134,6 +138,7 @@ TestCase {
     }
 
     function test_simplefixed32message() {
+        compare(fixed32Msg.testFieldFixedInt32 == 4294967295, true, "SimpleFixedInt32Message.testFieldInt: 4294967295: " + fixed32Msg.testFieldFixedInt32)
         fixed32Msg.testFieldFixedInt32 = 0;
         compare(fixed32Msg.testFieldFixedInt32 == 0, true, "SimpleFixedInt32Message == 0")
         fixed32Msg.testFieldFixedInt32 = 127;
@@ -151,6 +156,7 @@ TestCase {
     }
 
     function test_simplesfixed32message() {
+        compare(sfixed32Msg.testFieldFixedInt32 == 2147483647, true, "SimpleSFixedInt32Message.testFieldInt: 2147483647: " + sfixed32Msg.testFieldFixedInt32)
         sfixed32Msg.testFieldFixedInt32 = 0;
         compare(sfixed32Msg.testFieldFixedInt32 == 0, true, "SimpleSFixedInt32Message == 0")
         sfixed32Msg.testFieldFixedInt32 = -128;

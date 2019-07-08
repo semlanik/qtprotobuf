@@ -15,3 +15,5 @@ add_target_qml(TARGET ${TARGET} QML_FILES ${QML_FILES})
 add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/qml)
 
 add_test(NAME ${TARGET} COMMAND ${TARGET})
+set_tests_properties(${TARGET} PROPERTIES
+    ENVIRONMENT QML2_IMPORT_PATH=$<TARGET_FILE_DIR:protobufquickplugin>/../)

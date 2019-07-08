@@ -24,9 +24,22 @@
  */
 
 #include "qtprotobufquickplugin.h"
+#include "qtprotobuftypes.h"
+#include <private/qqmlmetatype_p.h>
 #include <QDebug>
+
+template<typename T>
+static QVariant coverter(const QString &str) {
+    QVariant value = QVariant::fromValue(str.toDouble());
+    value.convert(qMetaTypeId<T>());
+    return value;
+}
 
 void QtProtobufQuickPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("QtProtobuf"));
+    qmlRegisterModule(uri, QTPROTOBUF_VERSION_MAJOR, QTPROTOBUF_VERSION_MINOR);
+    QQmlMetaType::registerCustomStringConverter(qMetaTypeId<QtProtobuf::int32>(), coverter<QtProtobuf::int32>);
+    QQmlMetaType::registerCustomStringConverter(qMetaTypeId<QtProtobuf::fixed32>(), coverter<QtProtobuf::fixed32>);
+    QQmlMetaType::registerCustomStringConverter(qMetaTypeId<QtProtobuf::sfixed32>(), coverter<QtProtobuf::sfixed32>);
 }
