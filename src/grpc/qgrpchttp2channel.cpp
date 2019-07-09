@@ -33,14 +33,13 @@
 #include <QTimer>
 #include <QtEndian>
 
+#include <unordered_map>
+
 #include "qgrpcasyncreply.h"
 #include "qabstractgrpcclient.h"
 #include "abstractcredentials.h"
-
-#include <unordered_map>
-
+#include "qprotobufserializerregistry_p.h"
 #include "qtprotobuflogging.h"
-#include <qprotobufserializer.h>
 
 using namespace QtProtobuf;
 
@@ -296,4 +295,10 @@ void QGrpcHttp2Channel::abort(QGrpcAsyncReply *reply)
     assert(reply != nullptr);
     reply->setData({});
     reply->error({QGrpcStatus::StatusCode::Aborted, QLatin1String("Call aborted by user or timeout")});
+}
+
+std::shared_ptr<QAbstractProtobufSerializer> QGrpcHttp2Channel::serializer() const
+{
+    //TODO: make selection based on credentials or channel settings
+    return QProtobufSerializerRegistry::instance().getSerializer("protobuf");
 }

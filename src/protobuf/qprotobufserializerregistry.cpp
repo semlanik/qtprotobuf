@@ -23,6 +23,39 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "qprotobufserializerregistry.h"
+#include "qprotobufserializerregistry_p.h"
+#include "qprotobufserializer.h"
+#include "qprotobufjsonserializer.h"
+
+
+namespace QtProtobuf {
+class QProtobufSerializerRegistryPrivate {
+public:
+    QProtobufSerializerRegistryPrivate() {
+        serializers["protobuf"] = std::shared_ptr<QAbstractProtobufSerializer>(new QProtobufSerializer);
+        serializers["json"] = std::shared_ptr<QAbstractProtobufSerializer>(new QProtobufJsonSerializer);
+    }
+    std::unordered_map<QString/*id*/,  std::shared_ptr<QAbstractProtobufSerializer>> serializers;
+};
+}
 
 using namespace QtProtobuf;
+
+QProtobufSerializerRegistry::QProtobufSerializerRegistry() : d(new QProtobufSerializerRegistryPrivate)
+{
+
+}
+
+QProtobufSerializerRegistry::~QProtobufSerializerRegistry() = default;
+
+
+std::shared_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::getSerializer(const QString &id)
+{
+       return d->serializers.at(id); //throws
+}
+
+std::unique_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::acquireSerializer(const QString &/*id*/)
+{
+    Q_ASSERT_X(false, "QProtobufSerializerRegistry", "acquireSerializer is unimplemented");
+    return std::unique_ptr<QAbstractProtobufSerializer>();
+}

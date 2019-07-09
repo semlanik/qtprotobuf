@@ -28,7 +28,21 @@ file(GLOB HEADERS
     qtprotobuftypes.h
     qtprotobuflogging.h
     qprotobufobject.h
-    qprotobufserializerregistry.h
+    qprotobufserializerregistry_p.h
+    qqmllistpropertyconstructor.h
+    qabstractprotobufserializer.h
+    qabstractprotobufserializer_p.h
+    qprotobufserializer.h
+    qprotobufserializer_p.h
+    qprotobufjsonserializer.h
+    qprotobufselfcheckiterator.h
+    qprotobufregistrationhelper.h)
+
+file(GLOB PUBLIC_HEADERS
+    qtprotobufglobal.h
+    qtprotobuftypes.h
+    qtprotobuflogging.h
+    qprotobufobject.h
     qqmllistpropertyconstructor.h
     qabstractprotobufserializer.h
     qabstractprotobufserializer_p.h
@@ -42,7 +56,7 @@ target_compile_definitions(${TARGET} PRIVATE QT_BUILD_PROTOBUF_LIB PUBLIC QTPROT
     QTPROTOBUF_VERSION_MINOR=${PROJECT_VERSION_MINOR})
 
 add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
-set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})
+set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${PUBLIC_HEADERS}" OUTPUT_NAME ${TARGET})
 target_include_directories(${TARGET} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${TARGET_INCLUDE_DIR}>

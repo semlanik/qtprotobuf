@@ -38,21 +38,35 @@
 #include "qtprotobufglobal.h"
 
 namespace QtProtobuf {
+
+class QProtobufSerializerRegistryPrivate;
 /*!
  * \ingroup QtProtobuf
+ * \private
  * \brief The QProtobufSerializerRegistry class provides api to register serializers
- *        Loads serializer plugins and constructs them based on plugin identifier.
+ *        Loads serializer plugins and constructs serializer based on identifier.
  *
  */
-//TODO: this class is not implemented and is private
-class Q_PROTOBUF_EXPORT QProtobufSerializerRegistry
+
+class Q_PROTOBUF_EXPORT QProtobufSerializerRegistry final
 {
-    QProtobufSerializerRegistry() = delete;
-    ~QProtobufSerializerRegistry() = delete;
+public:
+    std::shared_ptr<QAbstractProtobufSerializer> getSerializer(const QString &id);
+    std::unique_ptr<QAbstractProtobufSerializer> acquireSerializer(const QString &id);
+
+    static QProtobufSerializerRegistry &instance() {
+        static QProtobufSerializerRegistry _instance;
+        return _instance;
+    }
+
+private:
+    QProtobufSerializerRegistry();
+    ~QProtobufSerializerRegistry();
 
     Q_DISABLE_COPY(QProtobufSerializerRegistry)
     QProtobufSerializerRegistry(QProtobufSerializerRegistry &&) = delete;
     QProtobufSerializerRegistry &operator =(QProtobufSerializerRegistry &&) = delete;
-public:
+
+    std::unique_ptr<QProtobufSerializerRegistryPrivate> d;
 };
 }

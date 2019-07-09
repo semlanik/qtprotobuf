@@ -28,6 +28,7 @@
 #include <QString>
 #include <QByteArray>
 #include <functional>
+#include <memory>
 
 #include "qgrpcstatus.h"
 #include "qtgrpcglobal.h"
@@ -36,6 +37,7 @@ namespace QtProtobuf {
 
 class QGrpcAsyncReply;
 class QAbstractGrpcClient;
+class QAbstractProtobufSerializer;
 /*!
  * \ingroup QtGrpc
  * \brief The QAbstractGrpcChannel class is interface that represents common gRPC channel functionality.
@@ -76,6 +78,8 @@ public:
      * \param[in] handler callback that will be called when message recevied from the server-stream
      */
     virtual void subscribe(const QString &method, const QString &service, const QByteArray &args, QAbstractGrpcClient *client, const std::function<void(const QByteArray &)> &handler) = 0;
+
+    virtual std::shared_ptr<QAbstractProtobufSerializer> serializer() const = 0;
 protected:
     QAbstractGrpcChannel() = default;
     virtual ~QAbstractGrpcChannel() = default;
