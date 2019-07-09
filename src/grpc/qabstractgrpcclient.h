@@ -204,11 +204,8 @@ private:
         return status;
     }
 
-    Q_DISABLE_COPY(QAbstractGrpcClient)
-    QAbstractGrpcClient(QAbstractGrpcClient &&) = delete;
-    QAbstractGrpcClient &operator =(QAbstractGrpcClient &&) = delete;
+    Q_DISABLE_COPY_MOVE(QAbstractGrpcClient)
 
-    // PIMPL
-    std::unique_ptr<QAbstractGrpcClientPrivate> d;
+    std::unique_ptr<QAbstractGrpcClientPrivate> d_ptr;
 };
 }

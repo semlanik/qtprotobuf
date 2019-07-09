@@ -53,11 +53,8 @@ protected:
     void abort(QGrpcAsyncReply *reply) override;
 
 private:
-    Q_DISABLE_COPY(QGrpcHttp2Channel)
-    QGrpcHttp2Channel(QGrpcHttp2Channel &&) = delete;
-    QGrpcHttp2Channel &operator =(QGrpcHttp2Channel &&) = delete;
+    Q_DISABLE_COPY_MOVE(QGrpcHttp2Channel)
 
-    // PIMPL
-    std::unique_ptr<QGrpcHttp2ChannelPrivate> d;
+    std::unique_ptr<QGrpcHttp2ChannelPrivate> d_ptr;
 };
 }

@@ -27,6 +27,19 @@
 #include "qprotobufserializer.h"
 #include "qprotobufjsonserializer.h"
 
+#include <QString>
+#include <QHash>
+
+//TODO: remove once migration to 5.14 as minimum required version is completed
+#if QT_VERSION < 0x051300
+namespace std {
+  template<> struct hash<QString> {
+    std::size_t operator()(const QString &s) const {
+      return std::hash<std::string>()(s.toStdString());
+    }
+  };
+}
+#endif
 
 namespace QtProtobuf {
 class QProtobufSerializerRegistryPrivate {

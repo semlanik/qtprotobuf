@@ -120,25 +120,6 @@ public:
     virtual void deserializeMessage(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
 
     /*!
-     * \brief serializeProperty Method called on property serialization cycle.
-     * \param[in] propertyValue Value of property and metainformation stored in QVariant
-     * \param[in] fieldIndex index of property in message
-     * \param[in] metaProperty meta information about property to be serialized
-     * \return Raw serialized data represented as byte array
-     */
-    virtual QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) const = 0;
-
-    /*!
-     * \brief deserializeProperty Method called on property deserialization cycle
-     * \param[out] object Property value will be written to the given QObject.
-     * \param[in] it Pointer to next chunk of raw data received from channel
-     * \param[in] propertyOrdering Ordering of properties for given \a object
-     * \param[in] metaObject Static meta object of given \a object. Static meta object usualy is used to get actual
-     *            property value and write new property to \a object
-     */
-    virtual void deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
-
-    /*!
      * \brief serializeObject Serializes complete \a object according given \a propertyOrdering and \a metaObject
      *        information
      * \param[in] object Pointer to object to be serialized
@@ -200,28 +181,6 @@ public:
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
      */
     virtual void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const = 0;
-
-protected:
-    /*!
-     * \brief serializeObjectCommon Common routine to iterate object properties. Could be used in serializer
-     *        implementations. But in practice is private interface for QAbstractProtobufSerializer
-     * \param[in] object Pointer to object to be serialized
-     * \param[in] propertyOrdering Ordering of properties for given \a object
-     * \param[in] metaObject Static meta object of given \a object.
-     * \return Raw serialized data represented as byte array
-     */
-    QByteArray serializeObjectCommon(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const;
-
-    /*!
-     * \brief deserializeObjectCommon Common routine to iterate object properties. Could be used in serializer
-     *        implementations. But in practice is private interface for QAbstractProtobufSerializer
-     * \param[out] object Pointer to allocated object
-     * \param[in] array Complete message buffer received from transport stream
-     * \param[in] propertyOrdering Ordering of properties for given \a object
-     * \param[in] metaObject Static meta object of given \a object. Static meta object usualy is used to get actual
-     *        property value and write new property to \a object
-     */
-    void deserializeObjectCommon(QObject *object, const QByteArray &array, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const;
 };
 /*! \} */
 }

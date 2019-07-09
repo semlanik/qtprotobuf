@@ -110,9 +110,7 @@ protected:
 
 private:
     QGrpcAsyncReply();
-    Q_DISABLE_COPY(QGrpcAsyncReply)
-    QGrpcAsyncReply(QGrpcAsyncReply &&) = delete;
-    QGrpcAsyncReply &operator =(QGrpcAsyncReply &&) = delete;
+    Q_DISABLE_COPY_MOVE(QGrpcAsyncReply)
 
     friend class QAbstractGrpcClient;
 

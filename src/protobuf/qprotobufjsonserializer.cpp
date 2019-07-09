@@ -28,14 +28,52 @@
 
 using namespace QtProtobuf;
 
-QProtobufJsonSerializer::QProtobufJsonSerializer()
+namespace QtProtobuf {
+
+class QProtobufJsonSerializerPrivate final
+{
+    Q_DISABLE_COPY_MOVE(QProtobufJsonSerializerPrivate)
+public:
+    QProtobufJsonSerializerPrivate(QProtobufJsonSerializer *q) : q_ptr(q) {}
+    ~QProtobufJsonSerializerPrivate() = default;
+
+    QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) {
+        Q_UNUSED(fieldIndex)
+        auto &value = QtProtobufPrivate::findHandler(metaProperty.userType());
+        if (value.serializer) {
+            return value.serializer(q_ptr, propertyValue, fieldIndex);
+        } else {
+            QString result("\"%1\":%2");
+            return result.arg(metaProperty.name(), propertyValue.toString()).toUtf8();
+        }
+    }
+private:
+    QProtobufJsonSerializer *q_ptr;
+};
+
+}
+
+QProtobufJsonSerializer::QProtobufJsonSerializer() : d_ptr(new QProtobufJsonSerializerPrivate(this))
 {
 }
+
+QProtobufJsonSerializer::~QProtobufJsonSerializer() = default;
+
 
 QByteArray QProtobufJsonSerializer::serializeMessage(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
 {
     QByteArray result = "{";
-    result.append(serializeObjectCommon(object, propertyOrdering, metaObject));
+
+    for (const auto &field : propertyOrdering) {
+        int propertyIndex = field.second;
+        int fieldIndex = field.first;
+        Q_ASSERT_X(fieldIndex < 536870912 && fieldIndex > 0, "", "fieldIndex is out of range");
+        QMetaProperty metaProperty = metaObject.property(propertyIndex);
+        const char *propertyName = metaProperty.name();
+        const QVariant &propertyValue = object->property(propertyName);
+        result.append(d_ptr->serializeProperty(propertyValue, fieldIndex, metaProperty));
+    }
+
     result.append("}");
     return result;
 }
@@ -48,30 +86,10 @@ void QProtobufJsonSerializer::deserializeMessage(QObject *object, const QByteArr
     Q_UNUSED(metaObject)
 }
 
-QByteArray QProtobufJsonSerializer::serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty) const
-{
-    Q_UNUSED(fieldIndex)
-    auto &value = QtProtobufPrivate::findHandler(metaProperty.userType());
-    if (value.serializer) {
-        return value.serializer(this, propertyValue, fieldIndex);
-    } else {
-        QString result("\"%1\":%2");
-        return result.arg(metaProperty.name(), propertyValue.toString()).toUtf8();
-    }
-}
-
-void QProtobufJsonSerializer::deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
-{
-    Q_UNUSED(object)
-    Q_UNUSED(it)
-    Q_UNUSED(propertyOrdering)
-    Q_UNUSED(metaObject)
-}
-
 QByteArray QProtobufJsonSerializer::serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
 {
     QByteArray result = "{";
-    result.append(serializeObjectCommon(object, propertyOrdering, metaObject));
+    result.append(serializeMessage(object, propertyOrdering, metaObject));
     result.append("}");
     return result;
 }

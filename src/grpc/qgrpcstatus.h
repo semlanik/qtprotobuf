@@ -92,7 +92,7 @@ public:
     QGrpcStatus &operator =(QGrpcStatus &&other);
 
 private:
-    std::unique_ptr<QGrpcStatusPrivate> d;
+    std::unique_ptr<QGrpcStatusPrivate> d_ptr;
 };
 }
 

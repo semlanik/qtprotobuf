@@ -53,26 +53,3 @@ QtProtobufPrivate::SerializationHandler &QtProtobufPrivate::findHandler(int user
     }
     return empty;
 }
-
-QByteArray QAbstractProtobufSerializer::serializeObjectCommon(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
-{
-    QByteArray result;
-    for (const auto &field : propertyOrdering) {
-        int propertyIndex = field.second;
-        int fieldIndex = field.first;
-        Q_ASSERT_X(fieldIndex < 536870912 && fieldIndex > 0, "", "fieldIndex is out of range");
-        QMetaProperty metaProperty = metaObject.property(propertyIndex);
-        const char *propertyName = metaProperty.name();
-        const QVariant &propertyValue = object->property(propertyName);
-        result.append(serializeProperty(propertyValue, fieldIndex, metaProperty));
-    }
-
-    return result;
-}
-
-void QAbstractProtobufSerializer::deserializeObjectCommon(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
-{
-    for (QProtobufSelfcheckIterator it(data); it != data.end();) {
-        deserializeProperty(object, it, propertyOrdering, metaObject);
-    }
-}

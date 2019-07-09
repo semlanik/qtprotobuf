@@ -40,26 +40,26 @@ public:
 };
 
 QGrpcStatus::QGrpcStatus(StatusCode code, const QString &message) :
-    d(std::make_unique<QGrpcStatusPrivate>(code, message))
+    d_ptr(std::make_unique<QGrpcStatusPrivate>(code, message))
 {}
 
-QGrpcStatus::QGrpcStatus(const QGrpcStatus &other) : d(std::make_unique<QGrpcStatusPrivate>(other.d->m_code, other.d->m_message))
+QGrpcStatus::QGrpcStatus(const QGrpcStatus &other) : d_ptr(std::make_unique<QGrpcStatusPrivate>(other.d_ptr->m_code, other.d_ptr->m_message))
 {}
 
-QGrpcStatus::QGrpcStatus(QGrpcStatus &&other) : d(std::move(other.d))
+QGrpcStatus::QGrpcStatus(QGrpcStatus &&other) : d_ptr(std::move(other.d_ptr))
 {
 }
 
 QGrpcStatus &QGrpcStatus::operator =(const QGrpcStatus &other)
 {
-    d->m_code = other.d->m_code;
-    d->m_message = other.d->m_message;
+    d_ptr->m_code = other.d_ptr->m_code;
+    d_ptr->m_message = other.d_ptr->m_message;
     return *this;
 }
 
 QGrpcStatus &QGrpcStatus::operator =(QGrpcStatus &&other)
 {
-    d = std::move(other.d);
+    d_ptr = std::move(other.d_ptr);
     return *this;
 }
 
@@ -68,27 +68,27 @@ QGrpcStatus::~QGrpcStatus()
 
 QString QGrpcStatus::message() const
 {
-    return d->m_message;
+    return d_ptr->m_message;
 }
 
 QGrpcStatus::StatusCode QGrpcStatus::code() const
 {
-    return d->m_code;
+    return d_ptr->m_code;
 }
 
 bool QGrpcStatus::operator ==(StatusCode code) const
 {
-    return d->m_code == code;
+    return d_ptr->m_code == code;
 }
 
 bool QGrpcStatus::operator !=(StatusCode code) const
 {
-    return d->m_code != code;
+    return d_ptr->m_code != code;
 }
 
 bool QGrpcStatus::operator ==(const QGrpcStatus &other) const
 {
-    return d->m_code == other.d->m_code;
+    return d_ptr->m_code == other.d_ptr->m_code;
 }
 
 }

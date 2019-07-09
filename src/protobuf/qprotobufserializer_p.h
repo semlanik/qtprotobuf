@@ -40,10 +40,9 @@ namespace QtProtobuf {
  */
 class QProtobufSerializer;
 
-class QProtobufSerializerPrivate final {
-    Q_DISABLE_COPY(QProtobufSerializerPrivate)
-    QProtobufSerializerPrivate(QProtobufSerializerPrivate &&) = delete;
-    QProtobufSerializerPrivate &operator =(QProtobufSerializerPrivate &&) = delete;
+class QProtobufSerializerPrivate final
+{
+    Q_DISABLE_COPY_MOVE(QProtobufSerializerPrivate)
 public:
 
     /*!
@@ -66,7 +65,7 @@ public:
 
     using SerializerRegistry = std::unordered_map<int/*metatypeid*/, SerializationHandlers>;
 
-    QProtobufSerializerPrivate();
+    QProtobufSerializerPrivate(QProtobufSerializer *q);
     ~QProtobufSerializerPrivate() = default;
     //###########################################################################
     //                               Serializers
@@ -478,6 +477,12 @@ public:
     static SerializerRegistry handlers;
     static void skipVarint(QProtobufSelfcheckIterator &it);
     static void skipLengthDelimited(QProtobufSelfcheckIterator &it);
+
+    QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty);
+    void deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject);
+
+private:
+    QProtobufSerializer *q_ptr;
 };
 
 //###########################################################################

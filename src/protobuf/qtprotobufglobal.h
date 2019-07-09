@@ -32,3 +32,17 @@
 #else
 #  define Q_PROTOBUF_EXPORT Q_DECL_IMPORT
 #endif
+
+//Support macro for Qt versions < 5.13
+//TODO: remove once migration to 5.14 as minimum required version is completed
+#ifndef Q_DISABLE_MOVE
+    #define Q_DISABLE_MOVE(Class) \
+        Class(Class &&) = delete; \
+        Class &operator=(Class &&) = delete;
+#endif
+
+#ifndef Q_DISABLE_COPY_MOVE
+#define Q_DISABLE_COPY_MOVE(Class) \
+    Q_DISABLE_COPY(Class) \
+    Q_DISABLE_MOVE(Class)
+#endif
