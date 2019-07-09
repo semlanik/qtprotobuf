@@ -86,7 +86,7 @@ void QProtobufJsonSerializer::deserializeMessage(QObject *object, const QByteArr
     Q_UNUSED(metaObject)
 }
 
-QByteArray QProtobufJsonSerializer::serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
+QByteArray QProtobufJsonSerializer::serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int /*fieldIndex*/) const
 {
     QByteArray result = "{";
     result.append(serializeMessage(object, propertyOrdering, metaObject));

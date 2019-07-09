@@ -90,9 +90,11 @@ void QProtobufSerializer::deserializeMessage(QObject *object, const QByteArray &
     }
 }
 
-QByteArray QProtobufSerializer::serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
+QByteArray QProtobufSerializer::serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) const
 {
-    return QProtobufSerializerPrivate::prependLengthDelimitedSize(serializeMessage(object, propertyOrdering, metaObject));
+    QByteArray result = QProtobufSerializerPrivate::encodeHeader(fieldIndex, LengthDelimited);
+    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(serializeMessage(object, propertyOrdering, metaObject)));
+    return result;
 }
 
 void QProtobufSerializer::deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
@@ -103,9 +105,7 @@ void QProtobufSerializer::deserializeObject(QObject *object, QProtobufSelfcheckI
 
 QByteArray QProtobufSerializer::serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) const
 {
-    QByteArray result = QProtobufSerializerPrivate::encodeHeader(fieldIndex, LengthDelimited);
-    result.append(serializeObject(object, propertyOrdering, metaObject));
-    return result;
+    return serializeObject(object, propertyOrdering, metaObject, fieldIndex);
 }
 
 void QProtobufSerializer::deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
@@ -217,15 +217,14 @@ QByteArray QProtobufSerializerPrivate::serializeProperty(const QVariant &propert
     if (basicIt != QProtobufSerializerPrivate::handlers.end()) {
         type = basicIt->second.type;
         result.append(basicIt->second.serializer(propertyValue, fieldIndex));
+        if (fieldIndex != QtProtobufPrivate::NotUsedFieldIndex
+                && type != UnknownWireType) {
+            result.prepend(QProtobufSerializerPrivate::encodeHeader(fieldIndex, type));
+        }
     } else {
         auto &handler = QtProtobufPrivate::findHandler(userType);
         type = handler.type;
         result.append(handler.serializer(q_ptr, propertyValue, fieldIndex));//throws if not implemented
-    }
-
-    if (fieldIndex != QtProtobufPrivate::NotUsedFieldIndex
-            && type != UnknownWireType) {
-        result.prepend(QProtobufSerializerPrivate::encodeHeader(fieldIndex, type));
     }
     return result;
 }

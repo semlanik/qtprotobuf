@@ -127,7 +127,7 @@ public:
      * \param[in] metaObject Meta object information for given \a object
      * \return Raw serialized data represented as byte array
      */
-    virtual QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
+    virtual QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) const = 0;
 
     /*!
      * \brief deserializeObject Deserializes buffer to an \a object
@@ -194,8 +194,8 @@ public:
  */
 template<typename T>
 static void qRegisterProtobufType() {
-    QtProtobufPrivate::registerHandler(qMetaTypeId<T *>(), { QtProtobufPrivate::serializeComplexType<T>,
-            QtProtobufPrivate::deserializeComplexType<T>, QtProtobuf::LengthDelimited });
+    QtProtobufPrivate::registerHandler(qMetaTypeId<T *>(), { QtProtobufPrivate::serializeObject<T>,
+            QtProtobufPrivate::deserializeObject<T>, QtProtobuf::LengthDelimited });
     QtProtobufPrivate::registerHandler(qMetaTypeId<QList<QSharedPointer<T>>>(), { QtProtobufPrivate::serializeList<T>,
             QtProtobufPrivate::deserializeList<T>, QtProtobuf::LengthDelimited });
 }

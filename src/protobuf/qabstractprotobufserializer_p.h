@@ -44,7 +44,7 @@ namespace QtProtobufPrivate {
 //! \private
 constexpr int NotUsedFieldIndex = -1;
 
-using Serializer = std::function<QByteArray(const QtProtobuf::QAbstractProtobufSerializer *, const QVariant &, int &)>;
+using Serializer = std::function<QByteArray(const QtProtobuf::QAbstractProtobufSerializer *, const QVariant &, int)>;
 /*!
  * \brief Deserializer is interface function for deserialize method
  */
@@ -69,9 +69,9 @@ extern Q_PROTOBUF_EXPORT void registerHandler(int userType, const SerializationH
  */
 template <typename T,
           typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
-QByteArray serializeComplexType(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, int &/*outFieldIndex*/) {
+QByteArray serializeObject(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, int outFieldIndex) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
-    return serializer->serializeObject(value.value<T *>(), T::propertyOrdering, T::staticMetaObject);
+    return serializer->serializeObject(value.value<T *>(), T::propertyOrdering, T::staticMetaObject, outFieldIndex);
 }
 
 /*!
@@ -81,14 +81,13 @@ QByteArray serializeComplexType(const QtProtobuf::QAbstractProtobufSerializer *s
  */
 template<typename V,
          typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
-QByteArray serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &listValue, int &outFieldIndex) {
+QByteArray serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &listValue, int outFieldIndex) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
     QList<QSharedPointer<V>> list = listValue.value<QList<QSharedPointer<V>>>();
 
     qProtoDebug() << __func__ << "listValue.count" << list.count() << "outFiledIndex" << outFieldIndex;
 
     if (list.count() <= 0) {
-        outFieldIndex = NotUsedFieldIndex;
         return QByteArray();
     }
 
@@ -100,9 +99,6 @@ QByteArray serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializ
         }
         serializedList.append(serializer->serializeListObject(value.data(), V::propertyOrdering, V::staticMetaObject, outFieldIndex));
     }
-
-    outFieldIndex = NotUsedFieldIndex;
-
     return serializedList;
 }
 
@@ -113,7 +109,7 @@ QByteArray serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializ
  */
 template<typename K, typename V,
          typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
-QByteArray serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, int &outFieldIndex) {
+QByteArray serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, int outFieldIndex) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
     QMap<K,V> mapValue = value.value<QMap<K,V>>();
     using ItType = typename QMap<K,V>::const_iterator;
@@ -122,7 +118,6 @@ QByteArray serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serialize
     for ( ItType it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
         mapResult.append(serializer->serializeMapPair(QVariant::fromValue<K>(it.key()), QVariant::fromValue<V>(it.value()), outFieldIndex));
     }
-    outFieldIndex = NotUsedFieldIndex;
     return mapResult;
 }
 
@@ -134,7 +129,7 @@ QByteArray serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serialize
  */
 template<typename K, typename V,
          typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
-QByteArray serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, int &outFieldIndex) {
+QByteArray serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, int outFieldIndex) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
     QMap<K, QSharedPointer<V>> mapValue = value.value<QMap<K, QSharedPointer<V>>>();
     using ItType = typename QMap<K, QSharedPointer<V>>::const_iterator;
@@ -147,7 +142,6 @@ QByteArray serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serialize
         }
         mapResult.append(serializer->serializeMapPair(QVariant::fromValue<K>(it.key()), QVariant::fromValue<V *>(it.value().data()), outFieldIndex));
     }
-    outFieldIndex = NotUsedFieldIndex;
     return mapResult;
 }
 
@@ -158,7 +152,7 @@ QByteArray serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serialize
  */
 template <typename T,
           typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
-void deserializeComplexType(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &to) {
+void deserializeObject(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &to) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
     T *value = new T;
     serializer->deserializeObject(value, it, T::propertyOrdering, T::staticMetaObject);
