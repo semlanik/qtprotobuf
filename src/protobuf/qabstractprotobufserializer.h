@@ -40,6 +40,8 @@
 #include "qtprotobufglobal.h"
 
 namespace QtProtobuf {
+
+class QProtobufMetaProperty;
 /*!
 *  \addtogroup QtProtobuf
 *  \{
@@ -125,15 +127,17 @@ public:
      * \param[in] object Pointer to object to be serialized
      * \param[in] propertyOrdering Protobuf order of QObject properties
      * \param[in] metaObject Meta object information for given \a object
+     * \param[in] metaProperty information about property to be serialized
      * \return Raw serialized data represented as byte array
      */
-    virtual QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) const = 0;
+    virtual QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const = 0;
 
     /*!
      * \brief deserializeObject Deserializes buffer to an \a object
      * \param[out] object Pointer to allocated object
      * \param[in] it Pointer to beging of buffer where object serialized data is located
      * \param[in] propertyOrdering Ordering of properties for given \a object
+     * \param[in] metaProperty information about property to be serialized
      * \param[in] metaObject Static meta object of given \a object. Static meta object usualy is used to get actual
      *        property value and write new property to \a object
      */
@@ -144,10 +148,10 @@ public:
      * \param[in] object Pointer to object that will be serialized
      * \param[in] propertyOrdering Ordering of properties for given \a object
      * \param[in] metaObject Static meta object of given \a object
-     * \param[in] fieldIndex Index of list property in target message
+     * \param[in] metaProperty information about property to be serialized
      * \return Raw serialized data represented as byte array
      */
-    virtual QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) const = 0;
+    virtual QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const = 0;
 
     /*!
      * \brief deserializeListObject Deserializes an \a object from byte stream as part of list property
@@ -163,12 +167,12 @@ public:
      * \brief serializeMapPair Serializes QMap pair of \a key and \a value to raw data buffer
      * \param[in] key Map key
      * \param[in] value Map value for given \a key
-     * \param[in] fieldIndex Index of map property in message
+     * \param[in] metaProperty information about property to be serialized
      * \return Raw serialized data represented as byte array
      *
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
      */
-    virtual QByteArray serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) const = 0;
+    virtual QByteArray serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const = 0;
 
     /*!
      * \brief deserializeMapPair Deserializes QMap pair of \a key and \a value from raw data
@@ -195,9 +199,9 @@ public:
 template<typename T>
 static void qRegisterProtobufType() {
     QtProtobufPrivate::registerHandler(qMetaTypeId<T *>(), { QtProtobufPrivate::serializeObject<T>,
-            QtProtobufPrivate::deserializeObject<T>, QtProtobuf::LengthDelimited });
+            QtProtobufPrivate::deserializeObject<T>, QtProtobufPrivate::ObjectHandler });
     QtProtobufPrivate::registerHandler(qMetaTypeId<QList<QSharedPointer<T>>>(), { QtProtobufPrivate::serializeList<T>,
-            QtProtobufPrivate::deserializeList<T>, QtProtobuf::LengthDelimited });
+            QtProtobufPrivate::deserializeList<T>, QtProtobufPrivate::ListHandler });
 }
 
 /*!
@@ -209,7 +213,7 @@ template<typename K, typename V,
          typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
 inline void qRegisterProtobufMapType() {
     QtProtobufPrivate::registerHandler(qMetaTypeId<QMap<K, V>>(), { QtProtobufPrivate::serializeMap<K, V>,
-    QtProtobufPrivate::deserializeMap<K, V>, QtProtobuf::LengthDelimited });
+    QtProtobufPrivate::deserializeMap<K, V>, QtProtobufPrivate::MapHandler });
 }
 
 /*!
@@ -222,5 +226,5 @@ template<typename K, typename V,
          typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
 inline void qRegisterProtobufMapType() {
     QtProtobufPrivate::registerHandler(qMetaTypeId<QMap<K, QSharedPointer<V>>>(), { QtProtobufPrivate::serializeMap<K, V>,
-    QtProtobufPrivate::deserializeMap<K, V>, QtProtobuf::LengthDelimited });
+    QtProtobufPrivate::deserializeMap<K, V>, QtProtobufPrivate::MapHandler });
 }

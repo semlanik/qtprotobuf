@@ -26,7 +26,7 @@
 #include "qprotobufserializer.h"
 #include "qprotobufserializer_p.h"
 
-#include <QMetaProperty>
+#include "qprotobufmetaproperty.h"
 
 using namespace QtProtobuf;
 
@@ -77,7 +77,7 @@ QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QP
         QMetaProperty metaProperty = metaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
         const QVariant &propertyValue = object->property(propertyName);
-        result.append(d_ptr->serializeProperty(propertyValue, fieldIndex, metaProperty));
+        result.append(d_ptr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
     }
 
     return result;
@@ -90,9 +90,9 @@ void QProtobufSerializer::deserializeMessage(QObject *object, const QByteArray &
     }
 }
 
-QByteArray QProtobufSerializer::serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) const
+QByteArray QProtobufSerializer::serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const
 {
-    QByteArray result = QProtobufSerializerPrivate::encodeHeader(fieldIndex, LengthDelimited);
+    QByteArray result = QProtobufSerializerPrivate::encodeHeader(metaProperty.protoFieldIndex(), LengthDelimited);
     result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(serializeMessage(object, propertyOrdering, metaObject)));
     return result;
 }
@@ -103,9 +103,9 @@ void QProtobufSerializer::deserializeObject(QObject *object, QProtobufSelfcheckI
     deserializeMessage(object, array, propertyOrdering, metaObject);
 }
 
-QByteArray QProtobufSerializer::serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, int fieldIndex) const
+QByteArray QProtobufSerializer::serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const
 {
-    return serializeObject(object, propertyOrdering, metaObject, fieldIndex);
+    return serializeObject(object, propertyOrdering, metaObject, metaProperty);
 }
 
 void QProtobufSerializer::deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
@@ -113,10 +113,10 @@ void QProtobufSerializer::deserializeListObject(QObject *object, QProtobufSelfch
     deserializeObject(object, it, propertyOrdering, metaObject);
 }
 
-QByteArray QProtobufSerializer::serializeMapPair(const QVariant &key, const QVariant &value, int fieldIndex) const
+QByteArray QProtobufSerializer::serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const
 {
-    QByteArray result = QProtobufSerializerPrivate::encodeHeader(fieldIndex, LengthDelimited);
-    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(d_ptr->serializeProperty(key, 1, QMetaProperty()) + d_ptr->serializeProperty(value, 2, QMetaProperty())));
+    QByteArray result = QProtobufSerializerPrivate::encodeHeader(metaProperty.protoFieldIndex(), LengthDelimited);
+    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(d_ptr->serializeProperty(key, QProtobufMetaProperty(metaProperty, 1)) + d_ptr->serializeProperty(value, QProtobufMetaProperty(metaProperty, 2))));
     return result;
 }
 
@@ -130,15 +130,10 @@ void QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, QPr
     while (it != last) {
         QProtobufSerializerPrivate::decodeHeader(it, mapIndex, type);
         if (mapIndex == 1) {
-            //TODO: replace with some common function
+            //Only simple types are supported as keys
             int userType = key.userType();
-            auto basicIt = QProtobufSerializerPrivate::handlers.find(userType);
-            if (basicIt != QProtobufSerializerPrivate::handlers.end()) {
-                basicIt->second.deserializer(it, key);
-            } else {
-                auto &handler = QtProtobufPrivate::findHandler(userType);
-                handler.deserializer(this, it, key);
-            }
+            auto &handler = QProtobufSerializerPrivate::handlers.at(userType);//throws if not found
+            handler.deserializer(it, key);
         } else {
             //TODO: replace with some common function
             int userType = value.userType();
@@ -199,9 +194,9 @@ int QProtobufSerializerPrivate::skipSerializedFieldBytes(QProtobufSelfcheckItera
 }
 
 
-QByteArray QProtobufSerializerPrivate::serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty)
+QByteArray QProtobufSerializerPrivate::serializeProperty(const QVariant &propertyValue, const QProtobufMetaProperty &metaProperty)
 {
-    qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << fieldIndex
+    qProtoDebug() << __func__ << "propertyValue" << propertyValue << "fieldIndex" << metaProperty.protoFieldIndex()
                   << static_cast<QMetaType::Type>(propertyValue.type());
 
     QByteArray result;
@@ -213,18 +208,18 @@ QByteArray QProtobufSerializerPrivate::serializeProperty(const QVariant &propert
     }
 
     //TODO: replace with some common function
+    int fieldIndex = metaProperty.protoFieldIndex();
     auto basicIt = QProtobufSerializerPrivate::handlers.find(userType);
     if (basicIt != QProtobufSerializerPrivate::handlers.end()) {
         type = basicIt->second.type;
         result.append(basicIt->second.serializer(propertyValue, fieldIndex));
         if (fieldIndex != QtProtobufPrivate::NotUsedFieldIndex
                 && type != UnknownWireType) {
-            result.prepend(QProtobufSerializerPrivate::encodeHeader(fieldIndex, type));
+            result.prepend(QProtobufSerializerPrivate::encodeHeader(metaProperty.protoFieldIndex(), type));
         }
     } else {
         auto &handler = QtProtobufPrivate::findHandler(userType);
-        type = handler.type;
-        result.append(handler.serializer(q_ptr, propertyValue, fieldIndex));//throws if not implemented
+        handler.serializer(q_ptr, propertyValue, QProtobufMetaProperty(metaProperty, metaProperty.protoFieldIndex()), result);
     }
     return result;
 }

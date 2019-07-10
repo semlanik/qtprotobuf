@@ -478,7 +478,7 @@ public:
     static void skipVarint(QProtobufSelfcheckIterator &it);
     static void skipLengthDelimited(QProtobufSelfcheckIterator &it);
 
-    QByteArray serializeProperty(const QVariant &propertyValue, int fieldIndex, const QMetaProperty &metaProperty);
+    QByteArray serializeProperty(const QVariant &propertyValue, const QProtobufMetaProperty &metaProperty);
     void deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject);
 
 private:
