@@ -165,7 +165,7 @@ void QProtobufSerializerPrivate::skipVarint(QProtobufSelfcheckIterator &it)
 void QProtobufSerializerPrivate::skipLengthDelimited(QProtobufSelfcheckIterator &it)
 {
     //Get length of lenght-delimited field
-    unsigned int length = QProtobufSerializerPrivate::deserializeBasic<uint32>(it).toUInt();
+    uint32 length = QProtobufSerializerPrivate::deserializeVarintCommon<uint32>(it);
     it += length;
 }
 
@@ -252,7 +252,8 @@ void QProtobufSerializerPrivate::deserializeProperty(QObject *object, QProtobufS
 
     QVariant newPropertyValue;
     if (metaProperty.isEnumType()) {
-        newPropertyValue = QVariant::fromValue(int32_t(QProtobufSerializerPrivate::deserializeBasic<int64>(it).value<int64>()._t));
+        QProtobufSerializerPrivate::deserializeBasic<int64>(it, newPropertyValue);
+        newPropertyValue.convert(qMetaTypeId<int32_t>());
     } else {
         newPropertyValue = metaProperty.read(object);
         int userType = metaProperty.userType();

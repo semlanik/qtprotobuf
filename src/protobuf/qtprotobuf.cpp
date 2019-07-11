@@ -54,6 +54,7 @@ void registerBasicConverters() {
     QMetaType::registerConverter<qint64, T>(T::fromType);
     QMetaType::registerConverter<T, qint64>(T::toType);
     QMetaType::registerConverter<int32_t, T>(T::fromType);
+    QMetaType::registerConverter<T, int32_t>(T::toType); //Required for enum handling
     QMetaType::registerConverter<T, QString>(T::toString);
 }
 
