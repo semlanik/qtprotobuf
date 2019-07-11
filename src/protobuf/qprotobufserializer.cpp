@@ -27,6 +27,7 @@
 #include "qprotobufserializer_p.h"
 
 #include "qprotobufmetaproperty.h"
+#include "qprotobufmetaobject.h"
 
 using namespace QtProtobuf;
 
@@ -107,14 +108,14 @@ QProtobufSerializer::QProtobufSerializer() : d_ptr(new QProtobufSerializerPrivat
     QProtobufSerializerPrivate::wrapSerializer<QByteArrayList, QProtobufSerializerPrivate::serializeListType, QProtobufSerializerPrivate::deserializeList<QByteArray>, LengthDelimited>();
 }
 
-QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
+QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QProtobufMetaObject &metaObject) const
 {
     QByteArray result;
-    for (const auto &field : propertyOrdering) {
+    for (const auto &field : metaObject.propertyOrdering) {
         int propertyIndex = field.second;
         int fieldIndex = field.first;
         Q_ASSERT_X(fieldIndex < 536870912 && fieldIndex > 0, "", "fieldIndex is out of range");
-        QMetaProperty metaProperty = metaObject.property(propertyIndex);
+        QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
         const QVariant &propertyValue = object->property(propertyName);
         result.append(d_ptr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
@@ -123,34 +124,34 @@ QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QP
     return result;
 }
 
-void QProtobufSerializer::deserializeMessage(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
+void QProtobufSerializer::deserializeMessage(QObject *object, const QProtobufMetaObject &metaObject, const QByteArray &data) const
 {
     for (QProtobufSelfcheckIterator it(data); it != data.end();) {
-        d_ptr->deserializeProperty(object, it, propertyOrdering, metaObject);
+        d_ptr->deserializeProperty(object, metaObject, it);
     }
 }
 
-QByteArray QProtobufSerializer::serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const
+QByteArray QProtobufSerializer::serializeObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const
 {
     QByteArray result = QProtobufSerializerPrivate::encodeHeader(metaProperty.protoFieldIndex(), LengthDelimited);
-    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(serializeMessage(object, propertyOrdering, metaObject)));
+    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(serializeMessage(object, metaObject)));
     return result;
 }
 
-void QProtobufSerializer::deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
+void QProtobufSerializer::deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
 {
     QByteArray array = QProtobufSerializerPrivate::deserializeLengthDelimited(it);
-    deserializeMessage(object, array, propertyOrdering, metaObject);
+    deserializeMessage(object, metaObject, array);
 }
 
-QByteArray QProtobufSerializer::serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const
+QByteArray QProtobufSerializer::serializeListObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const
 {
-    return serializeObject(object, propertyOrdering, metaObject, metaProperty);
+    return serializeObject(object, metaObject, metaProperty);
 }
 
-void QProtobufSerializer::deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
+void QProtobufSerializer::deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
 {
-    deserializeObject(object, it, propertyOrdering, metaObject);
+    deserializeObject(object, metaObject, it);
 }
 
 QByteArray QProtobufSerializer::serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const
@@ -264,7 +265,7 @@ QByteArray QProtobufSerializerPrivate::serializeProperty(const QVariant &propert
     return result;
 }
 
-void QProtobufSerializerPrivate::deserializeProperty(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject)
+void QProtobufSerializerPrivate::deserializeProperty(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it)
 {
     //Each iteration we expect iterator is setup to beginning of next chunk
     int fieldNumber = QtProtobufPrivate::NotUsedFieldIndex;
@@ -276,8 +277,8 @@ void QProtobufSerializerPrivate::deserializeProperty(QObject *object, QProtobufS
                               "Seems stream is broken");
     }
 
-    auto propertyNumberIt = propertyOrdering.find(fieldNumber);
-    if (propertyNumberIt == std::end(propertyOrdering)) {
+    auto propertyNumberIt = metaObject.propertyOrdering.find(fieldNumber);
+    if (propertyNumberIt == std::end(metaObject.propertyOrdering)) {
         auto bytesCount = QProtobufSerializerPrivate::skipSerializedFieldBytes(it, wireType);
         qProtoWarning() << "Message received contains unexpected/optional field. WireType:" << wireType
                         << ", field number: " << fieldNumber << "Skipped:" << (bytesCount + 1) << "bytes";
@@ -285,7 +286,7 @@ void QProtobufSerializerPrivate::deserializeProperty(QObject *object, QProtobufS
     }
 
     int propertyIndex = propertyNumberIt->second;
-    QMetaProperty metaProperty = metaObject.property(propertyIndex);
+    QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
 
     qProtoDebug() << __func__ << " wireType: " << wireType << " metaProperty: " << metaProperty.typeName()
                   << "currentByte:" << QString::number((*it), 16);

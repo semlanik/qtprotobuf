@@ -22,7 +22,8 @@ file(GLOB SOURCES
     qabstractprotobufserializer.cpp
     qprotobufjsonserializer.cpp
     qprotobufserializer.cpp
-    qprotobufmetaproperty.cpp)
+    qprotobufmetaproperty.cpp
+    qprotobufmetaobject.cpp)
 
 file(GLOB HEADERS
     qtprotobufglobal.h
@@ -37,7 +38,9 @@ file(GLOB HEADERS
     qprotobufserializer_p.h
     qprotobufjsonserializer.h
     qprotobufselfcheckiterator.h
-    qprotobufregistrationhelper.h)
+    qprotobufregistrationhelper.h
+    qprotobufmetaproperty.h
+    qprotobufmetaobject.h)
 
 file(GLOB PUBLIC_HEADERS
     qtprotobufglobal.h
@@ -51,7 +54,8 @@ file(GLOB PUBLIC_HEADERS
     qprotobufjsonserializer.h
     qprotobufselfcheckiterator.h
     qprotobufregistrationhelper.h
-    qprotobufmetaproperty.h)
+    qprotobufmetaproperty.h
+    qprotobufmetaobject.h)
 
 add_library(${TARGET} SHARED ${SOURCES})
 target_compile_definitions(${TARGET} PRIVATE QT_BUILD_PROTOBUF_LIB PUBLIC QTPROTOBUF_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}

@@ -42,6 +42,7 @@
 namespace QtProtobuf {
 
 class QProtobufMetaProperty;
+class QProtobufMetaObject;
 /*!
 *  \addtogroup QtProtobuf
 *  \{
@@ -83,7 +84,7 @@ public:
     template<typename T>
     QByteArray serialize(const QObject *object) {
         qProtoDebug() << T::staticMetaObject.className() << "serialize";
-        return serializeMessage(object, T::propertyOrdering, T::staticMetaObject);
+        return serializeMessage(object, T::protobufMetaObject);
     }
 
     /*!
@@ -98,7 +99,7 @@ public:
     template<typename T>
     void deserialize(QObject *object, const QByteArray &array) {
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
-        deserializeMessage(object, array, T::propertyOrdering, T::staticMetaObject);
+        deserializeMessage(object, T::protobufMetaObject, array);
     }
 
     virtual ~QAbstractProtobufSerializer() = default;
@@ -110,7 +111,7 @@ public:
      * \param metaObject
      * \return
      */
-    virtual QByteArray serializeMessage(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
+    virtual QByteArray serializeMessage(const QObject *object, const QProtobufMetaObject &metaObject) const = 0;
 
     /*!
      * \brief serializeMessage
@@ -119,55 +120,52 @@ public:
      * \param metaObject
      * \return
      */
-    virtual void deserializeMessage(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
+    virtual void deserializeMessage(QObject *object, const QProtobufMetaObject &metaObject, const QByteArray &data) const = 0;
 
     /*!
      * \brief serializeObject Serializes complete \a object according given \a propertyOrdering and \a metaObject
      *        information
      * \param[in] object Pointer to object to be serialized
-     * \param[in] propertyOrdering Protobuf order of QObject properties
-     * \param[in] metaObject Meta object information for given \a object
-     * \param[in] metaProperty information about property to be serialized
+     * \param[in] metaObject Protobuf meta object information for given \a object
+     * \param[in] metaProperty Information about property to be serialized
      * \return Raw serialized data represented as byte array
      */
-    virtual QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const = 0;
+    virtual QByteArray serializeObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const = 0;
 
     /*!
      * \brief deserializeObject Deserializes buffer to an \a object
-     * \param[out] object Pointer to allocated object
+     * \param[out] object Pointer to pre-allocated object
+     * \param[in] metaObject Protobuf meta object information for given \a object. Static meta object usualy is used to get actual
+     *        property value and write new property to \a object
      * \param[in] it Pointer to beging of buffer where object serialized data is located
      * \param[in] propertyOrdering Ordering of properties for given \a object
-     * \param[in] metaProperty information about property to be serialized
-     * \param[in] metaObject Static meta object of given \a object. Static meta object usualy is used to get actual
-     *        property value and write new property to \a object
+     * \param[in] metaProperty Information about property to be serialized
      */
-    virtual void deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
+    virtual void deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const = 0;
 
     /*!
      * \brief serializeListObject Method called to serialize \a object as a part of list property
      * \param[in] object Pointer to object that will be serialized
-     * \param[in] propertyOrdering Ordering of properties for given \a object
-     * \param[in] metaObject Static meta object of given \a object
-     * \param[in] metaProperty information about property to be serialized
+     * \param[in] metaObject Protobuf meta object information for given \a object
+     * \param[in] metaProperty Information about property to be serialized
      * \return Raw serialized data represented as byte array
      */
-    virtual QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const = 0;
+    virtual QByteArray serializeListObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const = 0;
 
     /*!
      * \brief deserializeListObject Deserializes an \a object from byte stream as part of list property
-     * \param[out] object Pointer to allocated object, that will be appended to list property
-     * \param[in] it Pointer to beging of buffer where object serialized data is located
-     * \param[in] propertyOrdering Ordering of properties for given \a object
-     * \param[in] metaObject Static meta object of given \a object. Static meta object usualy is used to get actual
+     * \param[out] object Pointer to pre-allocated object, that will be appended to list property
+     * \param[in] Protobuf meta object information for given \a object. Static meta object usualy is used to get actual
      *        property value and write new property to \a object
+     * \param[in] it Pointer to beging of buffer where object serialized data is located
      */
-    virtual void deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const = 0;
+    virtual void deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const = 0;
 
     /*!
      * \brief serializeMapPair Serializes QMap pair of \a key and \a value to raw data buffer
      * \param[in] key Map key
      * \param[in] value Map value for given \a key
-     * \param[in] metaProperty information about property to be serialized
+     * \param[in] metaProperty Information about property to be serialized
      * \return Raw serialized data represented as byte array
      *
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details

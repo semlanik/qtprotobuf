@@ -41,14 +41,14 @@ public:
     ~QProtobufJsonSerializer();
 
 protected:
-    QByteArray serializeMessage(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const  override;
-    void deserializeMessage(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const override;
+    QByteArray serializeMessage(const QObject *object, const QProtobufMetaObject &metaObject) const  override;
+    void deserializeMessage(QObject *object, const QProtobufMetaObject &metaObject, const QByteArray &data) const override;
 
-    QByteArray serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const override;
-    void deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const override;
+    QByteArray serializeObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const override;
+    void deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const override;
 
-    QByteArray serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const override;
-    void deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const override;
+    QByteArray serializeListObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const override;
+    void deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const override;
 
     QByteArray serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const override;
     void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const override;

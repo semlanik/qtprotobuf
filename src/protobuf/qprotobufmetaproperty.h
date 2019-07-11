@@ -40,4 +40,5 @@ private:
     QProtobufMetaProperty();
     int m_fieldIndex;
 };
+
 }

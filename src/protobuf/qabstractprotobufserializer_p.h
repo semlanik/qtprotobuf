@@ -78,7 +78,7 @@ template <typename T,
           typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
 void serializeObject(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
-    buffer.append(serializer->serializeObject(value.value<T *>(), T::propertyOrdering, T::staticMetaObject, metaProperty));
+    buffer.append(serializer->serializeObject(value.value<T *>(), T::protobufMetaObject, metaProperty));
 }
 
 /*!
@@ -103,7 +103,7 @@ void serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, co
             qProtoWarning() << "Null pointer in list";
             continue;
         }
-        buffer.append(serializer->serializeListObject(value.data(), V::propertyOrdering, V::staticMetaObject, metaProperty));
+        buffer.append(serializer->serializeListObject(value.data(), V::protobufMetaObject, metaProperty));
     }
 }
 
@@ -152,7 +152,7 @@ template <typename T,
 void deserializeObject(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &to) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
     T *value = new T;
-    serializer->deserializeObject(value, it, T::propertyOrdering, T::staticMetaObject);
+    serializer->deserializeObject(value, T::protobufMetaObject, it);
     to = QVariant::fromValue<T *>(value);
 }
 
@@ -169,7 +169,7 @@ void deserializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, 
 
     V *newValue = new V;
     QList<QSharedPointer<V>> list = previous.value<QList<QSharedPointer<V>>>();
-    serializer->deserializeListObject(newValue, it, V::propertyOrdering, V::staticMetaObject);
+    serializer->deserializeListObject(newValue, V::protobufMetaObject, it);
     list.append(QSharedPointer<V>(newValue));
     previous.setValue(list);
 }

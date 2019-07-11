@@ -31,7 +31,7 @@
 #include <QHash>
 
 //TODO: remove once migration to 5.14 as minimum required version is completed
-#if QT_VERSION < 0x051300
+#if QT_VERSION < 0x050D00
 namespace std {
   template<> struct hash<QString> {
     std::size_t operator()(const QString &s) const {
@@ -64,7 +64,7 @@ QProtobufSerializerRegistry::~QProtobufSerializerRegistry() = default;
 
 std::shared_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::getSerializer(const QString &id)
 {
-       return d->serializers.at(id); //throws
+    return d->serializers.at(id); //throws
 }
 
 std::unique_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::acquireSerializer(const QString &/*id*/)

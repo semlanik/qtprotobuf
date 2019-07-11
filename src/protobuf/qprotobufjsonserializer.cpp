@@ -24,6 +24,7 @@
  */
 
 #include "qprotobufjsonserializer.h"
+#include "qprotobufmetaobject.h"
 #include "qprotobufmetaproperty.h"
 #include <QMetaProperty>
 
@@ -62,15 +63,15 @@ QProtobufJsonSerializer::QProtobufJsonSerializer() : d_ptr(new QProtobufJsonSeri
 QProtobufJsonSerializer::~QProtobufJsonSerializer() = default;
 
 
-QByteArray QProtobufJsonSerializer::serializeMessage(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
+QByteArray QProtobufJsonSerializer::serializeMessage(const QObject *object, const QProtobufMetaObject &metaObject) const
 {
     QByteArray result = "{";
 
-    for (const auto &field : propertyOrdering) {
+    for (const auto &field : metaObject.propertyOrdering) {
         int propertyIndex = field.second;
         int fieldIndex = field.first;
         Q_ASSERT_X(fieldIndex < 536870912 && fieldIndex > 0, "", "fieldIndex is out of range");
-        QMetaProperty metaProperty = metaObject.property(propertyIndex);
+        QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
         const QVariant &propertyValue = object->property(propertyName);
         result.append(d_ptr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
@@ -80,44 +81,40 @@ QByteArray QProtobufJsonSerializer::serializeMessage(const QObject *object, cons
     return result;
 }
 
-void QProtobufJsonSerializer::deserializeMessage(QObject *object, const QByteArray &data, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
+void QProtobufJsonSerializer::deserializeMessage(QObject *object, const QProtobufMetaObject &metaObject, const QByteArray &data) const
 {
     Q_UNUSED(object)
     Q_UNUSED(data)
-    Q_UNUSED(propertyOrdering)
     Q_UNUSED(metaObject)
 }
 
-QByteArray QProtobufJsonSerializer::serializeObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &/*metaProperty*/) const
+QByteArray QProtobufJsonSerializer::serializeObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &/*metaProperty*/) const
 {
     QByteArray result = "{";
-    result.append(serializeMessage(object, propertyOrdering, metaObject));
+    result.append(serializeMessage(object, metaObject));
     result.append("}");
     return result;
 }
 
-void QProtobufJsonSerializer::deserializeObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
+void QProtobufJsonSerializer::deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
 {
     Q_UNUSED(object)
     Q_UNUSED(it)
-    Q_UNUSED(propertyOrdering)
     Q_UNUSED(metaObject)
 }
 
-QByteArray QProtobufJsonSerializer::serializeListObject(const QObject *object, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const
+QByteArray QProtobufJsonSerializer::serializeListObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const
 {
     Q_UNUSED(object)
-    Q_UNUSED(propertyOrdering)
     Q_UNUSED(metaObject)
     Q_UNUSED(metaProperty)
     return QByteArray();
 }
 
-void QProtobufJsonSerializer::deserializeListObject(QObject *object, QProtobufSelfcheckIterator &it, const QProtobufPropertyOrdering &propertyOrdering, const QMetaObject &metaObject) const
+void QProtobufJsonSerializer::deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
 {
     Q_UNUSED(object)
     Q_UNUSED(it)
-    Q_UNUSED(propertyOrdering)
     Q_UNUSED(metaObject)
 }
 
