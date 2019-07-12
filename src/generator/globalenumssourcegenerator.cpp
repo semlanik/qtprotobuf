@@ -87,6 +87,7 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
                                                                    {"namespaces", fullNamespace}};
             mPrinter.Print(properties, Templates::ComplexGlobalEnumFieldRegistrationTemplate);
             mPrinter.Print(properties, Templates::RegisterMetaTypeTemplate);
+            mPrinter.Print(properties, Templates::RegisterEnumSerializersTemplate);
         }
     }
     Outdent();

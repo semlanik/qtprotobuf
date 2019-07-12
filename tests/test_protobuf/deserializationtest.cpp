@@ -86,6 +86,8 @@
 #include "fieldindextest3message.h"
 #include "fieldindextest4message.h"
 
+#include "simpleenumlistmessage.h"
+
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf::tests;
 using namespace QtProtobuf;
@@ -902,4 +904,20 @@ TEST_F(DeserializationTest, FieldIndexRangeTest)
     FieldIndexTest4Message msg4(0);
     msg4.deserialize(serializer.get(), QByteArray::fromHex("f8ffffff0f02"));
     ASSERT_EQ(msg4.testField(), 1);
+}
+
+TEST_F(DeserializationTest, SimpleEnumListMessageTest)
+{
+    SimpleEnumListMessage msg;
+
+    msg.deserialize(serializer.get(), QByteArray());
+    ASSERT_TRUE(msg.localEnumList().isEmpty());
+
+    msg.deserialize(serializer.get(), QByteArray::fromHex("0a06000102010203"));
+    ASSERT_TRUE((msg.localEnumList() == SimpleEnumListMessage::LocalEnumList {SimpleEnumListMessage::LOCAL_ENUM_VALUE0,
+                SimpleEnumListMessage::LOCAL_ENUM_VALUE1,
+                SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
+                SimpleEnumListMessage::LOCAL_ENUM_VALUE1,
+                SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
+                SimpleEnumListMessage::LOCAL_ENUM_VALUE3}));
 }

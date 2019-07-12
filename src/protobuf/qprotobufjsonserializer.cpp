@@ -132,3 +132,33 @@ void QProtobufJsonSerializer::deserializeMapPair(QVariant &key, QVariant &value,
     Q_UNUSED(value)
     Q_UNUSED(it)
 }
+
+QByteArray QProtobufJsonSerializer::serializeEnum(int64 value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const
+{
+    Q_UNUSED(value)
+    Q_UNUSED(metaEnum)
+    Q_UNUSED(metaProperty)
+    return QByteArray();
+}
+
+QByteArray QProtobufJsonSerializer::serializeEnumList(const QList<int64> &value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const
+{
+    Q_UNUSED(value)
+    Q_UNUSED(metaEnum)
+    Q_UNUSED(metaProperty)
+    return QByteArray();
+}
+
+void QProtobufJsonSerializer::deserializeEnum(int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const
+{
+    Q_UNUSED(value)
+    Q_UNUSED(metaEnum)
+    Q_UNUSED(it)
+}
+
+void QProtobufJsonSerializer::deserializeEnumList(QList<int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const
+{
+    Q_UNUSED(value)
+    Q_UNUSED(metaEnum)
+    Q_UNUSED(it)
+}

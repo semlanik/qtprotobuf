@@ -237,7 +237,11 @@ public:
         int empty = QtProtobufPrivate::NotUsedFieldIndex;
         QByteArray serializedList;
         for (auto &value : listValue) {
-            serializedList.append(serializeBasic<V>(value, empty));
+            QByteArray element = serializeBasic<V>(value, empty);
+            if (element.isEmpty()) {
+                element.append('\0');
+            }
+            serializedList.append(element);
         }
         //If internal field type is not LengthDelimited, exact amount of fields to be specified
         serializedList = prependLengthDelimitedSize(serializedList);
@@ -263,6 +267,7 @@ public:
         outFieldIndex = QtProtobufPrivate::NotUsedFieldIndex;
         return serializedList;
     }
+
     //###########################################################################
     //                               Deserializers
     //###########################################################################
@@ -426,6 +431,7 @@ public:
                 type
         };
     }
+
     // this set of 3 methods is used to skip bytes corresponding to an unexpected property
     // in a serialized message met while the message being deserialized
     static int skipSerializedFieldBytes(QProtobufSelfcheckIterator &it, WireTypes type);

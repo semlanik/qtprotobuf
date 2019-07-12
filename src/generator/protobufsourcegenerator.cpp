@@ -59,9 +59,11 @@ void ProtobufSourceGenerator::printRegisterBody()
             mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name() + "List"},
                             {"namespaces", mNamespacesColonDelimited}},
                            Templates::RegisterMetaTypeTemplateNoNamespace);
-            mPrinter.Print({{"type", mClassName+ "::" + field->enum_type()->name() + "List"},
+            mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name() + "List"},
                             {"namespaces", mNamespacesColonDelimited}},
                            Templates::RegisterMetaTypeTemplate);
+            mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name()}},
+                           Templates::RegisterEnumSerializersTemplate);
         } else if (field->is_map()) {
             mPrinter.Print({{"type", field->message_type()->name()},
                             {"namespaces", mClassName}},

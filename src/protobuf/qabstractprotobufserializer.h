@@ -183,6 +183,44 @@ public:
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
      */
     virtual void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const = 0;
+
+    /*!
+     * \brief serializeEnum Serializes enum value represented as int64 type
+     * \param[in] value Enum value to be serialized
+     * \param[in] metaEnum Information about enumeration type
+     * \param[in] metaProperty Information about property to be serialized
+     * \return Raw serialized data represented as byte array
+     *
+     * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
+     */
+    virtual QByteArray serializeEnum(int64 value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const = 0;
+
+    /*!
+     * \brief serializeEnumList  Method called to serialize list of enum values
+     * \param[in] value List of enum values to be serialized, represented as int64
+     * \param[in] metaEnum Information about enumeration type
+     * \param[in] metaProperty Information about property to be serialized
+     * \return Raw serialized data represented as byte array
+     *
+     * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
+     */
+    virtual QByteArray serializeEnumList(const QList<int64> &value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const = 0;
+
+    /*!
+     * \brief deserializeEnum Deserializes enum value from byte stream
+     * \param[out] value Buffer that will be used to collect new enum value
+     * \param[in] metaEnum Information about enumeration type
+     * \param[in] it Points to serialized raw key/value data
+     */
+    virtual void deserializeEnum(int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const = 0;
+
+    /*!
+     * \brief deserializeEnum Deserializes list of enum values from byte stream
+     * \param[out] value QList that will be used to collect deserialized enum values
+     * \param[in] metaEnum Information about enumeration type
+     * \param[in] it Points to serialized raw key/value data
+     */
+    virtual void deserializeEnumList(QList<int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const = 0;
 };
 /*! \} */
 }
@@ -225,4 +263,19 @@ template<typename K, typename V,
 inline void qRegisterProtobufMapType() {
     QtProtobufPrivate::registerHandler(qMetaTypeId<QMap<K, QSharedPointer<V>>>(), { QtProtobufPrivate::serializeMap<K, V>,
     QtProtobufPrivate::deserializeMap<K, V>, QtProtobufPrivate::MapHandler });
+}
+
+
+/*!
+ * \brief Registers serializers for enumeration type in QtProtobuf global serializers registry
+ *
+ * \details generates default serializers for enumeration and QList of enumerations.
+ */
+template<typename T,
+         typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
+inline void qRegisterProtobufEnumType() {
+    QtProtobufPrivate::registerHandler(qMetaTypeId<T>(), { QtProtobufPrivate::serializeEnum<T>,
+                                                           QtProtobufPrivate::deserializeEnum<T>, QtProtobufPrivate::ObjectHandler });
+    QtProtobufPrivate::registerHandler(qMetaTypeId<QList<T>>(), { QtProtobufPrivate::serializeEnumList<T>,
+                                                           QtProtobufPrivate::deserializeEnumList<T>, QtProtobufPrivate::ListHandler });
 }

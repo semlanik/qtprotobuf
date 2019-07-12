@@ -189,6 +189,41 @@ void QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, QPr
     }
 }
 
+QByteArray QProtobufSerializer::serializeEnum(int64 value, const QMetaEnum &/*metaEnum*/, const QtProtobuf::QProtobufMetaProperty &metaProperty) const
+{
+    WireTypes type = Varint;
+    int fieldIndex = metaProperty.protoFieldIndex();
+    QByteArray result = QProtobufSerializerPrivate::serializeBasic<int64>(value, fieldIndex);
+    if (fieldIndex != QtProtobufPrivate::NotUsedFieldIndex) {
+        result.prepend(QProtobufSerializerPrivate::encodeHeader(metaProperty.protoFieldIndex(), type));
+    }
+    return result;
+}
+
+QByteArray QProtobufSerializer::serializeEnumList(const QList<int64> &value, const QMetaEnum &/*metaEnum*/, const QtProtobuf::QProtobufMetaProperty &metaProperty) const
+{
+    WireTypes type = LengthDelimited;
+    int fieldIndex = metaProperty.protoFieldIndex();
+    QByteArray result = QProtobufSerializerPrivate::serializeListType<int64>(value, fieldIndex);
+    if (fieldIndex != QtProtobufPrivate::NotUsedFieldIndex) {
+        result.prepend(QProtobufSerializerPrivate::encodeHeader(metaProperty.protoFieldIndex(), type));
+    }
+    return result;
+}
+
+void QProtobufSerializer::deserializeEnum(int64 &value, const QMetaEnum &/*metaEnum*/, QProtobufSelfcheckIterator &it) const
+{
+    QVariant variantValue;
+    QProtobufSerializerPrivate::deserializeBasic<int64>(it, variantValue);
+    value = variantValue.value<int64>();
+}
+
+void QProtobufSerializer::deserializeEnumList(QList<int64> &value, const QMetaEnum &/*metaEnum*/, QProtobufSelfcheckIterator &it) const
+{
+    QVariant variantValue;
+    QProtobufSerializerPrivate::deserializeList<int64>(it, variantValue);
+    value = variantValue.value<QList<int64>>();
+}
 
 QProtobufSerializerPrivate::QProtobufSerializerPrivate(QProtobufSerializer *q) : q_ptr(q)
 {
@@ -244,9 +279,6 @@ QByteArray QProtobufSerializerPrivate::serializeProperty(const QVariant &propert
     WireTypes type = UnknownWireType;
 
     int userType = propertyValue.userType();
-    if (metaProperty.isEnumType()) {
-        userType = qMetaTypeId<int64>();
-    }
 
     //TODO: replace with some common function
     int fieldIndex = metaProperty.protoFieldIndex();
@@ -292,20 +324,16 @@ void QProtobufSerializerPrivate::deserializeProperty(QObject *object, const QPro
                   << "currentByte:" << QString::number((*it), 16);
 
     QVariant newPropertyValue;
-    if (metaProperty.isEnumType()) {
-        QProtobufSerializerPrivate::deserializeBasic<int64>(it, newPropertyValue);
-        newPropertyValue.convert(qMetaTypeId<int32_t>());
+    newPropertyValue = metaProperty.read(object);
+    int userType = metaProperty.userType();
+
+    //TODO: replace with some common function
+    auto basicIt = QProtobufSerializerPrivate::handlers.find(userType);
+    if (basicIt != QProtobufSerializerPrivate::handlers.end()) {
+        basicIt->second.deserializer(it, newPropertyValue);
     } else {
-        newPropertyValue = metaProperty.read(object);
-        int userType = metaProperty.userType();
-        //TODO: replace with some common function
-        auto basicIt = QProtobufSerializerPrivate::handlers.find(userType);
-        if (basicIt != QProtobufSerializerPrivate::handlers.end()) {
-            basicIt->second.deserializer(it, newPropertyValue);
-        } else {
-            auto &handler = QtProtobufPrivate::findHandler(userType);
-            handler.deserializer(q_ptr, it, newPropertyValue);//throws if not implemented
-        }
+        auto &handler = QtProtobufPrivate::findHandler(userType);
+        handler.deserializer(q_ptr, it, newPropertyValue);
     }
     metaProperty.write(object, newPropertyValue);
 }

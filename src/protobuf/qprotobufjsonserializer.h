@@ -52,6 +52,12 @@ protected:
 
     QByteArray serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const override;
     void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const override;
+
+    QByteArray serializeEnum(int64 value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const override;
+    QByteArray serializeEnumList(const QList<int64> &value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const override;
+
+    void deserializeEnum(int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const override;
+    void deserializeEnumList(QList<int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const override;
 private:
     std::unique_ptr<QProtobufJsonSerializerPrivate> d_ptr;
 };

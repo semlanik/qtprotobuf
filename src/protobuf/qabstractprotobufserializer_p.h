@@ -28,6 +28,7 @@
 #include <QObject>
 #include <QVariant>
 #include <QMetaObject>
+#include <QMetaEnum>
 
 #include <functional>
 
@@ -71,7 +72,6 @@ extern Q_PROTOBUF_EXPORT void registerHandler(int userType, const SerializationH
 
 /*!
  * \private
- *
  * \brief default serializer template for type T inherited of QObject
  */
 template <typename T,
@@ -83,7 +83,6 @@ void serializeObject(const QtProtobuf::QAbstractProtobufSerializer *serializer, 
 
 /*!
  * \private
- *
  * \brief default serializer template for list of type T objects inherited of QObject
  */
 template<typename V,
@@ -109,7 +108,6 @@ void serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, co
 
 /*!
  * \private
- *
  * \brief default serializer template for map of key K, value V
  */
 template<typename K, typename V,
@@ -124,9 +122,7 @@ void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, con
 
 /*!
  * \private
- *
- * \brief default serializer template for map of type key K, value V. Specialization for V
- *        inherited of QObject
+ * \brief default serializer template for map of type key K, value V. Specialization for V inherited of QObject
  */
 template<typename K, typename V,
          typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
@@ -144,7 +140,32 @@ void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, con
 
 /*!
  * \private
- *
+ * \brief default serializer template for enum types
+ */
+template<typename T,
+         typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
+void serializeEnum(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    buffer.append(serializer->serializeEnum(QtProtobuf::int64(value.value<T>()), QMetaEnum::fromType<T>(),  metaProperty));
+}
+
+/*!
+ * \private
+ * \brief default serializer template for enum list types
+ */
+template<typename T,
+         typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
+void serializeEnumList(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    QList<QtProtobuf::int64> intList;
+    for (auto enumValue : value.value<QList<T>>()) {
+        intList.append(QtProtobuf::int64(enumValue));
+    }
+    buffer.append(serializer->serializeEnumList(intList, QMetaEnum::fromType<T>(), metaProperty));
+}
+
+/*!
+ * \private
  * \brief default deserializer template for type T inherited of QObject
  */
 template <typename T,
@@ -158,7 +179,6 @@ void deserializeObject(const QtProtobuf::QAbstractProtobufSerializer *serializer
 
 /*!
  * \private
- *
  * \brief default deserializer template for list of type T objects inherited of QObject
  */
 template <typename V,
@@ -215,4 +235,23 @@ void deserializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, Q
     previous = QVariant::fromValue<QMap<K, QSharedPointer<V>>>(out);
 }
 
+template <typename T,
+          typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
+void deserializeEnum(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &to) {
+    QtProtobuf::int64 intValue;
+    serializer->deserializeEnum(intValue, QMetaEnum::fromType<T>(), it);
+    to = QVariant::fromValue<T>(static_cast<T>(intValue._t));
+}
+
+template <typename T,
+          typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
+void deserializeEnumList(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &previous) {
+    QList<QtProtobuf::int64> intList;
+    serializer->deserializeEnumList(intList, QMetaEnum::fromType<T>(), it);
+    QList<T> enumList = previous.value<QList<T>>();
+    for (auto intValue : intList) {
+        enumList.append(static_cast<T>(intValue._t));
+    }
+    previous = QVariant::fromValue<QList<T>>(enumList);
+}
 }

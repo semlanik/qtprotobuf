@@ -110,6 +110,7 @@ public:
     static const char *QEnumTemplate;
     static const char *MapSerializationRegisterTemplate;
     static const char *RegisterSerializersTemplate;
+    static const char *RegisterEnumSerializersTemplate;
     static const char *RegistratorTemplate;
     static const char *QmlRegisterTypeTemplate;
     static const char *QmlRegisterTypeUncreatableTemplate;
