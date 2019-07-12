@@ -66,3 +66,20 @@ protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin>/qtprotobufgen --qtprotobuf_o
 cd <build directory>
 ctest
 ```
+## Documentation generation
+
+Project uses doxygen for documentation generation.
+
+#### For Windows additionally install:
+* [doxygen](http://www.doxygen.nl/download.html)
+* [graphviz](https://graphviz.gitlab.io/_pages/Download/Download_windows.html)
+
+
+You can generate documentation:
+
+```bash
+mkdir build
+cd build
+cmake ..
+cmake --build . --target doc
+```
