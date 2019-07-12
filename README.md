@@ -58,9 +58,62 @@ cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 **Note:** 64-bit build is not supported yet
 
 ## Usage
+
+### Direct usage of generator
+
 ```bash
 protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin>/qtprotobufgen --qtprotobuf_out=<output_dir> <protofile>.proto [--qtprotobuf_opt=out=<output_dir>]
 ```
+
+### Integration with project
+
+You can integrate QtProtobuf as submodule in your project or as installed in system package. Add following line in your project CMakeLists.txt:
+
+```cmake
+...
+find_package(QtProtobufProject CONFIG REQUIRED COMPONENTS QtProtobuf QtGrpc)
+set(GENERATED_HEADERS
+    # List of artifacts expected after qtprotobufgen job done.
+    # Usually it's full list of messages in all packages with .h header suffix
+    ...
+    )
+file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.proto
+                               ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile2.proto
+                               ...
+                               ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofileN.proto)
+# Function below generates source files for specified PROTO_FILES,
+# writes result to STATIC library target and saves its name to 
+# ${QtProtobuf_GENERATED} variable
+generate_qtprotobuf(TARGET MyTarget
+    OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+    PROTO_FILES ${PROTO_FILES}
+    GENERATED_HEADERS ${GENERATED_HEADERS})
+add_executable(MyTarget main.cpp) # Add your target here
+target_link_libraries(MyTarget ${QtProtobuf_GENERATED})
+
+```
+## CMake functions reference
+
+### generate_qtprotobuf
+
+generate_qtprotobuf is cmake helper function that automatically generates STATIC library target from your .proto files
+
+Due to cmake restrictions it's required to specify resulting artifacts manually as list of header files expected after generator job finished.
+
+**Parameters:**
+
+*TARGET* - name of you target that will be base for generated target name
+
+*OUT_DIR* - output directory that will contain generated artifacts. Usually subfolder in build directory should be used
+
+*GENERATED_HEADERS* - List of header files expected after generator job finished
+
+*PROTO_FILES* - List of .proto files that will be used in generation procedure
+
+**Outcome:**
+
+*QtProtobuf_GENERATED* - variable that will contain generated STATIC library target name
+
 ## Running tests
 ```bash
 cd <build directory>
