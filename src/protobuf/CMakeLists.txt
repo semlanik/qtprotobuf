@@ -13,7 +13,7 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 
-include(${CMAKE_SOURCE_DIR}/cmake/Coverage.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/Coverage.cmake)
 
 file(GLOB SOURCES
     qtprotobuf.cpp
@@ -88,18 +88,18 @@ install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QTPROTOBUF_COMMON_NAMESPACE}:: FILE 
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
-    "${TARGET_CONFIG}.cmake.in" "${CMAKE_BINARY_DIR}/${TARGET_CONFIG}.cmake"
+    "${TARGET_CONFIG}.cmake.in" "${QTPROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake"
     INSTALL_DESTINATION "${TARGET_CMAKE_DIR}")
 
-install(FILES "${CMAKE_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
+install(FILES "${QTPROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
 
 export(TARGETS ${TARGET} NAMESPACE ${QTPROTOBUF_COMMON_NAMESPACE}:: FILE ${TARGET_EXPORT}.cmake)
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/QtProtobufGen.cmake.in" "${CMAKE_BINARY_DIR}/QtProtobufGen.cmake" @ONLY)
-install(FILES "${CMAKE_BINARY_DIR}/QtProtobufGen.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/QtProtobufGen.cmake.in" "${QTPROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" @ONLY)
+install(FILES "${QTPROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
 
-configure_file("${CMAKE_SOURCE_DIR}/cmake/ProtobufLookup.cmake" "${CMAKE_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
-install(FILES "${CMAKE_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
+configure_file("${QTPROTOBUF_CMAKE_DIR}/ProtobufLookup.cmake" "${QTPROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
+install(FILES "${QTPROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
 
 add_subdirectory("quick")
 

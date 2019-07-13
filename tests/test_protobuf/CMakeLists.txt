@@ -1,6 +1,6 @@
 set(TARGET qtprotobuf_test)
 
-include(${CMAKE_SOURCE_DIR}/cmake/QtProtobufCommon.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
 set(GENERATED_HEADERS
     complexmessage.h

@@ -1,6 +1,6 @@
 set(TARGET simplechatserver)
 
-include(${CMAKE_SOURCE_DIR}/cmake/QtProtobufCommon.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
 set(GENERATED_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/simplechat.pb.cc

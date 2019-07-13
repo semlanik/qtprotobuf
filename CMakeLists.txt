@@ -5,6 +5,9 @@ project(QtProtobufProject VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
+set(QTPROTOBUF_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(QTPROTOBUF_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+
 find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
 if(Qt5Core_VERSION VERSION_LESS "5.12.3")
     # grpc target requires QT version not less than 5.12.3
@@ -25,15 +28,15 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/grpc/CMakeLists.txt")
         set(gRPC_FOUND TRUE)
     endif()
 else()
-    include("cmake/ProtobufLookup.cmake")
-    include("cmake/gRPCLookup.cmake")
+    include("${QTPROTOBUF_CMAKE_DIR}/ProtobufLookup.cmake")
+    include("${QTPROTOBUF_CMAKE_DIR}/gRPCLookup.cmake")
 endif()
 
 set(gtest_force_shared_crt OFF)
 set(QTPROTOBUF_COMMON_NAMESPACE QtProtobufProject)
 set(GENERATOR_TARGET qtprotobufgen)
 set(QTPROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_FULL_BINDIR}/${GENERATOR_TARGET})
-set(QTPROTOBUF_EXECUTABLE $<TARGET_FILE:${GENERATOR_TARGET}>)
+set(QTPROTOBUF_EXECUTABLE $<TARGET_FILE:${GENERATOR_TARGET}> CACHE STRING "QTPROTOBUF_EXECUTABLE is set ${QTPROTOBUF_EXECUTABLE}" FORCE)
 
 if(UNIX)
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -65,9 +68,9 @@ add_subdirectory("src/grpc")
 add_subdirectory("src/generator")
 
 configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QTPROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
     INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
-install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+install(FILES "${QTPROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 
 export(PACKAGE ${PROJECT_NAME})
 

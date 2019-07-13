@@ -1,4 +1,4 @@
-include(${CMAKE_SOURCE_DIR}/cmake/QtProtobufCommon.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
 set(GENERATED_HEADERS
     simplestringmessage.h

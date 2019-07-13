@@ -11,7 +11,7 @@ set(TARGET_BIN_DIR ${CMAKE_INSTALL_BINDIR})
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-include(${CMAKE_SOURCE_DIR}/cmake/Coverage.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/Coverage.cmake)
 
 file(GLOB SOURCES qgrpcasyncreply.cpp
     qgrpcstatus.cpp
@@ -61,14 +61,14 @@ install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QTPROTOBUF_COMMON_NAMESPACE}:: FILE 
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
-    "${TARGET_CONFIG}.cmake.in" "${CMAKE_BINARY_DIR}/${TARGET_CONFIG}.cmake"
+    "${TARGET_CONFIG}.cmake.in" "${QTPROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake"
     INSTALL_DESTINATION "${TARGET_CMAKE_DIR}")
 
-install(FILES "${CMAKE_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
+install(FILES "${QTPROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
 
 export(TARGETS ${TARGET} NAMESPACE ${QTPROTOBUF_COMMON_NAMESPACE}:: FILE ${TARGET_EXPORT}.cmake)
 
-configure_file("${CMAKE_SOURCE_DIR}/cmake/gRPCLookup.cmake" "${CMAKE_BINARY_DIR}/gRPCLookup.cmake" COPYONLY)
-install(FILES "${CMAKE_BINARY_DIR}/gRPCLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
+configure_file("${QTPROTOBUF_CMAKE_DIR}/gRPCLookup.cmake" "${QTPROTOBUF_BINARY_DIR}/gRPCLookup.cmake" COPYONLY)
+install(FILES "${QTPROTOBUF_BINARY_DIR}/gRPCLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
 
 add_coverage_target(TARGET ${TARGET})
