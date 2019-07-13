@@ -739,7 +739,7 @@ TEST_F(DeserializationTest, SimpleStringStringMapDeserializeTest)
 TEST_F(DeserializationTest, SimpleFixed32ComplexMapDeserializeTest)
 {
     SimpleFixed32ComplexMessageMapMessage test;
-    test.deserialize(serializer.get(), QByteArray::fromHex("3a180d0a0000001211120d320b74656e207369787465656e08103a230d2a000000121c12183216666f757274792074776f2074656e207369787465656e080a3a110d13000100120a120632045755543f080a"));
+    test.deserialize(serializer.get(), QByteArray::fromHex("3a180d0a00000012110810120d320b74656e207369787465656e3a230d2a000000121c080a12183216666f757274792074776f2074656e207369787465656e3a110d13000100120a080a120632045755543f"));
     ASSERT_TRUE(*test.mapField()[10].data() == ComplexMessage({16, {"ten sixteen"}}));
     ASSERT_TRUE(*test.mapField()[42].data() == ComplexMessage({10, {"fourty two ten sixteen"}}));
     ASSERT_TRUE(*test.mapField()[65555].data() == ComplexMessage({10, {"WUT?"}}));
