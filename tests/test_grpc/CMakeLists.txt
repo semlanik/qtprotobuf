@@ -1,7 +1,3 @@
-configure_file(test_driver.sh.in test_driver.sh @ONLY)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testfile ${CMAKE_CURRENT_BINARY_DIR}/testfile COPYONLY)
-
 include(${CMAKE_SOURCE_DIR}/cmake/QtProtobufCommon.cmake)
 
 set(GENERATED_HEADERS
@@ -28,10 +24,19 @@ add_target_windeployqt(TARGET qtgrpc_secure_test
 add_subdirectory(echoserver)
 add_subdirectory(secureechoserver)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testfile ${CMAKE_CURRENT_BINARY_DIR}/testfile COPYONLY)
+
+if(UNIX)
+    set(TEST_DRIVER_NAME "test_driver.sh")
+elseif(WIN32)
+    set(TEST_DRIVER_NAME "test_driver.bat")
+endif()
+
+configure_file(${TEST_DRIVER_NAME}.in ${TEST_DRIVER_NAME} @ONLY)
 add_test(NAME qtgrpc_echo_test
-         COMMAND test_driver.sh ./tests/test_grpc/qtgrpc_test ./tests/test_grpc/echoserver/echoserver
+         COMMAND ${TEST_DRIVER_NAME} $<TARGET_FILE:qtgrpc_test> $<TARGET_FILE:echoserver> $<TARGET_FILE_NAME:qtgrpc_test> $<TARGET_FILE_NAME:echoserver>
 )
 
 add_test(NAME qtgrpc_secure_test
-         COMMAND test_driver.sh ./tests/test_grpc/qtgrpc_secure_test ./tests/test_grpc/echoserver/secureechoserver
+         COMMAND ${TEST_DRIVER_NAME} $<TARGET_FILE:qtgrpc_secure_test> $<TARGET_FILE:secureechoserver> $<TARGET_FILE_NAME:qtgrpc_secure_test> $<TARGET_FILE_NAME:secureechoserver>
 )

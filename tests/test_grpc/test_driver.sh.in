@@ -8,18 +8,18 @@ BUILD_FOLDER=@CMAKE_BINARY_DIR@
 
 # start optional server provided in $2
 if [[ $2 ]] ; then
-    echo "SERVER: $BUILD_FOLDER/$2 & sleep 0.2"
-    "$BUILD_FOLDER/$2" &
+    echo "SERVER: $2 & sleep 0.2"
+    "$2" &
     sleep 0.2
 fi
 
 # execute test provided in $1 with backend provided in $2
-echo "CLIENT: $BUILD_FOLDER/$1"
-"$BUILD_FOLDER/$1"
+echo "CLIENT: $1"
+"$1"
 
 EXIT_CODE=$?
 
-# kill qml background server process
+# kill background server process
 [[ $2 ]] && kill $!
 
 exit $EXIT_CODE

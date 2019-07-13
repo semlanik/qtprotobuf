@@ -1,0 +1,6 @@
+START "Server" %2
+
+START "Client test" %1 /WAIT
+
+; kill background server process
+taskkill /im %4
