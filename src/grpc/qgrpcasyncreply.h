@@ -87,6 +87,28 @@ public:
         m_channel->abort(this);
     }
 
+    /*!
+     * \brief Subscribe to QGrpcAsyncReply signals
+     */
+    template <typename Func1, typename Func2>
+    inline void subscribe(QObject *receiver, Func1 finishCallback, Func2 errorCallback,
+                                     Qt::ConnectionType type = Qt::AutoConnection)
+    {
+        QObject::connect(this, &QGrpcAsyncReply::finished, receiver, finishCallback, type);
+        QObject::connect(this, &QGrpcAsyncReply::error, receiver, errorCallback, type);
+    }
+
+    /*!
+     * \brief Overloaded QGrpcAsyncReply::subscribe method, to subscribe to finished signal
+     *        only
+     */
+    template <typename Func1>
+    inline void subscribe(QObject *receiver, Func1 finishCallback,
+                                     Qt::ConnectionType type = Qt::AutoConnection)
+    {
+        QObject::connect(this, &QGrpcAsyncReply::finished, receiver, finishCallback, type);
+    }
+
 signals:
     /*!
      * \brief The signal is emitted when reply is ready for read. Usualy called by channel when all chunks of data

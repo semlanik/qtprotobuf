@@ -174,7 +174,7 @@ TEST_F(ClientTest, StringEchoDeferredAsyncAbortTest)
         errorCalled = true;
     });
 
-    QTimer::singleShot(2000, reply, &QGrpcAsyncReply::abort);
+    QTimer::singleShot(500, reply, &QGrpcAsyncReply::abort);
     QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
 
     waiter.exec();
@@ -388,3 +388,62 @@ TEST_F(ClientTest, ClientSyncTestUnattachedChannelSignal)
     delete ret;
 }
 
+TEST_F(ClientTest, AsyncReplySubscribeTest)
+{
+    QTimer callTimeout;
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, InsecureCredentials()));
+    SimpleStringMessage request(QString{"Some status message"});
+    QGrpcStatus::StatusCode asyncStatus = QGrpcStatus::StatusCode::Ok;
+    QEventLoop waiter;
+    QString statusMessage;
+
+    QObject::connect(&callTimeout, &QTimer::timeout, &waiter, &QEventLoop::quit);
+    callTimeout.setInterval(5000);
+    auto reply = testClient.testMethodStatusMessage(request);
+
+    reply->subscribe(&m_app, []() {
+        ASSERT_TRUE(false);
+    },
+    [&asyncStatus, &waiter, &statusMessage](const QGrpcStatus &status) {
+        asyncStatus = status.code();
+        statusMessage = status.message();
+        waiter.quit();
+    });
+
+    callTimeout.start();
+    waiter.exec();
+    callTimeout.stop();
+
+    ASSERT_STREQ(statusMessage.toStdString().c_str(), request.testFieldString().toStdString().c_str());
+
+    SimpleStringMessage result;
+    request.setTestFieldString("Hello beach!");
+
+    reply = testClient.testMethod(request);
+    reply->subscribe(&m_app, [reply, &result, &waiter]() {
+        result = reply->read<SimpleStringMessage>();
+        waiter.quit();
+    });
+
+    callTimeout.start();
+    waiter.exec();
+    callTimeout.stop();
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), request.testFieldString().toStdString().c_str());
+
+    result.setTestFieldString("");
+    request.setTestFieldString("Hello beach1!");
+
+    reply = testClient.testMethod(request);
+    reply->subscribe(&m_app, [reply, &result, &waiter]() {
+        result = reply->read<SimpleStringMessage>();
+        waiter.quit();
+    }, []() {
+        ASSERT_TRUE(false);
+    });
+
+    callTimeout.start();
+    waiter.exec();
+    callTimeout.stop();
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), request.testFieldString().toStdString().c_str());
+}
