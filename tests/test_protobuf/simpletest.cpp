@@ -285,16 +285,16 @@ TEST_F(SimpleTest, SimpleLocalEnumListTest)
     ASSERT_GT(SimpleEnumListMessage::staticMetaObject.enumeratorCount(), 0);
 
     const char *propertyName = "localEnumList";
-    assertMessagePropertyRegistered<SimpleEnumListMessage, SimpleEnumListMessage::LocalEnumList>(1,  "SimpleEnumListMessage::LocalEnumList", propertyName);
+    assertMessagePropertyRegistered<SimpleEnumListMessage, SimpleEnumListMessage::LocalEnumRepeated>(1,  "SimpleEnumListMessage::LocalEnumRepeated", propertyName);
 
-    SimpleEnumListMessage::LocalEnumList value({SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
+    SimpleEnumListMessage::LocalEnumRepeated value({SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
                                                 SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
                                                 SimpleEnumListMessage::LOCAL_ENUM_VALUE1,
                                                 SimpleEnumListMessage::LOCAL_ENUM_VALUE3});
 
     SimpleEnumListMessage test;
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<SimpleEnumListMessage::LocalEnumList>(value)));
-    ASSERT_TRUE(test.property(propertyName).value<SimpleEnumListMessage::LocalEnumList>() == value);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<SimpleEnumListMessage::LocalEnumRepeated>(value)));
+    ASSERT_TRUE(test.property(propertyName).value<SimpleEnumListMessage::LocalEnumRepeated>() == value);
     ASSERT_TRUE(test.localEnumList() == value);
 }
 
@@ -339,16 +339,16 @@ TEST_F(SimpleTest, SimpleEnumsTest)
 TEST_F(SimpleTest, SimpleFileEnumsTest)
 {
     const char *propertyName = "globalEnumList";
-    assertMessagePropertyRegistered<SimpleFileEnumMessage, GlobalEnums::TestEnumList>(2, "qtprotobufnamespace::tests::GlobalEnums::TestEnumList", propertyName);
+    assertMessagePropertyRegistered<SimpleFileEnumMessage, GlobalEnums::TestEnumRepeated>(2, "qtprotobufnamespace::tests::GlobalEnums::TestEnumRepeated", propertyName);
 
-    GlobalEnums::TestEnumList value({GlobalEnums::TEST_ENUM_VALUE1,
+    GlobalEnums::TestEnumRepeated value({GlobalEnums::TEST_ENUM_VALUE1,
                                      GlobalEnums::TEST_ENUM_VALUE3,
                                      GlobalEnums::TEST_ENUM_VALUE4,
                                      GlobalEnums::TEST_ENUM_VALUE2,
                                      GlobalEnums::TEST_ENUM_VALUE1});
     SimpleFileEnumMessage test;
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<GlobalEnums::TestEnumList>(value)));
-    ASSERT_TRUE(test.property(propertyName).value<GlobalEnums::TestEnumList>() == value);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<GlobalEnums::TestEnumRepeated>(value)));
+    ASSERT_TRUE(test.property(propertyName).value<GlobalEnums::TestEnumRepeated>() == value);
     ASSERT_TRUE(test.globalEnumList() == value);
 }
 
@@ -384,8 +384,8 @@ TEST_F(SimpleTest, SimpleExternalComplexMessageTest)
 TEST_F(SimpleTest, RepeatedExternalComplexMessageTest)
 {
     const char *propertyName = "testExternalComplex";
-    assertMessagePropertyRegistered<RepeatedExternalComplexMessage, qtprotobufnamespace1::externaltests::ExternalComplexMessageList>(
-                1, "qtprotobufnamespace1::externaltests::ExternalComplexMessageList", propertyName);
+    assertMessagePropertyRegistered<RepeatedExternalComplexMessage, qtprotobufnamespace1::externaltests::ExternalComplexMessageRepeated>(
+                1, "qtprotobufnamespace1::externaltests::ExternalComplexMessageRepeated", propertyName);
 
     qtprotobufnamespace1::externaltests::SimpleExternalMessage complexMessage;
     complexMessage.setLocalList({1, 2, 3, 4, 5});
@@ -393,12 +393,12 @@ TEST_F(SimpleTest, RepeatedExternalComplexMessageTest)
     QSharedPointer<qtprotobufnamespace1::externaltests::ExternalComplexMessage> externalMessage(new qtprotobufnamespace1::externaltests::ExternalComplexMessage);
     externalMessage->setTestFieldInt(complexMessage);
 
-    qtprotobufnamespace1::externaltests::ExternalComplexMessageList complexMessageList;
+    qtprotobufnamespace1::externaltests::ExternalComplexMessageRepeated complexMessageList;
     complexMessageList << externalMessage;
 
     RepeatedExternalComplexMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(complexMessageList)));
-    ASSERT_TRUE(test.property(propertyName).value<qtprotobufnamespace1::externaltests::ExternalComplexMessageList>() == complexMessageList);
+    ASSERT_TRUE(test.property(propertyName).value<qtprotobufnamespace1::externaltests::ExternalComplexMessageRepeated>() == complexMessageList);
     ASSERT_TRUE(test.testExternalComplex() == complexMessageList);
 }
 
@@ -654,15 +654,15 @@ TEST_F(SimpleTest, StepChildEnumMessageTest)
 TEST_F(SimpleTest, StepChildEnumListMessageTest)
 {
     const char *propertyName = "localStepChildList";
-    assertMessagePropertyRegistered<StepChildEnumMessage, SimpleEnumMessage::LocalEnumList>(2, "qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnumList", propertyName);
+    assertMessagePropertyRegistered<StepChildEnumMessage, SimpleEnumMessage::LocalEnumRepeated>(2, "qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnumRepeated", propertyName);
 
-    SimpleEnumMessage::LocalEnumList value({SimpleEnumMessage::LOCAL_ENUM_VALUE2,
+    SimpleEnumMessage::LocalEnumRepeated value({SimpleEnumMessage::LOCAL_ENUM_VALUE2,
                                             SimpleEnumMessage::LOCAL_ENUM_VALUE2,
                                             SimpleEnumMessage::LOCAL_ENUM_VALUE1,
                                             SimpleEnumMessage::LOCAL_ENUM_VALUE3});
     StepChildEnumMessage test;
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnumList>(value)));
-    ASSERT_TRUE(test.property(propertyName).value<SimpleEnumMessage::LocalEnumList>() == value);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobufnamespace::tests::SimpleEnumMessage::LocalEnumRepeated>(value)));
+    ASSERT_TRUE(test.property(propertyName).value<SimpleEnumMessage::LocalEnumRepeated>() == value);
     ASSERT_TRUE(test.localStepChildList() == value);
 }
 

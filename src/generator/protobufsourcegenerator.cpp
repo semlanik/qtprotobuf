@@ -56,10 +56,10 @@ void ProtobufSourceGenerator::printRegisterBody()
         const FieldDescriptor *field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_ENUM
                 && isLocalMessageEnum(mMessage, field)) {
-            mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name() + "List"},
+            mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
                             {"namespaces", mNamespacesColonDelimited}},
                            Templates::RegisterMetaTypeTemplateNoNamespace);
-            mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name() + "List"},
+            mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
                             {"namespaces", mNamespacesColonDelimited}},
                            Templates::RegisterMetaTypeTemplate);
             mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name()}},

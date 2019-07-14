@@ -133,6 +133,7 @@ public:
     static const char *ClientMethodServerStreamDefinitionTemplate;
     static const char *ClientMethodServerStream2DefinitionTemplate;
 
+    static const char *ListSuffix;
 
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
 };

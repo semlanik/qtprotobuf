@@ -49,18 +49,18 @@ const char *Templates::UsingQtProtobufNamespaceTemplate = "\nusing namespace QtP
 const char *Templates::ComplexTypeRegistrationTemplate = "namespace $classname$Private {\n"
                                                          "void registerTypes()\n{\n"
                                                          "    qRegisterMetaType<$classname$>(\"$classname$\");\n"
-                                                         "    qRegisterMetaType<$classname$List>(\"$classname$List\");\n"
+                                                         "    qRegisterMetaType<$classname$Repeated>(\"$classname$Repeated\");\n"
                                                          "    qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
-                                                         "    qRegisterMetaType<$classname$List>(\"$namespaces$::$classname$List\");\n"
+                                                         "    qRegisterMetaType<$classname$Repeated>(\"$namespaces$::$classname$Repeated\");\n"
                                                          "";
 const char *Templates::ComplexGlobalEnumRegistrationTemplate = "namespace $classname$Private {\n"
                                                                "void registerTypes()\n{\n";
 const char *Templates::ComplexGlobalEnumFieldRegistrationTemplate = "qRegisterMetaType<$classname$::$enum$>(\"$namespaces$::$classname$::$enum$\");\n";
-const char *Templates::ComplexListTypeUsingTemplate = "using $classname$List = QList<QSharedPointer<$classname$>>;\n";
+const char *Templates::ComplexListTypeUsingTemplate = "using $classname$Repeated = QList<QSharedPointer<$classname$>>;\n";
 const char *Templates::MapTypeUsingTemplate = "using $classname$ = QMap<$key$, $value$>;\n";
 const char *Templates::MessageMapTypeUsingTemplate = "using $classname$ = QMap<$key$, QSharedPointer<$value$>>;\n";
 
-const char *Templates::EnumTypeUsingTemplate = "using $enum$List = QList<$enum$>;\n";
+const char *Templates::EnumTypeUsingTemplate = "using $enum$Repeated = QList<$enum$>;\n";
 
 const char *Templates::NamespaceTemplate = "\nnamespace $namespace$ {\n";
 const char *Templates::UsingNamespaceTemplate = "using namespace $namespace$;\n";
@@ -163,11 +163,11 @@ const char *Templates::PropertyInitializerTemplate = "\n    , m_$property_name$(
 const char *Templates::ConstructorContentTemplate = "\n{\n}\n";
 
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n";
-const char *Templates::DeclareMetaTypeListTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$List)\n";
+const char *Templates::DeclareMetaTypeListTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$Repeated)\n";
 const char *Templates::DeclareMessageMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n"
                                                         "Q_DECLARE_OPAQUE_POINTER($namespaces$::$classname$)\n";
 
-const char *Templates::DeclareComplexListTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$List)\n"
+const char *Templates::DeclareComplexListTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$Repeated)\n"
                                                         "Q_DECLARE_METATYPE(QQmlListProperty<$namespaces$::$classname$>)\n";
 const char *Templates::RegisterMetaTypeDefaultTemplate = "qRegisterMetaType<$namespaces$::$type$>();\n";
 const char *Templates::RegisterMetaTypeTemplateNoNamespace = "qRegisterMetaType<$namespaces$::$type$>(\"$type$\");\n";
@@ -227,6 +227,9 @@ const char *Templates::ClientMethodServerStream2DefinitionTemplate = "void $clas
                                                                      "    subscribe(\"$method_name$\", $param_name$, $return_name$);\n"
                                                                      "    subscribe(\"$method_name$\", $param_name$, &$classname$::$method_name$Updated);\n"
                                                                      "}\n";
+
+const char *Templates::ListSuffix = "Repeated";
+
 
 const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> Templates::TypeReflection = {
     {::google::protobuf::FieldDescriptor::TYPE_DOUBLE, "double"},

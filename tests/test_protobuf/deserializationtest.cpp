@@ -914,7 +914,7 @@ TEST_F(DeserializationTest, SimpleEnumListMessageTest)
     ASSERT_TRUE(msg.localEnumList().isEmpty());
 
     msg.deserialize(serializer.get(), QByteArray::fromHex("0a06000102010203"));
-    ASSERT_TRUE((msg.localEnumList() == SimpleEnumListMessage::LocalEnumList {SimpleEnumListMessage::LOCAL_ENUM_VALUE0,
+    ASSERT_TRUE((msg.localEnumList() == SimpleEnumListMessage::LocalEnumRepeated {SimpleEnumListMessage::LOCAL_ENUM_VALUE0,
                 SimpleEnumListMessage::LOCAL_ENUM_VALUE1,
                 SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
                 SimpleEnumListMessage::LOCAL_ENUM_VALUE1,

@@ -247,7 +247,12 @@ bool ProtobufClassGenerator::producePropertyMap(const FieldDescriptor *field, Pr
 
     std::string typeNameNoList = typeName;
     if (field->is_repeated() && !field->is_map()) {
-        typeNameNoList.resize(typeNameNoList.size() - strlen("List"));
+        if(field->type() == FieldDescriptor::TYPE_MESSAGE
+                || field->type() == FieldDescriptor::TYPE_ENUM) {
+            typeNameNoList.resize(typeNameNoList.size() - strlen(Templates::ListSuffix));
+        } else {
+            typeNameNoList.resize(typeNameNoList.size() - strlen("List"));
+        }
     }
     propertyMap = {{"type", typeName},
                    {"type_lower", typeNameLower},
@@ -351,7 +356,7 @@ void ProtobufClassGenerator::printLocalEmumsMetaTypesDeclaration()
 
         if (field->type() == FieldDescriptor::TYPE_ENUM
                 && isLocalMessageEnum(mMessage, field)) {
-             mPrinter.Print({{"classname", mClassName + "::" + field->enum_type()->name() + "List"},
+             mPrinter.Print({{"classname", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
                              {"namespaces", mNamespacesColonDelimited}}, Templates::DeclareMetaTypeTemplate);
         }
     }

@@ -83,7 +83,7 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
             const auto enumDescr = file->enum_type(i);
             const std::map<std::string, std::string> properties = {{"classname", mClassName},
                                                                    {"type", mClassName + "::" + enumDescr->name()},
-                                                                   {"enum", enumDescr->name() + "List"},
+                                                                   {"enum", enumDescr->name() + Templates::ListSuffix},
                                                                    {"namespaces", fullNamespace}};
             mPrinter.Print(properties, Templates::ComplexGlobalEnumFieldRegistrationTemplate);
             mPrinter.Print(properties, Templates::RegisterMetaTypeTemplate);

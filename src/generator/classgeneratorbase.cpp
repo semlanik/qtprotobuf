@@ -142,7 +142,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
             return mClassName + "::" + field->message_type()->name();
         }
         if (field->is_repeated()) {
-            return namespaceTypeName.append("List");
+            return namespaceTypeName.append(Templates::ListSuffix);
         }
     } else if (field->type() == FieldDescriptor::TYPE_ENUM) {
         const EnumDescriptor *enumType = field->enum_type();
@@ -162,7 +162,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
             typeName = namespaceTypeName.append(enumType->name());
         }
         if (field->is_repeated()) {
-            return typeName.append("List");
+            return typeName.append(Templates::ListSuffix);
         }
     } else {
         auto it = Templates::TypeReflection.find(field->type());

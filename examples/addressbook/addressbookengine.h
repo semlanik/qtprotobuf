@@ -68,7 +68,7 @@ signals:
 private:
     qtprotobuf::examples::AddressBookClient *m_client;
     ContactsListModel *m_contacts;
-    qtprotobuf::examples::ContactList m_container;
+    qtprotobuf::examples::ContactRepeated m_container;
     qtprotobuf::examples::CallStatus m_callStatus;
 };
 

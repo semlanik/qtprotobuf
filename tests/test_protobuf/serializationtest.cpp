@@ -1467,7 +1467,7 @@ TEST_F(SerializationTest, RepeatedStringMessageTest)
     test.setTestRepeatedString({"aaaa","bbbbb","ccc","dddddd","eeeee", ""});
     QByteArray result = test.serialize(serializer.get());
     //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a04616161610a0562626262620a036363630a066464646464640a0565656565650a00"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a04616161610a0562626262620a036363630a066464646464640a0565656565650a00");
 
     test.setTestRepeatedString(QStringList());
     result = test.serialize(serializer.get());
@@ -1507,7 +1507,7 @@ TEST_F(SerializationTest, RepeatedBytesMessageTest)
                                QByteArray::fromHex("010203040506")});
     result = test.serialize(serializer.get());
     //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a060102030405060a000a05eaeaeaeaea0a06010203040506"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a060102030405060a000a05eaeaeaeaea0a06010203040506");
 }
 
 TEST_F(SerializationTest, RepeatedFloatMessageTest)
