@@ -182,6 +182,8 @@ struct QGrpcHttp2ChannelPrivate {
             url.setScheme("http");
         }
     }
+
+    QObject lambdaContext;
 };
 
 }
@@ -242,7 +244,7 @@ void QGrpcHttp2Channel::subscribe(const QString &method, const QString &service,
 {
     QNetworkReply *networkReply = d_ptr->post(method, service, args, true);
 
-    auto connection = QObject::connect(networkReply, &QNetworkReply::readyRead, client, [networkReply, handler, this]() {
+    auto connection = QObject::connect(networkReply, &QNetworkReply::readyRead, &(d_ptr->lambdaContext), [networkReply, handler, this]() {
         auto replyIt = d_ptr->activeStreamReplies.find(networkReply);
 
         QByteArray data = networkReply->readAll();
@@ -280,9 +282,7 @@ void QGrpcHttp2Channel::subscribe(const QString &method, const QString &service,
         QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
     });
 
-    //TODO: seems this connection might be invalid in case if this destroyed.
-    //Think about correct handling of this situation
-    QObject::connect(networkReply, &QNetworkReply::finished, [networkReply, connection, this]() {
+    QObject::connect(networkReply, &QNetworkReply::finished, &(d_ptr->lambdaContext), [networkReply, connection, this]() {
         d_ptr->activeStreamReplies.erase(networkReply);
         //TODO: implement error handling and subscription recovery here
         QObject::disconnect(connection);
