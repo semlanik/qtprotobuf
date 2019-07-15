@@ -4,3 +4,5 @@ START "Client test" %1 /WAIT
 
 ; kill background server process
 taskkill /im %4
+
+TIMEOUT /T 2
