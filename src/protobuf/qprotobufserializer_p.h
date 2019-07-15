@@ -406,6 +406,7 @@ public:
                QByteArray(*s)(const T &, int &)>
     static QByteArray serializeWrapper(const QVariant &variantValue, int &fieldIndex) {
         if (variantValue.isNull()) {
+            fieldIndex = QtProtobufPrivate::NotUsedFieldIndex;
             return QByteArray();
         }
         const T& value = *(static_cast<const T *>(variantValue.data()));

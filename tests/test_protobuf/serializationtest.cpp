@@ -76,6 +76,7 @@
 #include "fieldindextest3message.h"
 #include "fieldindextest4message.h"
 #include "simpleenumlistmessage.h"
+#include "simplebytesmessage.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf::tests;
@@ -1719,6 +1720,22 @@ TEST_F(SerializationTest, SimpleEnumListMessageTest)
     result = msg.serialize(serializer.get());
     ASSERT_STREQ(result.toHex().toStdString().c_str(),
                  "");
+}
+
+TEST_F(SerializationTest, EmptyBytesMessageTest)
+{
+    SimpleBytesMessage msg;
+
+    QByteArray result = msg.serialize(serializer.get());
+    ASSERT_TRUE(result.isEmpty());
+}
+
+TEST_F(SerializationTest, EmptyStringMessageTest)
+{
+    SimpleStringMessage msg;
+
+    QByteArray result = msg.serialize(serializer.get());
+    ASSERT_TRUE(result.isEmpty());
 }
 
 TEST_F(SerializationTest, DISABLED_BenchmarkTest)
