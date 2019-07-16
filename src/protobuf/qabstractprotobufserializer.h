@@ -83,6 +83,7 @@ public:
      */
     template<typename T>
     QByteArray serialize(const QObject *object) {
+        Q_ASSERT(object != nullptr);
         qProtoDebug() << T::staticMetaObject.className() << "serialize";
         return serializeMessage(object, T::protobufMetaObject);
     }
@@ -98,6 +99,7 @@ public:
      */
     template<typename T>
     void deserialize(QObject *object, const QByteArray &array) {
+        Q_ASSERT(object != nullptr);
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
         deserializeMessage(object, T::protobufMetaObject, array);
     }

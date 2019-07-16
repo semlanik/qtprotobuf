@@ -44,7 +44,7 @@ static int qmllistpropertyCount(QQmlListProperty<T> *p) {
 
 //! \private
 template<typename T>
-static T * qmllistpropertyAt(QQmlListProperty<T> *p, int index) {
+static T *qmllistpropertyAt(QQmlListProperty<T> *p, int index) {
     return reinterpret_cast<QList<QSharedPointer<T>> *>(p->data)->at(index).data();
 }
 

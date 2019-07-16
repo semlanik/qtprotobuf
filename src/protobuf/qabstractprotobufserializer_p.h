@@ -77,7 +77,7 @@ extern Q_PROTOBUF_EXPORT void registerHandler(int userType, const SerializationH
 template <typename T,
           typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
 void serializeObject(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
-    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     buffer.append(serializer->serializeObject(value.value<T *>(), T::protobufMetaObject, metaProperty));
 }
 
@@ -88,7 +88,7 @@ void serializeObject(const QtProtobuf::QAbstractProtobufSerializer *serializer, 
 template<typename V,
          typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
 void serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &listValue, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
-    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     QList<QSharedPointer<V>> list = listValue.value<QList<QSharedPointer<V>>>();
 
     qProtoDebug() << __func__ << "listValue.count" << list.count();
@@ -113,7 +113,7 @@ void serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, co
 template<typename K, typename V,
          typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
 void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
-    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     QMap<K,V> mapValue = value.value<QMap<K,V>>();
     for (auto it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
         buffer.append(serializer->serializeMapPair(QVariant::fromValue<K>(it.key()), QVariant::fromValue<V>(it.value()), metaProperty));
@@ -127,7 +127,7 @@ void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, con
 template<typename K, typename V,
          typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
 void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
-    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     QMap<K, QSharedPointer<V>> mapValue = value.value<QMap<K, QSharedPointer<V>>>();
     for (auto it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
         if (it.value().isNull()) {
@@ -145,7 +145,7 @@ void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, con
 template<typename T,
          typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
 void serializeEnum(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
-    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     buffer.append(serializer->serializeEnum(QtProtobuf::int64(value.value<T>()), QMetaEnum::fromType<T>(),  metaProperty));
 }
 
@@ -156,7 +156,7 @@ void serializeEnum(const QtProtobuf::QAbstractProtobufSerializer *serializer, co
 template<typename T,
          typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
 void serializeEnumList(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
-    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     QList<QtProtobuf::int64> intList;
     for (auto enumValue : value.value<QList<T>>()) {
         intList.append(QtProtobuf::int64(enumValue));
@@ -171,7 +171,7 @@ void serializeEnumList(const QtProtobuf::QAbstractProtobufSerializer *serializer
 template <typename T,
           typename std::enable_if_t<std::is_base_of<QObject, T>::value, int> = 0>
 void deserializeObject(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &to) {
-    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     T *value = new T;
     serializer->deserializeObject(value, T::protobufMetaObject, it);
     to = QVariant::fromValue<T *>(value);
@@ -184,7 +184,7 @@ void deserializeObject(const QtProtobuf::QAbstractProtobufSerializer *serializer
 template <typename V,
           typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
 void deserializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &previous) {
-    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
     V *newValue = new V;
@@ -202,7 +202,7 @@ void deserializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, 
 template <typename K, typename V,
           typename std::enable_if_t<!std::is_base_of<QObject, V>::value, int> = 0>
 void deserializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &previous) {
-    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
     QMap<K, V> out = previous.value<QMap<K, V>>();
@@ -223,7 +223,7 @@ void deserializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, Q
 template <typename K, typename V,
           typename std::enable_if_t<std::is_base_of<QObject, V>::value, int> = 0>
 void deserializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &previous) {
-    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "serializer set is not setup");
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
     auto out = previous.value<QMap<K, QSharedPointer<V>>>();
@@ -238,6 +238,7 @@ void deserializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, Q
 template <typename T,
           typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
 void deserializeEnum(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &to) {
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     QtProtobuf::int64 intValue;
     serializer->deserializeEnum(intValue, QMetaEnum::fromType<T>(), it);
     to = QVariant::fromValue<T>(static_cast<T>(intValue._t));
@@ -246,6 +247,7 @@ void deserializeEnum(const QtProtobuf::QAbstractProtobufSerializer *serializer, 
 template <typename T,
           typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
 void deserializeEnumList(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &previous) {
+    Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     QList<QtProtobuf::int64> intList;
     serializer->deserializeEnumList(intList, QMetaEnum::fromType<T>(), it);
     QList<T> enumList = previous.value<QList<T>>();

@@ -41,8 +41,8 @@
 
 #define Q_DECLARE_PROTOBUF_SERIALIZERS(T)\
     public:\
-        QByteArray serialize(QtProtobuf::QAbstractProtobufSerializer *serializer) const { return serializer->serialize<T>(this); }\
-        void deserialize(QtProtobuf::QAbstractProtobufSerializer *serializer, const QByteArray &array) { serializer->deserialize<T>(this, array); }\
+        QByteArray serialize(QtProtobuf::QAbstractProtobufSerializer *serializer) const { Q_ASSERT_X(serializer != nullptr, "QProtobufObject", "Serializer is null"); return serializer->serialize<T>(this); }\
+        void deserialize(QtProtobuf::QAbstractProtobufSerializer *serializer, const QByteArray &array) { Q_ASSERT_X(serializer != nullptr, "QProtobufObject", "Serializer is null"); serializer->deserialize<T>(this, array); }\
     private:
 
 /*!

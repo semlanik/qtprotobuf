@@ -63,9 +63,7 @@ private:
     QProtobufSerializerRegistry();
     ~QProtobufSerializerRegistry();
 
-    Q_DISABLE_COPY(QProtobufSerializerRegistry)
-    QProtobufSerializerRegistry(QProtobufSerializerRegistry &&) = delete;
-    QProtobufSerializerRegistry &operator =(QProtobufSerializerRegistry &&) = delete;
+    Q_DISABLE_COPY_MOVE(QProtobufSerializerRegistry)
 
     std::unique_ptr<QProtobufSerializerRegistryPrivate> d;
 };
