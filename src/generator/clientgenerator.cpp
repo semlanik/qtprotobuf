@@ -55,7 +55,7 @@ void ClientGenerator::printClientClass()
 void ClientGenerator::printConstructor()
 {
     Indent();
-    mPrinter.Print({{"classname", mClassName}}, Templates::ConstructorTemplate);
+    mPrinter.Print({{"classname", mClassName}}, Templates::QObjectConstructorTemplate);
     Outdent();
 }
 

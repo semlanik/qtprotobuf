@@ -86,6 +86,7 @@ const char *Templates::EnumFieldTemplate = "$enumvalue$ = $value$,\n";
 const char *Templates::ProtoConstructorTemplate = "$classname$($parameter_list$QObject *parent = nullptr);\n";
 const char *Templates::ProtoConstructorDefinitionTemplate = "$classname$::$classname$($parameter_list$QObject *parent) : QObject(parent)";
 const char *Templates::ConstructorTemplate = "$classname$();\n";
+const char *Templates::QObjectConstructorTemplate = "explicit $classname$(QObject *parent = nullptr);\n";
 const char *Templates::ConstructorHeaderTemplate = "$classname$() {}\n";
 const char *Templates::CopyConstructorTemplate = "$classname$(const $classname$ &other) : QObject() {\n";
 const char *Templates::MoveConstructorTemplate = "$classname$($classname$ &&other) : QObject() {\n";
@@ -189,7 +190,7 @@ const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
 
-const char *Templates::ConstructorDefinitionSyncTemplate = "\n$classname$::$classname$() : $parent_class$(\"$service_name$\")\n"
+const char *Templates::ClientConstructorDefinitionTemplate = "\n$classname$::$classname$(QObject *parent) : $parent_class$(\"$service_name$\", parent)\n"
                                                            "{\n"
                                                            "}\n";
 const char *Templates::ClientMethodDefinitionSyncTemplate = "\nQtProtobuf::QGrpcStatus $classname$::$method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"

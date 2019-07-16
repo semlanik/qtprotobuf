@@ -69,6 +69,7 @@ public:
     static const char *ProtoConstructorTemplate;
     static const char *ProtoConstructorDefinitionTemplate;
     static const char *ConstructorTemplate;
+    static const char *QObjectConstructorTemplate;
     static const char *CopyConstructorTemplate;
     static const char *MoveConstructorTemplate;
     static const char *DeletedCopyConstructorTemplate;
@@ -115,7 +116,7 @@ public:
     static const char *QmlRegisterTypeTemplate;
     static const char *QmlRegisterTypeUncreatableTemplate;
     //Service templates
-    static const char *ConstructorDefinitionSyncTemplate;
+    static const char *ClientConstructorDefinitionTemplate;
 
     static const char *ClientMethodDeclarationSyncTemplate;
     static const char *ClientMethodDeclarationAsyncTemplate;
