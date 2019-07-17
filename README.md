@@ -1,6 +1,8 @@
 # QtProtobuf
 
-Protobuf plugin to generate Qt classes
+gRPC and Protobuf generator and bindings for Qt framework
+
+> see [Protobuf](https://developers.google.com/protocol-buffers) and [gRPC](https://grpc.io/) for more information
 
 ## Linux Build
 ### Prerequesties
