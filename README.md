@@ -116,6 +116,16 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 
 *QtProtobuf_GENERATED* - variable that will contain generated STATIC library target name
 
+### Usefull definitions
+
+*QTPROTOBUF_MAKE_COVERAGE* - if **TRUE/ON**, QtProtobuf will be built with gcov intergration, to collect code coverage reports(usefull for developers). **FALSE** by default
+
+*QTPROTOBUF_MAKE_TESTS* - if **TRUE/ON**, tests for QtProtobuf will be built. **TRUE** by default
+
+*QTPROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON**, built-in examples will be built. **TRUE** by default
+
+*QTPROTOBUF_EXECUTABLE* - contains full path to QtProtobuf generator add_executable
+
 ## Running tests
 ```bash
 cd <build directory>
