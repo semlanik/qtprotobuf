@@ -86,15 +86,10 @@ void GlobalEnumsGenerator::printMetatype(const google::protobuf::FileDescriptor 
         }
         fullNamespace.append("::").append(name);
     }
-    std::string fullClassname;
+    fullNamespace.append("::").append(Templates::GlobalEnumClassNameTemplate);
     for (int i = 0; i < file->enum_type_count(); i++) {
         const auto enumDescr = file->enum_type(i);
-        if (!enumDescr->name().empty()) {
-            fullClassname.append(Templates::GlobalEnumClassNameTemplate).append("::").append(enumDescr->name());
-        }
-    }
-    if (!fullClassname.empty()) {
-        mPrinter.Print({{"classname", fullClassname}, {"namespaces", fullNamespace}},
+        mPrinter.Print({{"classname", enumDescr->name()}, {"namespaces", fullNamespace}},
                        Templates::DeclareMetaTypeListTemplate);
     }
 }

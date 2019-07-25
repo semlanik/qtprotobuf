@@ -313,27 +313,44 @@ TEST_F(SimpleTest, SimpleExternalEnumMessageTest)
 
 TEST_F(SimpleTest, SimpleEnumsTest)
 {
-    ASSERT_GT(GlobalEnums::staticMetaObject.enumeratorCount(), 0);
-    QMetaEnum simpleEnum;
+    EXPECT_GT(GlobalEnums::staticMetaObject.enumeratorCount(), 0);
+    QMetaEnum testEnum;
     for (int i = 0; i < GlobalEnums::staticMetaObject.enumeratorCount(); i++) {
         QMetaEnum tmp = GlobalEnums::staticMetaObject.enumerator(i);
         if (QString(tmp.name()) == QString("TestEnum")) {
-            simpleEnum = tmp;
+            testEnum = tmp;
             break;
         }
     }
-    ASSERT_TRUE(simpleEnum.isValid());
-    ASSERT_STREQ(simpleEnum.key(0), "TEST_ENUM_VALUE0");
-    ASSERT_STREQ(simpleEnum.key(1), "TEST_ENUM_VALUE1");
-    ASSERT_STREQ(simpleEnum.key(2), "TEST_ENUM_VALUE2");
-    ASSERT_STREQ(simpleEnum.key(3), "TEST_ENUM_VALUE3");
-    ASSERT_STREQ(simpleEnum.key(4), "TEST_ENUM_VALUE4");
+    ASSERT_TRUE(testEnum.isValid());
+    ASSERT_STREQ(testEnum.key(0), "TEST_ENUM_VALUE0");
+    ASSERT_STREQ(testEnum.key(1), "TEST_ENUM_VALUE1");
+    ASSERT_STREQ(testEnum.key(2), "TEST_ENUM_VALUE2");
+    ASSERT_STREQ(testEnum.key(3), "TEST_ENUM_VALUE3");
+    ASSERT_STREQ(testEnum.key(4), "TEST_ENUM_VALUE4");
 
-    ASSERT_EQ(simpleEnum.value(0), 0);
-    ASSERT_EQ(simpleEnum.value(1), 1);
-    ASSERT_EQ(simpleEnum.value(2), 2);
-    ASSERT_EQ(simpleEnum.value(3), 4);
-    ASSERT_EQ(simpleEnum.value(4), 3);
+    ASSERT_EQ(testEnum.value(0), 0);
+    ASSERT_EQ(testEnum.value(1), 1);
+    ASSERT_EQ(testEnum.value(2), 2);
+    ASSERT_EQ(testEnum.value(3), 4);
+    ASSERT_EQ(testEnum.value(4), 3);
+
+    for (int i = 0; i < GlobalEnums::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = GlobalEnums::staticMetaObject.enumerator(i);
+        if (QString(tmp.name()) == QString("TestEnumSecondInFile")) {
+            testEnum = tmp;
+            break;
+        }
+    }
+
+    ASSERT_TRUE(testEnum.isValid());
+    ASSERT_STREQ(testEnum.key(0), "TEST_ENUM_SIF_VALUE0");
+    ASSERT_STREQ(testEnum.key(1), "TEST_ENUM_SIF_VALUE1");
+    ASSERT_STREQ(testEnum.key(2), "TEST_ENUM_SIF_VALUE2");
+
+    ASSERT_EQ(testEnum.value(0), 0);
+    ASSERT_EQ(testEnum.value(1), 1);
+    ASSERT_EQ(testEnum.value(2), 2);
 }
 
 TEST_F(SimpleTest, SimpleFileEnumsTest)

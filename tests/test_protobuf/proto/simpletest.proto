@@ -541,6 +541,12 @@ enum TestEnum {
     TEST_ENUM_VALUE4 = 3;
 }
 
+enum TestEnumSecondInFile {
+    TEST_ENUM_SIF_VALUE0 = 0;
+    TEST_ENUM_SIF_VALUE1 = 1;
+    TEST_ENUM_SIF_VALUE2 = 2;
+}
+
 message FieldIndexTest1Message {
     sint32 testField = 31;
 }
