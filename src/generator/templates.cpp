@@ -125,6 +125,7 @@ const char *Templates::QmlListGetterTemplate = "QQmlListProperty<$type_nolist$> 
 const char *Templates::SetterTemplateMessageType = "void set$property_name_cap$_p($type$ *$property_name$) {\n"
                                                    "    if ($property_name$ == nullptr) {\n"
                                                    "        m_$property_name$ = {};\n"
+                                                   "        return;\n"
                                                    "    }\n"
                                                    "    if (m_$property_name$ != *$property_name$) {\n"
                                                    "        m_$property_name$ = *$property_name$;\n"

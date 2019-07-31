@@ -736,5 +736,12 @@ TEST_F(SimpleTest, EmptyMessageTest)
     ASSERT_EQ(EmptyMessage::staticMetaObject.propertyCount(), 1);
 }
 
+TEST_F(SimpleTest, NullPointerMessageTest)
+{
+    ComplexMessage msg(0, {QString("not null")});
+    msg.setTestComplexField_p(nullptr);
+    ASSERT_TRUE(msg.testComplexField().testFieldString().isEmpty());
+}
+
 } // tests
 } // qtprotobuf
