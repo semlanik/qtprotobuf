@@ -34,6 +34,7 @@
 #include "clientgenerator.h"
 #include "clientsourcegenerator.h"
 #include "utils.h"
+#include "iostream"
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
