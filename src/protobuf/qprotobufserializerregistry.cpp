@@ -30,8 +30,6 @@
 #include <QString>
 #include <QHash>
 
-//TODO: remove once migration to 5.14 as minimum required version is completed
-#if QT_VERSION < 0x050D00
 namespace std {
   template<> struct hash<QString> {
     std::size_t operator()(const QString &s) const {
@@ -39,7 +37,6 @@ namespace std {
     }
   };
 }
-#endif
 
 namespace QtProtobuf {
 class QProtobufSerializerRegistryPrivate {
