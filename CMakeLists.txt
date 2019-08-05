@@ -16,7 +16,7 @@ if(Qt5Core_VERSION VERSION_LESS "5.12.3")
     message(FATAL_ERROR "Required Qt version is 5.12.3+")
 endif()
 
-if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/grpc/CMakeLists.txt")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/grpc/CMakeLists.txt")
     message(STATUS "Found local gRPC sources directory. Perform all-in-one build")
     set(gRPC_BUILD_TESTS FALSE)
     set(protobuf_BUILD_TESTS FALSE)
