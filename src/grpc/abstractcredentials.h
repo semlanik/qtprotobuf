@@ -30,6 +30,7 @@
 #include <QVariant>
 
 #include <functional>
+#include <memory>
 
 #include "qtgrpcglobal.h"
 
@@ -42,77 +43,89 @@ namespace QtProtobuf {
 class CallCredentials;
 class ChannelCredentials;
 
-/*!
- * \brief The AbstractCredentials class
- */
-class Q_GRPC_EXPORT AbstractCredentials
-{
+using CredentialMap = QHash<QLatin1String, QVariant>;
+
+//! \private
+class QGrpcAbstractCredentials {
 public:
-    template<typename Call, typename Channel,
-             typename std::enable_if_t<std::is_base_of<QtProtobuf::CallCredentials, Call>::value
-                                       && std::is_base_of<QtProtobuf::ChannelCredentials, Channel>::value, int> = 0>
-    AbstractCredentials(const Call &call, const Channel &channel) {
-        mCallCredentials = call.mCallCredentials;
-        mChannelCredentials = channel.mChannelCredentials;
-    }
-
-    template<typename Call,
-             typename std::enable_if_t<std::is_base_of<QtProtobuf::CallCredentials, Call>::value, int> = 0>
-    AbstractCredentials(const Call &call) {
-        mCallCredentials = call.mCallCredentials;
-    }
-
-    template<typename Channel,
-             typename std::enable_if_t<std::is_base_of<QtProtobuf::ChannelCredentials, Channel>::value, int> = 0>
-    AbstractCredentials(const Channel &channel) {
-        mChannelCredentials = channel.mChannelCredentials;
-    }
-
-    using CredentialMap = QHash<QLatin1String, QVariant>;
-
-    CredentialMap callCredentials() {
-        return mCallCredentials;
-    }
-
-    CredentialMap channelCredentials() {
-        return mChannelCredentials;
-    }
-protected:
-    AbstractCredentials() = default;
-    void setCallCredentials(const CredentialMap &credentialMap) { mCallCredentials = credentialMap; }
-    void setChannelCredentials(const CredentialMap &credentialMap) { mChannelCredentials = credentialMap; }
-
-private:
-    CredentialMap mCallCredentials;
-    CredentialMap mChannelCredentials;
+    virtual CredentialMap callCredentials() = 0;
+    virtual CredentialMap channelCredentials() = 0;
 };
 
 /*!
  * \brief The CallCredentials class
  */
-class Q_GRPC_EXPORT CallCredentials : public AbstractCredentials
+class Q_GRPC_EXPORT CallCredentials
 {
-protected:
-    CallCredentials(const CredentialMap &credentialMap) {
-        setCallCredentials(credentialMap);
-        setChannelCredentials(CredentialMap{});
-    }
-
-private:
+public:
     CallCredentials() = default;
+    virtual ~CallCredentials();
 };
 
 /*!
  * \brief The ChannelCredentials class
  */
-class Q_GRPC_EXPORT ChannelCredentials : public AbstractCredentials
+class Q_GRPC_EXPORT ChannelCredentials
 {
-protected:
-    ChannelCredentials(const CredentialMap &credentialMap) {
-        setCallCredentials(CredentialMap{});
-        setChannelCredentials(credentialMap);
-    }
+public:
+    ChannelCredentials() = default;
+    virtual ~ChannelCredentials();
 };
+
+
+/*!
+ * \brief The QGrpcCredentials class
+ */
+template<typename Call, typename Channel,
+         typename std::enable_if_t<std::is_base_of<QtProtobuf::CallCredentials, Call>::value
+                                   && std::is_base_of<QtProtobuf::ChannelCredentials, Channel>::value, int> = 0>
+class Q_GRPC_EXPORT QGrpcCredentials : public QGrpcAbstractCredentials
+{
+public:
+    static QtProtobuf::QGrpcAbstractCredentials *withCredentials(const Call &call, const Channel &channel)
+    {
+        return new QGrpcCredentials<Call, Channel>(call, channel);
+    }
+    static QtProtobuf::QGrpcAbstractCredentials *withCallCredentials(const Call &call) {
+        return new QGrpcCredentials<Call, Channel>(call);
+    }
+    static QtProtobuf::QGrpcAbstractCredentials *withChannelCredentials(const Channel &channel) {
+        return new QGrpcCredentials<Call, Channel>(channel);
+    }
+
+    CredentialMap callCredentials() {
+        return mCall();
+    }
+
+    CredentialMap channelCredentials() {
+        return mChannel();
+    }
+
+public:
+    QGrpcCredentials(const Call &call, const Channel &channel) :
+        mCall(call)
+      , mChannel(channel)
+    {
+    }
+
+    QGrpcCredentials(const Call &call) :
+        mCall(call)
+    {
+    }
+
+    QGrpcCredentials(const Channel &channel) :
+        mChannel(channel)
+    {
+    }
+
+protected:
+    QGrpcCredentials() = default;
+
+private:
+    Call mCall;
+    Channel mChannel;
+};
+
 /*! \} */
 }
 
@@ -120,16 +133,16 @@ protected:
 template<typename Call, typename Channel,
          typename std::enable_if_t<std::is_base_of<QtProtobuf::CallCredentials, Call>::value
                                    && std::is_base_of<QtProtobuf::ChannelCredentials, Channel>::value, int> = 0>
-QtProtobuf::AbstractCredentials operator |(const Call &call, const Channel &channel)
+std::unique_ptr<QtProtobuf::QGrpcAbstractCredentials> operator |(const Call &call, const Channel &channel)
 {
-    return QtProtobuf::AbstractCredentials(call, channel);
+    return std::unique_ptr<QtProtobuf::QGrpcAbstractCredentials>(QtProtobuf::QGrpcCredentials<Call, Channel>::withCredentials(call, channel));
 }
 
 //! \private
 template<typename Call, typename Channel,
          typename std::enable_if_t<std::is_base_of<QtProtobuf::CallCredentials, Call>::value
                                    && std::is_base_of<QtProtobuf::ChannelCredentials, Channel>::value, int> = 0>
-QtProtobuf::AbstractCredentials operator |(const Channel &channel, const Call &call)
+std::unique_ptr<QtProtobuf::QGrpcAbstractCredentials> operator |(const Channel &channel, const Call &call)
 {
-    return QtProtobuf::AbstractCredentials(call, channel);
+    return std::unique_ptr<QtProtobuf::QGrpcAbstractCredentials>(new QtProtobuf::QGrpcCredentials<Call, Channel>(call, channel));
 }

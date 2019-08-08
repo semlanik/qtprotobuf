@@ -32,7 +32,7 @@
 
 namespace QtProtobuf {
 
-class AbstractCredentials;
+class QGrpcAbstractCredentials;
 struct QGrpcHttp2ChannelPrivate;
 /*!
  * \ingroup QtGrpc
@@ -41,7 +41,7 @@ struct QGrpcHttp2ChannelPrivate;
 class Q_GRPC_EXPORT QGrpcHttp2Channel final : public QAbstractGrpcChannel
 {
 public:
-    QGrpcHttp2Channel(const QUrl &url, const AbstractCredentials &credentials);
+    QGrpcHttp2Channel(const QUrl &url, std::unique_ptr<QGrpcAbstractCredentials> credentials);
     ~QGrpcHttp2Channel();
 
     QGrpcStatus call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;

@@ -37,6 +37,9 @@ namespace QtProtobuf {
 class Q_GRPC_EXPORT InsecureCredentials : public ChannelCredentials
 {
 public:
-    InsecureCredentials() : ChannelCredentials(CredentialMap()) {}
+    InsecureCredentials() = default;
+    CredentialMap operator()() {
+        return CredentialMap{};
+    }
 };
 }

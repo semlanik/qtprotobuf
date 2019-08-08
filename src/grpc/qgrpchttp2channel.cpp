@@ -104,7 +104,7 @@ struct QGrpcHttp2ChannelPrivate {
 
     QUrl url;
     QNetworkAccessManager nm;
-    AbstractCredentials credentials;
+    std::unique_ptr<QGrpcAbstractCredentials> credentials;
     QSslConfiguration sslConfig;
     std::unordered_map<QNetworkReply *, ExpectedData> activeStreamReplies;
 
@@ -119,7 +119,7 @@ struct QGrpcHttp2ChannelPrivate {
         request.setRawHeader(AcceptEncodingHeader, "identity,gzip");
         request.setRawHeader(TEHeader, "trailers");
         request.setSslConfiguration(sslConfig);
-        AbstractCredentials::CredentialMap callCredentials = credentials.callCredentials();
+        CredentialMap callCredentials = credentials->callCredentials();
         for (auto i = callCredentials.begin(); i != callCredentials.end(); ++i) {
             request.setRawHeader(i.key().data(), i.value().toString().toUtf8());
         }
@@ -172,15 +172,15 @@ struct QGrpcHttp2ChannelPrivate {
         return networkReply->readAll().mid(GrpcMessageSizeHeaderSize);
     }
 
-    QGrpcHttp2ChannelPrivate(const QUrl &_url, const AbstractCredentials &_credentials)
+    QGrpcHttp2ChannelPrivate(const QUrl &_url, std::unique_ptr<QGrpcAbstractCredentials> _credentials)
         : url(_url)
-        , credentials(_credentials)
+        , credentials(std::move(_credentials))
     {
         if (url.scheme() == "https") {
-            if (!credentials.channelCredentials().contains(QLatin1String("sslConfig"))) {
+            if (!credentials->channelCredentials().contains(QLatin1String("sslConfig"))) {
                 throw std::invalid_argument("Https connection requested but not ssl configuration provided.");
             }
-            sslConfig = credentials.channelCredentials().value(QLatin1String("sslConfig")).value<QSslConfiguration>();
+            sslConfig = credentials->channelCredentials().value(QLatin1String("sslConfig")).value<QSslConfiguration>();
         } else if (url.scheme().isEmpty()) {
             url.setScheme("http");
         }
@@ -195,8 +195,8 @@ struct QGrpcHttp2ChannelPrivate {
 
 }
 
-QGrpcHttp2Channel::QGrpcHttp2Channel(const QUrl &url, const AbstractCredentials &credentials) : QAbstractGrpcChannel()
-  , d_ptr(std::make_unique<QGrpcHttp2ChannelPrivate>(url, credentials))
+QGrpcHttp2Channel::QGrpcHttp2Channel(const QUrl &url, std::unique_ptr<QGrpcAbstractCredentials> credentials) : QAbstractGrpcChannel()
+  , d_ptr(std::make_unique<QGrpcHttp2ChannelPrivate>(url, std::move(credentials)))
 {
 }
 

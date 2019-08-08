@@ -24,3 +24,8 @@
  */
 
 #include "abstractcredentials.h"
+
+using namespace QtProtobuf;
+
+CallCredentials::~CallCredentials() = default;
+ChannelCredentials::~ChannelCredentials() = default;
