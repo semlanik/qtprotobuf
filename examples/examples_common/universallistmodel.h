@@ -70,8 +70,10 @@ public:
      */
     int append(T* value) {
         Q_ASSERT_X(value != nullptr, fullTemplateName(), "Trying to add member of NULL");
-
-        if(m_container.indexOf(value) >= 0) {
+        auto it = std::find_if(std::begin(m_container), std::end(m_container), [value](const QSharedPointer<T> &ptr){
+            return ptr.data() == value;
+        });
+        if(it != std::end(m_container)) {
 #ifdef DEBUG
             qDebug() << fullTemplateName() << "Member already exists";
 #endif
@@ -91,8 +93,10 @@ public:
      */
     int prepend(T* value) {
         Q_ASSERT_X(value != nullptr, fullTemplateName(), "Trying to add member of NULL");
-
-        if(m_container.indexOf(value) >= 0) {
+        auto it = std::find_if(std::begin(m_container), std::end(m_container), [value](const QSharedPointer<T> &ptr){
+            return ptr.data() == value;
+        });
+        if(it != std::end(m_container)) {
 #ifdef DEBUG
             qDebug() << fullTemplateName() << "Member already exists";
 #endif
@@ -112,9 +116,13 @@ public:
     void remove(T* value) {
         Q_ASSERT_X(value != nullptr, fullTemplateName(), ": Trying to remove member of NULL");
 
-        int valueIndex = m_container.indexOf(value);
+        auto it = std::find_if(std::begin(m_container), std::end(m_container), [value](const QSharedPointer<T> &ptr){
+            return ptr.data() == value;
+        });
 
-        remove(valueIndex);
+        if (it != std::end(m_container)) {
+            m_container.erase(it);
+        }
     }
 
     void remove(int valueIndex) override {
