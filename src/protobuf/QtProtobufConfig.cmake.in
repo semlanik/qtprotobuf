@@ -5,5 +5,5 @@ if(NOT TARGET @TARGET@ AND NOT @TARGET@_BINARY_DIR)
 endif()
 
 @PACKAGE_INIT@
-
+set(PROTO_PARSER ${CMAKE_CURRENT_LIST_DIR}/parsemessages.go)
 include("${CMAKE_CURRENT_LIST_DIR}/QtProtobufGen.cmake")

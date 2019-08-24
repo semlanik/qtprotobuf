@@ -74,11 +74,6 @@ You can integrate QtProtobuf as submodule in your project or as installed in sys
 ```cmake
 ...
 find_package(QtProtobufProject CONFIG REQUIRED COMPONENTS QtProtobuf QtGrpc)
-set(GENERATED_HEADERS
-    # List of artifacts expected after qtprotobufgen job done.
-    # Usually it's full list of messages in all packages with .h header suffix
-    ...
-    )
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.proto
                                ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile2.proto
                                ...
@@ -88,11 +83,29 @@ file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.pr
 # ${QtProtobuf_GENERATED} variable
 generate_qtprotobuf(TARGET MyTarget
     OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
-    PROTO_FILES ${PROTO_FILES}
-    GENERATED_HEADERS ${GENERATED_HEADERS})
+    PROTO_FILES ${PROTO_FILES})
 add_executable(MyTarget main.cpp) # Add your target here
 target_link_libraries(MyTarget ${QtProtobuf_GENERATED})
 
+```
+
+**Optional:**
+
+You also may pre-specify expected generated headers to prevent dummy-parser mistakes
+
+```cmake
+...
+set(GENERATED_HEADERS
+    # List of artifacts expected after qtprotobufgen job done.
+    # Usually it's full list of messages in all packages with .h header suffix
+    ...
+    )
+...
+generate_qtprotobuf(TARGET MyTarget
+    OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+    PROTO_FILES ${PROTO_FILES}
+    GENERATED_HEADERS ${GENERATED_HEADERS})
+...
 ```
 ## CMake functions reference
 

@@ -7,20 +7,11 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt5 COMPONENTS Core Quick Network REQUIRED)
 find_package(QtProtobufProject CONFIG REQUIRED COMPONENTS QtProtobuf QtGrpc)
 
-set(GENERATED_HEADERS
-    chatmessage.h
-    chatmessages.h
-    user.h
-    users.h
-    none.h
-    simplechatclient.h)
-
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/simplechat.proto)
 
 generate_qtprotobuf(TARGET ${TARGET}
     OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
-    PROTO_FILES ${PROTO_FILES}
-    GENERATED_HEADERS ${GENERATED_HEADERS})
+    PROTO_FILES ${PROTO_FILES})
 
 file(GLOB SOURCES main.cpp
     simplechatengine.cpp

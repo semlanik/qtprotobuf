@@ -12,10 +12,19 @@ function(generate_qtprotobuf)
     if(NOT DEFINED QTPROTOBUF_EXECUTABLE)
         set(QTPROTOBUF_EXECUTABLE @QTPROTOBUF_EXECUTABLE_INSTALL@)
     endif()
+    find_program(GO_EXECUTABLE "go")
     foreach(PROTO_FILE IN LISTS generate_qtprotobuf_PROTO_FILES)
         get_filename_component(BASE_DIR ${PROTO_FILE} DIRECTORY)
         set(PROTO_INCLUDES -I"${BASE_DIR}" ${PROTO_INCUDES})
+        execute_process(COMMAND ${GO_EXECUTABLE} run ${PROTO_PARSER} ${PROTO_FILE} OUTPUT_VARIABLE GENERATED_HEADERS_PART ERROR_VARIABLE PARSER_ERROR)
+        set(GENERATED_HEADERS ${GENERATED_HEADERS} ${GENERATED_HEADERS_PART})
     endforeach()
+
+    #message("${PARSER_ERROR} Generated files list: ${GENERATED_HEADERS} ${GENERATED_HEADERS_PART}")
+
+    if(DEFINED generate_qtprotobuf_GENERATED_HEADERS)
+        set(GENERATED_HEADERS ${generate_qtprotobuf_GENERATED_HEADERS})
+    endif()
 
     if(NOT DEFINED generate_qtprotobuf_OUT_DIR)
         set(OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -27,7 +36,7 @@ function(generate_qtprotobuf)
 
     unset(QTPROTOBUF_GENERATED_SOURCES)
     unset(QTPROTOBUF_GENERATED_HEADERS)
-    foreach(GENERATED_HEADER IN LISTS generate_qtprotobuf_GENERATED_HEADERS)
+    foreach(GENERATED_HEADER IN LISTS GENERATED_HEADERS)
         get_filename_component(GENERATED_BASENAME ${GENERATED_HEADER} NAME_WE)
 
         list(APPEND QTPROTOBUF_GENERATED_SOURCES ${OUT_DIR}/${GENERATED_BASENAME}.cpp)
