@@ -123,6 +123,8 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 
 *GENERATED_HEADERS* - List of header files expected after generator job finished
 
+*EXCLUDE_HEADERS* - List of header files to be excluded from pre-parsed list of expected header files (e.g. nested messages that are not supported by QtProtobuf generator)
+
 *PROTO_FILES* - List of .proto files that will be used in generation procedure
 
 **Outcome:**

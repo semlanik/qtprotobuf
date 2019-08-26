@@ -43,7 +43,7 @@ endfunction(protobuf_generate_all)
 function(add_test_target)
     set(options)
     set(oneValueArgs QML_DIR TARGET)
-    set(multiValueArgs SOURCES GENERATED_HEADERS PROTO_FILES)
+    set(multiValueArgs SOURCES GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES)
     cmake_parse_arguments(add_test_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     ## test sources build
@@ -63,7 +63,8 @@ function(add_test_target)
     generate_qtprotobuf(TARGET ${add_test_target_TARGET}
         OUT_DIR ${GENERATED_SOURCES_DIR}
         PROTO_FILES ${PROTO_FILES}
-        GENERATED_HEADERS ${add_test_target_GENERATED_HEADERS})
+        GENERATED_HEADERS ${add_test_target_GENERATED_HEADERS}
+        EXCLUDE_HEADERS ${add_test_target_EXCLUDE_HEADERS})
 
     add_executable(${add_test_target_TARGET} ${add_test_target_SOURCES})
 

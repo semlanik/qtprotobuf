@@ -1,7 +1,7 @@
 function(generate_qtprotobuf)
     set(options)
     set(oneValueArgs OUT_DIR TARGET)
-    set(multiValueArgs GENERATED_HEADERS PROTO_FILES)
+    set(multiValueArgs GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES)
     cmake_parse_arguments(generate_qtprotobuf "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(QtProtobuf_GENERATED ${generate_qtprotobuf_TARGET}_qtprotobuf_gen PARENT_SCOPE)
@@ -20,12 +20,21 @@ function(generate_qtprotobuf)
         set(GENERATED_HEADERS ${GENERATED_HEADERS} ${GENERATED_HEADERS_PART})
     endforeach()
 
+    #TODO: add globalenums by default. But it's better to verify if proto file contains any global enum
+    set(GENERATED_HEADERS ${GENERATED_HEADERS} globalenums.h)
+
     #message("${PARSER_ERROR} Generated files list: ${GENERATED_HEADERS} ${GENERATED_HEADERS_PART}")
 
     if(DEFINED generate_qtprotobuf_GENERATED_HEADERS)
         set(GENERATED_HEADERS ${generate_qtprotobuf_GENERATED_HEADERS})
     endif()
 
+    foreach(EXCLUDE_HEADER IN LISTS generate_qtprotobuf_EXCLUDE_HEADERS)
+        list(REMOVE_ITEM GENERATED_HEADERS ${EXCLUDE_HEADER})
+    endforeach()
+
+    list(REMOVE_DUPLICATES GENERATED_HEADERS)
+    
     if(NOT DEFINED generate_qtprotobuf_OUT_DIR)
         set(OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
     else()
