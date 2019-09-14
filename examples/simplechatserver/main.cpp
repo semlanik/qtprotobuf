@@ -70,6 +70,7 @@ public:
             }
             if ((*it).first == std::string("user-password")) {
                 password = std::string((*it).second.data());
+                password.resize(32);
             }
         }
         return std::make_tuple(name, password);
