@@ -30,8 +30,8 @@ using namespace QtProtobuf::generator;
 const char *Templates::DefaultProtobufIncludesTemplate = "#include <QMetaType>\n"
                                                          "#include <QList>\n"
                                                          "#include <QtQml/QQmlListProperty>\n"
-                                                         "#include <qprotobufobject.h>\n"
-                                                         "#include <qqmllistpropertyconstructor.h>\n"
+                                                         "#include <QProtobufObject>\n"
+                                                         "#include <QQmlListPropertyConstructor>\n"
                                                          "#include <unordered_map>\n"
                                                          "#include <QSharedPointer>\n\n";
 

@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#pragma once //QQmlListPropertyConstructor
 
 #include <QQmlListProperty>
 #include <QQmlEngine>

@@ -38,8 +38,8 @@ GlobalEnumsSourceGenerator::GlobalEnumsSourceGenerator(const PackagesList &packa
 
 void GlobalEnumsSourceGenerator::run() {
     mPrinter.Print("#include <globalenums.h>\n"
-                   "#include <qprotobufobject.h>\n"
-                   "#include <qprotobufregistrationhelper.h>\n\n"
+                   "#include <QProtobufObject>\n"
+                   "#include <QProtobufRegistrationHelper>\n\n"
                    "#include <QQmlEngine>");
 
     std::vector<std::string> namespaces;
