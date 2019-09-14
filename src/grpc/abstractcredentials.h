@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#pragma once //AbstractCredentials
 
 #include <QString>
 #include <QHash>

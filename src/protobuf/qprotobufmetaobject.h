@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#pragma once //QProtobufMetaObject
 
 #include "qtprotobufglobal.h"
 #include "qtprotobuftypes.h"

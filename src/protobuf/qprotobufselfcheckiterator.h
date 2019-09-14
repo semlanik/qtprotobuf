@@ -28,7 +28,7 @@
 
 #include "qtprotobufglobal.h"
 
-#pragma once
+#pragma once //QProtobufSelfcheckIterator
 
 namespace QtProtobuf {
 

@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#pragma once //QProtobufRegistrationHelper
 
 #include <functional>
 
@@ -41,4 +41,3 @@ public:
 };
 
 }
-

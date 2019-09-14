@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#pragma once //SslCredentials
 
 #include "abstractcredentials.h"
 

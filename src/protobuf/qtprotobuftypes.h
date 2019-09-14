@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#pragma once //QtProtobufTypes
 
 #include <QList>
 #include <QMetaType>

@@ -23,6 +23,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#pragma once //QProtobufJsonSerializer
+
 #include "qabstractprotobufserializer.h"
 #include "qtprotobufglobal.h"
 

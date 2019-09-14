@@ -12,6 +12,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 include(${QTPROTOBUF_CMAKE_DIR}/Coverage.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
 
 file(GLOB SOURCES qgrpcasyncreply.cpp
     qgrpcstatus.cpp
@@ -32,13 +33,16 @@ file(GLOB HEADERS qgrpcasyncreply.h
     insecurecredentials.h
     qtgrpcglobal.h)
 
+protobuf_generate_qt_headers(PUBLIC_HEADERS ${HEADERS} COMPONENT ${TARGET})
+
 add_library(${TARGET} SHARED ${SOURCES})
 target_compile_definitions(${TARGET} PRIVATE QT_BUILD_GRPC_LIB)
 
 add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
-set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS}" OUTPUT_NAME ${TARGET})
+set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS};${GENERATED_PUBLIC_HEADERS}" OUTPUT_NAME ${TARGET})
 target_include_directories(${TARGET} PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${QTPROTOBUF_BINARY_DIR}/include/${TARGET}>
     $<INSTALL_INTERFACE:${TARGET_INCLUDE_DIR}>
 )
 target_link_libraries(${TARGET} PUBLIC ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf Qt5::Core Qt5::Network)

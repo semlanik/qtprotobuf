@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#pragma once //QAbstractGrpcClient
 
 #include <memory>
 #include <functional>

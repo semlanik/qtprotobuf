@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#pragma once //QProtobufObject
 
 #include "qabstractprotobufserializer.h"
 #include "qprotobufmetaobject.h"

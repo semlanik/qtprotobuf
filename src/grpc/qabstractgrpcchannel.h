@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#pragma once //QAbstractGrpcChannel
 
 #include <QString>
 #include <QByteArray>
