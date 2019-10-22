@@ -46,6 +46,7 @@ function(add_test_target)
     set(multiValueArgs SOURCES GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES)
     cmake_parse_arguments(add_test_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+    find_package(Threads REQUIRED)
     ## test sources build
     # policy enables automoc for generated files
     if(${CMAKE_VERSION} VERSION_GREATER "3.10.0")
@@ -73,7 +74,7 @@ function(add_test_target)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     endif()
     add_dependencies(${add_test_target_TARGET} ${QtProtobuf_GENERATED})
-    target_link_libraries(${add_test_target_TARGET} gtest_main gtest ${QtProtobuf_GENERATED} ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf ${QTPROTOBUF_COMMON_NAMESPACE}::QtGrpc Qt5::Core Qt5::Qml Qt5::Network)
+    target_link_libraries(${add_test_target_TARGET} gtest_main gtest ${QtProtobuf_GENERATED} ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf ${QTPROTOBUF_COMMON_NAMESPACE}::QtGrpc Qt5::Core Qt5::Qml Qt5::Network ${CMAKE_THREAD_LIBS_INIT})
 endfunction(add_test_target)
 
 function(add_target_qml)
