@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Viktor Kopp <vifactor@gmail.com>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,38 +23,32 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once //QGrpcHttp2Channel
+#pragma once //QGrpcSslCredentials
 
-#include "qabstractgrpcchannel.h"
+#include "qgrpccredentials.h"
+#include "qtgrpcglobal.h"
 
-#include <QUrl>
-#include <memory>
+#include <QSslConfiguration>
 
 namespace QtProtobuf {
 
-class QAbstractGrpcCredentials;
-struct QGrpcHttp2ChannelPrivate;
 /*!
  * \ingroup QtGrpc
- * \brief The QGrpcHttp2Channel class
+ * \brief The QGrpcSslCredentials class
  */
-class Q_GRPC_EXPORT QGrpcHttp2Channel final : public QAbstractGrpcChannel
+class Q_GRPC_EXPORT QGrpcSslCredentials final : public QGrpcChannelCredentials
 {
 public:
-    QGrpcHttp2Channel(const QUrl &url, std::unique_ptr<QAbstractGrpcCredentials> credentials);
-    ~QGrpcHttp2Channel();
+    QGrpcSslCredentials(const QSslConfiguration &configuation) :
+        m_map(QGrpcCredentialMap{{QLatin1String(SslConfigCredential),
+              QVariant::fromValue<QSslConfiguration>(configuation)}})
+    {}
 
-    QGrpcStatus call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
-    void call(const QString &method, const QString &service, const QByteArray &args, QtProtobuf::QGrpcAsyncReply *reply) override;
-    void subscribe(const QString &method, const QString &service, const QByteArray &args, QAbstractGrpcClient *client, const std::function<void (const QByteArray &)> &handler) override;
-    std::shared_ptr<QAbstractProtobufSerializer> serializer() const override;
-
-protected:
-    void abort(QGrpcAsyncReply *reply) override;
-
+    QGrpcCredentialMap channelCredentials() const {
+        return m_map;
+    }
 private:
-    Q_DISABLE_COPY_MOVE(QGrpcHttp2Channel)
-
-    std::unique_ptr<QGrpcHttp2ChannelPrivate> d_ptr;
+	QGrpcSslCredentials() = default;
+    QGrpcCredentialMap m_map;
 };
 }

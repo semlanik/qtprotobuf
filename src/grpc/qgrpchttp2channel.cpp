@@ -37,7 +37,7 @@
 
 #include "qgrpcasyncreply.h"
 #include "qabstractgrpcclient.h"
-#include "abstractcredentials.h"
+#include "qgrpccredentials.h"
 #include "qprotobufserializerregistry_p.h"
 #include "qtprotobuflogging.h"
 
@@ -104,7 +104,7 @@ struct QGrpcHttp2ChannelPrivate {
 
     QUrl url;
     QNetworkAccessManager nm;
-    std::unique_ptr<QGrpcAbstractCredentials> credentials;
+    std::unique_ptr<QAbstractGrpcCredentials> credentials;
     QSslConfiguration sslConfig;
     std::unordered_map<QNetworkReply *, ExpectedData> activeStreamReplies;
 
@@ -119,7 +119,7 @@ struct QGrpcHttp2ChannelPrivate {
         request.setRawHeader(AcceptEncodingHeader, "identity,gzip");
         request.setRawHeader(TEHeader, "trailers");
         request.setSslConfiguration(sslConfig);
-        CredentialMap callCredentials = credentials->callCredentials();
+        QGrpcCredentialMap callCredentials = credentials->callCredentials();
         for (auto i = callCredentials.begin(); i != callCredentials.end(); ++i) {
             request.setRawHeader(i.key().data(), i.value().toString().toUtf8());
         }
@@ -127,7 +127,7 @@ struct QGrpcHttp2ChannelPrivate {
         request.setAttribute(QNetworkRequest::Http2DirectAttribute, true);
 
         QByteArray msg(GrpcMessageSizeHeaderSize, '\0');
-        *(int *)(msg.data() + 1) = qToBigEndian(args.size());
+        *reinterpret_cast<int *>(msg.data() + 1) = qToBigEndian(args.size());
         msg += args;
         qProtoDebug() << "SEND: " << msg.size();
 
@@ -172,22 +172,22 @@ struct QGrpcHttp2ChannelPrivate {
         return networkReply->readAll().mid(GrpcMessageSizeHeaderSize);
     }
 
-    QGrpcHttp2ChannelPrivate(const QUrl &_url, std::unique_ptr<QGrpcAbstractCredentials> _credentials)
+    QGrpcHttp2ChannelPrivate(const QUrl &_url, std::unique_ptr<QAbstractGrpcCredentials> _credentials)
         : url(_url)
         , credentials(std::move(_credentials))
     {
         if (url.scheme() == "https") {
-            if (!credentials->channelCredentials().contains(QLatin1String("sslConfig"))) {
+            if (!credentials->channelCredentials().contains(QLatin1String(SslConfigCredential))) {
                 throw std::invalid_argument("Https connection requested but not ssl configuration provided.");
             }
-            sslConfig = credentials->channelCredentials().value(QLatin1String("sslConfig")).value<QSslConfiguration>();
+            sslConfig = credentials->channelCredentials().value(QLatin1String(SslConfigCredential)).value<QSslConfiguration>();
         } else if (url.scheme().isEmpty()) {
             url.setScheme("http");
         }
     }
 
     static int getExpectedDataSize(const QByteArray &container) {
-        return qFromBigEndian(*(int *)(container.data() + 1)) + GrpcMessageSizeHeaderSize;
+        return qFromBigEndian(*reinterpret_cast<const int *>(container.data() + 1)) + GrpcMessageSizeHeaderSize;
     }
 
     QObject lambdaContext;
@@ -195,7 +195,7 @@ struct QGrpcHttp2ChannelPrivate {
 
 }
 
-QGrpcHttp2Channel::QGrpcHttp2Channel(const QUrl &url, std::unique_ptr<QGrpcAbstractCredentials> credentials) : QAbstractGrpcChannel()
+QGrpcHttp2Channel::QGrpcHttp2Channel(const QUrl &url, std::unique_ptr<QAbstractGrpcCredentials> credentials) : QAbstractGrpcChannel()
   , d_ptr(std::make_unique<QGrpcHttp2ChannelPrivate>(url, std::move(credentials)))
 {
 }

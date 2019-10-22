@@ -23,4 +23,30 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "sslcredentials.h"
+#pragma once //QGrpcUserPasswordCredentials
+
+#include "qgrpccredentials.h"
+
+namespace QtProtobuf {
+
+constexpr char defaultUserFieldName[] = "user-name";
+constexpr char defaultPasswordFieldName[] = "user-password";
+
+template<const char *UserFieldName = defaultUserFieldName,
+         const char *PasswordFieldName = defaultPasswordFieldName>
+class QGrpcUserPasswordCredentials final : public QGrpcCallCredentials
+{
+public:
+    QGrpcUserPasswordCredentials(const QString &userName, const QString &password) :
+        m_map(QtProtobuf::QGrpcCredentialMap{{QLatin1String(UserFieldName), QVariant::fromValue(userName)},
+                                      {QLatin1String(PasswordFieldName), QVariant::fromValue(password)}})
+	{}
+
+	QtProtobuf::QGrpcCredentialMap operator()() {
+		return m_map;
+	}
+private:
+	QGrpcUserPasswordCredentials() = default;
+    QtProtobuf::QGrpcCredentialMap m_map;
+};
+}

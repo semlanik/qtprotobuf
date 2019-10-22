@@ -224,7 +224,7 @@ using DoubleList = QList<double>;
  * \brief registerTypes
  * This method should be called in all applications that supposed to use QtProtobuf
  */
-Q_PROTOBUF_EXPORT extern void qRegisterProtobufTypes();
+extern Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
 
 /*! \} */
 }

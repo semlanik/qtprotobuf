@@ -23,9 +23,4 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "abstractcredentials.h"
-
-using namespace QtProtobuf;
-
-CallCredentials::~CallCredentials() = default;
-ChannelCredentials::~ChannelCredentials() = default;
+#include "qgrpcsslcredentials.h"

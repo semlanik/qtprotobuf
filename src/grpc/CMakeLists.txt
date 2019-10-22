@@ -19,18 +19,21 @@ file(GLOB SOURCES qgrpcasyncreply.cpp
     qabstractgrpcchannel.cpp
     qgrpchttp2channel.cpp
     qabstractgrpcclient.cpp
-    abstractcredentials.cpp
-    sslcredentials.cpp
-    insecurecredentials.cpp)
+    qgrpccredentials.cpp
+    qgrpcsslcredentials.cpp
+    qgrpcinsecurecredentials.cpp
+    qgrpcuserpasswordcredentials.cpp)
 
 file(GLOB HEADERS qgrpcasyncreply.h
     qgrpcstatus.h
     qabstractgrpcchannel.h
     qgrpchttp2channel.h
     qabstractgrpcclient.h
-    abstractcredentials.h
-    sslcredentials.h
-    insecurecredentials.h
+    qabstractgrpccredentials.h
+    qgrpccredentials.h
+    qgrpcsslcredentials.h
+    qgrpcinsecurecredentials.h
+    qgrpcuserpasswordcredentials.h
     qtgrpcglobal.h)
 
 protobuf_generate_qt_headers(PUBLIC_HEADERS ${HEADERS} COMPONENT ${TARGET})

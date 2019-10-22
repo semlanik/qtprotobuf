@@ -29,8 +29,8 @@
 #include "addressbook_grpc.pb.h"
 
 #include <QGrpcHttp2Channel>
-#include <InsecureCredentials>
-#include <SslCredentials>
+#include <QGrpcUserPasswordCredentials>
+#include <QGrpcSslCredentials>
 
 #include <QDebug>
 #include <QFile>
@@ -38,14 +38,6 @@
 #include <QCryptographicHash>
 
 using namespace qtprotobuf::examples;
-
-class AuthCredentials : public QtProtobuf::CallCredentials
-{
-public:
-    AuthCredentials(const QString &userName, const QString &password) :
-        CallCredentials(CredentialMap{{QLatin1String("user-name"), QVariant::fromValue(userName)},
-                                      {QLatin1String("user-password"), QVariant::fromValue(password)}}) {}
-};
 
 AddressBookEngine::AddressBookEngine() : QObject()
   , m_client(new AddressBookClient)
@@ -61,8 +53,8 @@ AddressBookEngine::AddressBookEngine() : QObject()
     conf.setProtocol(QSsl::TlsV1_2);
     conf.setAllowedNextProtocols({QSslConfiguration::ALPNProtocolHTTP2});
 
-    std::shared_ptr<QtProtobuf::QAbstractGrpcChannel> channel(new QtProtobuf::QGrpcHttp2Channel(QUrl("https://localhost:65001"), QtProtobuf::SslCredentials(conf) |
-                                                                                      AuthCredentials("authorizedUser", QCryptographicHash::hash("test", QCryptographicHash::Md5).toHex())));
+    std::shared_ptr<QtProtobuf::QAbstractGrpcChannel> channel(new QtProtobuf::QGrpcHttp2Channel(QUrl("https://localhost:65001"), QtProtobuf::QGrpcSslCredentials(conf) |
+                                                                                      QtProtobuf::QGrpcUserPasswordCredentials<>("authorizedUser", QCryptographicHash::hash("test", QCryptographicHash::Md5).toHex())));
     m_client->attachChannel(channel);
     m_client->subscribeContactsUpdates(ListFrame());
     connect(m_client, &AddressBookClient::contactsUpdated, this, [this](const Contacts &contacts) {

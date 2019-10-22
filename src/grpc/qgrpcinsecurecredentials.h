@@ -23,4 +23,37 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "insecurecredentials.h"
+#pragma once //QGrpcInsecureCredentials
+
+#include "qgrpccredentials.h"
+#include "qtgrpcglobal.h"
+
+namespace QtProtobuf {
+/*!
+ * \ingroup QtGrpc
+ * \brief The QGrpcInsecureCallCredentials class is dummy implementation of
+ * QGrpcCallCredentials. It doesn't provides any extra information to channel.
+ *
+ * Use it when you don't need any call credentials.
+ */
+class Q_GRPC_EXPORT QGrpcInsecureCallCredentials final : public QGrpcCallCredentials {
+public:
+    QGrpcCredentialMap operator()() const {
+        return QGrpcCredentialMap{};
+    }
+};
+
+/*!
+ * \ingroup QtGrpc
+ * \brief The QGrpcInsecureChannelCredentials class is dummy implementation of
+ * QGrpcChannelCredentials. It doesn't provides any extra information to channel.
+ *
+ * Use it when you don't need any channel credentials.
+ */
+class Q_GRPC_EXPORT QGrpcInsecureChannelCredentials final : public QGrpcChannelCredentials {
+public:
+    QGrpcCredentialMap channelCredentials() const {
+        return QGrpcCredentialMap{};
+    }
+};
+}

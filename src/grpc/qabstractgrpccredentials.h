@@ -23,23 +23,23 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once //InsecureCredentials
-
-#include "abstractcredentials.h"
+#pragma once
 
 #include "qtgrpcglobal.h"
 
+#include <QHash>
+#include <QString>
+#include <QVariant>
+
 namespace QtProtobuf {
-/*!
- * \ingroup QtGrpc
- * \brief The InsecureCredentials class
- */
-class Q_GRPC_EXPORT InsecureCredentials : public ChannelCredentials
-{
+
+using QGrpcCredentialMap = QHash<QLatin1String, QVariant>;
+
+//! \private
+class Q_GRPC_EXPORT QAbstractGrpcCredentials {
 public:
-    InsecureCredentials() = default;
-    CredentialMap operator()() {
-        return CredentialMap{};
-    }
+    virtual ~QAbstractGrpcCredentials() = default;
+    virtual QGrpcCredentialMap callCredentials() = 0;
+    virtual QGrpcCredentialMap channelCredentials() = 0;
 };
 }

@@ -23,30 +23,4 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once //SslCredentials
-
-#include "abstractcredentials.h"
-
-#include <QSslConfiguration>
-
-#include "qtgrpcglobal.h"
-
-namespace QtProtobuf {
-/*!
- * \ingroup QtGrpc
- * \brief The SslCredentials class
- */
-class Q_GRPC_EXPORT SslCredentials : public ChannelCredentials
-{
-public:
-    SslCredentials(const QSslConfiguration &configuation) :
-        m_map(CredentialMap{{QLatin1String("sslConfig"),
-              QVariant::fromValue<QSslConfiguration>(configuation)}})
-    {}
-    CredentialMap operator()() {
-        return m_map;
-    }
-private:
-    CredentialMap m_map;
-};
-}
+#include "qgrpcinsecurecredentials.h"

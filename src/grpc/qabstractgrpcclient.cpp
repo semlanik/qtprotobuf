@@ -111,4 +111,3 @@ QAbstractProtobufSerializer *QAbstractGrpcClient::serializer() const
 {
     return d_ptr->serializer.get();
 }
-

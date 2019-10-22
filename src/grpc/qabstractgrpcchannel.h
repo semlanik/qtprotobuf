@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "qgrpcstatus.h"
+#include "qgrpccredentials.h"
 #include "qtgrpcglobal.h"
 
 namespace QtProtobuf {

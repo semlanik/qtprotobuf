@@ -28,8 +28,8 @@
 #include "simplechat_grpc.pb.h"
 
 #include <QGrpcHttp2Channel>
-#include <InsecureCredentials>
-#include <SslCredentials>
+#include <QGrpcUserPasswordCredentials>
+#include <QGrpcSslCredentials>
 
 #include <QDebug>
 #include <QFile>
@@ -44,14 +44,6 @@
 #include <QBuffer>
 
 using namespace qtprotobuf::examples;
-
-class AuthCredentials : public QtProtobuf::CallCredentials
-{
-public:
-    AuthCredentials(const QString &userName, const QString &password) :
-        CallCredentials(CredentialMap{{QLatin1String("user-name"), QVariant::fromValue(userName)},
-    {QLatin1String("user-password"), QVariant::fromValue(password)}}) {}
-};
 
 SimpleChatEngine::SimpleChatEngine(QObject *parent) : QObject(parent), m_client(new SimpleChatClient)
   , m_clipBoard(QGuiApplication::clipboard())
@@ -77,8 +69,8 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
     conf.setAllowedNextProtocols({QSslConfiguration::ALPNProtocolHTTP2});
 
     QUrl url("https://localhost:65002");
-    std::shared_ptr<QtProtobuf::QAbstractGrpcChannel> channel(new QtProtobuf::QGrpcHttp2Channel(url, QtProtobuf::SslCredentials(conf) |
-                                                                                      AuthCredentials(name, QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())));
+    std::shared_ptr<QtProtobuf::QAbstractGrpcChannel> channel(new QtProtobuf::QGrpcHttp2Channel(url, QtProtobuf::QGrpcSslCredentials(conf) |
+                                                                                      QtProtobuf::QGrpcUserPasswordCredentials<>(name, QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())));
 
     m_client->attachChannel(channel);
     m_client->subscribeMessageListUpdates(None());
@@ -162,4 +154,3 @@ QString SimpleChatEngine::getImageThumbnail(const QByteArray &data) const
     img.save(&buffer, "PNG");
     return getImage(scaledData);
 }
-
