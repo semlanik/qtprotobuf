@@ -92,9 +92,11 @@ const char *Templates::CopyConstructorTemplate = "$classname$(const $classname$ 
 const char *Templates::MoveConstructorTemplate = "$classname$($classname$ &&other) : QObject() {\n";
 const char *Templates::DeletedCopyConstructorTemplate = "$classname$(const $classname$ &) = delete;\n";
 const char *Templates::DeletedMoveConstructorTemplate = "$classname$($classname$ &&) = delete;\n";
-const char *Templates::CopyFieldTemplate = "m_$property_name$ = other.m_$property_name$;\n";
+const char *Templates::CopyFieldTemplate = "m_$property_name$ = other.m_$property_name$;\n"
+                                           "$property_name$Changed();\n";
 const char *Templates::MoveComplexFieldTemplate = "m_$property_name$ = std::move(other.m_$property_name$);\n";
-const char *Templates::MoveFieldTemplate = "m_$property_name$ = std::exchange(other.m_$property_name$, 0);\n";
+const char *Templates::MoveFieldTemplate = "m_$property_name$ = std::exchange(other.m_$property_name$, 0);\n"
+                                           "$property_name$Changed();\n";
 const char *Templates::EnumMoveFieldTemplate = "m_$property_name$ = other.m_$property_name$;\n";
 const char *Templates::AssignmentOperatorTemplate = "$classname$ &operator =(const $classname$ &other) {\n";
 const char *Templates::AssignmentOperatorReturnTemplate = "return *this;\n";
