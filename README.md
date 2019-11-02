@@ -10,6 +10,12 @@ Check installation of protobuf and grpc in your system. Minimum required version
 
 **Note:** Older versions could be supported as well but not officially tested.
 
+#### For Ubuntu
+Install GRPC packages in system:
+
+```bash
+sudo apt-get install libgrpc++-dev protobuf-compiler-grpc libgrpc++1 libgrpc-dev libgrpc6
+```
 #### All-in-one build
 If required versions of libraries are not found in your system, you may use all-in-one build procedure for prerequesties
 
@@ -22,7 +28,13 @@ git submodule update --init --recursive
 ```bash
 mkdir build
 cd build
+
+In case Qt installed in system, use:
 cmake ..
+
+In case you have Qt installed from qt installer, use:
+cmake .. -DCMAKE_PREFIX_PATH="<path/to/qt/installation>/Qt<qt_version>/<qt_version>/gcc_64/lib/cmake"
+
 cmake --build . [--config <RELEASE|DEBUG>] -- -j<N>
 ```
 
