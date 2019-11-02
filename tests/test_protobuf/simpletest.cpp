@@ -68,6 +68,7 @@
 #include "globalenums.h"
 #include <QVariantList>
 #include <QMetaProperty>
+#include <QSignalSpy>
 
 #include <gtest/gtest.h>
 
@@ -743,5 +744,41 @@ TEST_F(SimpleTest, NullPointerMessageTest)
     ASSERT_TRUE(msg.testComplexField().testFieldString().isEmpty());
 }
 
+TEST_F(SimpleTest, AssignmentOperatorTest)
+{
+    const char *propertyName = "testFieldInt";
+    SimpleIntMessage test;
+    SimpleIntMessage test2{35};
+
+    QSignalSpy updateSpy(&test, &SimpleIntMessage::testFieldIntChanged);
+    test.setProperty(propertyName, QVariant::fromValue<int32>(15));
+    test.setTestFieldInt(25);
+    test = test2;
+    test = test;
+    test = test2;
+    ASSERT_EQ(test2.testFieldInt(), test.testFieldInt());
+    ASSERT_EQ(3, updateSpy.count());
+}
+
+TEST_F(SimpleTest, MoveOperatorTest)
+{
+    const char *propertyName = "testFieldInt";
+    SimpleIntMessage test;
+    SimpleIntMessage test2{35};
+
+    QSignalSpy updateSpy(&test, &SimpleIntMessage::testFieldIntChanged);
+    QSignalSpy movedUpdateSpy(&test2, &SimpleIntMessage::testFieldIntChanged);
+
+    SimpleIntMessage test3(std::move(test2));
+    test2.setTestFieldInt(35);
+
+    test.setProperty(propertyName, QVariant::fromValue<int32>(15));
+    test.setTestFieldInt(25);
+    test = std::move(test2);
+    ASSERT_EQ(35, test.testFieldInt());
+    ASSERT_EQ(0, test2.testFieldInt());
+    ASSERT_EQ(3, updateSpy.count());
+    ASSERT_EQ(3, movedUpdateSpy.count());
+}
 } // tests
 } // qtprotobuf
