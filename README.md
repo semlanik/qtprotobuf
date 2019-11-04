@@ -29,10 +29,10 @@ git submodule update --init --recursive
 mkdir build
 cd build
 
-In case Qt installed in system, use:
+#In case Qt installed in system, use:
 cmake ..
 
-In case you have Qt installed from qt installer, use:
+#In case you have Qt installed from qt installer, use:
 cmake .. -DCMAKE_PREFIX_PATH="<path/to/qt/installation>/Qt<qt_version>/<qt_version>/gcc_64/lib/cmake"
 
 cmake --build . [--config <RELEASE|DEBUG>] -- -j<N>
