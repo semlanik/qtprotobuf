@@ -562,3 +562,27 @@ message FieldIndexTest3Message {
 message FieldIndexTest4Message {
     sint32 testField = 536870911;
 }
+
+message Message_Uderscore_name {
+    sint32 testField = 1;
+}
+
+message MessageUderscorename {
+    sint32 testField = 1;
+}
+
+message MessageUnderscoreField {
+    sint32 underScore_Message_field = 1;
+}
+
+message PriorMessageUnderscoreField {
+    sint32 _underScoreMessageField = 1;
+}
+
+message FollowingMessageUnderscoreField {
+    sint32 underScoreMessageField_ = 1;
+}
+
+message CombinedMessageUnderscoreField {
+    sint32 _underScoreMessage_Field_ = 1;
+}

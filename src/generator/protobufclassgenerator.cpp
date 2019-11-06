@@ -242,7 +242,7 @@ bool ProtobufClassGenerator::producePropertyMap(const FieldDescriptor *field, Pr
     std::string typeNameLower(typeName);
     utils::tolower(typeNameLower);
 
-    std::string capProperty = field->camelcase_name();
+    std::string capProperty = field->name();
     capProperty[0] = static_cast<char>(::toupper(capProperty[0]));
 
     std::string typeNameNoList = typeName;
@@ -256,7 +256,7 @@ bool ProtobufClassGenerator::producePropertyMap(const FieldDescriptor *field, Pr
     }
     propertyMap = {{"type", typeName},
                    {"type_lower", typeNameLower},
-                   {"property_name", field->camelcase_name()},
+                   {"property_name", field->name()},
                    {"property_name_cap", capProperty},
                    {"type_nolist", typeNameNoList}
                   };

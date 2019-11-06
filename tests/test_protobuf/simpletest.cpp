@@ -64,6 +64,12 @@
 #include "simplesint32stringmapmessage.h"
 #include "simplestringstringmapmessage.h"
 #include "emptymessage.h"
+#include "message_uderscore_name.h"
+#include "messageuderscorename.h"
+#include "messageunderscorefield.h"
+#include "priormessageunderscorefield.h"
+#include "followingmessageunderscorefield.h"
+#include "combinedmessageunderscorefield.h"
 
 #include "globalenums.h"
 #include <QVariantList>
@@ -780,5 +786,23 @@ TEST_F(SimpleTest, MoveOperatorTest)
     ASSERT_EQ(3, updateSpy.count());
     ASSERT_EQ(3, movedUpdateSpy.count());
 }
+
+TEST_F(SimpleTest, UnderscoresTest)
+{
+    //Sanity compilation checks
+    Message_Uderscore_name msg1;
+    MessageUderscorename msg2;
+    MessageUnderscoreField msg3;
+    PriorMessageUnderscoreField msg4;
+    FollowingMessageUnderscoreField msg5;
+    CombinedMessageUnderscoreField msg6;
+
+    assertMessagePropertyRegistered<MessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "underScore_Message_field");
+    assertMessagePropertyRegistered<PriorMessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "_underScoreMessageField");
+    assertMessagePropertyRegistered<PriorMessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "_underScoreMessageField");
+    assertMessagePropertyRegistered<FollowingMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "underScoreMessageField_");
+    assertMessagePropertyRegistered<CombinedMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "_underScoreMessage_Field_");
+}
+
 } // tests
 } // qtprotobuf
