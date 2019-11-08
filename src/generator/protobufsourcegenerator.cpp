@@ -47,7 +47,7 @@ void ProtobufSourceGenerator::printRegisterBody()
                                                                        {"package", mMessage->file()->package()}
                                                                       };
     mPrinter.Print(registrationProperties,
-                   Templates::ComplexTypeRegistrationTemplate);
+                   Templates::ManualRegistrationComplexTypeDefinition);
     Indent();
     mPrinter.Print(registrationProperties, Templates::RegisterQmlListPropertyMetaTypeTemplate);
     mPrinter.Print(registrationProperties, Templates::QmlRegisterTypeTemplate);
@@ -80,10 +80,7 @@ void ProtobufSourceGenerator::printRegisterBody()
         }
     }
 
-    mPrinter.Print({{"classname", mClassName}}, Templates::RegisterSerializersTemplate);
     Outdent();
-    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
-    printRegistrationHelperInvokation();
     mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
 }
 
@@ -103,11 +100,6 @@ void ProtobufSourceGenerator::printFieldsOrdering() {
     Outdent();
     mPrinter.Print(Templates::SemicolonBlockEnclosureTemplate);
     mPrinter.Print("\n");
-}
-
-void ProtobufSourceGenerator::printRegistrationHelperInvokation()
-{
-    mPrinter.Print(Templates::RegistratorTemplate);
 }
 
 void ProtobufSourceGenerator::printConstructor()

@@ -39,7 +39,6 @@ file(GLOB HEADERS
     qprotobufserializer_p.h
     qprotobufjsonserializer.h
     qprotobufselfcheckiterator.h
-    qprotobufregistrationhelper.h
     qprotobufmetaproperty.h
     qprotobufmetaobject.h)
 
@@ -54,7 +53,6 @@ file(GLOB PUBLIC_HEADERS
     qprotobufserializer.h
     qprotobufjsonserializer.h
     qprotobufselfcheckiterator.h
-    qprotobufregistrationhelper.h
     qprotobufmetaproperty.h
     qprotobufmetaobject.h)
 

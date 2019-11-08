@@ -119,6 +119,24 @@ generate_qtprotobuf(TARGET MyTarget
     GENERATED_HEADERS ${GENERATED_HEADERS})
 ...
 ```
+
+#### Usage
+
+To enable QtProtobuf project you need to register protobuf types. It's good practice to make it in 'main' function.
+
+```cpp
+...
+#include <QtProtobufTypes>
+...
+int main(int argc, char *argv[])
+{
+    QtProtobuf::registerProtoTypes();
+    ... //Qt application initialization and run
+}
+```
+
+**For each generated class you also need to call 'qRegisterProtobufType&lt;GeneratedClassName&gt;' to enable serialization and QML support**
+
 ## CMake functions reference
 
 ### generate_qtprotobuf

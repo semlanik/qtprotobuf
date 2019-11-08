@@ -41,7 +41,6 @@ public:
     void run() override;
     void printRegisterBody(const std::list<const ::google::protobuf::FileDescriptor *> &list,
                            const std::vector<std::string> &namespaces);
-    void printRegistrationHelperInvokation();
 };
 
 } //namespace generator

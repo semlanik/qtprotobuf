@@ -49,6 +49,14 @@ AddressBookEngine::AddressBookEngine() : QObject()
   , m_contacts(new ContactsListModel({}, this))
   , m_callStatus(CallStatus::Inactive)
 {
+    qRegisterProtobufType<Contact>();
+    qRegisterProtobufType<ListFrame>();
+    qRegisterProtobufType<CallStatus>();
+    qRegisterProtobufType<PhoneNumber>();
+    qRegisterProtobufType<None>();
+    qRegisterProtobufType<Address>();
+    qRegisterProtobufType<Job>();
+
     //Prepare ssl configuration
     QSslConfiguration conf = QSslConfiguration::defaultConfiguration();
     QFile certFile("cert.pem");

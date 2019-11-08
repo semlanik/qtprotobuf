@@ -36,6 +36,7 @@ class DeserializationTest : public ::testing::Test
 public:
     DeserializationTest() = default;
     void SetUp() override;
+    static void SetUpTestCase();
 protected:
     std::unique_ptr<QProtobufSerializer> serializer;
 };

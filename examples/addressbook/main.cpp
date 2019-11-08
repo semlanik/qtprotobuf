@@ -40,6 +40,7 @@ using namespace qtprotobuf::examples;
 
 int main(int argc, char *argv[])
 {
+    QtProtobuf::registerProtoTypes();
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     qmlRegisterType<ContactsListModel>("examples.addressbook", 1, 0, "ContactsListModel");

@@ -25,6 +25,8 @@
 
 #pragma once //QtProtobufTypes
 
+#include "qtprotobufglobal.h"
+
 #include <QList>
 #include <QMetaType>
 
@@ -217,6 +219,12 @@ using FloatList = QList<float>;
  * \brief alias for list of QtProtobuf::double
  */
 using DoubleList = QList<double>;
+
+/*!
+ * \brief registerTypes
+ * This method should be called in all applications that supposed to use QtProtobuf
+ */
+Q_PROTOBUF_EXPORT extern void registerProtoTypes();
 
 /*! \} */
 }

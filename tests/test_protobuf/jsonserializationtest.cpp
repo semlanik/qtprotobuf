@@ -39,6 +39,10 @@ class JsonSerializationTest : public ::testing::Test
 public:
     JsonSerializationTest() = default;
     void SetUp() override;
+    static void SetUpTestCase() {
+        QtProtobuf::registerProtoTypes();
+    }
+
 protected:
     std::unique_ptr<QProtobufJsonSerializer> serializer;
 };

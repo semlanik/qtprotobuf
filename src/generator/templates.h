@@ -42,8 +42,9 @@ public:
     static const char *ExternalIncludeTemplate;
     static const char *GlobalEnumIncludeTemplate;
     static const char *UsingQtProtobufNamespaceTemplate;
-    static const char *ComplexTypeRegistrationTemplate;
-    static const char *ComplexGlobalEnumRegistrationTemplate;
+    static const char *ManualRegistrationDeclaration;
+    static const char *ManualRegistrationComplexTypeDefinition;
+    static const char *ManualRegistrationGlobalEnumDefinition;
     static const char *ComplexGlobalEnumFieldRegistrationTemplate;
     static const char *ComplexListTypeUsingTemplate;
     static const char *MapTypeUsingTemplate;

@@ -25,12 +25,11 @@
 
 #include "qtprotobuftypes.h"
 #include "qprotobufobject.h"
-#include "qprotobufregistrationhelper.h"
 
 #include <type_traits>
 
 #define registerProtobufType(X) qRegisterMetaType<X>(# X);\
-                                qRegisterMetaType<X>("QtProtobuf::"# X);
+                                qRegisterMetaType<X>("QtProtobuf::"# X)
 
 namespace QtProtobuf {
 
@@ -81,7 +80,14 @@ void registerBasicConverters() {
     QMetaType::registerConverter<T, QString>(T::toString);
 }
 
-void registerTypes() {
+}
+
+void registerProtoTypes() {
+    static bool registred = false;
+    if (registred) {
+        return;
+    }
+    registred = true;
     registerProtobufType(int32);
     registerProtobufType(int64);
     registerProtobufType(uint32);
@@ -114,7 +120,4 @@ void registerTypes() {
     registerBasicConverters<fixed32>();
     registerBasicConverters<fixed64>();
 }
-}
-
-static QProtobufRegistrationHelper helper(registerTypes);
 }

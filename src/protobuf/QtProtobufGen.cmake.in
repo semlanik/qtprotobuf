@@ -10,7 +10,7 @@ function(generate_qtprotobuf)
     set(GEN_TARGET ${generate_qtprotobuf_TARGET}_qtprotobuf_generate)
 
     if(NOT DEFINED QTPROTOBUF_EXECUTABLE)
-        set(QTPROTOBUF_EXECUTABLE @QTPROTOBUF_EXECUTABLE_INSTALL@)
+        set(QTPROTOBUF_EXECUTABLE "@QTPROTOBUF_EXECUTABLE_INSTALL@")
     endif()
     find_program(GO_EXECUTABLE "go")
     foreach(PROTO_FILE IN LISTS generate_qtprotobuf_PROTO_FILES)
@@ -34,7 +34,7 @@ function(generate_qtprotobuf)
     endforeach()
 
     list(REMOVE_DUPLICATES GENERATED_HEADERS)
-    
+
     if(NOT DEFINED generate_qtprotobuf_OUT_DIR)
         set(OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
     else()
@@ -64,7 +64,7 @@ function(generate_qtprotobuf)
             DEPENDS ${PROTO_FILES} ${QTPROTOBUF_EXECUTABLE}
             COMMENT "Generating QtProtobuf ${generate_qtprotobuf_TARGET} sources..."
     )
-    
+
     add_custom_target(${GEN_TARGET} DEPENDS ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS} ${PROTO_FILES})
 
     qt5_wrap_cpp(MOC_SOURCES ${QTPROTOBUF_GENERATED_HEADERS})
@@ -76,4 +76,4 @@ function(generate_qtprotobuf)
         $<TARGET_PROPERTY:@QTPROTOBUF_COMMON_NAMESPACE@::QtProtobuf,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:@QTPROTOBUF_COMMON_NAMESPACE@::QtGrpc,INTERFACE_INCLUDE_DIRECTORIES> ${OUT_DIR})
 endfunction()
- 
+

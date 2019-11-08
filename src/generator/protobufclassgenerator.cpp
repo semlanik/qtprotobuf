@@ -445,6 +445,10 @@ void ProtobufClassGenerator::printProperties()
     }
     Outdent();
 
+    Indent();
+    mPrinter.Print({{"classname", mClassName}}, Templates::ManualRegistrationDeclaration);
+    Outdent();
+
     mPrinter.Print(Templates::SignalsBlockTemplate);
 
     Indent();

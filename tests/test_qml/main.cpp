@@ -46,16 +46,17 @@ using namespace qtprotobufnamespace::tests;
 class TestSetup : public QObject {
 public:
     TestSetup() {
-        SimpleBoolMessage();
-        SimpleBytesMessage();
-        SimpleDoubleMessage();
-        SimpleFloatMessage();
-        SimpleFixedInt32Message();
-        SimpleIntMessage();
-        SimpleSIntMessage();
-        SimpleUIntMessage();
-        SimpleStringMessage();
-        SimpleSFixedInt32Message();
+        QtProtobuf::registerProtoTypes();
+        qRegisterProtobufType<SimpleBoolMessage>();
+        qRegisterProtobufType<SimpleBytesMessage>();
+        qRegisterProtobufType<SimpleDoubleMessage>();
+        qRegisterProtobufType<SimpleFloatMessage>();
+        qRegisterProtobufType<SimpleFixedInt32Message>();
+        qRegisterProtobufType<SimpleIntMessage>();
+        qRegisterProtobufType<SimpleSIntMessage>();
+        qRegisterProtobufType<SimpleUIntMessage>();
+        qRegisterProtobufType<SimpleStringMessage>();
+        qRegisterProtobufType<SimpleSFixedInt32Message>();
     }
     ~TestSetup() = default;
 };

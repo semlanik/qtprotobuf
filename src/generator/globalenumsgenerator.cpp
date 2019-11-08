@@ -40,6 +40,9 @@ void GlobalEnumsGenerator::startEnum(const std::vector<std::string>& namespaces)
     printNamespaces(namespaces);
     printEnumClass();
     printPublic();
+    Indent();
+    mPrinter.Print({{"classname", mClassName}}, Templates::ManualRegistrationDeclaration);
+    Outdent();
     printPrivate();
     printConstructor();
 }

@@ -42,6 +42,10 @@ using namespace QtProtobuf;
 class ClientTest : public ::testing::Test
 {
 protected:
+    static void SetUpTestCase() {
+        QtProtobuf::registerProtoTypes();
+        qRegisterProtobufType<SimpleStringMessage>();
+    }
     static QCoreApplication m_app;
     static int m_argc;
     static QUrl m_echoServerAddress;

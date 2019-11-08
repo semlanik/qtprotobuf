@@ -236,6 +236,7 @@ public:
  */
 template<typename T>
 static void qRegisterProtobufType() {
+    T::registerTypes();
     QtProtobufPrivate::registerHandler(qMetaTypeId<T *>(), { QtProtobufPrivate::serializeObject<T>,
             QtProtobufPrivate::deserializeObject<T>, QtProtobufPrivate::ObjectHandler });
     QtProtobufPrivate::registerHandler(qMetaTypeId<QList<QSharedPointer<T>>>(), { QtProtobufPrivate::serializeList<T>,

@@ -46,15 +46,15 @@ const char *Templates::ExternalIncludeTemplate = "#include <$include$>\n";
 const char *Templates::GlobalEnumIncludeTemplate = "#include <globalenums.h>\n";
 
 const char *Templates::UsingQtProtobufNamespaceTemplate = "\nusing namespace QtProtobuf;\n";
-const char *Templates::ComplexTypeRegistrationTemplate = "namespace $classname$Private {\n"
-                                                         "void registerTypes()\n{\n"
-                                                         "    qRegisterMetaType<$classname$>(\"$classname$\");\n"
-                                                         "    qRegisterMetaType<$classname$Repeated>(\"$classname$Repeated\");\n"
-                                                         "    qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
-                                                         "    qRegisterMetaType<$classname$Repeated>(\"$namespaces$::$classname$Repeated\");\n"
-                                                         "";
-const char *Templates::ComplexGlobalEnumRegistrationTemplate = "namespace $classname$Private {\n"
-                                                               "void registerTypes()\n{\n";
+const char *Templates::ManualRegistrationDeclaration = "static void registerTypes();\n";
+const char *Templates::ManualRegistrationComplexTypeDefinition = "void $classname$::registerTypes()\n{\n"
+                                                                 "    qRegisterMetaType<$classname$>(\"$classname$\");\n"
+                                                                 "    qRegisterMetaType<$classname$Repeated>(\"$classname$Repeated\");\n"
+                                                                 "    qRegisterMetaType<$classname$>(\"$namespaces$::$classname$\");\n"
+                                                                 "    qRegisterMetaType<$classname$Repeated>(\"$namespaces$::$classname$Repeated\");\n"
+                                                                 "";
+const char *Templates::ManualRegistrationGlobalEnumDefinition = "void $classname$::registerTypes()\n{\n"
+                                                                 "";
 const char *Templates::ComplexGlobalEnumFieldRegistrationTemplate = "qRegisterMetaType<$classname$::$enum$>(\"$namespaces$::$classname$::$enum$\");\n";
 const char *Templates::ComplexListTypeUsingTemplate = "using $classname$Repeated = QList<QSharedPointer<$classname$>>;\n";
 const char *Templates::MapTypeUsingTemplate = "using $classname$ = QMap<$key$, $value$>;\n";

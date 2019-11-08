@@ -35,6 +35,9 @@ class CoverterTest : public ::testing::Test
 {
 public:
     CoverterTest() = default;
+    static void SetUpTestCase() {
+        QtProtobuf::registerProtoTypes();
+    }
 };
 
 TEST_F(CoverterTest, TestFromTypeConverters)

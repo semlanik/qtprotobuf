@@ -42,6 +42,7 @@ using namespace qtprotobuf::examples;
 
 int main(int argc, char *argv[])
 {
+    QtProtobuf::registerProtoTypes();
     QGuiApplication app(argc, argv);
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
