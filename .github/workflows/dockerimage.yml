@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Test Verification
 
 on: [push]
 
@@ -10,5 +10,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: Init submodules
+      run: git submodule update --init --recursive
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file .ci/Dockerfile.ubuntu --tag ubuntu_debugimage:latest
+    - name: Run tests
+      run: docker run ubuntu_debugimage:latest ctest /build --output-on-failure
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Init submodules
+      run: git submodule update --init --recursive
+    - name: Build the Docker image
+      run: docker build . --file .ci/Dockerfile.windows --tag windows_debugimage:latest
