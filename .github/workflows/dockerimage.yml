@@ -24,4 +24,4 @@ jobs:
     - name: Init submodules
       run: git submodule update --init --recursive
     - name: Build the Docker image
-      run: docker build . --file .ci/Dockerfile.windows --tag windows_debugimage:latest
+      run: docker build . --file .ci/Dockerfile.windows --isolation=hyperv --tag windows_debugimage:latest
