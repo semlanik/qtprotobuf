@@ -36,7 +36,7 @@ namespace generator {
 class ClassSourceGeneratorBase : public ClassGeneratorBase
 {
 public:
-    ClassSourceGeneratorBase(const std::string &className, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
+    ClassSourceGeneratorBase(const std::string &className, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
     ~ClassSourceGeneratorBase() = default;
     virtual void run() = 0;
 

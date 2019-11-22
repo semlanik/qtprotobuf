@@ -35,7 +35,7 @@ class GlobalEnumsGenerator : public ClassGeneratorBase
 {
     PackagesList mPackageList;
 public:
-    GlobalEnumsGenerator(const PackagesList &packageList, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out);
+    GlobalEnumsGenerator(const PackagesList &packageList, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
     virtual ~GlobalEnumsGenerator() = default;
 
     void run();

@@ -42,8 +42,8 @@ using namespace ::google::protobuf::compiler;
 using namespace QtProtobuf::generator;
 
 ServiceGeneratorBase::ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor *service,
-                                           std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out) :
-    ClassGeneratorBase(service->full_name(), std::move(out))
+                                           const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out) :
+    ClassGeneratorBase(service->full_name(), out)
   , mService(service)
 {
 }

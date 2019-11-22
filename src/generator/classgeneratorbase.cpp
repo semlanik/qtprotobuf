@@ -38,7 +38,7 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
-ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out) : mOutput(std::move(out))
+ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::ZeroCopyOutputStream> &out) : mOutput(out)
   , mPrinter(mOutput.get(), '$')
 {
     mPrinter.Print(Templates::DisclaimerTemplate);

@@ -26,6 +26,7 @@
 #pragma once
 
 #include <google/protobuf/compiler/code_generator.h>
+#include <google/protobuf/io/zero_copy_stream.h>
 #include <string>
 #include <memory>
 

@@ -34,7 +34,7 @@ class ProtobufSourceGenerator : public ClassSourceGeneratorBase
 {
     const google::protobuf::Descriptor *mMessage;
 public:
-    ProtobufSourceGenerator(const google::protobuf::Descriptor *message, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
+    ProtobufSourceGenerator(const google::protobuf::Descriptor *message, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
     void printRegisterBody();
     void printFieldsOrdering();
     void printConstructor();

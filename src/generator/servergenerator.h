@@ -42,7 +42,7 @@ class ServerGenerator : public ServiceGeneratorBase
 {
     const google::protobuf::ServiceDescriptor *mService;
 public:
-    ServerGenerator(const google::protobuf::ServiceDescriptor *service, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
+    ServerGenerator(const google::protobuf::ServiceDescriptor *service, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
     virtual ~ServerGenerator() = default;
 
     void run() {

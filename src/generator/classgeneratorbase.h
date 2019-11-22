@@ -47,7 +47,7 @@ using PropertyMap = std::map<std::string, std::string>;
 class ClassGeneratorBase
 {
 public:
-    ClassGeneratorBase(const std::string &className, std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out);
+    ClassGeneratorBase(const std::string &className, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
     virtual ~ClassGeneratorBase() = default;
     virtual void run() = 0;
 protected:
@@ -57,7 +57,7 @@ protected:
         NEIGHBOUR_ENUM
     };
 
-    std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> mOutput;
+    std::shared_ptr<::google::protobuf::io::ZeroCopyOutputStream> mOutput;
     ::google::protobuf::io::Printer mPrinter;
     std::string mClassName;
     std::vector<std::string> mNamespaces;

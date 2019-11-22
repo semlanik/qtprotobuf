@@ -40,8 +40,8 @@ using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 
-ServerGenerator::ServerGenerator(const ServiceDescriptor *service, std::unique_ptr<io::ZeroCopyOutputStream> out) :
-    ServiceGeneratorBase(service, std::move(out))
+ServerGenerator::ServerGenerator(const ServiceDescriptor *service, const std::shared_ptr<io::ZeroCopyOutputStream> &out) :
+    ServiceGeneratorBase(service, out)
   , mService(nullptr)
 {
     mClassName += "Server";

@@ -35,8 +35,8 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
-ProtobufClassGenerator::ProtobufClassGenerator(const Descriptor *message, std::unique_ptr<::google::protobuf::io::ZeroCopyOutputStream> out)
-    : ClassGeneratorBase(message->full_name(), std::move(out))
+ProtobufClassGenerator::ProtobufClassGenerator(const Descriptor *message, const std::shared_ptr<::google::protobuf::io::ZeroCopyOutputStream> &out)
+    : ClassGeneratorBase(message->full_name(), out)
     , mMessage(message)
 {
 }

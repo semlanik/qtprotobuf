@@ -35,8 +35,8 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 
 ClientSourceGenerator::ClientSourceGenerator(const google::protobuf::ServiceDescriptor *service,
-                                             std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> out) :
-    ClassSourceGeneratorBase(service->full_name(), std::move(out))
+                                             const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out) :
+    ClassSourceGeneratorBase(service->full_name(), out)
   , mService(service)
 {
     mClassName += "Client";

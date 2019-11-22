@@ -32,8 +32,8 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
-GlobalEnumsGenerator::GlobalEnumsGenerator(const PackagesList &packageList, std::unique_ptr<io::ZeroCopyOutputStream> out) :
-    ClassGeneratorBase(Templates::GlobalEnumClassNameTemplate, std::move(out))
+GlobalEnumsGenerator::GlobalEnumsGenerator(const PackagesList &packageList, const std::shared_ptr<io::ZeroCopyOutputStream> &out) :
+    ClassGeneratorBase(Templates::GlobalEnumClassNameTemplate, out)
   , mPackageList(packageList) {}
 
 void GlobalEnumsGenerator::startEnum(const std::vector<std::string>& namespaces) {

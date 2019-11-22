@@ -81,13 +81,13 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 
         std::string filename = baseFilename + ".h";
         ProtobufClassGenerator classGen(message,
-                                        std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
+                                        std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename)));
         classGen.run();
 
         filename = baseFilename + ".cpp";
-            ProtobufSourceGenerator classSourceGen(message,
-                                      std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename))));
-            classSourceGen.run();
+        ProtobufSourceGenerator classSourceGen(message,
+                                               std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(filename)));
+        classSourceGen.run();
     }
 
     for (int i = 0; i < file->service_count(); i++) {
@@ -97,17 +97,17 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 
         std::string fullFilename = baseFilename + "server.h";
         ServerGenerator serverGen(service,
-                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+                                  std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename)));
         serverGen.run();
 
         fullFilename = baseFilename + "client.h";
         ClientGenerator clientGen(service,
-                                  std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+                                  std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename)));
         clientGen.run();
 
         fullFilename = baseFilename + "client.cpp";
         ClientSourceGenerator clientSrcGen(service,
-                                           std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename))));
+                                           std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename)));
         clientSrcGen.run();
     }
     return true;
@@ -123,11 +123,11 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
     }
 
     GlobalEnumsGenerator enumGen(packageList,
-                                 std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".h"))));
+                                 std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".h")));
     enumGen.run();
 
     GlobalEnumsSourceGenerator enumSourceGen(packageList,
-                                             std::move(std::unique_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".cpp"))));
+                                             std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".cpp")));
     enumSourceGen.run();
     return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
 
