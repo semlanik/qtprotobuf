@@ -47,7 +47,8 @@ using PropertyMap = std::map<std::string, std::string>;
 class ClassGeneratorBase
 {
 public:
-    ClassGeneratorBase(const std::string &className, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
+    ClassGeneratorBase(const std::string &fullClassName, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
+    ClassGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
     virtual ~ClassGeneratorBase() = default;
     virtual void run() = 0;
 protected:
@@ -58,11 +59,12 @@ protected:
     };
 
     std::shared_ptr<::google::protobuf::io::ZeroCopyOutputStream> mOutput;
-    ::google::protobuf::io::Printer mPrinter;
+    std::shared_ptr<::google::protobuf::io::Printer> mPrinter;
     std::string mClassName;
     std::vector<std::string> mNamespaces;
     std::string mNamespacesColonDelimited;
 
+public:
     void printPreamble();
     void printNamespaces();
     void printNamespaces(const std::vector<std::string> &namespaces);
@@ -86,35 +88,35 @@ protected:
         Indent();
         for (int i = 0; i < message->enum_type_count(); i++) {
             const auto enumDescr = message->enum_type(i);
-            mPrinter.Print({{"enum", enumDescr->name()}}, Templates::EnumDefinitionTemplate);
+            mPrinter->Print({{"enum", enumDescr->name()}}, Templates::EnumDefinitionTemplate);
 
             Indent();
             for (int j = 0; j < enumDescr->value_count(); j++) {
                 const auto valueDescr = enumDescr->value(j);
-                mPrinter.Print({{"enumvalue", valueDescr->name()},
+                mPrinter->Print({{"enumvalue", valueDescr->name()},
                                 {"value", std::to_string(valueDescr->number())}}, Templates::EnumFieldTemplate);
             }
             Outdent();
-            mPrinter.Print(Templates::SemicolonBlockEnclosureTemplate);
-            mPrinter.Print({{"type", enumDescr->name().c_str()}}, Templates::QEnumTemplate);
+            mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);
+            mPrinter->Print({{"type", enumDescr->name().c_str()}}, Templates::QEnumTemplate);
         }
 
         for (int i = 0; i < message->enum_type_count(); i++) {
             const auto enumDescr = message->enum_type(i);
-            mPrinter.Print({{"enum", enumDescr->name()}}, Templates::EnumTypeUsingTemplate);
+            mPrinter->Print({{"enum", enumDescr->name()}}, Templates::EnumTypeUsingTemplate);
         }
         Outdent();
     }
 
 
     void Indent() {
-        mPrinter.Indent();
-        mPrinter.Indent();
+        mPrinter->Indent();
+        mPrinter->Indent();
     }
 
     void Outdent() {
-        mPrinter.Outdent();
-        mPrinter.Outdent();
+        mPrinter->Outdent();
+        mPrinter->Outdent();
     }
 
     std::string getTypeName(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor);

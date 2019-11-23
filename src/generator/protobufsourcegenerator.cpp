@@ -40,39 +40,45 @@ ProtobufSourceGenerator::ProtobufSourceGenerator(const google::protobuf::Descrip
 {
 }
 
+ProtobufSourceGenerator::ProtobufSourceGenerator(const google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    ClassSourceGeneratorBase(message->full_name(), printer)
+  , mMessage(message)
+{
+}
+
 void ProtobufSourceGenerator::printRegisterBody()
 {
     const std::map<std::string, std::string> registrationProperties = {{"classname", mClassName},
                                                                        {"namespaces", mNamespacesColonDelimited},
                                                                        {"package", mMessage->file()->package()}
                                                                       };
-    mPrinter.Print(registrationProperties,
+    mPrinter->Print(registrationProperties,
                    Templates::ManualRegistrationComplexTypeDefinition);
     Indent();
-    mPrinter.Print(registrationProperties, Templates::RegisterQmlListPropertyMetaTypeTemplate);
-    mPrinter.Print(registrationProperties, Templates::QmlRegisterTypeTemplate);
+    mPrinter->Print(registrationProperties, Templates::RegisterQmlListPropertyMetaTypeTemplate);
+    mPrinter->Print(registrationProperties, Templates::QmlRegisterTypeTemplate);
 
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_ENUM
                 && isLocalMessageEnum(mMessage, field)) {
-            mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
+            mPrinter->Print({{"type", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
                             {"namespaces", mNamespacesColonDelimited}},
                            Templates::RegisterMetaTypeTemplateNoNamespace);
-            mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
+            mPrinter->Print({{"type", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
                             {"namespaces", mNamespacesColonDelimited}},
                            Templates::RegisterMetaTypeTemplate);
-            mPrinter.Print({{"type", mClassName + "::" + field->enum_type()->name()}},
+            mPrinter->Print({{"type", mClassName + "::" + field->enum_type()->name()}},
                            Templates::RegisterEnumSerializersTemplate);
         } else if (field->is_map()) {
-            mPrinter.Print({{"type", field->message_type()->name()},
+            mPrinter->Print({{"type", field->message_type()->name()},
                             {"namespaces", mClassName}},
                            Templates::RegisterMetaTypeTemplate);
-            mPrinter.Print({{"type", field->message_type()->name()},
+            mPrinter->Print({{"type", field->message_type()->name()},
                             {"namespaces", mNamespacesColonDelimited + "::" + mClassName}},
                            Templates::RegisterMetaTypeTemplate);
 
-            mPrinter.Print({{"classname", mClassName},
+            mPrinter->Print({{"classname", mClassName},
                             {"type", field->message_type()->name()},
                             {"key_type", getTypeName(field->message_type()->field(0), mMessage)},
                             {"value_type", getTypeName(field->message_type()->field(1), mMessage)}},
@@ -81,25 +87,25 @@ void ProtobufSourceGenerator::printRegisterBody()
     }
 
     Outdent();
-    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+    mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 }
 
 void ProtobufSourceGenerator::printFieldsOrdering() {
-    mPrinter.Print({{"type", mClassName}}, Templates::FieldsOrderingContainerTemplate);
+    mPrinter->Print({{"type", mClassName}}, Templates::FieldsOrderingContainerTemplate);
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         if (i != 0) {
-            mPrinter.Print("\n,");
+            mPrinter->Print("\n,");
         }
         //property_number is incremented by 1 because user properties stating from 1.
         //Property with index 0 is "objectName"
-        mPrinter.Print({{"field_number", std::to_string(field->number())},
+        mPrinter->Print({{"field_number", std::to_string(field->number())},
                         {"property_number", std::to_string(i + 1)}}, Templates::FieldOrderTemplate);
     }
     Outdent();
-    mPrinter.Print(Templates::SemicolonBlockEnclosureTemplate);
-    mPrinter.Print("\n");
+    mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);
+    mPrinter->Print("\n");
 }
 
 void ProtobufSourceGenerator::printConstructor()
@@ -143,14 +149,14 @@ void ProtobufSourceGenerator::printConstructor()
         }
         parameterList += ", ";
     }
-    mPrinter.Print({{"classname", mClassName},
+    mPrinter->Print({{"classname", mClassName},
                     {"parameter_list", parameterList}}, Templates::ProtoConstructorDefinitionTemplate);
 
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         std::string fieldName = field->name();
         fieldName[0] =  static_cast<char>(::tolower(fieldName[0]));
-        mPrinter.Print({{"property_name", fieldName}}, Templates::PropertyInitializerTemplate);
+        mPrinter->Print({{"property_name", fieldName}}, Templates::PropertyInitializerTemplate);
     }
-    mPrinter.Print(Templates::ConstructorContentTemplate);
+    mPrinter->Print(Templates::ConstructorContentTemplate);
 }

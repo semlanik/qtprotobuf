@@ -26,9 +26,12 @@
 #pragma once
 
 #include <QObject>
-#include "contacts.h"
+#include "addressbook.pb.h"
+//#include "contacts.h"
+//#include "callstatus.h"
+
+
 #include "universallistmodel.h"
-#include "callstatus.h"
 
 namespace qtprotobuf { namespace examples {
 class AddressBookClient;

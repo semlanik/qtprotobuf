@@ -67,6 +67,7 @@ const char *Templates::UsingNamespaceTemplate = "using namespace $namespace$;\n"
 const char *Templates::NonProtoClassDefinitionTemplate = "\nclass $classname$ : public QObject\n"
                                                          "{\n"
                                                          "    Q_OBJECT\n";
+const char *Templates::ProtoClassDeclarationTemplate = "class $classname$;\n";
 const char *Templates::ProtoClassDefinitionTemplate = "\nclass $classname$ : public QObject\n"
                                                       "{\n"
                                                       "    Q_OBJECT\n"

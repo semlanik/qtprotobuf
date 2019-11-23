@@ -26,7 +26,8 @@
 #include <gtest/gtest.h>
 #include <QByteArray>
 #include <QString>
-#include <simplefixedint32message.h>
+#include "simpletest.pb.h"
+//#include <simplefixedint32message.h>
 #include <qprotobufjsonserializer.h>
 
 using namespace qtprotobufnamespace::tests;

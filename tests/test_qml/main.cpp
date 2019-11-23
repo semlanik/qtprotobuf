@@ -25,21 +25,23 @@
 
 #include <QtQuickTest/quicktest.h>
 
-#include "simpleboolmessage.h"
-#include "simplebytesmessage.h"
-#include "simpledoublemessage.h"
-#include "simplefloatmessage.h"
-#include "simplefixedint32message.h"
-#include "simplefixedint64message.h"
-#include "simplesfixedint32message.h"
-#include "simplesfixedint64message.h"
-#include "simpleintmessage.h"
-#include "simpleint64message.h"
-#include "simplesintmessage.h"
-#include "simplesint64message.h"
-#include "simpleuintmessage.h"
-#include "simpleuint64message.h"
-#include "simplestringmessage.h"
+#include "simpletest.pb.h"
+
+//#include "simpleboolmessage.h"
+//#include "simplebytesmessage.h"
+//#include "simpledoublemessage.h"
+//#include "simplefloatmessage.h"
+//#include "simplefixedint32message.h"
+//#include "simplefixedint64message.h"
+//#include "simplesfixedint32message.h"
+//#include "simplesfixedint64message.h"
+//#include "simpleintmessage.h"
+//#include "simpleint64message.h"
+//#include "simplesintmessage.h"
+//#include "simplesint64message.h"
+//#include "simpleuintmessage.h"
+//#include "simpleuint64message.h"
+//#include "simplestringmessage.h"
 
 using namespace qtprotobufnamespace::tests;
 

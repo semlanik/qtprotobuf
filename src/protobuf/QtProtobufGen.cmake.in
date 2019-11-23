@@ -21,9 +21,7 @@ function(generate_qtprotobuf)
     endforeach()
 
     #TODO: add globalenums by default. But it's better to verify if proto file contains any global enum
-    set(GENERATED_HEADERS ${GENERATED_HEADERS} globalenums.h)
-
-    #message("${PARSER_ERROR} Generated files list: ${GENERATED_HEADERS} ${GENERATED_HEADERS_PART}")
+    set(GENERATED_HEADERS ${GENERATED_HEADERS} globaldeclarations.pb.h)
 
     if(DEFINED generate_qtprotobuf_GENERATED_HEADERS)
         set(GENERATED_HEADERS ${generate_qtprotobuf_GENERATED_HEADERS})
@@ -46,7 +44,8 @@ function(generate_qtprotobuf)
     unset(QTPROTOBUF_GENERATED_SOURCES)
     unset(QTPROTOBUF_GENERATED_HEADERS)
     foreach(GENERATED_HEADER IN LISTS GENERATED_HEADERS)
-        get_filename_component(GENERATED_BASENAME ${GENERATED_HEADER} NAME_WE)
+        get_filename_component(GENERATED_BASENAME ${GENERATED_HEADER} NAME)
+        string(REGEX REPLACE "\\.[^.]*$" "" GENERATED_BASENAME ${GENERATED_BASENAME})
 
         list(APPEND QTPROTOBUF_GENERATED_SOURCES ${OUT_DIR}/${GENERATED_BASENAME}.cpp)
         list(APPEND QTPROTOBUF_GENERATED_HEADERS ${OUT_DIR}/${GENERATED_BASENAME}.h)

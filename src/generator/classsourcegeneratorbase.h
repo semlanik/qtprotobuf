@@ -37,6 +37,7 @@ class ClassSourceGeneratorBase : public ClassGeneratorBase
 {
 public:
     ClassSourceGeneratorBase(const std::string &className, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
+    ClassSourceGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
     ~ClassSourceGeneratorBase() = default;
     virtual void run() = 0;
 

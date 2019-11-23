@@ -1,9 +1,9 @@
 #include <iostream>
 #include <grpc++/grpc++.h>
-#include <testservice.pb.h>
-#include <testservice.grpc.pb.h>
-#include <simpletest.pb.h>
-#include <simpletest.grpc.pb.h>
+#include "testservice.pb.h"
+#include "testservice.grpc.pb.h"
+#include "simpletest.pb.h"
+#include "simpletest.grpc.pb.h"
 #include <thread>
 
 class SimpleTestImpl final : public qtprotobufnamespace::tests::TestService::Service {

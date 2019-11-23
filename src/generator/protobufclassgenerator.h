@@ -48,6 +48,7 @@ class ProtobufClassGenerator : public ClassGeneratorBase
     const ::google::protobuf::Descriptor *mMessage;
 public:
     ProtobufClassGenerator(const ::google::protobuf::Descriptor *message, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
+    ProtobufClassGenerator(const ::google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
     virtual ~ProtobufClassGenerator() = default;
 
     void run() override;

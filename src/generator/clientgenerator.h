@@ -43,10 +43,13 @@ class ClientGenerator : public ServiceGeneratorBase
 public:
     ClientGenerator(const ::google::protobuf::ServiceDescriptor *service,
                     const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
+    ClientGenerator(const ::google::protobuf::ServiceDescriptor *service,
+                    const std::shared_ptr<::google::protobuf::io::Printer> &printer);
     ~ClientGenerator() = default;
 
     void run() {
         printPreamble();
+        printIncludes();
         printClientIncludes();
         printNamespaces();
         printClientClass();
@@ -56,7 +59,6 @@ public:
         encloseClass();
         encloseNamespaces();
     }
-private:
     void printClientClass();
     void printConstructor();
     void printClientIncludes();

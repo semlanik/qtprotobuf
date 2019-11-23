@@ -36,12 +36,17 @@ GlobalEnumsGenerator::GlobalEnumsGenerator(const PackagesList &packageList, cons
     ClassGeneratorBase(Templates::GlobalEnumClassNameTemplate, out)
   , mPackageList(packageList) {}
 
+
+GlobalEnumsGenerator::GlobalEnumsGenerator(const PackagesList &packageList, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    ClassGeneratorBase(Templates::GlobalEnumClassNameTemplate, printer)
+  , mPackageList(packageList) {}
+
 void GlobalEnumsGenerator::startEnum(const std::vector<std::string>& namespaces) {
     printNamespaces(namespaces);
     printEnumClass();
     printPublic();
     Indent();
-    mPrinter.Print({{"classname", mClassName}}, Templates::ManualRegistrationDeclaration);
+    mPrinter->Print({{"classname", mClassName}}, Templates::ManualRegistrationDeclaration);
     Outdent();
     printPrivate();
     printConstructor();
@@ -50,9 +55,9 @@ void GlobalEnumsGenerator::startEnum(const std::vector<std::string>& namespaces)
 void GlobalEnumsGenerator::printConstructor()
 {
     Indent();
-    mPrinter.Print({{"classname", mClassName}}, Templates::ConstructorHeaderTemplate);
-    mPrinter.Print({{"classname", mClassName}}, Templates::DeletedCopyConstructorTemplate);
-    mPrinter.Print({{"classname", mClassName}}, Templates::DeletedMoveConstructorTemplate);
+    mPrinter->Print({{"classname", mClassName}}, Templates::ConstructorHeaderTemplate);
+    mPrinter->Print({{"classname", mClassName}}, Templates::DeletedCopyConstructorTemplate);
+    mPrinter->Print({{"classname", mClassName}}, Templates::DeletedMoveConstructorTemplate);
     Outdent();
 }
 
@@ -92,7 +97,7 @@ void GlobalEnumsGenerator::printMetatype(const google::protobuf::FileDescriptor 
     fullNamespace.append("::").append(Templates::GlobalEnumClassNameTemplate);
     for (int i = 0; i < file->enum_type_count(); i++) {
         const auto enumDescr = file->enum_type(i);
-        mPrinter.Print({{"classname", enumDescr->name()}, {"namespaces", fullNamespace}},
+        mPrinter->Print({{"classname", enumDescr->name()}, {"namespaces", fullNamespace}},
                        Templates::DeclareMetaTypeListTemplate);
     }
 }
@@ -103,5 +108,5 @@ void GlobalEnumsGenerator::encloseEnum(const std::vector<std::string>& namespace
 }
 
 void GlobalEnumsGenerator::printEnumClass() {
-    mPrinter.Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
+    mPrinter->Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
 }

@@ -30,8 +30,9 @@
 #include <QQmlContext>
 
 #include "addressbookengine.h"
-#include <contacts.h>
-#include <contact.h>
+#include "addressbook.pb.h"
+//#include <contacts.h>
+//#include <contact.h>
 
 #include <QMetaProperty>
 #include <QQmlPropertyMap>

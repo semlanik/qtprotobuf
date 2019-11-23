@@ -42,17 +42,23 @@ ClassSourceGeneratorBase::ClassSourceGeneratorBase(const std::string &fullClassN
 
 }
 
+ClassSourceGeneratorBase::ClassSourceGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    ClassGeneratorBase(fullClassName, printer)
+{
+
+}
+
 void ClassSourceGeneratorBase::printClassHeaderInclude()
 {
     std::string includeFileName = mClassName;
     utils::tolower(includeFileName);
-    mPrinter.Print({{"include", includeFileName}}, Templates::InternalIncludeTemplate);
-    mPrinter.Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+    mPrinter->Print({{"include", includeFileName}}, Templates::InternalIncludeTemplate);
+    mPrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
 }
 
 void ClassSourceGeneratorBase::printUsingNamespaces(const std::unordered_set<std::string> &namespaces)
 {
     for (auto ns : namespaces) {
-        mPrinter.Print({{"namespace", ns}}, Templates::UsingNamespaceTemplate);
+        mPrinter->Print({{"namespace", ns}}, Templates::UsingNamespaceTemplate);
     }
 }

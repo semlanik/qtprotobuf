@@ -36,6 +36,7 @@
 #include "utils.h"
 
 #include <iostream>
+#include <set>
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/io/printer.h>
@@ -76,6 +77,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
             std::cerr << file->name() << ":" << (message->index() + 1) << ": " << " Error: Meta object features not supported for nested classes in " << message->full_name() << std::endl;
             continue;
         }
+
         std::string baseFilename(message->name());
         utils::tolower(baseFilename);
 
@@ -129,7 +131,7 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
     GlobalEnumsSourceGenerator enumSourceGen(packageList,
                                              std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".cpp")));
     enumSourceGen.run();
-    return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
 
+    return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
 }
 

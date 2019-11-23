@@ -48,6 +48,12 @@ ServiceGeneratorBase::ServiceGeneratorBase(const ::google::protobuf::ServiceDesc
 {
 }
 
+ServiceGeneratorBase::ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor *service,
+                const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    ClassGeneratorBase(service->full_name(), printer)
+  , mService(service)
+{}
+
 void ServiceGeneratorBase::printIncludes()
 {
     std::unordered_set<std::string> includeSet;
@@ -63,13 +69,13 @@ void ServiceGeneratorBase::printIncludes()
     }
 
     for (auto type : includeSet) {
-        mPrinter.Print({{"include", type}}, Templates::InternalIncludeTemplate);
+        mPrinter->Print({{"include", type}}, Templates::InternalIncludeTemplate);
     }
 }
 
 void ServiceGeneratorBase::printClassName()
 {
-    mPrinter.Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
+    mPrinter->Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
 }
 
 void ServiceGeneratorBase::printMethodsDeclaration(const char *methodTemplate, const char *methodAsyncTemplate, const char *methodAsync2Template)
@@ -79,9 +85,9 @@ void ServiceGeneratorBase::printMethodsDeclaration(const char *methodTemplate, c
         const MethodDescriptor *method = mService->method(i);
         std::map<std::string, std::string> parameters;
         getMethodParameters(method, parameters);
-        mPrinter.Print(parameters, methodTemplate);
-        mPrinter.Print(parameters, methodAsyncTemplate);
-        mPrinter.Print(parameters, methodAsync2Template);
+        mPrinter->Print(parameters, methodTemplate);
+        mPrinter->Print(parameters, methodAsyncTemplate);
+        mPrinter->Print(parameters, methodAsync2Template);
     }
     Outdent();
 }

@@ -23,10 +23,12 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "testserviceclient.h"
+#include "testservice_grpc.pb.h"
+
+//#include "testserviceclient.h"
 #include "qgrpchttp2channel.h"
 #include "insecurecredentials.h"
-#include "blobmessage.h"
+//#include "blobmessage.h"
 #include <sslcredentials.h>
 
 #include <QTimer>

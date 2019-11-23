@@ -62,6 +62,12 @@ static void tolower(std::string &str) {
     std::transform(std::begin(str), std::end(str), std::begin(str), ::tolower);
 }
 
+static std::string extractFileName(std::string fileName) {
+    size_t index = fileName.rfind(".proto");
+    fileName.resize(index);
+    return fileName;
+}
+
 };
 
 #define UNUSED(expr) do { (void)(expr); } while (0)

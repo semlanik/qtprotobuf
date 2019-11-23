@@ -46,6 +46,8 @@ protected:
 public:
     ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor *service,
                          const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
+    ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor *service,
+                    const std::shared_ptr<::google::protobuf::io::Printer> &printer);
     void run() = 0;
 
     void printIncludes();

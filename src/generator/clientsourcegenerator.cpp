@@ -42,6 +42,15 @@ ClientSourceGenerator::ClientSourceGenerator(const google::protobuf::ServiceDesc
     mClassName += "Client";
 }
 
+
+ClientSourceGenerator::ClientSourceGenerator(const google::protobuf::ServiceDescriptor *service,
+                      const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    ClassSourceGeneratorBase(service->full_name(), printer)
+  , mService(service)
+{
+    mClassName += "Client";
+}
+
 void ClientSourceGenerator::printMethods()
 {
     for (int i = 0; i < mService->method_count(); i++) {
@@ -49,19 +58,19 @@ void ClientSourceGenerator::printMethods()
         std::map<std::string, std::string> parameters;
         getMethodParameters(method, parameters);
         if (method->server_streaming()) {
-            mPrinter.Print(parameters, Templates::ClientMethodServerStreamDefinitionTemplate);
-            mPrinter.Print(parameters, Templates::ClientMethodServerStream2DefinitionTemplate);
+            mPrinter->Print(parameters, Templates::ClientMethodServerStreamDefinitionTemplate);
+            mPrinter->Print(parameters, Templates::ClientMethodServerStream2DefinitionTemplate);
         } else {
-            mPrinter.Print(parameters, Templates::ClientMethodDefinitionSyncTemplate);
-            mPrinter.Print(parameters, Templates::ClientMethodDefinitionAsyncTemplate);
-            mPrinter.Print(parameters, Templates::ClientMethodDefinitionAsync2Template);
+            mPrinter->Print(parameters, Templates::ClientMethodDefinitionSyncTemplate);
+            mPrinter->Print(parameters, Templates::ClientMethodDefinitionAsyncTemplate);
+            mPrinter->Print(parameters, Templates::ClientMethodDefinitionAsync2Template);
         }
     }
 }
 
 void ClientSourceGenerator::printConstructor()
 {
-    mPrinter.Print({ {"classname", mClassName},
+    mPrinter->Print({ {"classname", mClassName},
                      {"parent_class", "QAbstractGrpcClient"},
                      {"service_name", mService->full_name()} }, Templates::ClientConstructorDefinitionTemplate);
 }

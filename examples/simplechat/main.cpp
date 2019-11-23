@@ -29,9 +29,11 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include <chatmessage.h>
-#include <user.h>
-#include <chatmessages.h>
+#include "simplechat.pb.h"
+
+//#include <chatmessage.h>
+//#include <user.h>
+//#include <chatmessages.h>
 #include "simplechatengine.h"
 
 #include <QMetaProperty>

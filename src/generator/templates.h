@@ -53,6 +53,7 @@ public:
     static const char *NamespaceTemplate;
     static const char *UsingNamespaceTemplate;
     static const char *NonProtoClassDefinitionTemplate;
+    static const char *ProtoClassDeclarationTemplate;
     static const char *ProtoClassDefinitionTemplate;
     static const char *ConstructorHeaderTemplate;
     static const char *ClassDefinitionTemplate;

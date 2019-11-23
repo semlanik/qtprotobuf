@@ -38,10 +38,10 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
-ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::ZeroCopyOutputStream> &out) : mOutput(out)
-  , mPrinter(mOutput.get(), '$')
+ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    mPrinter(printer)
 {
-    mPrinter.Print(Templates::DisclaimerTemplate);
+    mPrinter->Print(Templates::DisclaimerTemplate);
     utils::split(fullClassName, mNamespaces, '.');
     assert(mNamespaces.size() > 0);
     mClassName = mNamespaces.back();
@@ -54,9 +54,15 @@ ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, const s
     }
 }
 
+ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::ZeroCopyOutputStream> &out) :
+  ClassGeneratorBase(fullClassName, std::shared_ptr<::google::protobuf::io::Printer>(new ::google::protobuf::io::Printer(out.get(), '$')))
+{
+    mOutput = out;
+}
+
 void ClassGeneratorBase::printPreamble()
 {
-    mPrinter.Print(Templates::PreambleTemplate);
+    mPrinter->Print(Templates::PreambleTemplate);
 }
 
 void ClassGeneratorBase::printNamespaces()
@@ -67,24 +73,24 @@ void ClassGeneratorBase::printNamespaces()
 void ClassGeneratorBase::printNamespaces(const std::vector<std::string> &namespaces)
 {
     for (auto ns: namespaces) {
-        mPrinter.Print({{"namespace", ns}}, Templates::NamespaceTemplate);
+        mPrinter->Print({{"namespace", ns}}, Templates::NamespaceTemplate);
     }
 }
 
 void ClassGeneratorBase::printClassDeclaration()
 {
-    mPrinter.Print({{"classname", mClassName}}, Templates::ProtoClassDefinitionTemplate);
+    mPrinter->Print({{"classname", mClassName}}, Templates::ProtoClassDefinitionTemplate);
 }
 
 void ClassGeneratorBase::encloseClass()
 {
-    mPrinter.Print(Templates::SemicolonBlockEnclosureTemplate);
+    mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);
 }
 
 void ClassGeneratorBase::encloseNamespaces(int count)
 {
     for (int i = 0; i < count; i++) {
-        mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+        mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
     }
 }
 
@@ -95,19 +101,19 @@ void ClassGeneratorBase::encloseNamespaces()
 
 void ClassGeneratorBase::printPublic()
 {
-    mPrinter.Print(Templates::PublicBlockTemplate);
+    mPrinter->Print(Templates::PublicBlockTemplate);
 }
 
 void ClassGeneratorBase::printPrivate()
 {
-    mPrinter.Print(Templates::PrivateBlockTemplate);
+    mPrinter->Print(Templates::PrivateBlockTemplate);
 }
 
 void ClassGeneratorBase::printMetaTypeDeclaration()
 {
-    mPrinter.Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
+    mPrinter->Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
                    Templates::DeclareMetaTypeTemplate);
-    mPrinter.Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
+    mPrinter->Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
                    Templates::DeclareComplexListTypeTemplate);
 }
 

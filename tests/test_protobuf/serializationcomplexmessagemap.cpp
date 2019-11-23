@@ -25,19 +25,21 @@
 
 #include "serializationtest.h"
 
-#include "simplefixed32complexmessagemapmessage.h"
-#include "simplesfixed32complexmessagemapmessage.h"
-#include "simpleint32complexmessagemapmessage.h"
-#include "simplesint32complexmessagemapmessage.h"
-#include "simpleuint32complexmessagemapmessage.h"
+#include "simpletest.pb.h"
 
-#include "simplefixed64complexmessagemapmessage.h"
-#include "simplesfixed64complexmessagemapmessage.h"
-#include "simpleint64complexmessagemapmessage.h"
-#include "simplesint64complexmessagemapmessage.h"
-#include "simpleuint64complexmessagemapmessage.h"
+//#include "simplefixed32complexmessagemapmessage.h"
+//#include "simplesfixed32complexmessagemapmessage.h"
+//#include "simpleint32complexmessagemapmessage.h"
+//#include "simplesint32complexmessagemapmessage.h"
+//#include "simpleuint32complexmessagemapmessage.h"
 
-#include "simplestringcomplexmessagemapmessage.h"
+//#include "simplefixed64complexmessagemapmessage.h"
+//#include "simplesfixed64complexmessagemapmessage.h"
+//#include "simpleint64complexmessagemapmessage.h"
+//#include "simplesint64complexmessagemapmessage.h"
+//#include "simpleuint64complexmessagemapmessage.h"
+
+//#include "simplestringcomplexmessagemapmessage.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf::tests;

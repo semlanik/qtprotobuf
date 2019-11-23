@@ -25,6 +25,8 @@
 
 #include "simplechatengine.h"
 
+#include "simplechat_grpc.pb.h"
+
 #include <QGrpcHttp2Channel>
 #include <InsecureCredentials>
 #include <SslCredentials>

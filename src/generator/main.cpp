@@ -26,9 +26,10 @@
 #include <google/protobuf/compiler/plugin.h>
 
 #include "generator.h"
+#include "singlefilegenerator.h"
 
 int main(int argc, char *argv[])
 {
-    QtProtobuf::generator::QtGenerator generator;
+    QtProtobuf::generator::SingleFileGenerator generator;
     return ::google::protobuf::compiler::PluginMain(argc, argv, &generator);
 }

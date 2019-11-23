@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package qtprotobufnamespace.tests;
+
+import "simpletest.proto";
+
+message CrossFileMessage {
+    SimpleBoolMessage testField = 1;
+}
+
+
+message SecondDependency {
+    FirstDependency testField = 1;
+}
+
+message FirstDependency {
+    SecondDependency testField = 1;
+}

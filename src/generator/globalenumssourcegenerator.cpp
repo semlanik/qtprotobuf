@@ -36,8 +36,13 @@ GlobalEnumsSourceGenerator::GlobalEnumsSourceGenerator(const PackagesList &packa
     ClassGeneratorBase(Templates::GlobalEnumClassNameTemplate, out)
   , mPackageList(packageList) {}
 
+
+GlobalEnumsSourceGenerator::GlobalEnumsSourceGenerator(const PackagesList &packageList, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    ClassGeneratorBase(Templates::GlobalEnumClassNameTemplate, printer)
+  , mPackageList(packageList) {}
+
 void GlobalEnumsSourceGenerator::run() {
-    mPrinter.Print("#include <globalenums.h>\n"
+    mPrinter->Print("#include \"globaldeclarations.pb.h\"\n"
                    "#include <QProtobufObject>\n"
                    "\n"
                    "#include <QQmlEngine>");
@@ -74,9 +79,9 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
                                                                        {"namespaces", fullNamespace},
                                                                        {"package", list.front()->package()}};
 
-    mPrinter.Print(registrationProperties, Templates::ManualRegistrationGlobalEnumDefinition);
+    mPrinter->Print(registrationProperties, Templates::ManualRegistrationGlobalEnumDefinition);
     Indent();
-    mPrinter.Print(registrationProperties, Templates::QmlRegisterTypeUncreatableTemplate);
+    mPrinter->Print(registrationProperties, Templates::QmlRegisterTypeUncreatableTemplate);
 
     for (auto file : list) {
         for (int i = 0; i < file->enum_type_count(); i++) {
@@ -85,11 +90,11 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
                                                                    {"type", mClassName + "::" + enumDescr->name()},
                                                                    {"enum", enumDescr->name() + Templates::ListSuffix},
                                                                    {"namespaces", fullNamespace}};
-            mPrinter.Print(properties, Templates::ComplexGlobalEnumFieldRegistrationTemplate);
-            mPrinter.Print(properties, Templates::RegisterMetaTypeTemplate);
-            mPrinter.Print(properties, Templates::RegisterEnumSerializersTemplate);
+            mPrinter->Print(properties, Templates::ComplexGlobalEnumFieldRegistrationTemplate);
+            mPrinter->Print(properties, Templates::RegisterMetaTypeTemplate);
+            mPrinter->Print(properties, Templates::RegisterEnumSerializersTemplate);
         }
     }
     Outdent();
-    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+    mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 }

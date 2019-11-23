@@ -46,28 +46,32 @@ ClientGenerator::ClientGenerator(const ServiceDescriptor *service, const std::sh
     mClassName += "Client";
 }
 
+ClientGenerator::ClientGenerator(const ::google::protobuf::ServiceDescriptor *service, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    ServiceGeneratorBase(service, printer)
+{
+    mClassName += "Client";
+}
+
 void ClientGenerator::printClientClass()
 {
-    mPrinter.Print({{"classname", mClassName}, {"parent_class", "QtProtobuf::QAbstractGrpcClient"}}, Templates::ClassDefinitionTemplate);
-    mPrinter.Print(Templates::QObjectMacro);
+    mPrinter->Print({{"classname", mClassName}, {"parent_class", "QtProtobuf::QAbstractGrpcClient"}}, Templates::ClassDefinitionTemplate);
+    mPrinter->Print(Templates::QObjectMacro);
 }
 
 void ClientGenerator::printConstructor()
 {
     Indent();
-    mPrinter.Print({{"classname", mClassName}}, Templates::QObjectConstructorTemplate);
+    mPrinter->Print({{"classname", mClassName}}, Templates::QObjectConstructorTemplate);
     Outdent();
 }
 
 void ClientGenerator::printClientIncludes()
 {
-    printIncludes();
-
     std::unordered_set<std::string> includeSet;
-    includeSet.insert("qabstractgrpcclient");
-    includeSet.insert("qgrpcasyncreply");
+    includeSet.insert("QAbstractGrpcClient");
+    includeSet.insert("QGrpcAsyncReply");
     for (auto type : includeSet) {
-        mPrinter.Print({{"include", type}}, Templates::InternalIncludeTemplate);
+        mPrinter->Print({{"include", type}}, Templates::ExternalIncludeTemplate);
     }
 }
 
@@ -80,15 +84,15 @@ void ClientGenerator::printClientMethodsDeclaration()
         getMethodParameters(method, parameters);
 
         if (method->server_streaming()) {
-            mPrinter.Print(parameters, Templates::ClientMethodSignalDeclarationTemplate);
-            mPrinter.Print(parameters, Templates::ClientMethodServerStreamDeclarationTemplate);
-            mPrinter.Print(parameters, Templates::ClientMethodServerStream2DeclarationTemplate);
+            mPrinter->Print(parameters, Templates::ClientMethodSignalDeclarationTemplate);
+            mPrinter->Print(parameters, Templates::ClientMethodServerStreamDeclarationTemplate);
+            mPrinter->Print(parameters, Templates::ClientMethodServerStream2DeclarationTemplate);
         } else {
-            mPrinter.Print(parameters, Templates::ClientMethodDeclarationSyncTemplate);
-            mPrinter.Print(parameters, Templates::ClientMethodDeclarationAsyncTemplate);
-            mPrinter.Print(parameters, Templates::ClientMethodDeclarationAsync2Template);
+            mPrinter->Print(parameters, Templates::ClientMethodDeclarationSyncTemplate);
+            mPrinter->Print(parameters, Templates::ClientMethodDeclarationAsyncTemplate);
+            mPrinter->Print(parameters, Templates::ClientMethodDeclarationAsync2Template);
         }
-        mPrinter.Print("\n");
+        mPrinter->Print("\n");
     }
     Outdent();
 }

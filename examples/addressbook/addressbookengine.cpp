@@ -24,7 +24,11 @@
  */
 
 #include "addressbookengine.h"
-#include "addressbookclient.h"
+
+#include "addressbook.pb.h"
+#include "addressbook_grpc.pb.h"
+
+//#include "addressbookclient.h"
 #include <QGrpcHttp2Channel>
 #include <InsecureCredentials>
 #include <SslCredentials>

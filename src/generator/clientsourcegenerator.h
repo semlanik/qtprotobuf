@@ -35,6 +35,8 @@ class ClientSourceGenerator : public ClassSourceGeneratorBase
 public:
     ClientSourceGenerator(const google::protobuf::ServiceDescriptor *service,
                           const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
+    ClientSourceGenerator(const google::protobuf::ServiceDescriptor *service,
+                          const std::shared_ptr<::google::protobuf::io::Printer> &printer);
     void run() override {
         printClassHeaderInclude();
         printUsingNamespaces({"QtProtobuf", mNamespacesColonDelimited});
@@ -42,9 +44,9 @@ public:
         printMethods();
     }
 
-protected:
     void printMethods();
     void printConstructor();
+protected:
     const ::google::protobuf::ServiceDescriptor *mService;
 };
 

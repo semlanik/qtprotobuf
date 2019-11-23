@@ -41,10 +41,17 @@ ProtobufClassGenerator::ProtobufClassGenerator(const Descriptor *message, const 
 {
 }
 
+ProtobufClassGenerator::ProtobufClassGenerator(const ::google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer)
+    : ClassGeneratorBase(message->full_name(), printer)
+    , mMessage(message)
+{
+
+}
+
 void ProtobufClassGenerator::printCopyFunctionality()
 {
     assert(mMessage != nullptr);
-    mPrinter.Print({{"classname", mClassName}},
+    mPrinter->Print({{"classname", mClassName}},
                    Templates::CopyConstructorTemplate);
 
     Indent();
@@ -53,24 +60,24 @@ void ProtobufClassGenerator::printCopyFunctionality()
     }
     Outdent();
 
-    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
-    mPrinter.Print({{"classname", mClassName}},
+    mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
+    mPrinter->Print({{"classname", mClassName}},
                    Templates::AssignmentOperatorTemplate);
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         printField(mMessage->field(i), Templates::CopyFieldTemplate);
     }
-    mPrinter.Print(Templates::AssignmentOperatorReturnTemplate);
+    mPrinter->Print(Templates::AssignmentOperatorReturnTemplate);
     Outdent();
 
-    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+    mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 }
 
 void ProtobufClassGenerator::printMoveSemantic()
 {
     assert(mMessage != nullptr);
-    mPrinter.Print({{"classname", mClassName}},
+    mPrinter->Print({{"classname", mClassName}},
                    Templates::MoveConstructorTemplate);
 
     Indent();
@@ -89,8 +96,8 @@ void ProtobufClassGenerator::printMoveSemantic()
     }
     Outdent();
 
-    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
-    mPrinter.Print({{"classname", mClassName}},
+    mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
+    mPrinter->Print({{"classname", mClassName}},
                    Templates::MoveAssignmentOperatorTemplate);
 
     Indent();
@@ -107,10 +114,10 @@ void ProtobufClassGenerator::printMoveSemantic()
             }
         }
     }
-    mPrinter.Print(Templates::AssignmentOperatorReturnTemplate);
+    mPrinter->Print(Templates::AssignmentOperatorReturnTemplate);
     Outdent();
 
-    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+    mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 }
 
 void ProtobufClassGenerator::printComparisonOperators()
@@ -118,21 +125,21 @@ void ProtobufClassGenerator::printComparisonOperators()
     assert(mMessage != nullptr);
     bool isFirst = true;
     PropertyMap properties;
-    mPrinter.Print({{"type", mClassName}}, Templates::EqualOperatorTemplate);
+    mPrinter->Print({{"type", mClassName}}, Templates::EqualOperatorTemplate);
     if (mMessage->field_count() <= 0) {
-        mPrinter.Print("true");
+        mPrinter->Print("true");
     }
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         if (producePropertyMap(field, properties)) {
             if (!isFirst) {
-                mPrinter.Print("\n&& ");
+                mPrinter->Print("\n&& ");
             } else {
                 Indent();
                 Indent();
                 isFirst = false;
             }
-            mPrinter.Print(properties, Templates::EqualOperatorPropertyTemplate);
+            mPrinter->Print(properties, Templates::EqualOperatorPropertyTemplate);
         }
     }
 
@@ -142,17 +149,17 @@ void ProtobufClassGenerator::printComparisonOperators()
         Outdent();
     }
 
-    mPrinter.Print(";\n");
-    mPrinter.Print(Templates::SimpleBlockEnclosureTemplate);
+    mPrinter->Print(";\n");
+    mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 
-    mPrinter.Print({{"type", mClassName}}, Templates::NotEqualOperatorTemplate);
+    mPrinter->Print({{"type", mClassName}}, Templates::NotEqualOperatorTemplate);
 }
 
 void ProtobufClassGenerator::printIncludes()
 {
     assert(mMessage != nullptr);
 
-    mPrinter.Print(Templates::DefaultProtobufIncludesTemplate);
+    mPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
 
     std::set<std::string> existingIncludes;
     for (int i = 0; i < mMessage->field_count(); i++) {
@@ -211,7 +218,7 @@ void ProtobufClassGenerator::printInclude(const FieldDescriptor *field, std::set
     }
 
     if (existingIncludes.find(newInclude) == std::end(existingIncludes)) {
-        mPrinter.Print({{"include", newInclude}}, includeTemplate);
+        mPrinter->Print({{"include", newInclude}}, includeTemplate);
         existingIncludes.insert(newInclude);
     }
 }
@@ -221,7 +228,7 @@ void ProtobufClassGenerator::printField(const FieldDescriptor *field, const char
     assert(field != nullptr);
     std::map<std::string, std::string> propertyMap;
     if (producePropertyMap(field, propertyMap)) {
-        mPrinter.Print(propertyMap, fieldTemplate);
+        mPrinter->Print(propertyMap, fieldTemplate);
     }
 }
 
@@ -319,7 +326,7 @@ void ProtobufClassGenerator::printConstructor()
         }
         parameterList += ", ";
     }
-    mPrinter.Print({{"classname", mClassName},
+    mPrinter->Print({{"classname", mClassName},
                     {"parameter_list", parameterList}}, Templates::ProtoConstructorTemplate);
 
 }
@@ -339,7 +346,7 @@ void ProtobufClassGenerator::printMaps()
                 mapTemplate = Templates::MessageMapTypeUsingTemplate;
             }
 
-            mPrinter.Print({{"classname",field->message_type()->name()},
+            mPrinter->Print({{"classname",field->message_type()->name()},
                             {"key", keyType},
                             {"value", valueType}}, mapTemplate);
         }
@@ -356,7 +363,7 @@ void ProtobufClassGenerator::printLocalEmumsMetaTypesDeclaration()
 
         if (field->type() == FieldDescriptor::TYPE_ENUM
                 && isLocalMessageEnum(mMessage, field)) {
-             mPrinter.Print({{"classname", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
+             mPrinter->Print({{"classname", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
                              {"namespaces", mNamespacesColonDelimited}}, Templates::DeclareMetaTypeTemplate);
         }
     }
@@ -367,7 +374,7 @@ void ProtobufClassGenerator::printMapsMetaTypesDeclaration()
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         if (field->is_map()) {
-             mPrinter.Print({{"classname", field->message_type()->name()},
+             mPrinter->Print({{"classname", field->message_type()->name()},
                              {"namespaces", mNamespacesColonDelimited + "::" + mClassName}}, Templates::DeclareMetaTypeTemplate);
         }
     }
@@ -446,10 +453,10 @@ void ProtobufClassGenerator::printProperties()
     Outdent();
 
     Indent();
-    mPrinter.Print({{"classname", mClassName}}, Templates::ManualRegistrationDeclaration);
+    mPrinter->Print({{"classname", mClassName}}, Templates::ManualRegistrationDeclaration);
     Outdent();
 
-    mPrinter.Print(Templates::SignalsBlockTemplate);
+    mPrinter->Print(Templates::SignalsBlockTemplate);
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
@@ -460,7 +467,7 @@ void ProtobufClassGenerator::printProperties()
 
 void ProtobufClassGenerator::printListType()
 {
-    mPrinter.Print({{"classname", mClassName}}, Templates::ComplexListTypeUsingTemplate);
+    mPrinter->Print({{"classname", mClassName}}, Templates::ComplexListTypeUsingTemplate);
 
 }
 

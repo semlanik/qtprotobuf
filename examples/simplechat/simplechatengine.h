@@ -27,8 +27,11 @@
 
 #include <QObject>
 
-#include <chatmessages.h>
-#include "simplechatclient.h"
+#include "simplechat.pb.h"
+#include "simplechat_grpc.pb.h"
+
+//#include <chatmessages.h>
+//#include "simplechatclient.h"
 
 #include "universallistmodel.h"
 
