@@ -38,6 +38,7 @@ public:
     ClientSourceGenerator(const google::protobuf::ServiceDescriptor *service,
                           const std::shared_ptr<::google::protobuf::io::Printer> &printer);
     void run() override {
+        printDisclaimer();
         printClassHeaderInclude();
         printUsingNamespaces({"QtProtobuf", mNamespacesColonDelimited});
         printConstructor();

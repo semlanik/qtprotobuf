@@ -40,6 +40,7 @@ public:
     virtual ~GlobalEnumsSourceGenerator() = default;
 
     void run() override;
+    void printHeaders();
     void printRegisterBody(const std::list<const ::google::protobuf::FileDescriptor *> &list,
                            const std::vector<std::string> &namespaces);
 };

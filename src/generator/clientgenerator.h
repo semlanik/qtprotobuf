@@ -48,6 +48,7 @@ public:
     ~ClientGenerator() = default;
 
     void run() {
+        printDisclaimer();
         printPreamble();
         printIncludes();
         printClientIncludes();

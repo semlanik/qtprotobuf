@@ -496,6 +496,7 @@ std::set<std::string> ProtobufClassGenerator::extractModels() const
 
 void ProtobufClassGenerator::run()
 {
+    printDisclaimer();
     printPreamble();
     printIncludes();
     printNamespaces();

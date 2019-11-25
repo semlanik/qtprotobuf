@@ -41,12 +41,14 @@ GlobalEnumsSourceGenerator::GlobalEnumsSourceGenerator(const PackagesList &packa
     ClassGeneratorBase(Templates::GlobalEnumClassNameTemplate, printer)
   , mPackageList(packageList) {}
 
-void GlobalEnumsSourceGenerator::run() {
-    mPrinter->Print("#include \"globaldeclarations.pb.h\"\n"
-                   "#include <QProtobufObject>\n"
-                   "\n"
-                   "#include <QQmlEngine>");
 
+void  GlobalEnumsSourceGenerator::printHeaders() {
+    mPrinter->Print("#include \"globalenums.h\"\n\n"
+                    "#include <QProtobufObject>\n\n"
+                    "#include <QQmlEngine>");
+}
+
+void GlobalEnumsSourceGenerator::run() {
     std::vector<std::string> namespaces;
     for (auto package : mPackageList) {
         if (!hasGlobalEnum(package.second)) {

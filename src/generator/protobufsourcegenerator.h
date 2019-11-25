@@ -42,6 +42,7 @@ public:
     void printConstructor();
 
     void run() override {
+        printDisclaimer();
         printClassHeaderInclude();
         printNamespaces();
         printFieldsOrdering();

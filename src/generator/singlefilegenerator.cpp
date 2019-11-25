@@ -67,26 +67,12 @@ bool SingleFileGenerator::Generate(const FileDescriptor *file,
 
 bool SingleFileGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, const string &parameter, GeneratorContext *generatorContext, string *error) const
 {
-    std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(globalDeclarationsFilename + ".h"));
-    std::shared_ptr<io::ZeroCopyOutputStream> outSource(generatorContext->Open(globalDeclarationsFilename + ".cpp"));
-    std::shared_ptr<::google::protobuf::io::Printer> outHeaderPrinter(new ::google::protobuf::io::Printer(outHeader.get(), '$'));
-    std::shared_ptr<::google::protobuf::io::Printer> outSourcePrinter(new ::google::protobuf::io::Printer(outSource.get(), '$'));
-
     PackagesList packageList;
     for (auto file : files) {
         packageList[file->package()].push_back(file);
     }
 
-    GlobalEnumsGenerator enumGen(packageList,
-                                 outHeaderPrinter);
-    enumGen.run();
-
-    GlobalEnumsSourceGenerator enumSourceGen(packageList,
-                                             outSourcePrinter);
-    enumSourceGen.run();
-
-
-    std::shared_ptr<io::ZeroCopyOutputStream> outfHeader(generatorContext->Open(globalDeclarationsFilename + "_.h"));
+    std::shared_ptr<io::ZeroCopyOutputStream> outfHeader(generatorContext->Open(globalDeclarationsFilename + ".h"));
     std::shared_ptr<::google::protobuf::io::Printer> outfHeaderPrinter(new ::google::protobuf::io::Printer(outfHeader.get(), '$'));
 
     outfHeaderPrinter->Print(Templates::DisclaimerTemplate);
@@ -171,39 +157,12 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     outSourcePrinter->Print(Templates::DisclaimerTemplate);
     outSourcePrinter->Print({{"include", outFileBasename + protoFileSuffix}}, Templates::InternalIncludeTemplate);
 
-    for (int i = 0; i < file->message_type_count(); i++) {
-        const Descriptor *message = file->message_type(i);
+    externalIncludes.insert("QByteArray");
+    externalIncludes.insert("QString");
 
-        for(int j = 0; j < message->field_count(); j++) {
-            const FieldDescriptor *field = message->field(j);
-            switch(field->type()) {
-            case FieldDescriptor::TYPE_MESSAGE:
-                if ( field->is_map() ) {
-                    externalIncludes.insert("QMap");
-                    assert(field->message_type() != nullptr);
-                    assert(field->message_type()->field_count() == 2);
-                } else if (field->message_type()->file() != file) {
-                    internalIncludes.insert(utils::extractFileName(field->message_type()->file()->name()) + protoFileSuffix);
-                }
-                break;
-            case FieldDescriptor::TYPE_BYTES:
-                externalIncludes.insert("QByteArray");
-                break;
-            case FieldDescriptor::TYPE_STRING:
-                externalIncludes.insert("QString");
-                break;
-            case FieldDescriptor::TYPE_ENUM:
-                if (field->enum_type()->file() != file) {
-                    internalIncludes.insert(utils::extractFileName(field->enum_type()->file()->name()) + protoFileSuffix);
-                }
-                break;
-            default:
-                break;
-            }
-        }
+    for (int i = 0; i < file->dependency_count(); i++) {
+        internalIncludes.insert(utils::extractFileName(file->dependency(i)->name()) + protoFileSuffix);
     }
-
-    internalIncludes.insert(globalDeclarationsFilename);
 
     for(auto include : externalIncludes) {
         outHeaderPrinter->Print({{"include", include}}, Templates::ExternalIncludeTemplate);
@@ -214,6 +173,19 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     }
 
     outSourcePrinter->Print({{"namespace", "QtProtobuf"}}, Templates::UsingNamespaceTemplate);
+
+
+    PackagesList packageList;
+    packageList[file->package()].push_back(file);
+
+    GlobalEnumsGenerator enumGen(packageList,
+                                 outHeaderPrinter);
+    enumGen.run();
+
+    GlobalEnumsSourceGenerator enumSourceGen(packageList,
+                                             outSourcePrinter);
+    enumSourceGen.run();
+
 
     std::vector<std::string> namespaces;
     std::string namespacesColonDelimited;

@@ -41,7 +41,6 @@ using namespace ::google::protobuf::compiler;
 ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
     mPrinter(printer)
 {
-    mPrinter->Print(Templates::DisclaimerTemplate);
     utils::split(fullClassName, mNamespaces, '.');
     assert(mNamespaces.size() > 0);
     mClassName = mNamespaces.back();
@@ -58,6 +57,12 @@ ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, const s
   ClassGeneratorBase(fullClassName, std::shared_ptr<::google::protobuf::io::Printer>(new ::google::protobuf::io::Printer(out.get(), '$')))
 {
     mOutput = out;
+}
+
+
+void ClassGeneratorBase::printDisclaimer()
+{
+    mPrinter->Print(Templates::DisclaimerTemplate);
 }
 
 void ClassGeneratorBase::printPreamble()

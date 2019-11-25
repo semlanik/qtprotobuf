@@ -126,10 +126,15 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
 
     GlobalEnumsGenerator enumGen(packageList,
                                  std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".h")));
+    enumGen.printDisclaimer();
+    enumGen.printPreamble();
     enumGen.run();
 
     GlobalEnumsSourceGenerator enumSourceGen(packageList,
                                              std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".cpp")));
+    enumSourceGen.printDisclaimer();
+    enumSourceGen.printPreamble();
+    enumSourceGen.printHeaders();
     enumSourceGen.run();
 
     return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);

@@ -62,7 +62,6 @@ void GlobalEnumsGenerator::printConstructor()
 }
 
 void GlobalEnumsGenerator::run() {
-    printPreamble();
     std::vector<std::string> namespaces;
     for (auto package : mPackageList) {
         if (!hasGlobalEnum(package.second)) {

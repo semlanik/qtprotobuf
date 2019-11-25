@@ -1,6 +1,6 @@
 function(generate_qtprotobuf)
     set(options)
-    set(oneValueArgs OUT_DIR TARGET)
+    set(oneValueArgs OUT_DIR TARGET MULTI)
     set(multiValueArgs GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES)
     cmake_parse_arguments(generate_qtprotobuf "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -12,16 +12,21 @@ function(generate_qtprotobuf)
     if(NOT DEFINED QTPROTOBUF_EXECUTABLE)
         set(QTPROTOBUF_EXECUTABLE "@QTPROTOBUF_EXECUTABLE_INSTALL@")
     endif()
+
+    set(GENERATION_TYPE "SINGLE")
+    if(${generate_qtprotobuf_MULTI})
+        set(GENERATION_TYPE "MULTI")
+        #TODO: add globalenums by default. But it's better to verify if proto file contains any global enum
+        set(GENERATED_HEADERS ${GENERATED_HEADERS} globalenums.h)
+    endif()
+
     find_program(GO_EXECUTABLE "go")
     foreach(PROTO_FILE IN LISTS generate_qtprotobuf_PROTO_FILES)
         get_filename_component(BASE_DIR ${PROTO_FILE} DIRECTORY)
         set(PROTO_INCLUDES -I"${BASE_DIR}" ${PROTO_INCUDES})
-        execute_process(COMMAND ${GO_EXECUTABLE} run ${PROTO_PARSER} ${PROTO_FILE} OUTPUT_VARIABLE GENERATED_HEADERS_PART ERROR_VARIABLE PARSER_ERROR)
+        execute_process(COMMAND ${GO_EXECUTABLE} run ${PROTO_PARSER} ${PROTO_FILE} ${GENERATION_TYPE} OUTPUT_VARIABLE GENERATED_HEADERS_PART ERROR_VARIABLE PARSER_ERROR)
         set(GENERATED_HEADERS ${GENERATED_HEADERS} ${GENERATED_HEADERS_PART})
     endforeach()
-
-    #TODO: add globalenums by default. But it's better to verify if proto file contains any global enum
-    set(GENERATED_HEADERS ${GENERATED_HEADERS} globaldeclarations.pb.h)
 
     if(DEFINED generate_qtprotobuf_GENERATED_HEADERS)
         set(GENERATED_HEADERS ${generate_qtprotobuf_GENERATED_HEADERS})
@@ -54,7 +59,7 @@ function(generate_qtprotobuf)
 
     add_custom_command(
             OUTPUT ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS}
-            COMMAND $<TARGET_FILE:protobuf::protoc>
+            COMMAND "QT_PROTOBUF_GENERATOR_TYPE=${GENERATION_TYPE}" $<TARGET_FILE:protobuf::protoc>
                 --plugin=protoc-gen-@GENERATOR_TARGET@=${QTPROTOBUF_EXECUTABLE}
                 --@GENERATOR_TARGET@_out=${OUT_DIR}
                 ${PROTO_INCLUDES}

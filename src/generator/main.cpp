@@ -30,6 +30,11 @@
 
 int main(int argc, char *argv[])
 {
+    std::string generatorType(getenv("QT_PROTOBUF_GENERATOR_TYPE"));
+    if (generatorType == std::string("MULTI")) {
+        QtProtobuf::generator::QtGenerator generator;
+        return ::google::protobuf::compiler::PluginMain(argc, argv, &generator);
+    }
     QtProtobuf::generator::SingleFileGenerator generator;
     return ::google::protobuf::compiler::PluginMain(argc, argv, &generator);
 }

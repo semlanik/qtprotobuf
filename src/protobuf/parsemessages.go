@@ -15,6 +15,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	multi := false
+	if len(os.Args) > 2{
+		if os.Args[2] == "MULTI" {
+			multi = true
+		}
+	}
+
 	file, err := os.Open(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
@@ -32,42 +39,43 @@ func main() {
 	}
 
 	scanner := bufio.NewScanner(file)
-    //Multifile version
-// 	for scanner.Scan() {
-// 		capture := messageFinder.FindStringSubmatch(scanner.Text())
-// 		if len(capture) == 2 {
-//             fmt.Printf("%s.h;", strings.ToLower(capture[1]))
-// 		}
-// 
-//         
-// 		capture = serviceFinder.FindStringSubmatch(scanner.Text())
-// 		if len(capture) == 2 {
-//             fmt.Printf("%sclient.h;", strings.ToLower(capture[1]))
-// 		}
-// 	}
-    
-    //Signlefile version
-	basename := strings.TrimSuffix(os.Args[1], filepath.Ext(os.Args[1]))
-	messageFound := false
-	serviceFound := false
-	for scanner.Scan() {
-		capture := messageFinder.FindStringSubmatch(scanner.Text())
-		if len(capture) == 2 {
-			messageFound = true
+	if multi {
+		for scanner.Scan() {
+			capture := messageFinder.FindStringSubmatch(scanner.Text())
+			if len(capture) == 2 {
+				fmt.Printf("%s.h;", strings.ToLower(capture[1]))
+			}
+
+			capture = serviceFinder.FindStringSubmatch(scanner.Text())
+			if len(capture) == 2 {
+				fmt.Printf("%sclient.h;", strings.ToLower(capture[1]))
+			}
+		}
+	} else {
+		//Singlefile version
+		basename := strings.TrimSuffix(os.Args[1], filepath.Ext(os.Args[1]))
+		messageFound := false
+		serviceFound := false
+		for scanner.Scan() {
+			capture := messageFinder.FindStringSubmatch(scanner.Text())
+			if len(capture) == 2 {
+				messageFound = true
+			}
+
+			capture = serviceFinder.FindStringSubmatch(scanner.Text())
+			if len(capture) == 2 {
+				serviceFound = true
+			}
 		}
 
-		capture = serviceFinder.FindStringSubmatch(scanner.Text())
-		if len(capture) == 2 {
-			serviceFound = true
+		if messageFound {
+			fmt.Printf("%s.pb.h;", basename)
+		}
+
+		if serviceFound {
+			fmt.Printf("%s_grpc.pb.h;", basename)
 		}
 	}
-	if messageFound {
-        fmt.Printf("%s.pb.h;", basename)
-    }
-    
-    if serviceFound {
-        fmt.Printf("%s_grpc.pb.h;", basename)
-    }
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)

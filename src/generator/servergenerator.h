@@ -46,6 +46,7 @@ public:
     virtual ~ServerGenerator() = default;
 
     void run() {
+        printDisclaimer();
         printPreamble();
         printIncludes();
         printNamespaces();

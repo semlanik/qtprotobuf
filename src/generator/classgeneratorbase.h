@@ -65,6 +65,7 @@ protected:
     std::string mNamespacesColonDelimited;
 
 public:
+    void printDisclaimer();
     void printPreamble();
     void printNamespaces();
     void printNamespaces(const std::vector<std::string> &namespaces);
