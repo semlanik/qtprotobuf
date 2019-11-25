@@ -33,6 +33,7 @@
 
 #include "utils.h"
 #include "templates.h"
+#include "generatoroptions.h"
 
 using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
@@ -78,6 +79,10 @@ bool GeneratorBase::GenerateAll(const std::vector<const FileDescriptor *> &files
     outfHeaderPrinter->Print(Templates::DisclaimerTemplate);
     outfHeaderPrinter->Print(Templates::PreambleTemplate);
     outfHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
+
+    if (GeneratorOptions::instance().hasQml()) {
+        outfHeaderPrinter->Print(Templates::QmlProtobufIncludesTemplate);
+    }
 
     bool addGlobalEnumsHeader = false;
     for (auto file : files) {

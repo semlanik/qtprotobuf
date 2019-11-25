@@ -25,6 +25,7 @@
 
 #include "protobufclassgenerator.h"
 #include "utils.h"
+#include "generatoroptions.h"
 
 #include <iostream>
 #include <google/protobuf/descriptor.h>
@@ -160,6 +161,9 @@ void ProtobufClassGenerator::printIncludes()
     assert(mMessage != nullptr);
 
     mPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
+    if (GeneratorOptions::instance().hasQml()) {
+        mPrinter->Print(Templates::QmlProtobufIncludesTemplate);
+    }
 
     std::set<std::string> existingIncludes;
     for (int i = 0; i < mMessage->field_count(); i++) {
@@ -397,7 +401,8 @@ void ProtobufClassGenerator::printProperties()
     //Generate extra QmlListProperty that is mapped to list
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE && field->is_repeated() && !field->is_map()) {
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE && field->is_repeated() && !field->is_map()
+                && GeneratorOptions::instance().hasQml()) {
             printField(field, Templates::QmlListPropertyTemplate);
         }
     }
@@ -427,7 +432,8 @@ void ProtobufClassGenerator::printProperties()
         printField(field, Templates::GetterTemplate);
         if (field->is_repeated()) {
             printField(field, Templates::GetterContainerExtraTemplate);
-            if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map()) {
+            if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map()
+                    && GeneratorOptions::instance().hasQml()) {
                 printField(field, Templates::QmlListGetterTemplate);
             }
         }

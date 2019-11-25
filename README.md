@@ -159,9 +159,11 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 
 *PROTO_FILES* - List of .proto files that will be used in generation procedure
 
-*MULTI* - Enabled/disabled multi-files generation mode. In case if this property is set to TRUE generator will create pair of header/source files for each message
+*MULTI* - Enables/disables multi-files generation mode. In case if this property is set to TRUE generator will create pair of header/source files for each message
 
 **Note:** multi-files generation mode is defined as deprecated by QtProtobuf team, and might have poor support in future
+
+*QML* - Enables/disables QML code generation in protobuf classes. If set to TRUE qml related code for lists and qml registration to be generated.
 
 **Outcome:**
 

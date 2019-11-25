@@ -25,6 +25,8 @@
 
 #include "globalenumssourcegenerator.h"
 
+#include "generatoroptions.h"
+
 #include <google/protobuf/io/zero_copy_stream.h>
 
 using namespace ::QtProtobuf::generator;
@@ -44,8 +46,10 @@ GlobalEnumsSourceGenerator::GlobalEnumsSourceGenerator(const PackagesList &packa
 
 void  GlobalEnumsSourceGenerator::printHeaders() {
     mPrinter->Print("#include \"globalenums.h\"\n\n"
-                    "#include <QProtobufObject>\n\n"
-                    "#include <QQmlEngine>");
+                    "#include <QProtobufObject>\n\n");
+    if (GeneratorOptions::instance().hasQml()) {
+        mPrinter->Print("#include <QQmlEngine>");
+    }
 }
 
 void GlobalEnumsSourceGenerator::run() {
@@ -83,7 +87,9 @@ void GlobalEnumsSourceGenerator::printRegisterBody(const std::list<const FileDes
 
     mPrinter->Print(registrationProperties, Templates::ManualRegistrationGlobalEnumDefinition);
     Indent();
-    mPrinter->Print(registrationProperties, Templates::QmlRegisterTypeUncreatableTemplate);
+    if (GeneratorOptions::instance().hasQml()) {
+        mPrinter->Print(registrationProperties, Templates::QmlRegisterTypeUncreatableTemplate);
+    }
 
     for (auto file : list) {
         for (int i = 0; i < file->enum_type_count(); i++) {

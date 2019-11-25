@@ -34,6 +34,7 @@
 #include "clientgenerator.h"
 #include "clientsourcegenerator.h"
 #include "utils.h"
+#include "generatoroptions.h"
 
 #include <iostream>
 #include <set>
@@ -84,6 +85,9 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     outHeaderPrinter->Print(Templates::DisclaimerTemplate);
     outHeaderPrinter->Print(Templates::PreambleTemplate);
     outHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
+    if (GeneratorOptions::instance().hasQml()) {
+        outHeaderPrinter->Print(Templates::QmlProtobufIncludesTemplate);
+    }
 
     outSourcePrinter->Print(Templates::DisclaimerTemplate);
     outSourcePrinter->Print({{"include", outFileBasename + Templates::ProtoFileSuffix}}, Templates::InternalIncludeTemplate);
@@ -189,6 +193,9 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
     outHeaderPrinter->Print(Templates::DisclaimerTemplate);
     outHeaderPrinter->Print(Templates::PreambleTemplate);
     outHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
+    if (GeneratorOptions::instance().hasQml()) {
+        outHeaderPrinter->Print(Templates::QmlProtobufIncludesTemplate);
+    }
 
     outSourcePrinter->Print(Templates::DisclaimerTemplate);
     outSourcePrinter->Print({{"include", outFileBasename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix}}, Templates::InternalIncludeTemplate);

@@ -23,21 +23,29 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <google/protobuf/compiler/plugin.h>
+#pragma once
 
-#include "generator.h"
-#include "singlefilegenerator.h"
-#include "generatoroptions.h"
+#include <string>
 
-using namespace ::QtProtobuf::generator;
-int main(int argc, char *argv[])
+namespace QtProtobuf {
+namespace generator {
+
+class GeneratorOptions
 {
-    GeneratorOptions::instance().parseFromEnv(getenv("QT_PROTOBUF_OPTIONS"));
-    if (GeneratorOptions::instance().isMulti()) {
-        std::cerr << "Run multi generator" << std::endl;
-        QtProtobuf::generator::QtGenerator generator;
-        return ::google::protobuf::compiler::PluginMain(argc, argv, &generator);
+    GeneratorOptions();
+public:
+    static GeneratorOptions &instance() {
+        static GeneratorOptions _instance;
+        return _instance;
     }
-    QtProtobuf::generator::SingleFileGenerator generator;
-    return ::google::protobuf::compiler::PluginMain(argc, argv, &generator);
-}
+
+    void parseFromEnv(const std::string &options);
+
+    bool isMulti() const { return mIsMulti; }
+    bool hasQml() const { return mHasQml; }
+private:
+    bool mIsMulti;
+    bool mHasQml;
+};
+
+}}

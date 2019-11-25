@@ -12,7 +12,8 @@ file(GLOB SOURCES
 
 add_test_target(TARGET ${TARGET}
     EXCLUDE_HEADERS nestedsimpleintmessage.h
-    SOURCES ${SOURCES})
+    SOURCES ${SOURCES}
+    QML TRUE)
 add_target_windeployqt(TARGET ${TARGET}
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

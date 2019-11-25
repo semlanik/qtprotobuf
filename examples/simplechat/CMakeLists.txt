@@ -11,7 +11,8 @@ file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/simplechat.prot
 
 generate_qtprotobuf(TARGET ${TARGET}
     OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
-    PROTO_FILES ${PROTO_FILES})
+    PROTO_FILES ${PROTO_FILES}
+    QML TRUE)
 
 file(GLOB SOURCES main.cpp
     simplechatengine.cpp

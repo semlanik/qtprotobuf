@@ -18,7 +18,8 @@ file(GLOB SOURCES main.cpp
     protobufsourcegenerator.cpp
     clientsourcegenerator.cpp
     singlefilegenerator.cpp
-    generatorbase.cpp)
+    generatorbase.cpp
+    generatoroptions.cpp)
 
 file(GLOB HEADERS classgeneratorbase.h
     classsourcegeneratorbase.h
@@ -34,7 +35,8 @@ file(GLOB HEADERS classgeneratorbase.h
     templates.h
     utils.h
     singlefilegenerator.h
-    generatorbase.h)
+    generatorbase.h
+    generatoroptions.h)
 
 add_executable(${TARGET} ${SOURCES})
 

@@ -27,6 +27,7 @@
 
 #include "templates.h"
 #include "utils.h"
+#include "generatoroptions.h"
 
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream.h>
@@ -120,6 +121,10 @@ void ClassGeneratorBase::printMetaTypeDeclaration()
                    Templates::DeclareMetaTypeTemplate);
     mPrinter->Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
                    Templates::DeclareComplexListTypeTemplate);
+    if (GeneratorOptions::instance().hasQml()) {
+        mPrinter->Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
+                       Templates::DeclareComplexQmlListTypeTemplate);
+    }
 }
 
 bool ClassGeneratorBase::isLocalMessageEnum(const google::protobuf::Descriptor *message,

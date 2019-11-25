@@ -29,6 +29,7 @@
 
 #include "templates.h"
 #include "utils.h"
+#include "generatoroptions.h"
 
 using namespace QtProtobuf::generator;
 using namespace ::google::protobuf;
@@ -53,7 +54,9 @@ void ClassSourceGeneratorBase::printClassHeaderInclude()
     std::string includeFileName = mClassName;
     utils::tolower(includeFileName);
     mPrinter->Print({{"include", includeFileName}}, Templates::InternalIncludeTemplate);
-    mPrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+    if (GeneratorOptions::instance().hasQml()) {
+        mPrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+    }
 }
 
 void ClassSourceGeneratorBase::printUsingNamespaces(const std::unordered_set<std::string> &namespaces)

@@ -35,6 +35,7 @@ namespace generator {
 class Templates {
 public:
     static const char *DefaultProtobufIncludesTemplate;
+    static const char *QmlProtobufIncludesTemplate;
     static const char *GlobalEnumClassNameTemplate;
     static const char *PreambleTemplate;
     static const char *DisclaimerTemplate;
@@ -106,6 +107,7 @@ public:
     static const char *DeclareMetaTypeListTemplate;
     static const char *DeclareMessageMetaTypeTemplate;
     static const char *DeclareComplexListTypeTemplate;
+    static const char *DeclareComplexQmlListTypeTemplate;
     static const char *RegisterMetaTypeDefaultTemplate;
     static const char *RegisterMetaTypeTemplate;
     static const char *RegisterMetaTypeTemplateNoNamespace;

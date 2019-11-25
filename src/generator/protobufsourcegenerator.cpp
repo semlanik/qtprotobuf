@@ -27,6 +27,7 @@
 
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream.h>
+#include "generatoroptions.h"
 
 using namespace QtProtobuf::generator;
 using namespace ::google::protobuf;
@@ -55,8 +56,10 @@ void ProtobufSourceGenerator::printRegisterBody()
     mPrinter->Print(registrationProperties,
                    Templates::ManualRegistrationComplexTypeDefinition);
     Indent();
-    mPrinter->Print(registrationProperties, Templates::RegisterQmlListPropertyMetaTypeTemplate);
-    mPrinter->Print(registrationProperties, Templates::QmlRegisterTypeTemplate);
+    if (GeneratorOptions::instance().hasQml()) {
+        mPrinter->Print(registrationProperties, Templates::RegisterQmlListPropertyMetaTypeTemplate);
+        mPrinter->Print(registrationProperties, Templates::QmlRegisterTypeTemplate);
+    }
 
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
