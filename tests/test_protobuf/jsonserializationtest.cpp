@@ -26,9 +26,11 @@
 #include <gtest/gtest.h>
 #include <QByteArray>
 #include <QString>
-#include "simpletest.pb.h"
-//#include <simplefixedint32message.h>
+
 #include <qprotobufjsonserializer.h>
+
+#include "simpletest.pb.h"
+#include "qtprotobuf_global.pb.h"
 
 using namespace qtprotobufnamespace::tests;
 
@@ -41,7 +43,10 @@ public:
     JsonSerializationTest() = default;
     void SetUp() override;
     static void SetUpTestCase() {
-        QtProtobuf::registerProtoTypes();
+        QtProtobuf::qRegisterProtobufTypes();
+        qtprotobufnamespace::tests::qRegisterProtobufTypes();
+        qtprotobufnamespace1::externaltests::qRegisterProtobufTypes();
+        qtprotobufnamespace::tests::globalenums::qRegisterProtobufTypes();
     }
 
 protected:

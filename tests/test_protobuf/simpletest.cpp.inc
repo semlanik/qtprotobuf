@@ -29,6 +29,8 @@
 
 #include <gtest/gtest.h>
 
+#include "qtprotobuf_global.pb.h"
+
 using namespace qtprotobufnamespace::tests;
 
 namespace QtProtobuf {
@@ -58,60 +60,10 @@ public:
 
 void SimpleTest::SetUpTestCase()
 {
-    QtProtobuf::registerProtoTypes();
-    qRegisterProtobufType<SimpleIntMessage>();
-    qRegisterProtobufType<SimpleUIntMessage>();
-    qRegisterProtobufType<SimpleSIntMessage>();
-    qRegisterProtobufType<SimpleInt64Message>();
-    qRegisterProtobufType<SimpleUInt64Message>();
-    qRegisterProtobufType<SimpleSInt64Message>();
-    qRegisterProtobufType<SimpleFixedInt32Message>();
-    qRegisterProtobufType<SimpleFixedInt64Message>();
-    qRegisterProtobufType<SimpleSFixedInt32Message>();
-    qRegisterProtobufType<SimpleSFixedInt64Message>();
-    qRegisterProtobufType<SimpleFloatMessage>();
-    qRegisterProtobufType<SimpleDoubleMessage>();
-    qRegisterProtobufType<SimpleStringMessage>();
-    qRegisterProtobufType<ComplexMessage>();
-    qRegisterProtobufType<RepeatedIntMessage>();
-    qRegisterProtobufType<RepeatedSIntMessage>();
-    qRegisterProtobufType<RepeatedUIntMessage>();
-    qRegisterProtobufType<RepeatedInt64Message>();
-    qRegisterProtobufType<RepeatedSInt64Message>();
-    qRegisterProtobufType<RepeatedUInt64Message>();
-    qRegisterProtobufType<RepeatedFixedIntMessage>();
-    qRegisterProtobufType<RepeatedSFixedIntMessage>();
-    qRegisterProtobufType<RepeatedFixedInt64Message>();
-    qRegisterProtobufType<RepeatedStringMessage>();
-    qRegisterProtobufType<RepeatedDoubleMessage>();
-    qRegisterProtobufType<RepeatedBytesMessage>();
-    qRegisterProtobufType<RepeatedFloatMessage>();
-    qRegisterProtobufType<RepeatedComplexMessage>();
-//    qRegisterProtobufType<SimpleFixed32StringMapMessage>();
-//    qRegisterProtobufType<SimpleSFixed32StringMapMessage>();
-//    qRegisterProtobufType<SimpleInt32StringMapMessage>();
-    qRegisterProtobufType<SimpleSInt32StringMapMessage>();
-//    qRegisterProtobufType<SimpleUInt32StringMapMessage>();
-//    qRegisterProtobufType<SimpleFixed64StringMapMessage>();
-//    qRegisterProtobufType<SimpleSFixed64StringMapMessage>();
-//    qRegisterProtobufType<SimpleInt64StringMapMessage>();
-//    qRegisterProtobufType<SimpleSInt64StringMapMessage>();
-//    qRegisterProtobufType<SimpleUInt64StringMapMessage>();
-    qRegisterProtobufType<SimpleStringStringMapMessage>();
-//    qRegisterProtobufType<FieldIndexTest1Message>();
-//    qRegisterProtobufType<FieldIndexTest2Message>();
-//    qRegisterProtobufType<FieldIndexTest3Message>();
-//    qRegisterProtobufType<FieldIndexTest4Message>();
-    qRegisterProtobufType<SimpleEnumListMessage>();
-    qRegisterProtobufType<SimpleBytesMessage>();
-
-    qRegisterProtobufType<EmptyMessage>();
-    qRegisterProtobufType<Message_Uderscore_name>();
-    qRegisterProtobufType<MessageUderscorename>();
-    qRegisterProtobufType<MessageUnderscoreField>();
-    qRegisterProtobufType<PriorMessageUnderscoreField>();
-    qRegisterProtobufType<FollowingMessageUnderscoreField>();
-    qRegisterProtobufType<CombinedMessageUnderscoreField>();
+    QtProtobuf::qRegisterProtobufTypes();
+    qtprotobufnamespace::tests::qRegisterProtobufTypes();
+    qtprotobufnamespace1::externaltests::qRegisterProtobufTypes();
+    qtprotobufnamespace::tests::globalenums::qRegisterProtobufTypes();
 }
 
 TEST_F(SimpleTest, SimpleBoolMessageTest)

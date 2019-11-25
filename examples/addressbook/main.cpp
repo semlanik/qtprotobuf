@@ -31,8 +31,7 @@
 
 #include "addressbookengine.h"
 #include "addressbook.pb.h"
-//#include <contacts.h>
-//#include <contact.h>
+#include "qtprotobuf_global.pb.h"
 
 #include <QMetaProperty>
 #include <QQmlPropertyMap>
@@ -41,7 +40,9 @@ using namespace qtprotobuf::examples;
 
 int main(int argc, char *argv[])
 {
-    QtProtobuf::registerProtoTypes();
+    QtProtobuf::qRegisterProtobufTypes();
+    qtprotobuf::examples::qRegisterProtobufTypes();
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     qmlRegisterType<ContactsListModel>("examples.addressbook", 1, 0, "ContactsListModel");

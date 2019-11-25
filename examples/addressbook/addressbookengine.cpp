@@ -28,7 +28,6 @@
 #include "addressbook.pb.h"
 #include "addressbook_grpc.pb.h"
 
-//#include "addressbookclient.h"
 #include <QGrpcHttp2Channel>
 #include <InsecureCredentials>
 #include <SslCredentials>
@@ -53,14 +52,6 @@ AddressBookEngine::AddressBookEngine() : QObject()
   , m_contacts(new ContactsListModel({}, this))
   , m_callStatus(CallStatus::Inactive)
 {
-    qRegisterProtobufType<Contact>();
-    qRegisterProtobufType<ListFrame>();
-    qRegisterProtobufType<CallStatus>();
-    qRegisterProtobufType<PhoneNumber>();
-    qRegisterProtobufType<None>();
-    qRegisterProtobufType<Address>();
-    qRegisterProtobufType<Job>();
-
     //Prepare ssl configuration
     QSslConfiguration conf = QSslConfiguration::defaultConfiguration();
     QFile certFile("cert.pem");

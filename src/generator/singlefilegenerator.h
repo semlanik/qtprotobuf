@@ -30,6 +30,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include "generatorbase.h"
 
 namespace google { namespace protobuf {
 class FileDescriptor;
@@ -41,23 +42,15 @@ class GeneratorContext;
 namespace QtProtobuf {
 namespace generator {
 
-class SingleFileGenerator : public ::google::protobuf::compiler::CodeGenerator
+class SingleFileGenerator : public GeneratorBase
 {
+public:
+    SingleFileGenerator();
     bool Generate(const ::google::protobuf::FileDescriptor *file,
                           const std::string &parameter,
                           ::google::protobuf::compiler::GeneratorContext *generatorContext,
                           std::string *error) const override;
-
-    bool GenerateAll(const std::vector<const ::google::protobuf::FileDescriptor *> &files,
-                             const std::string &parameter,
-                             ::google::protobuf::compiler::GeneratorContext *generatorContext,
-                             std::string *error) const override;
-    bool HasGenerateAll() const override { return true; }
-
-
 private:
-    void iterateNonNestedFileds(const ::google::protobuf::FileDescriptor *file, std::function<void(const ::google::protobuf::Descriptor *)> callback) const;
-
     bool GenerateServices(const ::google::protobuf::FileDescriptor *file,
                           const std::string &parameter,
                           ::google::protobuf::compiler::GeneratorContext *generatorContext,

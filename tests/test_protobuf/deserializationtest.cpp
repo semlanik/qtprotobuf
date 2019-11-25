@@ -26,70 +26,7 @@
 #include "deserializationtest.h"
 
 #include "simpletest.pb.h"
-//#include "simpleboolmessage.h"
-//#include "simplefixedint32message.h"
-//#include "simplefixedint64message.h"
-//#include "simplesfixedint32message.h"
-//#include "simplesfixedint64message.h"
-//#include "simplefloatmessage.h"
-//#include "simpledoublemessage.h"
-//#include "simpleintmessage.h"
-//#include "simplesintmessage.h"
-//#include "simpleuintmessage.h"
-//#include "simplestringmessage.h"
-//#include "complexmessage.h"
-//#include "repeatedstringmessage.h"
-//#include "repeatedbytesmessage.h"
-//#include "repeateddoublemessage.h"
-//#include "repeatedfloatmessage.h"
-//#include "repeatedintmessage.h"
-//#include "repeatedsintmessage.h"
-//#include "repeateduintmessage.h"
-//#include "repeatedint64message.h"
-//#include "repeatedsint64message.h"
-//#include "repeateduint64message.h"
-//#include "repeatedfixedintmessage.h"
-//#include "repeatedsfixedintmessage.h"
-//#include "repeatedfixedint64message.h"
-//#include "repeatedsfixedint64message.h"
-//#include "simpleenummessage.h"
-//#include "simplebytesmessage.h"
-//#include "repeatedcomplexmessage.h"
-
-//#include "simplefixed32stringmapmessage.h"
-//#include "simplesfixed32stringmapmessage.h"
-//#include "simpleint32stringmapmessage.h"
-//#include "simplesint32stringmapmessage.h"
-//#include "simpleuint32stringmapmessage.h"
-
-//#include "simplefixed64stringmapmessage.h"
-//#include "simplesfixed64stringmapmessage.h"
-//#include "simpleint64stringmapmessage.h"
-//#include "simplesint64stringmapmessage.h"
-//#include "simpleuint64stringmapmessage.h"
-
-//#include "simplestringstringmapmessage.h"
-
-//#include "simplefixed32complexmessagemapmessage.h"
-//#include "simplesfixed32complexmessagemapmessage.h"
-//#include "simpleint32complexmessagemapmessage.h"
-//#include "simplesint32complexmessagemapmessage.h"
-//#include "simpleuint32complexmessagemapmessage.h"
-
-//#include "simplefixed64complexmessagemapmessage.h"
-//#include "simplesfixed64complexmessagemapmessage.h"
-//#include "simpleint64complexmessagemapmessage.h"
-//#include "simplesint64complexmessagemapmessage.h"
-//#include "simpleuint64complexmessagemapmessage.h"
-
-//#include "simplestringcomplexmessagemapmessage.h"
-
-//#include "fieldindextest1message.h"
-//#include "fieldindextest2message.h"
-//#include "fieldindextest3message.h"
-//#include "fieldindextest4message.h"
-
-//#include "simpleenumlistmessage.h"
+#include "qtprotobuf_global.pb.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf::tests;
@@ -98,64 +35,10 @@ using namespace QtProtobuf;
 void DeserializationTest::SetUpTestCase()
 {
     //Register all types
-    QtProtobuf::registerProtoTypes();
-    qRegisterProtobufType<SimpleIntMessage>();
-    qRegisterProtobufType<SimpleUIntMessage>();
-    qRegisterProtobufType<SimpleSIntMessage>();
-//    qRegisterProtobufType<SimpleInt64Message>();
-//    qRegisterProtobufType<SimpleUInt64Message>();
-//    qRegisterProtobufType<SimpleSInt64Message>();
-    qRegisterProtobufType<SimpleFixedInt32Message>();
-    qRegisterProtobufType<SimpleFixedInt64Message>();
-    qRegisterProtobufType<SimpleSFixedInt32Message>();
-    qRegisterProtobufType<SimpleSFixedInt64Message>();
-    qRegisterProtobufType<SimpleFloatMessage>();
-    qRegisterProtobufType<SimpleDoubleMessage>();
-    qRegisterProtobufType<SimpleStringMessage>();
-    qRegisterProtobufType<ComplexMessage>();
-    qRegisterProtobufType<RepeatedIntMessage>();
-    qRegisterProtobufType<RepeatedSIntMessage>();
-    qRegisterProtobufType<RepeatedUIntMessage>();
-    qRegisterProtobufType<RepeatedInt64Message>();
-    qRegisterProtobufType<RepeatedSInt64Message>();
-    qRegisterProtobufType<RepeatedUInt64Message>();
-    qRegisterProtobufType<RepeatedFixedIntMessage>();
-    qRegisterProtobufType<RepeatedSFixedIntMessage>();
-    qRegisterProtobufType<RepeatedFixedInt64Message>();
-    qRegisterProtobufType<RepeatedStringMessage>();
-    qRegisterProtobufType<RepeatedDoubleMessage>();
-    qRegisterProtobufType<RepeatedBytesMessage>();
-    qRegisterProtobufType<RepeatedFloatMessage>();
-    qRegisterProtobufType<RepeatedComplexMessage>();
-    qRegisterProtobufType<SimpleFixed32StringMapMessage>();
-    qRegisterProtobufType<SimpleSFixed32StringMapMessage>();
-    qRegisterProtobufType<SimpleInt32StringMapMessage>();
-    qRegisterProtobufType<SimpleSInt32StringMapMessage>();
-    qRegisterProtobufType<SimpleUInt32StringMapMessage>();
-    qRegisterProtobufType<SimpleFixed64StringMapMessage>();
-    qRegisterProtobufType<SimpleSFixed64StringMapMessage>();
-    qRegisterProtobufType<SimpleInt64StringMapMessage>();
-    qRegisterProtobufType<SimpleSInt64StringMapMessage>();
-    qRegisterProtobufType<SimpleUInt64StringMapMessage>();
-    qRegisterProtobufType<SimpleStringStringMapMessage>();
-    qRegisterProtobufType<FieldIndexTest1Message>();
-    qRegisterProtobufType<FieldIndexTest2Message>();
-    qRegisterProtobufType<FieldIndexTest3Message>();
-    qRegisterProtobufType<FieldIndexTest4Message>();
-    qRegisterProtobufType<SimpleEnumListMessage>();
-    qRegisterProtobufType<SimpleBytesMessage>();
-    qRegisterProtobufType<SimpleFixed32ComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleSFixed32ComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleInt32ComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleSInt32ComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleUInt32ComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleFixed64ComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleSFixed64ComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleInt64ComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleSInt64ComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleUInt64ComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleStringComplexMessageMapMessage>();
-    qRegisterProtobufType<SimpleEnumMessage>();
+    QtProtobuf::qRegisterProtobufTypes();
+    qtprotobufnamespace::tests::qRegisterProtobufTypes();
+    qtprotobufnamespace1::externaltests::qRegisterProtobufTypes();
+    qtprotobufnamespace::tests::globalenums::qRegisterProtobufTypes();
 }
 
 void DeserializationTest::SetUp()

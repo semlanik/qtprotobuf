@@ -252,3 +252,9 @@ const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string>
     {::google::protobuf::FieldDescriptor::TYPE_SINT32, "sint32"},
     {::google::protobuf::FieldDescriptor::TYPE_SINT64, "sint64"}     //Limited usage see https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html
 };
+
+const char *Templates::ProtoFileSuffix = ".pb";
+const char *Templates::GrpcFileSuffix = "_grpc";
+
+const std::string Templates::GlobalDeclarationsFilename = std::string("qtprotobuf_global");
+

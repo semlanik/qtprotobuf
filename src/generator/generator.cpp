@@ -47,6 +47,9 @@ using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 
+QtGenerator::QtGenerator() : GeneratorBase(GeneratorBase::MultiMode)
+{}
+
 bool QtGenerator::Generate(const FileDescriptor *file,
                            const std::string &parameter,
                            GeneratorContext *generatorContext,
@@ -137,6 +140,6 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
     enumSourceGen.printHeaders();
     enumSourceGen.run();
 
-    return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
+    return GeneratorBase::GenerateAll(files, parameter, generatorContext, error);
 }
 

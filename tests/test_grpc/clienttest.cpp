@@ -24,11 +24,11 @@
  */
 
 #include "testservice_grpc.pb.h"
+#include "qtprotobuf_global.pb.h"
 
-//#include "testserviceclient.h"
 #include "qgrpchttp2channel.h"
 #include "insecurecredentials.h"
-//#include "blobmessage.h"
+
 #include <sslcredentials.h>
 
 #include <QTimer>
@@ -48,7 +48,7 @@ class ClientTest : public ::testing::Test
 {
 protected:
     static void SetUpTestCase() {
-        QtProtobuf::registerProtoTypes();
+        QtProtobuf::qRegisterProtobufTypes();
         qRegisterProtobufType<SimpleStringMessage>();
     }
     static QCoreApplication m_app;

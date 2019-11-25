@@ -27,9 +27,6 @@
 
 #include <QObject>
 #include "addressbook.pb.h"
-//#include "contacts.h"
-//#include "callstatus.h"
-
 
 #include "universallistmodel.h"
 

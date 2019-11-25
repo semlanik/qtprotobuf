@@ -23,20 +23,46 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <QtQuickTest/quicktest.h>
+#pragma once
 
-#include "simpletest.pb.h"
-#include "qtprotobuf_global.pb.h"
+#include <google/protobuf/compiler/code_generator.h>
+#include <google/protobuf/io/zero_copy_stream.h>
+#include <string>
+#include <memory>
+#include <functional>
 
-using namespace qtprotobufnamespace::tests;
+namespace google { namespace protobuf {
+class FileDescriptor;
+class Descriptor;
+namespace compiler {
+class GeneratorContext;
+}}}
 
-class TestSetup : public QObject {
+namespace QtProtobuf {
+namespace generator {
+
+class GeneratorBase: public ::google::protobuf::compiler::CodeGenerator
+{
 public:
-    TestSetup() {
-        QtProtobuf::qRegisterProtobufTypes();
-        qtprotobufnamespace::tests::qRegisterProtobufTypes();
-    }
-    ~TestSetup() = default;
+    enum Mode {
+        SingleMode = 0,
+        MultiMode,
+    };
+    GeneratorBase(Mode mode);
+    virtual ~GeneratorBase() = default;
+
+    virtual bool GenerateAll(const std::vector<const ::google::protobuf::FileDescriptor *> &files,
+                             const std::string &parameter,
+                             ::google::protobuf::compiler::GeneratorContext *generatorContext,
+                             std::string *error) const override;
+    bool HasGenerateAll() const override { return true; }
+
+protected:
+    void iterateNonNestedFileds(const ::google::protobuf::FileDescriptor *file, std::function<void(const ::google::protobuf::Descriptor *)> callback) const;
+
+private:
+    Mode m_mode;
 };
 
-QUICK_TEST_MAIN_WITH_SETUP(qtprotobuf_qml_test, TestSetup)
+}
+}

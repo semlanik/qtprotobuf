@@ -43,13 +43,12 @@
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/descriptor.h>
 
-static const char *protoFileSuffix = ".pb";
-static const char *grpcFileSuffix = "_grpc";
-static const std::string globalDeclarationsFilename = std::string("globaldeclarations") + protoFileSuffix;
-
 using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
+
+SingleFileGenerator::SingleFileGenerator() : GeneratorBase(GeneratorBase::SingleMode)
+{}
 
 bool SingleFileGenerator::Generate(const FileDescriptor *file,
                                    const std::string &parameter,
@@ -65,74 +64,6 @@ bool SingleFileGenerator::Generate(const FileDescriptor *file,
             && GenerateServices(file, parameter, generatorContext, error);
 }
 
-bool SingleFileGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, const string &parameter, GeneratorContext *generatorContext, string *error) const
-{
-    PackagesList packageList;
-    for (auto file : files) {
-        packageList[file->package()].push_back(file);
-    }
-
-    std::shared_ptr<io::ZeroCopyOutputStream> outfHeader(generatorContext->Open(globalDeclarationsFilename + ".h"));
-    std::shared_ptr<::google::protobuf::io::Printer> outfHeaderPrinter(new ::google::protobuf::io::Printer(outfHeader.get(), '$'));
-
-    outfHeaderPrinter->Print(Templates::DisclaimerTemplate);
-    outfHeaderPrinter->Print(Templates::PreambleTemplate);
-    outfHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
-
-    for (auto file : files) {
-        if (file->message_type_count() > 0) {
-            outfHeaderPrinter->Print({{"include", utils::extractFileName(file->name()) + protoFileSuffix}}, Templates::InternalIncludeTemplate);
-        }
-    }
-
-    for (auto package : packageList) {
-        std::vector<std::string> namespaces;
-        utils::split(package.first, namespaces, '.');
-        for (auto ns : namespaces) {
-            outfHeaderPrinter->Print({{"namespace", ns}}, Templates::NamespaceTemplate);
-        }
-        outfHeaderPrinter->Print("inline void qRegisterProtobufTypes() {\n");
-        outfHeaderPrinter->Indent();
-        outfHeaderPrinter->Indent();
-        for (auto file : package.second) {
-            iterateNonNestedFileds(file, [&outfHeaderPrinter](const ::google::protobuf::Descriptor *message){
-                outfHeaderPrinter->Print({{"classname", message->name()}}, "qRegisterProtobufType<$classname$>();\n");
-            });
-        }
-        outfHeaderPrinter->Outdent();
-        outfHeaderPrinter->Outdent();
-        outfHeaderPrinter->Print("}\n");
-        for (size_t i = 0; i < namespaces.size(); i++) {
-            outfHeaderPrinter->Print("}\n");
-        }
-    }
-
-    return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
-}
-
-void SingleFileGenerator::iterateNonNestedFileds(const ::google::protobuf::FileDescriptor *file, std::function<void(const ::google::protobuf::Descriptor *)> callback) const
-{
-    for (int i = 0; i < file->message_type_count(); i++) {
-        const Descriptor *message = file->message_type(i);
-
-        //Detect nested fields and filter maps fields
-        int mapsFieldsCount = 0;
-        for (int j = 0; j < message->nested_type_count(); j++) {
-            for (int k = 0; k < message->field_count(); k++) {
-                if (message->field(k)->is_map() && message->field(k)->message_type() == message->nested_type(j)) {
-                    ++mapsFieldsCount;
-                }
-            }
-        }
-
-        if (message->nested_type_count() > 0 && message->nested_type_count() > mapsFieldsCount) {
-            std::cerr << file->name() << ":" << (message->index() + 1) << ": " << " Error: Meta object features not supported for nested classes in " << message->full_name() << std::endl;
-            continue;
-        }
-        callback(message);
-    }
-}
-
 bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescriptor *file,
                                            const std::string &,
                                            ::google::protobuf::compiler::GeneratorContext *generatorContext,
@@ -144,8 +75,8 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     std::string outFileBasename = utils::extractFileName(file->name());
     std::set<std::string> internalIncludes;
     std::set<std::string> externalIncludes;
-    std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + protoFileSuffix + ".h"));
-    std::shared_ptr<io::ZeroCopyOutputStream> outSource(generatorContext->Open(outFileBasename + protoFileSuffix + ".cpp"));
+    std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + Templates::ProtoFileSuffix + ".h"));
+    std::shared_ptr<io::ZeroCopyOutputStream> outSource(generatorContext->Open(outFileBasename + Templates::ProtoFileSuffix + ".cpp"));
     std::shared_ptr<::google::protobuf::io::Printer> outHeaderPrinter(new ::google::protobuf::io::Printer(outHeader.get(), '$'));
     std::shared_ptr<::google::protobuf::io::Printer> outSourcePrinter(new ::google::protobuf::io::Printer(outSource.get(), '$'));
 
@@ -155,13 +86,13 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     outHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
 
     outSourcePrinter->Print(Templates::DisclaimerTemplate);
-    outSourcePrinter->Print({{"include", outFileBasename + protoFileSuffix}}, Templates::InternalIncludeTemplate);
+    outSourcePrinter->Print({{"include", outFileBasename + Templates::ProtoFileSuffix}}, Templates::InternalIncludeTemplate);
 
     externalIncludes.insert("QByteArray");
     externalIncludes.insert("QString");
 
     for (int i = 0; i < file->dependency_count(); i++) {
-        internalIncludes.insert(utils::extractFileName(file->dependency(i)->name()) + protoFileSuffix);
+        internalIncludes.insert(utils::extractFileName(file->dependency(i)->name()) + Templates::ProtoFileSuffix);
     }
 
     for(auto include : externalIncludes) {
@@ -250,8 +181,8 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
     std::string outFileBasename = utils::extractFileName(file->name());
     std::set<std::string> internalIncludes;
     std::set<std::string> externalIncludes;
-    std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + grpcFileSuffix + protoFileSuffix + ".h"));
-    std::shared_ptr<io::ZeroCopyOutputStream> outSource(generatorContext->Open(outFileBasename + grpcFileSuffix + protoFileSuffix + ".cpp"));
+    std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix + ".h"));
+    std::shared_ptr<io::ZeroCopyOutputStream> outSource(generatorContext->Open(outFileBasename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix + ".cpp"));
     std::shared_ptr<::google::protobuf::io::Printer> outHeaderPrinter(new ::google::protobuf::io::Printer(outHeader.get(), '$'));
     std::shared_ptr<::google::protobuf::io::Printer> outSourcePrinter(new ::google::protobuf::io::Printer(outSource.get(), '$'));
 
@@ -260,18 +191,18 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
     outHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
 
     outSourcePrinter->Print(Templates::DisclaimerTemplate);
-    outSourcePrinter->Print({{"include", outFileBasename + grpcFileSuffix + protoFileSuffix}}, Templates::InternalIncludeTemplate);
+    outSourcePrinter->Print({{"include", outFileBasename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix}}, Templates::InternalIncludeTemplate);
 
     for (int i = 0; i < file->service_count(); i++) {
         const ServiceDescriptor *service = file->service(i);
         for (int i = 0; i < service->method_count(); i++) {
             const MethodDescriptor *method = service->method(i);
             if (method->input_type()->file() != service->file()) {
-                internalIncludes.insert(utils::extractFileName(method->input_type()->file()->name()) + protoFileSuffix);
+                internalIncludes.insert(utils::extractFileName(method->input_type()->file()->name()) + Templates::ProtoFileSuffix);
             }
 
             if (method->output_type()->file() != service->file()) {
-                internalIncludes.insert(utils::extractFileName(method->output_type()->file()->name()) + protoFileSuffix);
+                internalIncludes.insert(utils::extractFileName(method->output_type()->file()->name()) + Templates::ProtoFileSuffix);
             }
         }
     }
@@ -280,9 +211,8 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
     externalIncludes.insert("QAbstractGrpcClient");
     externalIncludes.insert("QGrpcAsyncReply");
 
-    internalIncludes.insert(globalDeclarationsFilename);
     if (file->message_type_count() > 0) {
-        internalIncludes.insert(outFileBasename + protoFileSuffix);
+        internalIncludes.insert(outFileBasename + Templates::ProtoFileSuffix);
     }
     for(auto include : externalIncludes) {
         outHeaderPrinter->Print({{"include", include}}, Templates::ExternalIncludeTemplate);

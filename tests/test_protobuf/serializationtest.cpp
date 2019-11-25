@@ -26,58 +26,7 @@
 #include "serializationtest.h"
 
 #include "simpletest.pb.h"
-//#include "simpleintmessage.h"
-//#include "simpleuintmessage.h"
-//#include "simplesintmessage.h"
-//#include "simpleint64message.h"
-//#include "simpleuint64message.h"
-//#include "simplesint64message.h"
-//#include "simplefixedint32message.h"
-//#include "simplefixedint64message.h"
-//#include "simplesfixedint32message.h"
-//#include "simplesfixedint64message.h"
-//#include "simplefloatmessage.h"
-//#include "simpledoublemessage.h"
-//#include "simplestringmessage.h"
-//#include "complexmessage.h"
-//#include "repeatedintmessage.h"
-//#include "repeatedsintmessage.h"
-//#include "repeateduintmessage.h"
-//#include "repeatedint64message.h"
-//#include "repeatedsint64message.h"
-//#include "repeateduint64message.h"
-//#include "repeatedfixedintmessage.h"
-//#include "repeatedsfixedintmessage.h"
-//#include "repeatedfixedint64message.h"
-//#include "repeatedsfixedint64message.h"
-//#include "repeatedstringmessage.h"
-//#include "repeateddoublemessage.h"
-//#include "repeatedbytesmessage.h"
-//#include "repeatedfloatmessage.h"
-//#include "repeatedcomplexmessage.h"
-//#include "simpleboolmessage.h"
-//#include "simpleenummessage.h"
-
-//#include "simplefixed32stringmapmessage.h"
-//#include "simplesfixed32stringmapmessage.h"
-//#include "simpleint32stringmapmessage.h"
-//#include "simplesint32stringmapmessage.h"
-//#include "simpleuint32stringmapmessage.h"
-
-//#include "simplefixed64stringmapmessage.h"
-//#include "simplesfixed64stringmapmessage.h"
-//#include "simpleint64stringmapmessage.h"
-//#include "simplesint64stringmapmessage.h"
-//#include "simpleuint64stringmapmessage.h"
-
-//#include "simplestringstringmapmessage.h"
-
-//#include "fieldindextest1message.h"
-//#include "fieldindextest2message.h"
-//#include "fieldindextest3message.h"
-//#include "fieldindextest4message.h"
-//#include "simpleenumlistmessage.h"
-//#include "simplebytesmessage.h"
+#include "qtprotobuf_global.pb.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf::tests;
@@ -87,53 +36,10 @@ using namespace QtProtobuf;
 void SerializationTest::SetUpTestCase()
 {
     //Register all types
-    QtProtobuf::registerProtoTypes();
-    qRegisterProtobufType<SimpleIntMessage>();
-    qRegisterProtobufType<SimpleUIntMessage>();
-    qRegisterProtobufType<SimpleSIntMessage>();
-    qRegisterProtobufType<SimpleInt64Message>();
-    qRegisterProtobufType<SimpleUInt64Message>();
-    qRegisterProtobufType<SimpleSInt64Message>();
-    qRegisterProtobufType<SimpleFixedInt32Message>();
-    qRegisterProtobufType<SimpleFixedInt64Message>();
-    qRegisterProtobufType<SimpleSFixedInt32Message>();
-    qRegisterProtobufType<SimpleSFixedInt64Message>();
-    qRegisterProtobufType<SimpleFloatMessage>();
-    qRegisterProtobufType<SimpleDoubleMessage>();
-    qRegisterProtobufType<SimpleStringMessage>();
-    qRegisterProtobufType<ComplexMessage>();
-    qRegisterProtobufType<RepeatedIntMessage>();
-    qRegisterProtobufType<RepeatedSIntMessage>();
-    qRegisterProtobufType<RepeatedUIntMessage>();
-    qRegisterProtobufType<RepeatedInt64Message>();
-    qRegisterProtobufType<RepeatedSInt64Message>();
-    qRegisterProtobufType<RepeatedUInt64Message>();
-    qRegisterProtobufType<RepeatedFixedIntMessage>();
-    qRegisterProtobufType<RepeatedSFixedIntMessage>();
-    qRegisterProtobufType<RepeatedFixedInt64Message>();
-    qRegisterProtobufType<RepeatedStringMessage>();
-    qRegisterProtobufType<RepeatedDoubleMessage>();
-    qRegisterProtobufType<RepeatedBytesMessage>();
-    qRegisterProtobufType<RepeatedFloatMessage>();
-    qRegisterProtobufType<RepeatedComplexMessage>();
-    qRegisterProtobufType<SimpleFixed32StringMapMessage>();
-    qRegisterProtobufType<SimpleSFixed32StringMapMessage>();
-    qRegisterProtobufType<SimpleInt32StringMapMessage>();
-    qRegisterProtobufType<SimpleSInt32StringMapMessage>();
-    qRegisterProtobufType<SimpleUInt32StringMapMessage>();
-    qRegisterProtobufType<SimpleFixed64StringMapMessage>();
-    qRegisterProtobufType<SimpleSFixed64StringMapMessage>();
-    qRegisterProtobufType<SimpleInt64StringMapMessage>();
-    qRegisterProtobufType<SimpleSInt64StringMapMessage>();
-    qRegisterProtobufType<SimpleUInt64StringMapMessage>();
-    qRegisterProtobufType<SimpleStringStringMapMessage>();
-    qRegisterProtobufType<FieldIndexTest1Message>();
-    qRegisterProtobufType<FieldIndexTest2Message>();
-    qRegisterProtobufType<FieldIndexTest3Message>();
-    qRegisterProtobufType<FieldIndexTest4Message>();
-    qRegisterProtobufType<SimpleEnumListMessage>();
-    qRegisterProtobufType<SimpleBytesMessage>();
-    qRegisterProtobufType<SimpleEnumMessage>();
+    QtProtobuf::qRegisterProtobufTypes();
+    qtprotobufnamespace::tests::qRegisterProtobufTypes();
+    qtprotobufnamespace1::externaltests::qRegisterProtobufTypes();
+    qtprotobufnamespace::tests::globalenums::qRegisterProtobufTypes();
 }
 
 void SerializationTest::SetUp()

@@ -30,10 +30,8 @@
 #include <QQmlContext>
 
 #include "simplechat.pb.h"
+#include "qtprotobuf_global.pb.h"
 
-//#include <chatmessage.h>
-//#include <user.h>
-//#include <chatmessages.h>
 #include "simplechatengine.h"
 
 #include <QMetaProperty>
@@ -44,7 +42,9 @@ using namespace qtprotobuf::examples;
 
 int main(int argc, char *argv[])
 {
-    QtProtobuf::registerProtoTypes();
+    QtProtobuf::qRegisterProtobufTypes();
+    qtprotobuf::examples::qRegisterProtobufTypes();
+
     QGuiApplication app(argc, argv);
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

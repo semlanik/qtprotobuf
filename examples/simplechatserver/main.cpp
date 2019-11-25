@@ -62,11 +62,12 @@ public:
     }
 
     std::tuple<std::string, std::string> extractCredentials(grpc::ServerContext *context) {
-        std::string name{};
-        std::string password{};
+        std::string name{""};
+        std::string password{""};
         for (auto it = context->client_metadata().begin(); it != context->client_metadata().end(); ++it) {
             if ((*it).first == std::string("user-name")) {
                 name = std::string((*it).second.data());
+                name.resize(5);
             }
             if ((*it).first == std::string("user-password")) {
                 password = std::string((*it).second.data());
@@ -78,8 +79,8 @@ public:
 
     ::grpc::Status sendMessage(grpc::ServerContext *context, const ChatMessage *request, None *) override
     {
-        std::string name{};
-        std::string password{};
+        std::string name{""};
+        std::string password{""};
         std::tie(name, password) = extractCredentials(context);
         if (!checkUserCredentials(name, password)) {
             return ::grpc::Status(::grpc::StatusCode::UNAUTHENTICATED, "User or login are invalid");
@@ -149,8 +150,8 @@ int main(int argc, char *argv[])
             continue;
         }
         if ((*tag) == 0xdeadbeef) {
-            std::string name{};
-            std::string password{};
+            std::string name{""};
+            std::string password{""};
             std::tie(name, password) = service.extractCredentials(&(last->ctx_));
             if (!service.checkUserCredentials(name, password)) {
                 std::cout << "Authentication failed" << std::endl;

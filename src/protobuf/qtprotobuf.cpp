@@ -82,7 +82,7 @@ void registerBasicConverters() {
 
 }
 
-void registerProtoTypes() {
+void qRegisterProtobufTypes() {
     static bool registred = false;
     if (registred) {
         return;

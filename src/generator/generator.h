@@ -30,6 +30,8 @@
 #include <string>
 #include <memory>
 
+#include "generatorbase.h"
+
 namespace google { namespace protobuf {
 class FileDescriptor;
 namespace compiler {
@@ -39,8 +41,10 @@ class GeneratorContext;
 namespace QtProtobuf {
 namespace generator {
 
-class QtGenerator : public ::google::protobuf::compiler::CodeGenerator
+class QtGenerator : public GeneratorBase
 {
+public:
+    QtGenerator();
     bool Generate(const ::google::protobuf::FileDescriptor *file,
                           const std::string &parameter,
                           ::google::protobuf::compiler::GeneratorContext *generatorContext,
@@ -50,7 +54,6 @@ class QtGenerator : public ::google::protobuf::compiler::CodeGenerator
                              const std::string &parameter,
                              ::google::protobuf::compiler::GeneratorContext *generatorContext,
                              std::string *error) const override;
-    bool HasGenerateAll() const override { return true; }
 };
 
 } //namespace generator

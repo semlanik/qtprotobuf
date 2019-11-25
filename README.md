@@ -130,12 +130,14 @@ To enable QtProtobuf project you need to register protobuf types. It's good prac
 ...
 int main(int argc, char *argv[])
 {
-    QtProtobuf::registerProtoTypes();
+    QtProtobuf::qRegisterProtobufTypes();
     ... //Qt application initialization and run
 }
 ```
 
 **For each generated class you also need to call 'qRegisterProtobufType&lt;GeneratedClassName&gt;' to enable serialization and QML support**
+
+**Other option is to include common "qtprotobuf_global.pb.h" file and call apptopriate qRegisterProtobufTypes() method for you package**
 
 ## CMake functions reference
 
@@ -156,6 +158,10 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 *EXCLUDE_HEADERS* - List of header files to be excluded from pre-parsed list of expected header files (e.g. nested messages that are not supported by QtProtobuf generator)
 
 *PROTO_FILES* - List of .proto files that will be used in generation procedure
+
+*MULTI* - Enabled/disabled multi-files generation mode. In case if this property is set to TRUE generator will create pair of header/source files for each message
+
+**Note:** multi-files generation mode is defined as deprecated by QtProtobuf team, and might have poor support in future
 
 **Outcome:**
 

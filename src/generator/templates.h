@@ -137,8 +137,11 @@ public:
     static const char *ClientMethodServerStream2DefinitionTemplate;
 
     static const char *ListSuffix;
+    static const char *ProtoFileSuffix;
+    static const char *GrpcFileSuffix;
 
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
+    static const std::string GlobalDeclarationsFilename;
 };
 
 } //namespace generator

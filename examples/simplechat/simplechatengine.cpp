@@ -56,9 +56,6 @@ public:
 SimpleChatEngine::SimpleChatEngine(QObject *parent) : QObject(parent), m_client(new SimpleChatClient)
   , m_clipBoard(QGuiApplication::clipboard())
 {
-    qRegisterProtobufType<ChatMessage>();
-    qRegisterProtobufType<ChatMessages>();
-
     if (m_clipBoard) {
         connect(m_clipBoard, &QClipboard::dataChanged, this, &SimpleChatEngine::clipBoardContentTypeChanged);
     }
