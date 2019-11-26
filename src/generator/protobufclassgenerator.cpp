@@ -57,7 +57,12 @@ void ProtobufClassGenerator::printCopyFunctionality()
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage->field(i), Templates::CopyFieldTemplate);
+        auto field = mMessage->field(i);
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+            printField(field, Templates::CopyComplexFieldTemplate);
+        } else {
+            printField(field, Templates::CopyFieldTemplate);
+        }
     }
     Outdent();
 
@@ -67,7 +72,12 @@ void ProtobufClassGenerator::printCopyFunctionality()
 
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage->field(i), Templates::CopyFieldTemplate);
+        auto field = mMessage->field(i);
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+            printField(field, Templates::CopyComplexFieldTemplate);
+        } else {
+            printField(field, Templates::CopyFieldTemplate);
+        }
     }
     mPrinter->Print(Templates::AssignmentOperatorReturnTemplate);
     Outdent();
@@ -85,7 +95,11 @@ void ProtobufClassGenerator::printMoveSemantic()
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         if (isComplexType(field) || field->is_repeated()) {
-            printField(field, Templates::MoveComplexFieldTemplate);
+            if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+                printField(field, Templates::MoveMessageFieldTemplate);
+            } else {
+                printField(field, Templates::MoveComplexFieldTemplate);
+            }
         } else {
             if (field->type() != FieldDescriptor::TYPE_ENUM) {
                 printField(field, Templates::MoveFieldTemplate);
@@ -105,7 +119,11 @@ void ProtobufClassGenerator::printMoveSemantic()
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         if (isComplexType(field) || field->is_repeated()) {
-            printField(field, Templates::MoveComplexFieldTemplate);
+            if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+                printField(field, Templates::MoveMessageFieldTemplate);
+            } else {
+                printField(field, Templates::MoveComplexFieldTemplate);
+            }
         } else {
             if (field->type() != FieldDescriptor::TYPE_ENUM) {
                 printField(field, Templates::MoveFieldTemplate);
@@ -140,7 +158,12 @@ void ProtobufClassGenerator::printComparisonOperators()
                 Indent();
                 isFirst = false;
             }
-            mPrinter->Print(properties, Templates::EqualOperatorPropertyTemplate);
+            if (field->type() == FieldDescriptor::TYPE_MESSAGE
+                    && !field->is_map() && !field->is_repeated()) {
+                mPrinter->Print(properties, Templates::EqualOperatorMessagePropertyTemplate);
+            } else {
+                mPrinter->Print(properties, Templates::EqualOperatorPropertyTemplate);
+            }
         }
     }
 
@@ -424,12 +447,12 @@ void ProtobufClassGenerator::printProperties()
 
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
-            if (!field->is_map() && !field->is_repeated()) {
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+                printField(field, Templates::GetterPrivateMessageTemplate);
                 printField(field, Templates::GetterMessageTemplate);
-            }
+        } else {
+            printField(field, Templates::GetterTemplate);
         }
-        printField(field, Templates::GetterTemplate);
         if (field->is_repeated()) {
             printField(field, Templates::GetterContainerExtraTemplate);
             if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map()
@@ -443,9 +466,11 @@ void ProtobufClassGenerator::printProperties()
         switch (field->type()) {
         case FieldDescriptor::TYPE_MESSAGE:
             if (!field->is_map() && !field->is_repeated()) {
+                printField(field, Templates::SetterPrivateTemplateMessageType);
                 printField(field, Templates::SetterTemplateMessageType);
+            } else {
+                printField(field, Templates::SetterTemplateComplexType);
             }
-            printField(field, Templates::SetterTemplateComplexType);
             break;
         case FieldDescriptor::FieldDescriptor::TYPE_STRING:
         case FieldDescriptor::FieldDescriptor::TYPE_BYTES:
@@ -481,7 +506,12 @@ void ProtobufClassGenerator::printClassMembers()
 {
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage->field(i), Templates::MemberTemplate);
+        auto field = mMessage->field(i);
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+            printField(field, Templates::ComplexMemberTemplate);
+        } else {
+            printField(field, Templates::MemberTemplate);
+        }
     }
     Outdent();
 }

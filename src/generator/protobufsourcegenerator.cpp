@@ -158,8 +158,15 @@ void ProtobufSourceGenerator::printConstructor()
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         std::string fieldName = field->name();
+        auto fieldTypeName = getTypeName(field, mMessage);
         fieldName[0] =  static_cast<char>(::tolower(fieldName[0]));
-        mPrinter->Print({{"property_name", fieldName}}, Templates::PropertyInitializerTemplate);
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE
+                && !field->is_map() && !field->is_repeated()) {
+            mPrinter->Print({{"property_name", fieldName}, {"type", fieldTypeName}}, Templates::MessagePropertyInitializerTemplate);
+        } else {
+            mPrinter->Print({{"property_name", fieldName}}, Templates::PropertyInitializerTemplate);
+        }
+
     }
     mPrinter->Print(Templates::ConstructorContentTemplate);
 }

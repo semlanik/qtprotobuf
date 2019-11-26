@@ -64,6 +64,7 @@ public:
     static const char *QmlListPropertyTemplate;
     static const char *QmlListGetterTemplate;
     static const char *MemberTemplate;
+    static const char *ComplexMemberTemplate;
     static const char *EnumMemberTemplate;
     static const char *PublicBlockTemplate;
     static const char *PrivateBlockTemplate;
@@ -78,6 +79,8 @@ public:
     static const char *DeletedCopyConstructorTemplate;
     static const char *DeletedMoveConstructorTemplate;
     static const char *CopyFieldTemplate;
+    static const char *CopyComplexFieldTemplate;
+    static const char *MoveMessageFieldTemplate;
     static const char *MoveComplexFieldTemplate;
     static const char *MoveFieldTemplate;
     static const char *EnumMoveFieldTemplate;
@@ -86,12 +89,15 @@ public:
     static const char *MoveAssignmentOperatorTemplate;
     static const char *EqualOperatorTemplate;
     static const char *EqualOperatorPropertyTemplate;
+    static const char *EqualOperatorMessagePropertyTemplate;
     static const char *NotEqualOperatorTemplate;
     static const char *GetterTemplate;
     static const char *GetterContainerExtraTemplate;
+    static const char *GetterPrivateMessageTemplate;
     static const char *GetterMessageTemplate;
     static const char *SetterTemplateSimpleType;
     static const char *SetterTemplateComplexType;
+    static const char *SetterPrivateTemplateMessageType;
     static const char *SetterTemplateMessageType;
     static const char *SignalsBlockTemplate;
     static const char *SignalTemplate;
@@ -102,6 +108,7 @@ public:
     static const char *SemicolonBlockEnclosureTemplate;
     static const char *EmptyBlockTemplate;
     static const char *PropertyInitializerTemplate;
+    static const char *MessagePropertyInitializerTemplate;
     static const char *ConstructorContentTemplate;
     static const char *DeclareMetaTypeTemplate;
     static const char *DeclareMetaTypeListTemplate;

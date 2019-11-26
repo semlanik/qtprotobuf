@@ -81,6 +81,7 @@ const char *Templates::MessagePropertyTemplate = "Q_PROPERTY($type$ *$property_n
 const char *Templates::QmlListPropertyTemplate = "Q_PROPERTY(QQmlListProperty<$type_nolist$> $property_name$Data READ $property_name$_l NOTIFY $property_name$Changed)\n";
 
 const char *Templates::MemberTemplate = "$type$ m_$property_name$;\n";
+const char *Templates::ComplexMemberTemplate = "$type$ *m_$property_name$;\n";
 const char *Templates::EnumMemberTemplate = "::$type$ m_$property_name$;\n";
 const char *Templates::PublicBlockTemplate = "\npublic:\n";
 const char *Templates::PrivateBlockTemplate = "\nprivate:\n";
@@ -96,6 +97,8 @@ const char *Templates::MoveConstructorTemplate = "$classname$($classname$ &&othe
 const char *Templates::DeletedCopyConstructorTemplate = "$classname$(const $classname$ &) = delete;\n";
 const char *Templates::DeletedMoveConstructorTemplate = "$classname$($classname$ &&) = delete;\n";
 const char *Templates::CopyFieldTemplate = "set$property_name_cap$(other.m_$property_name$);\n";
+const char *Templates::CopyComplexFieldTemplate = "set$property_name_cap$(*other.m_$property_name$);\n";
+const char *Templates::MoveMessageFieldTemplate = "*m_$property_name$ = std::move(*other.m_$property_name$);\n";
 const char *Templates::MoveComplexFieldTemplate = "m_$property_name$ = std::move(other.m_$property_name$);\n";
 const char *Templates::MoveFieldTemplate = "set$property_name_cap$(std::exchange(other.m_$property_name$, 0));\n"
                                            "other.$property_name$Changed();\n";
@@ -106,12 +109,17 @@ const char *Templates::MoveAssignmentOperatorTemplate = "$classname$ &operator =
 const char *Templates::EqualOperatorTemplate = "bool operator ==(const $type$ &other) const {\n"
                                                "    return ";
 const char *Templates::EqualOperatorPropertyTemplate = "m_$property_name$ == other.m_$property_name$";
+const char *Templates::EqualOperatorMessagePropertyTemplate = "*m_$property_name$ == *other.m_$property_name$";
 const char *Templates::NotEqualOperatorTemplate = "bool operator !=(const $type$ &other) const {\n"
                                                   "    return !this->operator ==(other);\n"
                                                   "}\n\n";
 
-const char *Templates::GetterMessageTemplate = "$type$ *$property_name$_p() const {\n" //formally const...
-                                        "    return const_cast<$type$*>(&m_$property_name$);\n"
+const char *Templates::GetterPrivateMessageTemplate = "$type$ *$property_name$_p() const {\n"
+                                        "    return m_$property_name$;\n"
+                                        "}\n\n";
+
+const char *Templates::GetterMessageTemplate = "$type$ $property_name$() const {\n"
+                                        "    return *m_$property_name$;\n"
                                         "}\n\n";
 
 const char *Templates::GetterTemplate = "$type$ $property_name$() const {\n"
@@ -126,17 +134,24 @@ const char *Templates::QmlListGetterTemplate = "QQmlListProperty<$type_nolist$> 
                                                "    return QtProtobuf::constructQmlListProperty<$type_nolist$>(this, &m_$property_name$);\n"
                                                "}\n\n";
 
-const char *Templates::SetterTemplateMessageType = "void set$property_name_cap$_p($type$ *$property_name$) {\n"
+const char *Templates::SetterPrivateTemplateMessageType = "void set$property_name_cap$_p($type$ *$property_name$) {\n"
                                                    "    if ($property_name$ == nullptr) {\n"
-                                                   "        m_$property_name$ = {};\n"
+                                                   "        *m_$property_name$ = {};\n"
                                                    "        return;\n"
                                                    "    }\n"
-                                                   "    if (m_$property_name$ != *$property_name$) {\n"
-                                                   "        m_$property_name$ = *$property_name$;\n"
+                                                   "    if (*m_$property_name$ != *$property_name$) {\n"
+                                                   "        *m_$property_name$ = *$property_name$;\n"
                                                    "        $property_name$Changed();\n"
                                                    "    }\n"
                                                    "    //NOTE: take ownership of value\n"
                                                    "    delete $property_name$;\n"
+                                                   "}\n\n";
+
+const char *Templates::SetterTemplateMessageType = "void set$property_name_cap$(const $type$ &$property_name$) {\n"
+                                                   "    if (*m_$property_name$ != $property_name$) {\n"
+                                                   "        *m_$property_name$ = $property_name$;\n"
+                                                   "        $property_name$Changed();\n"
+                                                   "    }\n"
                                                    "}\n\n";
 
 const char *Templates::SetterTemplateComplexType = "void set$property_name_cap$(const $type$ &$property_name$) {\n"
@@ -166,6 +181,7 @@ const char *Templates::SimpleBlockEnclosureTemplate = "}\n\n";
 const char *Templates::SemicolonBlockEnclosureTemplate = "};\n";
 const char *Templates::EmptyBlockTemplate = "{}\n\n";
 const char *Templates::PropertyInitializerTemplate = "\n    , m_$property_name$($property_name$)";
+const char *Templates::MessagePropertyInitializerTemplate = "\n    , m_$property_name$(new $type$($property_name$))";
 const char *Templates::ConstructorContentTemplate = "\n{\n}\n";
 
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$)\n";

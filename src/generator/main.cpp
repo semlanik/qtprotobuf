@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
         GeneratorOptions::instance().parseFromEnv(optionsPtr);
     }
     if (GeneratorOptions::instance().isMulti()) {
-        std::cerr << "Run multi generator" << std::endl;
         QtProtobuf::generator::QtGenerator generator;
         return ::google::protobuf::compiler::PluginMain(argc, argv, &generator);
     }
