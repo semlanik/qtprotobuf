@@ -136,7 +136,6 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
     GlobalEnumsSourceGenerator enumSourceGen(packageList,
                                              std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".cpp")));
     enumSourceGen.printDisclaimer();
-    enumSourceGen.printPreamble();
     enumSourceGen.printHeaders();
     enumSourceGen.run();
 
