@@ -408,3 +408,11 @@ void ProtobufSourceGenerator::printDestructor()
     mPrinter->Print({{"classname", mClassName}}, "$classname$::~$classname$()\n"
                                                  "{}\n\n");
 }
+
+void ProtobufSourceGenerator::printIncludes()
+{
+    std::set<std::string> existingIncludes;
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        printInclude(mMessage, mMessage->field(i), existingIncludes);
+    }
+}

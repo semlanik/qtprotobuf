@@ -159,7 +159,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         classGen.encloseNamespaces();
         classGen.printMetaTypeDeclaration();
         classGen.printMapsMetaTypesDeclaration();
-        classGen.printLocalEmumsMetaTypesDeclaration();
+        classGen.printLocalEnumsMetaTypesDeclaration();
 
         ProtobufSourceGenerator srcGen(message,
                                        outSourcePrinter);

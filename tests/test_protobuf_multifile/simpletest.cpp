@@ -72,6 +72,8 @@
 #include "combinedmessageunderscorefield.h"
 #include "testmessagesequence.h"
 #include "testmessagesequence2.h"
+#include "cyclingseconddependency.h"
+#include "cyclingfirstdependency.h"
 
 #include "globalenums.h"
 

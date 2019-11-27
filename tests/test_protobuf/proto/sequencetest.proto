@@ -10,3 +10,10 @@ message TestMessageSequence2 {
     bool testField = 1;
 }
 
+message CyclingSecondDependency {
+    CyclingFirstDependency testField = 1;
+}
+
+message CyclingFirstDependency {
+    CyclingSecondDependency testField = 1;
+}

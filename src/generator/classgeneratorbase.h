@@ -76,6 +76,7 @@ public:
     void printMetaTypeDeclaration();
     void encloseNamespaces();
     void encloseNamespaces(int count);
+    void printInclude(const google::protobuf::Descriptor *message, const google::protobuf::FieldDescriptor *field, std::set<std::string> &existingIncludes);
     bool hasGlobalEnum(const std::list<const ::google::protobuf::FileDescriptor *> &list);
     void printField(const google::protobuf::Descriptor *message, const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
     bool producePropertyMap(const google::protobuf::Descriptor *message, const ::google::protobuf::FieldDescriptor *field, PropertyMap &propertyMap);

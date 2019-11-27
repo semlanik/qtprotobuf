@@ -89,63 +89,7 @@ void ProtobufClassGenerator::printIncludes()
 
     std::set<std::string> existingIncludes;
     for (int i = 0; i < mMessage->field_count(); i++) {
-        printInclude(mMessage->field(i), existingIncludes);
-    }
-}
-
-void ProtobufClassGenerator::printInclude(const FieldDescriptor *field, std::set<std::string> &existingIncludes)
-{
-    assert(field != nullptr);
-    std::string newInclude;
-    const char *includeTemplate;
-    switch (field->type()) {
-    case FieldDescriptor::TYPE_MESSAGE:
-        if ( field->is_map() ) {
-            newInclude = "QMap";
-            assert(field->message_type() != nullptr);
-            assert(field->message_type()->field_count() == 2);
-            printInclude(field->message_type()->field(0), existingIncludes);
-            printInclude(field->message_type()->field(1), existingIncludes);
-            includeTemplate = Templates::ExternalIncludeTemplate;
-        } else {
-            std::string typeName = field->message_type()->name();
-            utils::tolower(typeName);
-            newInclude = typeName;
-            includeTemplate = Templates::InternalIncludeTemplate;
-        }
-        break;
-    case FieldDescriptor::TYPE_BYTES:
-        newInclude = "QByteArray";
-        includeTemplate = Templates::ExternalIncludeTemplate;
-        break;
-    case FieldDescriptor::TYPE_STRING:
-        newInclude = "QString";
-        includeTemplate = Templates::ExternalIncludeTemplate;
-        break;
-    case FieldDescriptor::TYPE_ENUM: {
-        EnumVisibility enumVisibily = getEnumVisibility(field, mMessage);
-        if (enumVisibily == GLOBAL_ENUM) {
-            includeTemplate = Templates::GlobalEnumIncludeTemplate;
-        } else if (enumVisibily == NEIGHBOUR_ENUM) {
-            includeTemplate = Templates::InternalIncludeTemplate;
-            std::string fullEnumName = field->enum_type()->full_name();
-            std::vector<std::string> fullEnumNameParts;
-            utils::split(fullEnumName, fullEnumNameParts, '.');
-            std::string enumTypeOwner = fullEnumNameParts.at(fullEnumNameParts.size() - 2);
-            utils::tolower(enumTypeOwner);
-            newInclude = enumTypeOwner;
-        } else {
-            return;
-        }
-    }
-        break;
-    default:
-        return;
-    }
-
-    if (existingIncludes.find(newInclude) == std::end(existingIncludes)) {
-        mPrinter->Print({{"include", newInclude}}, includeTemplate);
-        existingIncludes.insert(newInclude);
+        printInclude(mMessage, mMessage->field(i), existingIncludes);
     }
 }
 
@@ -231,7 +175,7 @@ void ProtobufClassGenerator::printMaps()
     Outdent();
 }
 
-void ProtobufClassGenerator::printLocalEmumsMetaTypesDeclaration()
+void ProtobufClassGenerator::printLocalEnumsMetaTypesDeclaration()
 {
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
@@ -388,6 +332,7 @@ void ProtobufClassGenerator::run()
     printPreamble();
     printIncludes();
     printNamespaces();
+    printFieldClassDeclaration();
     printClassDeclaration();
     printProperties();
     printPrivate();
@@ -399,10 +344,21 @@ void ProtobufClassGenerator::run()
     encloseNamespaces();
     printMetaTypeDeclaration();
     printMapsMetaTypesDeclaration();
-    printLocalEmumsMetaTypesDeclaration();
+    printLocalEnumsMetaTypesDeclaration();
 }
 
 void ProtobufClassGenerator::printDestructor()
 {
-    mPrinter->Print({{"classname", mClassName}}, "virtual ~$classname$();");
+    mPrinter->Print({{"classname", mClassName}}, "virtual ~$classname$();\n");
+}
+
+void ProtobufClassGenerator::printFieldClassDeclaration()
+{
+    for(int i = 0; i < mMessage->field_count(); i++) {
+        auto field = mMessage->field(i);
+        if (field->type() == FieldDescriptor::TYPE_MESSAGE
+                && !field->is_map() && !field->is_repeated()) {
+            mPrinter->Print({{"classname", field->message_type()->name()}}, Templates::ProtoClassDeclarationTemplate);
+        }
+    }
 }

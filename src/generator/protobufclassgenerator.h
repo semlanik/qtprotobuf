@@ -62,10 +62,10 @@ public:
     void printConstructor();
     void printDestructor();
     void printListType();
-    void printInclude(const google::protobuf::FieldDescriptor *field, std::set<std::string> &existingIncludes);
     void printMaps();
     void printMapsMetaTypesDeclaration();
-    void printLocalEmumsMetaTypesDeclaration();
+    void printLocalEnumsMetaTypesDeclaration();
+    void printFieldClassDeclaration();
 
     std::set<std::string> extractModels() const;
 

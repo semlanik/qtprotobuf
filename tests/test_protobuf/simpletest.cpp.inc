@@ -773,5 +773,11 @@ TEST_F(SimpleTest, SequenceTest)
     assertMessagePropertyRegistered<sequence::TestMessageSequence2, bool>(1, "bool", "testField");
 }
 
+TEST_F(SimpleTest, CyclingTest)
+{
+    assertMessagePropertyRegistered<sequence::CyclingFirstDependency, sequence::CyclingSecondDependency*>(1, "CyclingSecondDependency*", "testField");
+    assertMessagePropertyRegistered<sequence::CyclingSecondDependency, sequence::CyclingFirstDependency*>(1, "CyclingFirstDependency*", "testField");
+}
+
 } // tests
 } // qtprotobuf

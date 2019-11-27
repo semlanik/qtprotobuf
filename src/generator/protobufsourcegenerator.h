@@ -45,10 +45,12 @@ public:
     void printComparisonOperators();
     void printGetters();
     void printDestructor();
+    void printIncludes();
 
     void run() override {
         printDisclaimer();
         printClassHeaderInclude();
+        printIncludes();
         printNamespaces();
         printDestructor();
         printFieldsOrdering();
