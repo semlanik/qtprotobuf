@@ -201,6 +201,9 @@ void ProtobufSourceGenerator::printConstructor()
                         case FieldDescriptor::TYPE_BOOL:
                             initializer = "false";
                             break;
+                        case FieldDescriptor::TYPE_ENUM:
+                            initializer = fieldTypeName + "::" + field->enum_type()->value(0)->name();
+                            break;
                         default:
                             break;
                         }
@@ -371,8 +374,6 @@ void ProtobufSourceGenerator::printGetters()
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
                 printField(mMessage, field, Templates::GetterPrivateMessageDefinitionTemplate);
                 printField(mMessage, field, Templates::GetterMessageDefinitionTemplate);
-        } else {
-            printField(mMessage, field, Templates::GetterDefinitionTemplate);
         }
         if (field->is_repeated()) {
             printField(mMessage, field, Templates::GetterContainerExtraDefinitionTemplate);

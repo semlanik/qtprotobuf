@@ -168,7 +168,9 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
             if (field->is_repeated()) {
                 typeName = typeName.append(mClassName + "::" + enumType->name());
             } else {
-                typeName = typeName.append(mClassName + "::" + enumType->name());
+                //Note: For local enum classes it's impossible to use class name space in Q_PROPERTY
+                //declaration. So please avoid addition of mClassName in line bellow
+                typeName = typeName.append(enumType->name());
             }
         } else if (visibility == GLOBAL_ENUM) {
             namespaceTypeName = getNamespacesList(enumType, typeNamespace, "");

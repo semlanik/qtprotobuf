@@ -91,4 +91,5 @@ void AddressBookEngine::endCall()
 AddressBookEngine::~AddressBookEngine()
 {
     delete m_client;
+    delete m_contacts;
 }

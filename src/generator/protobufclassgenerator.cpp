@@ -245,7 +245,7 @@ void ProtobufClassGenerator::printProperties()
             printField(mMessage, field, Templates::GetterPrivateMessageDeclarationTemplate);
             printField(mMessage, field, Templates::GetterMessageDeclarationTemplate);
         } else {
-            printField(mMessage, field, Templates::GetterDeclarationTemplate);
+            printField(mMessage, field, Templates::GetterTemplate);
         }
         if (field->is_repeated()) {
             printField(mMessage, field, Templates::GetterContainerExtraDeclarationTemplate);

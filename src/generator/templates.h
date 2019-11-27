@@ -100,8 +100,7 @@ public:
     static const char *GetterPrivateMessageDefinitionTemplate;
     static const char *GetterMessageDeclarationTemplate;
     static const char *GetterMessageDefinitionTemplate;
-    static const char *GetterDeclarationTemplate;
-    static const char *GetterDefinitionTemplate;
+    static const char *GetterTemplate;
     static const char *GetterContainerExtraDeclarationTemplate;
     static const char *GetterContainerExtraDefinitionTemplate;
     static const char *GetterQmlListDeclarationTemplate;

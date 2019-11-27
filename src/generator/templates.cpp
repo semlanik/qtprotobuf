@@ -137,8 +137,7 @@ const char *Templates::GetterMessageDefinitionTemplate = "const $type$ &$classna
                                         "    return *m_$property_name$;\n"
                                         "}\n\n";
 
-const char *Templates::GetterDeclarationTemplate = "$type$ $property_name$() const;\n";
-const char *Templates::GetterDefinitionTemplate = "$type$ $classname$::$property_name$() const {\n"
+const char *Templates::GetterTemplate = "$type$ $property_name$() const {\n"
                                         "    return m_$property_name$;\n"
                                         "}\n\n";
 
