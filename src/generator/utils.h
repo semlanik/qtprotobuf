@@ -32,6 +32,12 @@
 #include <list>
 #include <algorithm>
 
+#ifdef QT_PROTOBUF_DEBUG_GENERATOR
+#define QT_PROTOBUF_DEBUG(X) std::cout << X << std::endl
+#else
+#define QT_PROTOBUF_DEBUG(X)
+#endif
+
 namespace google { namespace protobuf {
 class FileDescriptor;
 }}
@@ -43,6 +49,9 @@ public:
 static void split(const std::string &str, std::vector<std::string> &container, char delim)
 {
     container.clear();
+    if (str.size() <= 0) {
+        return;
+    }
     std::stringstream stream(str);
     std::string token;
     while (std::getline(stream, token, delim)) {

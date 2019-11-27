@@ -28,11 +28,16 @@
 #include "generator.h"
 #include "singlefilegenerator.h"
 #include "generatoroptions.h"
+#include "utils.h"
 
 using namespace ::QtProtobuf::generator;
 int main(int argc, char *argv[])
 {
-    GeneratorOptions::instance().parseFromEnv(getenv("QT_PROTOBUF_OPTIONS"));
+    char *optionsPtr = getenv("QT_PROTOBUF_OPTIONS");
+    if (optionsPtr != nullptr) {
+        QT_PROTOBUF_DEBUG("QT_PROTOBUF_OPTIONS: " << optionsPtr);
+        GeneratorOptions::instance().parseFromEnv(optionsPtr);
+    }
     if (GeneratorOptions::instance().isMulti()) {
         std::cerr << "Run multi generator" << std::endl;
         QtProtobuf::generator::QtGenerator generator;

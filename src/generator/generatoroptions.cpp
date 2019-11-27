@@ -44,9 +44,12 @@ void GeneratorOptions::parseFromEnv(const std::string &options)
     std::vector<std::string> optionsList;
     utils::split(options, optionsList, ':');
     for (auto option : optionsList) {
-        if(option == MultifileBuildOption) {
+        QT_PROTOBUF_DEBUG("option: " << option);
+        if(option.compare(MultifileBuildOption) == 0) {
+            QT_PROTOBUF_DEBUG("set mIsMulti: true");
             mIsMulti = true;
-        } else if (option == QmlPluginOption) {
+        } else if (option.compare(QmlPluginOption) == 0) {
+            QT_PROTOBUF_DEBUG("set mHasQml: true");
             mHasQml = true;
         }
     }

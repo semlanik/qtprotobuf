@@ -63,9 +63,14 @@ function(generate_qtprotobuf)
         set_property(SOURCE ${OUT_DIR}/${GENERATED_BASENAME}.cpp PROPERTY SKIP_AUTOMOC ON)
     endforeach()
 
+    if(WIN32)
+        set(PROTOC_COMMAND set QT_PROTOBUF_OPTIONS=${GENERATION_OPTIONS}&& $<TARGET_FILE:protobuf::protoc>)
+    else()
+        set(PROTOC_COMMAND "QT_PROTOBUF_OPTIONS=${GENERATION_OPTIONS}" $<TARGET_FILE:protobuf::protoc>)
+    endif()
     add_custom_command(
             OUTPUT ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS}
-            COMMAND "QT_PROTOBUF_OPTIONS=${GENERATION_OPTIONS}" $<TARGET_FILE:protobuf::protoc>
+            COMMAND ${PROTOC_COMMAND}
                 --plugin=protoc-gen-@GENERATOR_TARGET@=${QTPROTOBUF_EXECUTABLE}
                 --@GENERATOR_TARGET@_out=${OUT_DIR}
                 ${PROTO_INCLUDES}
