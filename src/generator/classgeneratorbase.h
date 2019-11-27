@@ -77,6 +77,9 @@ public:
     void encloseNamespaces();
     void encloseNamespaces(int count);
     bool hasGlobalEnum(const std::list<const ::google::protobuf::FileDescriptor *> &list);
+    void printField(const google::protobuf::Descriptor *message, const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
+    bool producePropertyMap(const google::protobuf::Descriptor *message, const ::google::protobuf::FieldDescriptor *field, PropertyMap &propertyMap);
+    bool isComplexType(const google::protobuf::FieldDescriptor *field);
 
     template<typename T>
     void printQEnums(const T *message) {

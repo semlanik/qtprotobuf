@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package qtprotobufnamespace.tests.sequence;
+
+message TestMessageSequence {
+    TestMessageSequence2 testField = 1;
+}
+
+message TestMessageSequence2 {
+    bool testField = 1;
+}
+

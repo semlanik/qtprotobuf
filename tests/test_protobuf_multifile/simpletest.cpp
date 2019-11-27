@@ -70,6 +70,8 @@
 #include "priormessageunderscorefield.h"
 #include "followingmessageunderscorefield.h"
 #include "combinedmessageunderscorefield.h"
+#include "testmessagesequence.h"
+#include "testmessagesequence2.h"
 
 #include "globalenums.h"
 

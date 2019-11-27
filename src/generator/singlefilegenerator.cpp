@@ -152,6 +152,8 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         classGen.printProperties();
         classGen.printPrivate();
         classGen.printClassMembers();
+        classGen.printPublic();
+        classGen.printDestructor();
         classGen.encloseClass();
         classGen.printListType();
         classGen.encloseNamespaces();
@@ -164,7 +166,12 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         srcGen.printNamespaces();
         srcGen.printFieldsOrdering();
         srcGen.printRegisterBody();
+        srcGen.printDestructor();
         srcGen.printConstructor();
+        srcGen.printCopyFunctionality();
+        srcGen.printMoveSemantic();
+        srcGen.printComparisonOperators();
+        srcGen.printGetters();
         srcGen.encloseNamespaces();
 
     });

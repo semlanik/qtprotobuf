@@ -40,14 +40,24 @@ public:
     void printRegisterBody();
     void printFieldsOrdering();
     void printConstructor();
+    void printCopyFunctionality();
+    void printMoveSemantic();
+    void printComparisonOperators();
+    void printGetters();
+    void printDestructor();
 
     void run() override {
         printDisclaimer();
         printClassHeaderInclude();
         printNamespaces();
+        printDestructor();
         printFieldsOrdering();
         printRegisterBody();
         printConstructor();
+        printCopyFunctionality();
+        printMoveSemantic();
+        printComparisonOperators();
+        printGetters();
         encloseNamespaces();
     }
 };

@@ -168,7 +168,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
             if (field->is_repeated()) {
                 typeName = typeName.append(mClassName + "::" + enumType->name());
             } else {
-                typeName = typeName.append(enumType->name());
+                typeName = typeName.append(mClassName + "::" + enumType->name());
             }
         } else if (visibility == GLOBAL_ENUM) {
             namespaceTypeName = getNamespacesList(enumType, typeNamespace, "");
@@ -285,3 +285,60 @@ bool ClassGeneratorBase::hasGlobalEnum(const std::list<const FileDescriptor *> &
     }
     return true;
 }
+
+void ClassGeneratorBase::printField(const google::protobuf::Descriptor *message, const FieldDescriptor *field, const char *fieldTemplate)
+{
+    assert(field != nullptr);
+    std::map<std::string, std::string> propertyMap;
+    if (producePropertyMap(message, field, propertyMap)) {
+        mPrinter->Print(propertyMap, fieldTemplate);
+    }
+}
+
+bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *message, const FieldDescriptor *field, PropertyMap &propertyMap)
+{
+    assert(field != nullptr);
+    std::string typeName = getTypeName(field, message);
+
+    if (typeName.size() <= 0) {
+        std::cerr << "Type "
+                  << field->type_name()
+                  << " is not supported by Qt Generator"
+                     " please look at https://doc.qt.io/qt-5/qtqml-typesystem-basictypes.html"
+                     " for details" << std::endl;
+        return false;
+    }
+
+    std::string typeNameLower(typeName);
+    utils::tolower(typeNameLower);
+
+    std::string capProperty = field->name();
+    capProperty[0] = static_cast<char>(::toupper(capProperty[0]));
+
+    std::string typeNameNoList = typeName;
+    if (field->is_repeated() && !field->is_map()) {
+        if(field->type() == FieldDescriptor::TYPE_MESSAGE
+                || field->type() == FieldDescriptor::TYPE_ENUM) {
+            typeNameNoList.resize(typeNameNoList.size() - strlen(Templates::ListSuffix));
+        } else {
+            typeNameNoList.resize(typeNameNoList.size() - strlen("List"));
+        }
+    }
+    propertyMap = {{"type", typeName},
+                   {"classname", message->name()},
+                   {"type_lower", typeNameLower},
+                   {"property_name", field->name()},
+                   {"property_name_cap", capProperty},
+                   {"type_nolist", typeNameNoList}
+                  };
+    return true;
+}
+
+bool ClassGeneratorBase::isComplexType(const FieldDescriptor *field)
+{
+    assert(field != nullptr);
+    return field->type() == FieldDescriptor::TYPE_MESSAGE
+            || field->type() == FieldDescriptor::TYPE_STRING
+            || field->type() == FieldDescriptor::TYPE_BYTES;
+}
+

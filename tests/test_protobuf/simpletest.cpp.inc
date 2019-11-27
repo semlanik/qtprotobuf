@@ -767,5 +767,11 @@ TEST_F(SimpleTest, UnderscoresTest)
     assertMessagePropertyRegistered<CombinedMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "_underScoreMessage_Field_");
 }
 
+TEST_F(SimpleTest, SequenceTest)
+{
+    assertMessagePropertyRegistered<sequence::TestMessageSequence, sequence::TestMessageSequence2*>(1, "TestMessageSequence2*", "testField");
+    assertMessagePropertyRegistered<sequence::TestMessageSequence2, bool>(1, "bool", "testField");
+}
+
 } // tests
 } // qtprotobuf

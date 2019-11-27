@@ -57,10 +57,10 @@ public:
     void printCopyFunctionality();
     void printMoveSemantic();
     void printComparisonOperators();
-    void printField(const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
     void printProperties();
     void printClassMembers();
     void printConstructor();
+    void printDestructor();
     void printListType();
     void printInclude(const google::protobuf::FieldDescriptor *field, std::set<std::string> &existingIncludes);
     void printMaps();
@@ -70,8 +70,6 @@ public:
     std::set<std::string> extractModels() const;
 
 private:
-    bool producePropertyMap(const ::google::protobuf::FieldDescriptor *field, PropertyMap &propertyMap);
-    static bool isComplexType(const ::google::protobuf::FieldDescriptor *field);
     static bool isListType(const ::google::protobuf::FieldDescriptor *field);
 };
 
