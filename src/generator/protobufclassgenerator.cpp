@@ -108,6 +108,8 @@ void ProtobufClassGenerator::printConstructor()
         std::string fieldTypeName = getTypeName(field, mMessage);
         std::string fieldName = field->name();
         fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
+        fieldName = qualifiedName(fieldName);
+
         if (field->is_repeated() || field->is_map()) {
             parameterList.push_back("const " + fieldTypeName + " &" + fieldName);
         } else {

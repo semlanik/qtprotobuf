@@ -586,3 +586,9 @@ message FollowingMessageUnderscoreField {
 message CombinedMessageUnderscoreField {
     sint32 _underScoreMessage_Field_ = 1;
 }
+
+message MessageUpperCase {
+    sint32 TestField = 1;
+    sint32 property = 2;
+    sint32 id = 3;
+}

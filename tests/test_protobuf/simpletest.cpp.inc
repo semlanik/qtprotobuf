@@ -779,5 +779,12 @@ TEST_F(SimpleTest, CyclingTest)
     assertMessagePropertyRegistered<sequence::CyclingSecondDependency, sequence::CyclingFirstDependency*>(1, "CyclingFirstDependency*", "testField");
 }
 
+TEST_F(SimpleTest, UpperCaseTest)
+{
+    assertMessagePropertyRegistered<MessageUpperCase, sint32>(1, "QtProtobuf::sint32", "testField");
+    assertMessagePropertyRegistered<MessageUpperCase, sint32>(2, "QtProtobuf::sint32", "propertyProto");
+    assertMessagePropertyRegistered<MessageUpperCase, sint32>(3, "QtProtobuf::sint32", "idProto");
+}
+
 } // tests
 } // qtprotobuf

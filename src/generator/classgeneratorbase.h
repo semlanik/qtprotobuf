@@ -81,6 +81,7 @@ public:
     void printField(const google::protobuf::Descriptor *message, const ::google::protobuf::FieldDescriptor *field, const char *fieldTemplate);
     bool producePropertyMap(const google::protobuf::Descriptor *message, const ::google::protobuf::FieldDescriptor *field, PropertyMap &propertyMap);
     bool isComplexType(const google::protobuf::FieldDescriptor *field);
+    std::string qualifiedName(const std::string &name);
 
     template<typename T>
     void printQEnums(const T *message) {

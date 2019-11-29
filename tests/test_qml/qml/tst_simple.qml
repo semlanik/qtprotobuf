@@ -60,6 +60,10 @@ TestCase {
         testFieldString: "Test string"
     }
 
+    MessageUpperCase {
+        id: idTest
+    }
+
     function test_simpleboolmessage() {
         boolMsg.testFieldBool = true;
         compare(boolMsg.testFieldBool, true, "SimpleBoolMessage == true")

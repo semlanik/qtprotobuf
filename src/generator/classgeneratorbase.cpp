@@ -326,10 +326,14 @@ bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *
             typeNameNoList.resize(typeNameNoList.size() - strlen("List"));
         }
     }
+    std::string fieldName = field->name();
+    fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
+    fieldName = qualifiedName(fieldName);
+
     propertyMap = {{"type", typeName},
                    {"classname", message->name()},
                    {"type_lower", typeNameLower},
-                   {"property_name", field->name()},
+                   {"property_name", fieldName},
                    {"property_name_cap", capProperty},
                    {"type_nolist", typeNameNoList}
                   };
@@ -344,6 +348,17 @@ bool ClassGeneratorBase::isComplexType(const FieldDescriptor *field)
             || field->type() == FieldDescriptor::TYPE_BYTES;
 }
 
+std::string ClassGeneratorBase::qualifiedName(const std::string &name)
+{
+    std::string fieldName(name);
+    const std::vector<std::string> &searchExeptions = Templates::ListOfQmlExeptions;
+
+    auto searchResult = std::find(searchExeptions.begin(), searchExeptions.end(), fieldName);
+    if (searchResult != searchExeptions.end()) {
+        return fieldName.append(Templates::ProtoSufix);
+    }
+    return fieldName;
+}
 
 void ClassGeneratorBase::printInclude(const google::protobuf::Descriptor *message, const FieldDescriptor *field, std::set<std::string> &existingIncludes)
 {

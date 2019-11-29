@@ -34,6 +34,8 @@ namespace generator {
 
 class Templates {
 public:
+    static const std::vector<std::string> ListOfQmlExeptions;
+    static const char *ProtoSufix;
     static const char *DefaultProtobufIncludesTemplate;
     static const char *QmlProtobufIncludesTemplate;
     static const char *GlobalEnumClassNameTemplate;
