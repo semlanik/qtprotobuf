@@ -74,6 +74,9 @@
 #include "testmessagesequence2.h"
 #include "cyclingseconddependency.h"
 #include "cyclingfirstdependency.h"
+#include "messageuppercasereserved.h"
+#include "messagereserved.h"
+#include "messageenumreserved.h"
 
 #include "globalenums.h"
 

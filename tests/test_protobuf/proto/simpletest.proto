@@ -589,6 +589,40 @@ message CombinedMessageUnderscoreField {
 
 message MessageUpperCase {
     sint32 TestField = 1;
+}
+
+message MessageReserved {
+    sint32 import = 1;
     sint32 property = 2;
     sint32 id = 3;
 }
+
+message MessageUpperCaseReserved {
+    sint32 Import = 1;
+    sint32 Property = 2;
+    sint32 Id = 3;
+}
+
+message MessageEnumReserved {
+    enum ReservedEnum {
+        Import = 0;
+        Property = 1;
+        Id = 2;
+    }
+
+    enum LowerCaseEnum {
+        enumValue0 = 0;
+        enumValue1 = 1;
+        enumValue2 = 2;
+    }
+
+    enum UnderScoreEnum {
+        _enumUnderscoreValue0 = 0;
+        _EnumUnderscoreValue1 = 1;
+    }
+}
+
+message lowerCaseMessageName {
+    sint32 testField = 1;
+}
+

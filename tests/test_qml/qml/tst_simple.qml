@@ -61,8 +61,22 @@ TestCase {
     }
 
     MessageUpperCase {
-        id: idTest
+        id: caseSenseMsg
     }
+
+    MessageReserved {
+        id: reservedMsg
+    }
+
+    PriorMessageUnderscoreField {
+        id: underScoreMsg
+    }
+
+    //TODO: uncomment when functionality is implemented
+    //TODO: #192
+//    LowerCaseMessageName {
+//        id: lowerCaseMsg
+//    }
 
     function test_simpleboolmessage() {
         boolMsg.testFieldBool = true;
@@ -187,5 +201,41 @@ TestCase {
 
     function test_simplesstringmessage() {
         compare(stringMsg.testFieldString, "Test string", "SimpleStringMessage")
+    }
+
+    function test_reservedNames() {
+        reservedMsg.idProto = 34;
+        reservedMsg.importProto = 35;
+        reservedMsg.propertyProto = 36;
+        compare(reservedMsg.idProto, 34, "reservedMsg.idProto == 34")
+        compare(reservedMsg.importProto, 35, "reservedMsg.importProto == 35")
+        compare(reservedMsg.propertyProto, 36, "reservedMsg.propertyProto == 36")
+    }
+
+    function test_reservedEnums() {
+        compare(MessageEnumReserved.Import, 0, "MessageEnumReserved.Import == 0")
+        compare(MessageEnumReserved.Property, 1, "MessageEnumReserved.Property == 1")
+        compare(MessageEnumReserved.Id, 2, "MessageEnumReserved.Id == 2")
+    }
+
+    function test_caseSense() {
+        caseSenseMsg.testField = 34;
+        compare(caseSenseMsg.testField == 34, true, "MessageUpperCase == 34")
+
+        //TODO: #191
+        compare(MessageEnumReserved.EnumValue0 == 0, true, "MessageEnumReserved.EnumValue0 == 0")
+        compare(MessageEnumReserved.EnumValue1 == 1, true, "MessageEnumReserved.EnumValue1 == 1")
+        compare(MessageEnumReserved.EnumValue2 == 2, true, "MessageEnumReserved.EnumValue2 == 2")
+    }
+
+    function test_underScoreField() {
+        underScoreMsg._underScoreMessageField = 123
+        compare(underScoreMsg._underScoreMessageField == 123, true, "underScoreMsg._underScoreMessageField == 123")
+    }
+
+    function test_lowerCaseMessage() {
+        //TODO: #192
+        lowerCaseMsg.testField = 34
+        compare(lowerCaseMsg.testField == 34, true, "LowerCaseMessageName == 34")
     }
 }

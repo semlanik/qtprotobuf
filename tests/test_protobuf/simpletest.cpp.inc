@@ -782,8 +782,59 @@ TEST_F(SimpleTest, CyclingTest)
 TEST_F(SimpleTest, UpperCaseTest)
 {
     assertMessagePropertyRegistered<MessageUpperCase, sint32>(1, "QtProtobuf::sint32", "testField");
-    assertMessagePropertyRegistered<MessageUpperCase, sint32>(2, "QtProtobuf::sint32", "propertyProto");
-    assertMessagePropertyRegistered<MessageUpperCase, sint32>(3, "QtProtobuf::sint32", "idProto");
+}
+
+TEST_F(SimpleTest, ReservedTest)
+{
+    assertMessagePropertyRegistered<MessageReserved, sint32>(1, "QtProtobuf::sint32", "importProto");
+    assertMessagePropertyRegistered<MessageReserved, sint32>(2, "QtProtobuf::sint32", "propertyProto");
+    assertMessagePropertyRegistered<MessageReserved, sint32>(3, "QtProtobuf::sint32", "idProto");
+}
+
+TEST_F(SimpleTest, ReservedUpperCaseTest)
+{
+    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(1, "QtProtobuf::sint32", "importProto");
+    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(2, "QtProtobuf::sint32", "propertyProto");
+    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(3, "QtProtobuf::sint32", "idProto");
+}
+
+TEST_F(SimpleTest, ReservedEnumTest)
+{
+    ASSERT_GT(MessageEnumReserved::staticMetaObject.enumeratorCount(), 0);
+    QMetaEnum simpleEnum;
+    for (int i = 0; i < MessageEnumReserved::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = MessageEnumReserved::staticMetaObject.enumerator(i);
+        if (QString(tmp.name()) == QString("ReservedEnum")) {
+            simpleEnum = tmp;
+            break;
+        }
+    }
+    ASSERT_TRUE(simpleEnum.isValid());
+    ASSERT_STREQ(simpleEnum.key(0), "Import");
+    ASSERT_STREQ(simpleEnum.key(1), "Property");
+    ASSERT_STREQ(simpleEnum.key(2), "Id");
+
+    ASSERT_EQ(simpleEnum.value(0), 0);
+    ASSERT_EQ(simpleEnum.value(1), 1);
+    ASSERT_EQ(simpleEnum.value(2), 2);
+}
+
+TEST_F(SimpleTest, LowerCaseEnumTest)
+{
+    ASSERT_GT(MessageEnumReserved::staticMetaObject.enumeratorCount(), 0);
+    QMetaEnum simpleEnum;
+    for (int i = 0; i < MessageEnumReserved::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = MessageEnumReserved::staticMetaObject.enumerator(i);
+        if (QString(tmp.name()) == QString("LowerCaseEnum")) {
+            simpleEnum = tmp;
+            break;
+        }
+    }
+    ASSERT_TRUE(simpleEnum.isValid());
+    //TODO: #191
+    ASSERT_STREQ(simpleEnum.key(0), "EnumValue0");
+    ASSERT_STREQ(simpleEnum.key(1), "EnumValue1");
+    ASSERT_STREQ(simpleEnum.key(2), "EnumValue2");
 }
 
 } // tests
