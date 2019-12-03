@@ -72,11 +72,9 @@ TestCase {
         id: underScoreMsg
     }
 
-    //TODO: uncomment when functionality is implemented
-    //TODO: #192
-//    LowerCaseMessageName {
-//        id: lowerCaseMsg
-//    }
+    LowerCaseMessageName {
+        id: lowerCaseMsg
+    }
 
     function test_simpleboolmessage() {
         boolMsg.testFieldBool = true;
@@ -234,7 +232,6 @@ TestCase {
     }
 
     function test_lowerCaseMessage() {
-        //TODO: #192
         lowerCaseMsg.testField = 34
         compare(lowerCaseMsg.testField == 34, true, "LowerCaseMessageName == 34")
     }

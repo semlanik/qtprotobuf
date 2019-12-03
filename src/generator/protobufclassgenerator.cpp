@@ -106,8 +106,7 @@ void ProtobufClassGenerator::printConstructor()
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         std::string fieldTypeName = getTypeName(field, mMessage);
-        std::string fieldName = field->name();
-        fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
+        std::string fieldName = utils::lowerCaseName(field->name());
         fieldName = qualifiedName(fieldName);
 
         if (field->is_repeated() || field->is_map()) {
@@ -169,9 +168,9 @@ void ProtobufClassGenerator::printMaps()
                 mapTemplate = Templates::MessageMapTypeUsingTemplate;
             }
 
-            mPrinter->Print({{"classname",field->message_type()->name()},
-                            {"key", keyType},
-                            {"value", valueType}}, mapTemplate);
+            mPrinter->Print({{"classname", utils::upperCaseName(field->message_type()->name())},
+                             {"key", keyType},
+                             {"value", valueType}}, mapTemplate);
         }
     }
     Outdent();
@@ -186,7 +185,7 @@ void ProtobufClassGenerator::printLocalEnumsMetaTypesDeclaration()
 
         if (field->type() == FieldDescriptor::TYPE_ENUM
                 && isLocalMessageEnum(mMessage, field)) {
-             mPrinter->Print({{"classname", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
+            mPrinter->Print({{"classname", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
                              {"namespaces", mNamespacesColonDelimited}}, Templates::DeclareMetaTypeTemplate);
         }
     }
@@ -360,7 +359,7 @@ void ProtobufClassGenerator::printFieldClassDeclaration()
         auto field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_MESSAGE
                 && !field->is_map() && !field->is_repeated()) {
-            mPrinter->Print({{"classname", field->message_type()->name()}}, Templates::ProtoClassDeclarationTemplate);
+            mPrinter->Print({{"classname", utils::upperCaseName(field->message_type()->name())}}, Templates::ProtoClassDeclarationTemplate);
         }
     }
 }

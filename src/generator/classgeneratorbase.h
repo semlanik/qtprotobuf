@@ -29,6 +29,7 @@
 #include <memory>
 #include <list>
 
+#include "utils.h"
 #include "templates.h"
 
 namespace google { namespace protobuf {
@@ -99,8 +100,8 @@ public:
             Indent();
             for (int j = 0; j < enumDescr->value_count(); j++) {
                 const auto valueDescr = enumDescr->value(j);
-                mPrinter->Print({{"enumvalue", valueDescr->name()},
-                                {"value", std::to_string(valueDescr->number())}}, Templates::EnumFieldTemplate);
+                mPrinter->Print({{"enumvalue", utils::upperCaseName(valueDescr->name())},
+                                 {"value", std::to_string(valueDescr->number())}}, Templates::EnumFieldTemplate);
             }
             Outdent();
             mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);

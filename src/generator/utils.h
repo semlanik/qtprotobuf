@@ -77,6 +77,21 @@ static std::string extractFileName(std::string fileName) {
     return fileName;
 }
 
+
+static std::string upperCaseName(const std::string &name)
+{
+    std::string upperCaseName(name);
+    upperCaseName[0] = static_cast<char>(::toupper(upperCaseName[0]));
+    return upperCaseName;
+}
+
+static std::string lowerCaseName(const std::string &name)
+{
+    std::string lowerCaseName(name);
+    lowerCaseName[0] = static_cast<char>(::tolower(lowerCaseName[0]));
+    return lowerCaseName;
+}
+
 };
 
 #define UNUSED(expr) do { (void)(expr); } while (0)

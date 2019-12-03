@@ -26,7 +26,6 @@
 #include "classgeneratorbase.h"
 
 #include "templates.h"
-#include "utils.h"
 #include "generatoroptions.h"
 
 #include <google/protobuf/descriptor.h>
@@ -44,7 +43,7 @@ ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, const s
 {
     utils::split(fullClassName, mNamespaces, '.');
     assert(mNamespaces.size() > 0);
-    mClassName = mNamespaces.back();
+    mClassName = utils::upperCaseName(mNamespaces.back());
     mNamespaces.erase(mNamespaces.end() - 1);
     for (size_t i = 0; i < mNamespaces.size(); i++) {
         if (i > 0) {
@@ -155,7 +154,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
         typeName = namespaceTypeName.append(msg->name());
 
         if (field->is_map()) {
-            return mClassName + "::" + field->message_type()->name();
+            return mClassName + "::" + utils::upperCaseName(field->message_type()->name());
         }
         if (field->is_repeated()) {
             return namespaceTypeName.append(Templates::ListSuffix);
@@ -326,12 +325,11 @@ bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *
             typeNameNoList.resize(typeNameNoList.size() - strlen("List"));
         }
     }
-    std::string fieldName = field->name();
-    fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
-    fieldName = qualifiedName(fieldName);
 
+    std::string fieldName = utils::lowerCaseName(field->name());
+    fieldName = qualifiedName(fieldName);
     propertyMap = {{"type", typeName},
-                   {"classname", message->name()},
+                   {"classname", utils::upperCaseName(message->name())},
                    {"type_lower", typeNameLower},
                    {"property_name", fieldName},
                    {"property_name_cap", capProperty},

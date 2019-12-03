@@ -117,7 +117,7 @@ bool GeneratorBase::GenerateAll(const std::vector<const FileDescriptor *> &files
         outfHeaderPrinter->Indent();
         for (auto file : package.second) {
             iterateNonNestedFileds(file, [&outfHeaderPrinter](const ::google::protobuf::Descriptor *message) {
-                outfHeaderPrinter->Print({{"classname", message->name()}}, "qRegisterProtobufType<$classname$>();\n");
+                outfHeaderPrinter->Print({{"classname", utils::upperCaseName(message->name())}}, "qRegisterProtobufType<$classname$>();\n");
             });
 
             if (file->enum_type_count() > 0) {
