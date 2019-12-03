@@ -62,14 +62,13 @@ git submodule update --init --recursive
 Open Qt MSVC command line and follow steps:
 
 ```bash
-"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
+"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" <x86|x64>
 cd <directory with qtprotobuf project>
 mkdir build
 cd build
 cmake ..
 cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 ```
-**Note:** 64-bit build is not supported yet
 
 ## Usage
 
