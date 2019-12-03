@@ -6,7 +6,10 @@ gRPC and Protobuf generator and bindings for Qt framework
 
 ## Linux Build
 ### Prerequesties
-Check installation of protobuf and grpc in your system. Minimum required versions are protobuf-3.6.0 and grpc-1.15.0.
+Check installation of following packages in your system:
+- protobuf 3.6.0 or higher
+- grpc 1.15.0 or higher
+- golang 1.10 or higher (Mandatory dependency for any type of build)
 
 **Note:** Older versions could be supported as well but not officially tested.
 
