@@ -626,3 +626,7 @@ message lowerCaseMessageName {
     sint32 testField = 1;
 }
 
+message LowerCaseFieldMessageName {
+    lowerCaseMessageName testField = 1;
+}
+

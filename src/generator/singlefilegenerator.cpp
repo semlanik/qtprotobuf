@@ -136,7 +136,9 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     }
 
     iterateNonNestedFileds(file, [&outHeaderPrinter](const ::google::protobuf::Descriptor *message){
-        outHeaderPrinter->Print({{"classname", message->name()}}, Templates::ProtoClassDeclarationTemplate);
+        std::string qualifiedClassName = utils::upperCaseName(message->name());
+        outHeaderPrinter->Print({{"classname", qualifiedClassName}}, Templates::ProtoClassDeclarationTemplate);
+        outHeaderPrinter->Print({{"classname", qualifiedClassName}}, Templates::ComplexListTypeUsingTemplate);
     });
 
     for (size_t i = 0; i < namespaces.size(); i++) {
@@ -155,7 +157,6 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         classGen.printPublic();
         classGen.printDestructor();
         classGen.encloseClass();
-        classGen.printListType();
         classGen.encloseNamespaces();
         classGen.printMetaTypeDeclaration();
         classGen.printMapsMetaTypesDeclaration();

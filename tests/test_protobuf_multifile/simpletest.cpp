@@ -77,6 +77,14 @@
 #include "messageuppercasereserved.h"
 #include "messagereserved.h"
 #include "messageenumreserved.h"
+#include "repeatedfieldsequence.h"
+#include "repeatedfieldsequence2.h"
+#include "mapfieldsequence.h"
+#include "mapfieldsequence2.h"
+#include "lowercasesequence.h"
+#include "lowercasesequence2.h"
+#include "lowercasemessagename.h"
+#include "lowercasefieldmessagename.h"
 
 #include "globalenums.h"
 

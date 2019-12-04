@@ -64,6 +64,7 @@ void SimpleTest::SetUpTestCase()
     qtprotobufnamespace::tests::qRegisterProtobufTypes();
     qtprotobufnamespace1::externaltests::qRegisterProtobufTypes();
     qtprotobufnamespace::tests::globalenums::qRegisterProtobufTypes();
+    qtprotobufnamespace::tests::sequence::qRegisterProtobufTypes();
 }
 
 TEST_F(SimpleTest, SimpleBoolMessageTest)
@@ -834,6 +835,12 @@ TEST_F(SimpleTest, LowerCaseEnumTest)
     ASSERT_STREQ(simpleEnum.key(0), "EnumValue0");
     ASSERT_STREQ(simpleEnum.key(1), "EnumValue1");
     ASSERT_STREQ(simpleEnum.key(2), "EnumValue2");
+}
+
+TEST_F(SimpleTest, MapRepeatedFieldSequenceTest)
+{
+    assertMessagePropertyRegistered<sequence::RepeatedFieldSequence, sequence::RepeatedFieldSequence2Repeated>(1, "RepeatedFieldSequence2Repeated", "testField");
+    assertMessagePropertyRegistered<sequence::MapFieldSequence, sequence::MapFieldSequence::TestFieldEntry>(1, "MapFieldSequence::TestFieldEntry", "testField");
 }
 
 } // tests

@@ -296,7 +296,6 @@ void ProtobufClassGenerator::printProperties()
 void ProtobufClassGenerator::printListType()
 {
     mPrinter->Print({{"classname", mClassName}}, Templates::ComplexListTypeUsingTemplate);
-
 }
 
 void ProtobufClassGenerator::printClassMembers()

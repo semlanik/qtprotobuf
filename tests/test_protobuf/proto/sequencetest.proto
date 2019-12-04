@@ -17,3 +17,28 @@ message CyclingSecondDependency {
 message CyclingFirstDependency {
     CyclingSecondDependency testField = 1;
 }
+
+message RepeatedFieldSequence {
+    repeated RepeatedFieldSequence2 testField = 1;
+}
+
+message RepeatedFieldSequence2 {
+    bool testField = 1;
+}
+
+message MapFieldSequence {
+    map<uint32, MapFieldSequence2> testField = 1;
+}
+
+message MapFieldSequence2 {
+    bool testField = 1;
+}
+
+message lowerCaseSequence {
+    lowerCaseSequence2 testField = 1;
+}
+
+message lowerCaseSequence2 {
+    bool testField = 1;
+}
+

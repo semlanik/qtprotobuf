@@ -151,10 +151,10 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
     if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
         const Descriptor *msg = field->message_type();
         namespaceTypeName = getNamespacesList(msg, typeNamespace, mNamespacesColonDelimited);
-        typeName = namespaceTypeName.append(msg->name());
+        typeName = namespaceTypeName.append(utils::upperCaseName(msg->name()));
 
         if (field->is_map()) {
-            return mClassName + "::" + utils::upperCaseName(field->message_type()->name());
+            return mClassName + "::" + utils::upperCaseName(msg->name());
         }
         if (field->is_repeated()) {
             return namespaceTypeName.append(Templates::ListSuffix);
