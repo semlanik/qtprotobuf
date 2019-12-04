@@ -56,7 +56,7 @@ private:
 
 }
 
-QProtobufJsonSerializer::QProtobufJsonSerializer() : d_ptr(new QProtobufJsonSerializerPrivate(this))
+QProtobufJsonSerializer::QProtobufJsonSerializer() : dPtr(new QProtobufJsonSerializerPrivate(this))
 {
 }
 
@@ -74,7 +74,7 @@ QByteArray QProtobufJsonSerializer::serializeMessage(const QObject *object, cons
         QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
         const QVariant &propertyValue = object->property(propertyName);
-        result.append(d_ptr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
+        result.append(dPtr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
     }
 
     result.append("}");

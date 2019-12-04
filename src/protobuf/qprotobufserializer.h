@@ -60,7 +60,7 @@ protected:
     void deserializeEnum(int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const override;
     void deserializeEnumList(QList<int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const override;
 
-    std::unique_ptr<QProtobufSerializerPrivate> d_ptr;
+    std::unique_ptr<QProtobufSerializerPrivate> dPtr;
 };
 
 }

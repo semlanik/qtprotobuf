@@ -46,7 +46,7 @@ public:
 using namespace QtProtobuf;
 
 QAbstractGrpcClient::QAbstractGrpcClient(const QString &service, QObject *parent) : QObject(parent)
-  , d_ptr(std::make_unique<QAbstractGrpcClientPrivate>(service))
+  , dPtr(std::make_unique<QAbstractGrpcClientPrivate>(service))
 {
 }
 
@@ -55,15 +55,15 @@ QAbstractGrpcClient::~QAbstractGrpcClient()
 
 void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChannel> &channel)
 {
-    d_ptr->channel = channel;
-    d_ptr->serializer = channel->serializer();
+    dPtr->channel = channel;
+    dPtr->serializer = channel->serializer();
 }
 
 QGrpcStatus QAbstractGrpcClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
 {
     QGrpcStatus callStatus{QGrpcStatus::Unknown};
-    if (d_ptr->channel) {
-        callStatus = d_ptr->channel->call(method, d_ptr->service, arg, ret);
+    if (dPtr->channel) {
+        callStatus = dPtr->channel->call(method, dPtr->service, arg, ret);
     } else {
         callStatus = QGrpcStatus{QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")};
     }
@@ -78,8 +78,8 @@ QGrpcStatus QAbstractGrpcClient::call(const QString &method, const QByteArray &a
 QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArray &arg)
 {
     QGrpcAsyncReply *reply = nullptr;
-    if (d_ptr->channel) {
-        reply = new QGrpcAsyncReply(d_ptr->channel, this);
+    if (dPtr->channel) {
+        reply = new QGrpcAsyncReply(dPtr->channel, this);
 
         connect(reply, &QGrpcAsyncReply::error, this, [this, reply](const QGrpcStatus &status) {
             error(status);
@@ -90,7 +90,7 @@ QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArr
             reply->deleteLater();
         });
 
-        d_ptr->channel->call(method, d_ptr->service, arg, reply);
+        dPtr->channel->call(method, dPtr->service, arg, reply);
     } else {
         error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});
     }
@@ -100,8 +100,8 @@ QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArr
 
 void QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray&)> &handler)
 {
-    if (d_ptr->channel) {
-        d_ptr->channel->subscribe(method, d_ptr->service, arg, this, handler);
+    if (dPtr->channel) {
+        dPtr->channel->subscribe(method, dPtr->service, arg, this, handler);
     } else {
         error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});
     }
@@ -109,5 +109,5 @@ void QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg
 
 QAbstractProtobufSerializer *QAbstractGrpcClient::serializer() const
 {
-    return d_ptr->serializer.get();
+    return dPtr->serializer.get();
 }

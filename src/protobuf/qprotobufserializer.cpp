@@ -74,7 +74,7 @@ void QProtobufSerializerPrivate::deserializeList<QString>(QProtobufSelfcheckIter
 
 QProtobufSerializer::~QProtobufSerializer() = default;
 
-QProtobufSerializer::QProtobufSerializer() : d_ptr(new QProtobufSerializerPrivate(this))
+QProtobufSerializer::QProtobufSerializer() : dPtr(new QProtobufSerializerPrivate(this))
 {
 }
 
@@ -88,7 +88,7 @@ QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QP
         QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
         const QVariant &propertyValue = object->property(propertyName);
-        result.append(d_ptr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
+        result.append(dPtr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
     }
 
     return result;
@@ -97,7 +97,7 @@ QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QP
 void QProtobufSerializer::deserializeMessage(QObject *object, const QProtobufMetaObject &metaObject, const QByteArray &data) const
 {
     for (QProtobufSelfcheckIterator it(data); it != data.end();) {
-        d_ptr->deserializeProperty(object, metaObject, it);
+        dPtr->deserializeProperty(object, metaObject, it);
     }
 }
 
@@ -127,13 +127,13 @@ void QProtobufSerializer::deserializeListObject(QObject *object, const QProtobuf
 QByteArray QProtobufSerializer::serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const
 {
     QByteArray result = QProtobufSerializerPrivate::encodeHeader(metaProperty.protoFieldIndex(), LengthDelimited);
-    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(d_ptr->serializeProperty(key, QProtobufMetaProperty(metaProperty, 1)) + d_ptr->serializeProperty(value, QProtobufMetaProperty(metaProperty, 2))));
+    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(dPtr->serializeProperty(key, QProtobufMetaProperty(metaProperty, 1)) + dPtr->serializeProperty(value, QProtobufMetaProperty(metaProperty, 2))));
     return result;
 }
 
 void QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const
 {
-    d_ptr->deserializeMapPair(key, value, it);
+    dPtr->deserializeMapPair(key, value, it);
 }
 
 QByteArray QProtobufSerializer::serializeEnum(int64 value, const QMetaEnum &/*metaEnum*/, const QtProtobuf::QProtobufMetaProperty &metaProperty) const

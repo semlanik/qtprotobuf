@@ -206,6 +206,6 @@ private:
 
     Q_DISABLE_COPY_MOVE(QAbstractGrpcClient)
 
-    std::unique_ptr<QAbstractGrpcClientPrivate> d_ptr;
+    std::unique_ptr<QAbstractGrpcClientPrivate> dPtr;
 };
 }

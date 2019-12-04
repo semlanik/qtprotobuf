@@ -55,6 +55,6 @@ protected:
 private:
     Q_DISABLE_COPY_MOVE(QGrpcHttp2Channel)
 
-    std::unique_ptr<QGrpcHttp2ChannelPrivate> d_ptr;
+    std::unique_ptr<QGrpcHttp2ChannelPrivate> dPtr;
 };
 }
