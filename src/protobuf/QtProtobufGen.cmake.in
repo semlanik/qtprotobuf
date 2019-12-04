@@ -8,6 +8,7 @@ function(generate_qtprotobuf)
     set(QtProtobuf_GENERATED ${generate_qtprotobuf_TARGET}_qtprotobuf_gen)
 
     set(GEN_TARGET ${generate_qtprotobuf_TARGET}_qtprotobuf_generate)
+    set(GENERATED_HEADERS ${generate_qtprotobuf_GENERATED_HEADERS})
 
     if(NOT DEFINED QTPROTOBUF_EXECUTABLE)
         set(QTPROTOBUF_EXECUTABLE "@QTPROTOBUF_EXECUTABLE_INSTALL@")
@@ -77,13 +78,13 @@ function(generate_qtprotobuf)
                 --plugin=protoc-gen-@GENERATOR_TARGET@=${QTPROTOBUF_EXECUTABLE}
                 --@GENERATOR_TARGET@_out=${OUT_DIR}
                 ${PROTO_INCLUDES}
-                ${PROTO_FILES}
+                ${generate_qtprotobuf_PROTO_FILES}
             WORKING_DIRECTORY ${OUT_DIR}
-            DEPENDS ${PROTO_FILES} ${QTPROTOBUF_EXECUTABLE}
+            DEPENDS ${generate_qtprotobuf_PROTO_FILES} ${QTPROTOBUF_EXECUTABLE}
             COMMENT "Generating QtProtobuf ${generate_qtprotobuf_TARGET} sources..."
     )
 
-    add_custom_target(${GEN_TARGET} DEPENDS ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS} ${PROTO_FILES})
+    add_custom_target(${GEN_TARGET} DEPENDS ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS} ${generate_qtprotobuf_PROTO_FILES})
 
     qt5_wrap_cpp(MOC_SOURCES ${QTPROTOBUF_GENERATED_HEADERS})
     list(APPEND GENERATED_SOURCES ${MOC_SOURCES})
