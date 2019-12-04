@@ -831,7 +831,6 @@ TEST_F(SimpleTest, LowerCaseEnumTest)
         }
     }
     ASSERT_TRUE(simpleEnum.isValid());
-    //TODO: #191
     ASSERT_STREQ(simpleEnum.key(0), "EnumValue0");
     ASSERT_STREQ(simpleEnum.key(1), "EnumValue1");
     ASSERT_STREQ(simpleEnum.key(2), "EnumValue2");

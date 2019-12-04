@@ -220,7 +220,6 @@ TestCase {
         caseSenseMsg.testField = 34;
         compare(caseSenseMsg.testField == 34, true, "MessageUpperCase == 34")
 
-        //TODO: #191
         compare(MessageEnumReserved.EnumValue0 == 0, true, "MessageEnumReserved.EnumValue0 == 0")
         compare(MessageEnumReserved.EnumValue1 == 1, true, "MessageEnumReserved.EnumValue1 == 1")
         compare(MessageEnumReserved.EnumValue2 == 2, true, "MessageEnumReserved.EnumValue2 == 2")
