@@ -29,8 +29,8 @@
 
 #include <qprotobufjsonserializer.h>
 
-#include "simpletest.pb.h"
-#include "qtprotobuf_global.pb.h"
+#include "simpletest.qpb.h"
+#include "qtprotobuf_global.qpb.h"
 
 using namespace qtprotobufnamespace::tests;
 

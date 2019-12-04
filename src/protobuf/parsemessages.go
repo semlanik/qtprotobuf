@@ -69,11 +69,11 @@ func main() {
 		}
 
 		if messageFound {
-			fmt.Printf("%s.pb.h;", basename)
+			fmt.Printf("%s.qpb.h;", basename)
 		}
 
 		if serviceFound {
-			fmt.Printf("%s_grpc.pb.h;", basename)
+			fmt.Printf("%s_grpc.qpb.h;", basename)
 		}
 	}
 

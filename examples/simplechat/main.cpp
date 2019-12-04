@@ -29,8 +29,8 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "simplechat.pb.h"
-#include "qtprotobuf_global.pb.h"
+#include "simplechat.qpb.h"
+#include "qtprotobuf_global.qpb.h"
 
 #include "simplechatengine.h"
 

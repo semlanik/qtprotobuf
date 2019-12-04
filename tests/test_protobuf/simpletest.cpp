@@ -23,6 +23,6 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "simpletest.pb.h"
+#include "simpletest.qpb.h"
 
 #include "./simpletest.cpp.inc"

@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 
 **For each generated class you also need to call 'qRegisterProtobufType&lt;GeneratedClassName&gt;' to enable serialization and QML support**
 
-**Other option is to include common "qtprotobuf_global.pb.h" file and call apptopriate qRegisterProtobufTypes() method for you package**
+**Other option is to include common "qtprotobuf_global.qpb.h" file and call apptopriate qRegisterProtobufTypes() method for you package**
 
 ## CMake functions reference
 

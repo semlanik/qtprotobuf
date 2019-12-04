@@ -27,8 +27,8 @@
 
 #include <QObject>
 
-#include "simplechat.pb.h"
-#include "simplechat_grpc.pb.h"
+#include "simplechat.qpb.h"
+#include "simplechat_grpc.qpb.h"
 
 #include "universallistmodel.h"
 

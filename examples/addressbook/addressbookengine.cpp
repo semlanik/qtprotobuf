@@ -25,8 +25,8 @@
 
 #include "addressbookengine.h"
 
-#include "addressbook.pb.h"
-#include "addressbook_grpc.pb.h"
+#include "addressbook.qpb.h"
+#include "addressbook_grpc.qpb.h"
 
 #include <QGrpcHttp2Channel>
 #include <QGrpcUserPasswordCredentials>

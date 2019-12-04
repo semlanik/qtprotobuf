@@ -29,7 +29,7 @@
 
 #include <gtest/gtest.h>
 
-#include "qtprotobuf_global.pb.h"
+#include "qtprotobuf_global.qpb.h"
 
 using namespace qtprotobufnamespace::tests;
 

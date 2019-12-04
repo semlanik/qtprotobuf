@@ -1,6 +1,6 @@
 function(generate_qtprotobuf)
     set(options)
-    set(oneValueArgs OUT_DIR TARGET MULTI QML)
+    set(oneValueArgs OUT_DIR TARGET MULTI QML GENERATED_HEADERS_VAR)
     set(multiValueArgs GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES)
     cmake_parse_arguments(generate_qtprotobuf "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -85,7 +85,9 @@ function(generate_qtprotobuf)
     )
 
     add_custom_target(${GEN_TARGET} DEPENDS ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS} ${generate_qtprotobuf_PROTO_FILES})
-
+    if(NOT "${generate_qtprotobuf_GENERATED_HEADERS_VAR}" STREQUAL "")
+        set(${generate_qtprotobuf_GENERATED_HEADERS_VAR} ${QTPROTOBUF_GENERATED_HEADERS} PARENT_SCOPE)
+    endif()
     qt5_wrap_cpp(MOC_SOURCES ${QTPROTOBUF_GENERATED_HEADERS})
     list(APPEND GENERATED_SOURCES ${MOC_SOURCES})
     set_source_files_properties(${QTPROTOBUF_GENERATED_SOURCES} PROPERTIES GENERATED TRUE)
