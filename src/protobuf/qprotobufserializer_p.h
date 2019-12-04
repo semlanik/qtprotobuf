@@ -442,8 +442,9 @@ public:
     QByteArray serializeProperty(const QVariant &propertyValue, const QProtobufMetaProperty &metaProperty);
     void deserializeProperty(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it);
 
-    static SerializerRegistry handlers;
+    void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it);
 private:
+    static SerializerRegistry handlers;
     QProtobufSerializer *q_ptr;
 };
 
