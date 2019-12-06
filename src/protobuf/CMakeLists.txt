@@ -97,7 +97,7 @@ install(FILES "${QTPROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${T
 
 export(TARGETS ${TARGET} NAMESPACE ${QTPROTOBUF_COMMON_NAMESPACE}:: FILE ${TARGET_EXPORT}.cmake)
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/QtProtobufGen.cmake.in" "${QTPROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" @ONLY)
+configure_file("${QTPROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake" "${QTPROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" COPYONLY)
 install(FILES "${QTPROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/parsemessages.go" "${QTPROTOBUF_BINARY_DIR}/parsemessages.go" COPYONLY)

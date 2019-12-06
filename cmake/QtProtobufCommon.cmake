@@ -10,7 +10,7 @@ function(protobuf_generate_all)
 
     foreach(PROTO_FILE IN LISTS protobuf_generate_all_PROTO_FILES)
         get_filename_component(BASE_DIR ${PROTO_FILE} DIRECTORY)
-        set(PROTO_INCLUDES -I"${BASE_DIR}" ${PROTO_INCUDES})
+        set(PROTO_INCLUDES -I"${BASE_DIR}" ${PROTO_INCLUDES})
     endforeach()
 
     if(NOT DEFINED protobuf_generate_all_OUT_DIR)
@@ -43,7 +43,7 @@ endfunction(protobuf_generate_all)
 function(add_test_target)
     set(options)
     set(oneValueArgs QML_DIR TARGET MULTI QML)
-    set(multiValueArgs SOURCES GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES)
+    set(multiValueArgs SOURCES GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
     cmake_parse_arguments(add_test_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     find_package(Threads REQUIRED)
@@ -68,7 +68,8 @@ function(add_test_target)
         GENERATED_HEADERS ${add_test_target_GENERATED_HEADERS}
         EXCLUDE_HEADERS ${add_test_target_EXCLUDE_HEADERS}
         MULTI ${add_test_target_MULTI}
-        QML ${add_test_target_QML})
+        QML ${add_test_target_QML}
+        PROTO_INCLUDES ${add_test_target_PROTO_INCLUDES})
 
     add_executable(${add_test_target_TARGET} ${add_test_target_SOURCES})
 

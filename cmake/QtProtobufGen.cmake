@@ -1,7 +1,7 @@
 function(generate_qtprotobuf)
     set(options)
     set(oneValueArgs OUT_DIR TARGET MULTI QML GENERATED_HEADERS_VAR)
-    set(multiValueArgs GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES)
+    set(multiValueArgs GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
     cmake_parse_arguments(generate_qtprotobuf "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(QtProtobuf_GENERATED ${generate_qtprotobuf_TARGET}_qtprotobuf_gen PARENT_SCOPE)
@@ -11,18 +11,18 @@ function(generate_qtprotobuf)
     set(GENERATED_HEADERS ${generate_qtprotobuf_GENERATED_HEADERS})
 
     if(NOT DEFINED QTPROTOBUF_EXECUTABLE)
-        set(QTPROTOBUF_EXECUTABLE "@QTPROTOBUF_EXECUTABLE_INSTALL@")
+        set(QTPROTOBUF_EXECUTABLE "${QTPROTOBUF_EXECUTABLE_INSTALL}")
     endif()
 
     set(GENERATION_TYPE "SINGLE")
-    if(${generate_qtprotobuf_MULTI})
+    if("${generate_qtprotobuf_MULTI}" STREQUAL "TRUE")
         set(GENERATION_TYPE "MULTI")
         #TODO: add globalenums by default. But it's better to verify if proto file contains any global enum
         set(GENERATED_HEADERS ${GENERATED_HEADERS} globalenums.h)
     endif()
 
     set(GENERATION_OPTIONS ${GENERATION_TYPE})
-    if(${generate_qtprotobuf_QML})
+    if("${generate_qtprotobuf_QML}" STREQUAL "TRUE")
         message(STATUS "Enabled QML generation for ${generate_qtprotobuf_TARGET}")
         set(GENERATION_OPTIONS "${GENERATION_OPTIONS}:QML")
     endif()
@@ -31,12 +31,18 @@ function(generate_qtprotobuf)
     if (GO_EXECUTABLE STREQUAL GO_EXECUTABLE-NOTFOUND)
         message(FATAL_ERROR "Golang is mandatory dependency for QtProtobuf. Please install it and ensure that it's accessible by PATH environment variable")
     endif()
+
+    set(PROTO_INCLUDES ${generate_qtprotobuf_PROTO_INCLUDES})
     foreach(PROTO_FILE IN LISTS generate_qtprotobuf_PROTO_FILES)
         get_filename_component(BASE_DIR ${PROTO_FILE} DIRECTORY)
-        set(PROTO_INCLUDES -I"${BASE_DIR}" ${PROTO_INCUDES})
+        set(PROTO_INCLUDES -I"${BASE_DIR}" ${PROTO_INCLUDES})
         execute_process(COMMAND ${GO_EXECUTABLE} run ${PROTO_PARSER} ${PROTO_FILE} ${GENERATION_TYPE} OUTPUT_VARIABLE GENERATED_HEADERS_PART ERROR_VARIABLE PARSER_ERROR)
         set(GENERATED_HEADERS ${GENERATED_HEADERS} ${GENERATED_HEADERS_PART})
     endforeach()
+
+    if(NOT "${PARSER_ERROR}" STREQUAL "")
+        message(FATAL_ERROR "Go parser error ${PARSER_ERROR}")
+    endif()
 
     if(DEFINED generate_qtprotobuf_GENERATED_HEADERS)
         set(GENERATED_HEADERS ${generate_qtprotobuf_GENERATED_HEADERS})
@@ -72,11 +78,12 @@ function(generate_qtprotobuf)
     else()
         set(PROTOC_COMMAND "QT_PROTOBUF_OPTIONS=${GENERATION_OPTIONS}" $<TARGET_FILE:protobuf::protoc>)
     endif()
+
     add_custom_command(
             OUTPUT ${QTPROTOBUF_GENERATED_SOURCES} ${QTPROTOBUF_GENERATED_HEADERS}
             COMMAND ${PROTOC_COMMAND}
-                --plugin=protoc-gen-@GENERATOR_TARGET@=${QTPROTOBUF_EXECUTABLE}
-                --@GENERATOR_TARGET@_out=${OUT_DIR}
+                --plugin=protoc-gen-${GENERATOR_TARGET}=${QTPROTOBUF_EXECUTABLE}
+                --${GENERATOR_TARGET}_out=${OUT_DIR}
                 ${PROTO_INCLUDES}
                 ${generate_qtprotobuf_PROTO_FILES}
             WORKING_DIRECTORY ${OUT_DIR}
@@ -94,7 +101,7 @@ function(generate_qtprotobuf)
     add_library(${QtProtobuf_GENERATED} ${QTPROTOBUF_GENERATED_SOURCES} ${MOC_SOURCES})
     add_dependencies(${QtProtobuf_GENERATED} ${GEN_TARGET})
     target_include_directories(${QtProtobuf_GENERATED} PUBLIC ${OUT_DIR} PRIVATE ${Qt5Core_INCLUDE_DIRS}
-        $<TARGET_PROPERTY:@QTPROTOBUF_COMMON_NAMESPACE@::QtProtobuf,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:@QTPROTOBUF_COMMON_NAMESPACE@::QtGrpc,INTERFACE_INCLUDE_DIRECTORIES> ${OUT_DIR})
+        $<TARGET_PROPERTY:${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:${QTPROTOBUF_COMMON_NAMESPACE}::QtGrpc,INTERFACE_INCLUDE_DIRECTORIES> ${OUT_DIR})
 endfunction()
 
