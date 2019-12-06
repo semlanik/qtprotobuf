@@ -40,7 +40,8 @@ file(GLOB HEADERS
     qprotobufjsonserializer.h
     qprotobufselfcheckiterator.h
     qprotobufmetaproperty.h
-    qprotobufmetaobject.h)
+    qprotobufmetaobject.h
+    qprotobufserializationplugininterface.h)
 
 file(GLOB PUBLIC_HEADERS
     qtprotobufglobal.h
@@ -54,11 +55,15 @@ file(GLOB PUBLIC_HEADERS
     qprotobufjsonserializer.h
     qprotobufselfcheckiterator.h
     qprotobufmetaproperty.h
-    qprotobufmetaobject.h)
+    qprotobufmetaobject.h
+    qprotobufserializationplugininterface.h)
 
 protobuf_generate_qt_headers(PUBLIC_HEADERS ${PUBLIC_HEADERS} COMPONENT ${TARGET})
 
 add_library(${TARGET} SHARED ${SOURCES})
+
+target_compile_definitions(QtProtobuf PUBLIC QT_PROTOBUF_PLUGIN_PATH=$<TARGET_FILE_DIR:serializationplugin>)
+
 target_compile_definitions(${TARGET} PRIVATE QT_BUILD_PROTOBUF_LIB PUBLIC QTPROTOBUF_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
     QTPROTOBUF_VERSION_MINOR=${PROJECT_VERSION_MINOR})
 

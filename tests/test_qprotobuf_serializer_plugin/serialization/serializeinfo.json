@@ -1,0 +1,8 @@
+{
+    "name":"TestPlugin",
+    "author":"TatyanVladimirovich",
+    "version":1.0,
+    "protobufVersion":1.0,
+    "types":["protobuf", "json"],
+    "rating":0
+}

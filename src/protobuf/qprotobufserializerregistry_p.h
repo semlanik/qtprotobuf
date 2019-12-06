@@ -30,6 +30,7 @@
 
 #include <memory>
 #include <type_traits>
+#include <unordered_map>
 
 #include "qtprotobuflogging.h"
 #include "qprotobufselfcheckiterator.h"
@@ -40,6 +41,8 @@
 namespace QtProtobuf {
 
 class QProtobufSerializerRegistryPrivate;
+class QProtobufSerializerRegistryPrivateRecord;
+const QString DefaultImpl("Default");
 /*!
  * \ingroup QtProtobuf
  * \private
@@ -47,12 +50,17 @@ class QProtobufSerializerRegistryPrivate;
  *        Loads serializer plugins and constructs serializer based on identifier.
  *
  */
-
 class Q_PROTOBUF_EXPORT QProtobufSerializerRegistry final
 {
 public:
-    std::shared_ptr<QAbstractProtobufSerializer> getSerializer(const QString &id);
-    std::unique_ptr<QAbstractProtobufSerializer> acquireSerializer(const QString &id);
+    std::shared_ptr<QAbstractProtobufSerializer> getSerializer(const QString &id, const QString &plugin = DefaultImpl);
+    std::unique_ptr<QAbstractProtobufSerializer> acquireSerializer(const QString &id, const QString &plugin);
+    float pluginVersion(const QString &plugin);
+    QStringList pluginSerializers(const QString &plugin);
+    float pluginProtobufVersion(const QString &plugin);
+    int pluginRating(const QString &plugin);
+
+    const QString &loadPlugin(const QString &path = "", const QString &name = "");
 
     static QProtobufSerializerRegistry &instance() {
         static QProtobufSerializerRegistry _instance;
@@ -65,6 +73,6 @@ private:
 
     Q_DISABLE_COPY_MOVE(QProtobufSerializerRegistry)
 
-    std::unique_ptr<QProtobufSerializerRegistryPrivate> d;
+    std::unique_ptr<QProtobufSerializerRegistryPrivate> dPtr;
 };
 }
