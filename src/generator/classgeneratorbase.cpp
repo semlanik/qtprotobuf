@@ -173,7 +173,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
             }
         } else if (visibility == GLOBAL_ENUM) {
             namespaceTypeName = getNamespacesList(enumType, typeNamespace, "");
-            typeName = namespaceTypeName.append(Templates::GlobalEnumClassNameTemplate)
+            typeName = namespaceTypeName.append(enumType->name() + Templates::EnumClassSuffix)
                     .append("::").append(enumType->name());
         } else {
             typeName = namespaceTypeName.append(enumType->name());

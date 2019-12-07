@@ -28,8 +28,8 @@
 #include "classgeneratorbase.h"
 #include "protobufclassgenerator.h"
 #include "protobufsourcegenerator.h"
-#include "globalenumsgenerator.h"
-#include "globalenumssourcegenerator.h"
+#include "enumsgenerator.h"
+#include "enumssourcegenerator.h"
 #include "servergenerator.h"
 #include "clientgenerator.h"
 #include "clientsourcegenerator.h"
@@ -69,7 +69,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
                                            const std::string &,
                                            ::google::protobuf::compiler::GeneratorContext *generatorContext,
                                            std::string *) const {
-    if (file->message_type_count() <= 0) {
+    if (file->message_type_count() <= 0 && file->enum_type_count() <= 0) {
         return true;
     }
 
@@ -113,14 +113,18 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     PackagesList packageList;
     packageList[file->package()].push_back(file);
 
-    GlobalEnumsGenerator enumGen(packageList,
-                                 outHeaderPrinter);
-    enumGen.run();
+    for(int i = 0; i < file->enum_type_count(); i++) {
+        EnumsGenerator enumGen2(file->enum_type(i),
+                                outHeaderPrinter);
+        enumGen2.run();
+    }
 
-    GlobalEnumsSourceGenerator enumSourceGen(packageList,
-                                             outSourcePrinter);
-    enumSourceGen.run();
-
+    for(int i = 0; i < file->enum_type_count(); i++) {
+        auto enumType = file->enum_type(i);
+        EnumsSourceGenerator enumSourceGen2(enumType,
+                                outSourcePrinter);
+        enumSourceGen2.run();
+    }
 
     std::vector<std::string> namespaces;
     std::string namespacesColonDelimited;
@@ -221,7 +225,6 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
             }
         }
     }
-
 
     externalIncludes.insert("QAbstractGrpcClient");
     externalIncludes.insert("QGrpcAsyncReply");

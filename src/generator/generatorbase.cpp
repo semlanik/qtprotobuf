@@ -87,7 +87,7 @@ bool GeneratorBase::GenerateAll(const std::vector<const FileDescriptor *> &files
     bool addGlobalEnumsHeader = false;
     for (auto file : files) {
         if (m_mode == SingleMode) {
-            if (file->message_type_count() > 0) {
+            if (file->message_type_count() > 0 || file->enum_type_count() > 0) {
                 outfHeaderPrinter->Print({{"include", utils::extractFileName(file->name()) + Templates::ProtoFileSuffix}}, Templates::InternalIncludeTemplate);
             }
         } else {
@@ -120,8 +120,9 @@ bool GeneratorBase::GenerateAll(const std::vector<const FileDescriptor *> &files
                 outfHeaderPrinter->Print({{"classname", utils::upperCaseName(message->name())}}, "qRegisterProtobufType<$classname$>();\n");
             });
 
-            if (file->enum_type_count() > 0) {
-                outfHeaderPrinter->Print("GlobalEnums::registerTypes();\n");
+            for (int i = 0; i < file->enum_type_count(); i++) {
+                std::string enumRegistator = file->enum_type(i)->name() + Templates::EnumClassSuffix + "::registerTypes();\n";
+                outfHeaderPrinter->Print(enumRegistator.c_str());
             }
         }
         outfHeaderPrinter->Outdent();

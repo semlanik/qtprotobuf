@@ -52,7 +52,7 @@ public:
     static const char *ComplexListTypeUsingTemplate;
     static const char *MapTypeUsingTemplate;
     static const char *MessageMapTypeUsingTemplate;
-    static const char *EnumTypeUsingTemplate;
+    static const char *EnumTypeRepeatedTemplate;
     static const char *NamespaceTemplate;
     static const char *UsingNamespaceTemplate;
     static const char *NonProtoClassDefinitionTemplate;
@@ -166,6 +166,7 @@ public:
     static const char *ListSuffix;
     static const char *ProtoFileSuffix;
     static const char *GrpcFileSuffix;
+    static const char *EnumClassSuffix;
 
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
     static const std::string GlobalDeclarationsFilename;

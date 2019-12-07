@@ -33,7 +33,7 @@ func main() {
 		log.Fatalf("Invalid regexp %s\n", err)
 	}
 	
-    serviceFinder, err := regexp.Compile("^service\\s+([a-zA-Z0-9_]+)")
+	serviceFinder, err := regexp.Compile("^service\\s+([a-zA-Z0-9_]+)")
 	if err != nil {
 		log.Fatalf("Invalid regexp %s\n", err)
 	}
@@ -53,11 +53,21 @@ func main() {
 		}
 	} else {
 		//Singlefile version
+		enumFinder, err := regexp.Compile("^enum\\s+([a-zA-Z0-9_]+)")
+		if err != nil {
+			log.Fatalf("Invalid regexp %s\n", err)
+		}
+
 		basename := strings.TrimSuffix(os.Args[1], filepath.Ext(os.Args[1]))
 		messageFound := false
 		serviceFound := false
 		for scanner.Scan() {
 			capture := messageFinder.FindStringSubmatch(scanner.Text())
+			if len(capture) == 2 {
+				messageFound = true
+			}
+
+			capture = enumFinder.FindStringSubmatch(scanner.Text())
 			if len(capture) == 2 {
 				messageFound = true
 			}

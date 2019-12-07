@@ -69,7 +69,7 @@ const char *Templates::ComplexListTypeUsingTemplate = "using $classname$Repeated
 const char *Templates::MapTypeUsingTemplate = "using $classname$ = QMap<$key$, $value$>;\n";
 const char *Templates::MessageMapTypeUsingTemplate = "using $classname$ = QMap<$key$, QSharedPointer<$value$>>;\n";
 
-const char *Templates::EnumTypeUsingTemplate = "using $enum$Repeated = QList<$enum$>;\n";
+const char *Templates::EnumTypeRepeatedTemplate = "using $enum$Repeated = QList<$enum$>;\n";
 
 const char *Templates::NamespaceTemplate = "\nnamespace $namespace$ {\n";
 const char *Templates::UsingNamespaceTemplate = "using namespace $namespace$;\n";
@@ -300,6 +300,8 @@ const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string>
 
 const char *Templates::ProtoFileSuffix = ".qpb";
 const char *Templates::GrpcFileSuffix = "_grpc";
+
+const char *Templates::EnumClassSuffix = "Gadget";
 
 const std::string Templates::GlobalDeclarationsFilename = std::string("qtprotobuf_global");
 

@@ -271,10 +271,10 @@ TEST_F(SimpleTest, SimpleLocalEnumListTest)
 
 TEST_F(SimpleTest, SimpleExternalEnumMessageTest)
 {
-    using ExternalGlobalEnums = qtprotobufnamespace1::externaltests::GlobalEnums;
+    using ExternalGlobalEnums = qtprotobufnamespace1::externaltests::ExternalTestEnumGadget;
 
     const char *propertyName = "externalEnum";
-    assertMessagePropertyRegistered<SimpleExternalEnumMessage, ExternalGlobalEnums::ExternalTestEnum>(1, "qtprotobufnamespace1::externaltests::GlobalEnums::ExternalTestEnum", propertyName);
+    assertMessagePropertyRegistered<SimpleExternalEnumMessage, ExternalGlobalEnums::ExternalTestEnum>(1, "qtprotobufnamespace1::externaltests::ExternalTestEnumGadget::ExternalTestEnum", propertyName);
 
     SimpleExternalEnumMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<ExternalGlobalEnums::ExternalTestEnum>(ExternalGlobalEnums::EXTERNAL_TEST_ENUM_VALUE4)));
@@ -284,10 +284,10 @@ TEST_F(SimpleTest, SimpleExternalEnumMessageTest)
 
 TEST_F(SimpleTest, SimpleEnumsTest)
 {
-    EXPECT_GT(GlobalEnums::staticMetaObject.enumeratorCount(), 0);
+    EXPECT_GT(TestEnumGadget::staticMetaObject.enumeratorCount(), 0);
     QMetaEnum testEnum;
-    for (int i = 0; i < GlobalEnums::staticMetaObject.enumeratorCount(); i++) {
-        QMetaEnum tmp = GlobalEnums::staticMetaObject.enumerator(i);
+    for (int i = 0; i < TestEnumGadget::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = TestEnumGadget::staticMetaObject.enumerator(i);
         if (QString(tmp.name()) == QString("TestEnum")) {
             testEnum = tmp;
             break;
@@ -306,8 +306,8 @@ TEST_F(SimpleTest, SimpleEnumsTest)
     ASSERT_EQ(testEnum.value(3), 4);
     ASSERT_EQ(testEnum.value(4), 3);
 
-    for (int i = 0; i < GlobalEnums::staticMetaObject.enumeratorCount(); i++) {
-        QMetaEnum tmp = GlobalEnums::staticMetaObject.enumerator(i);
+    for (int i = 0; i < TestEnumSecondInFileGadget::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = TestEnumSecondInFileGadget::staticMetaObject.enumerator(i);
         if (QString(tmp.name()) == QString("TestEnumSecondInFile")) {
             testEnum = tmp;
             break;
@@ -327,16 +327,16 @@ TEST_F(SimpleTest, SimpleEnumsTest)
 TEST_F(SimpleTest, SimpleFileEnumsTest)
 {
     const char *propertyName = "globalEnumList";
-    assertMessagePropertyRegistered<SimpleFileEnumMessage, GlobalEnums::TestEnumRepeated>(2, "qtprotobufnamespace::tests::GlobalEnums::TestEnumRepeated", propertyName);
+    assertMessagePropertyRegistered<SimpleFileEnumMessage, TestEnumGadget::TestEnumRepeated>(2, "qtprotobufnamespace::tests::TestEnumGadget::TestEnumRepeated", propertyName);
 
-    GlobalEnums::TestEnumRepeated value({GlobalEnums::TEST_ENUM_VALUE1,
-                                     GlobalEnums::TEST_ENUM_VALUE3,
-                                     GlobalEnums::TEST_ENUM_VALUE4,
-                                     GlobalEnums::TEST_ENUM_VALUE2,
-                                     GlobalEnums::TEST_ENUM_VALUE1});
+    TestEnumGadget::TestEnumRepeated value{TestEnumGadget::TEST_ENUM_VALUE1,
+                                     TestEnumGadget::TEST_ENUM_VALUE3,
+                                     TestEnumGadget::TEST_ENUM_VALUE4,
+                                     TestEnumGadget::TEST_ENUM_VALUE2,
+                                     TestEnumGadget::TEST_ENUM_VALUE1};
     SimpleFileEnumMessage test;
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<GlobalEnums::TestEnumRepeated>(value)));
-    ASSERT_TRUE(test.property(propertyName).value<GlobalEnums::TestEnumRepeated>() == value);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<TestEnumGadget::TestEnumRepeated>(value)));
+    ASSERT_TRUE(test.property(propertyName).value<TestEnumGadget::TestEnumRepeated>() == value);
     ASSERT_TRUE(test.globalEnumList() == value);
 }
 

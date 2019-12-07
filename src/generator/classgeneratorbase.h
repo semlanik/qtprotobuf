@@ -110,7 +110,7 @@ public:
 
         for (int i = 0; i < message->enum_type_count(); i++) {
             const auto enumDescr = message->enum_type(i);
-            mPrinter->Print({{"enum", enumDescr->name()}}, Templates::EnumTypeUsingTemplate);
+            mPrinter->Print({{"enum", enumDescr->name()}}, Templates::EnumTypeRepeatedTemplate);
         }
         Outdent();
     }
