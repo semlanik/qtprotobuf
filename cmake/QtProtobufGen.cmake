@@ -103,9 +103,9 @@ function(generate_qtprotobuf)
     target_include_directories(${QtProtobuf_GENERATED} PUBLIC ${OUT_DIR} PRIVATE ${Qt5Core_INCLUDE_DIRS}
         $<TARGET_PROPERTY:${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:${QTPROTOBUF_COMMON_NAMESPACE}::QtGrpc,INTERFACE_INCLUDE_DIRECTORIES> ${OUT_DIR})
-	if(NOT WIN32)
-		target_include_directories(${QtProtobuf_GENERATED} PRIVATE
-			$<TARGET_PROPERTY:${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
-	endif()
+    if(NOT WIN32)
+        target_include_directories(${QtProtobuf_GENERATED} PRIVATE
+            $<TARGET_PROPERTY:${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
+    endif()
 endfunction()
 
