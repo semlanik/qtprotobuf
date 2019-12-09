@@ -114,22 +114,23 @@ if(NOT gRPC_FOUND)
     set(QTPROTOBUF_MAKE_EXAMPLES OFF)
 endif()
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/QtProtobufCommon.cmake")
+
 if(QTPROTOBUF_MAKE_TESTS)
-    find_package(GTest)
-    if(NOT GTest_FOUND)
-        include(cmake/DownloadProject.cmake)
-        download_project(PROJ                GTest
-            GIT_REPOSITORY      https://github.com/google/googletest.git
-            GIT_TAG             v1.8.x
-            )
-        # uncomment if gmock is going to be needed
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/googletest/CMakeLists.txt")
         set(BUILD_GMOCK OFF CACHE BOOL "Disable gmock build functionality" FORCE)
         set(gtest_force_shared_crt ON CACHE BOOL "Enable shared crt" FORCE)
-        add_subdirectory(${GTest_SOURCE_DIR} ${GTest_BINARY_DIR})
+        add_subdirectory("3rdparty/googletest")
+        set(GTest_FOUND TRUE)
+    else()
+        find_package(GTest)
     endif()
-
-    enable_testing()
-    add_subdirectory("tests")
+    if(GTest_FOUND)
+        enable_testing()
+        add_subdirectory("tests")
+    else()
+        message(STATUS "-- Force disable test")
+    endif()
 endif()
 
 if(QTPROTOBUF_MAKE_EXAMPLES)
