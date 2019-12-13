@@ -73,7 +73,11 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
                                                                                       QtProtobuf::QGrpcUserPasswordCredentials<>(name, QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())));
 
     m_client->attachChannel(channel);
-    m_client->subscribeMessageListUpdates(None());
+    QtProtobuf::QGrpcSubscription *subscription = m_client->subscribeMessageListUpdates(None());
+    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::error, this, [subscription] {
+        qCritical() << "Subscription error, cancel";
+        subscription->cancel();
+    });
     QObject::connect(m_client, &SimpleChatClient::messageListUpdated, this, [this, name](const qtprotobuf::examples::ChatMessages &messages) {
         if (m_userName != name) {
             m_userName = name;

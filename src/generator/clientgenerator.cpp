@@ -70,6 +70,7 @@ void ClientGenerator::printClientIncludes()
     std::unordered_set<std::string> includeSet;
     includeSet.insert("QAbstractGrpcClient");
     includeSet.insert("QGrpcAsyncReply");
+    includeSet.insert("QGrpcSubscription");
     for (auto type : includeSet) {
         mPrinter->Print({{"include", type}}, Templates::ExternalIncludeTemplate);
     }

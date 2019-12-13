@@ -26,7 +26,6 @@
 #pragma once //QGrpcAsyncReply
 
 #include <functional>
-#include <QPointer>
 #include <QMutex>
 #include <memory>
 

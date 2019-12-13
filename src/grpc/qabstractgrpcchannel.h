@@ -37,6 +37,7 @@
 namespace QtProtobuf {
 
 class QGrpcAsyncReply;
+class QGrpcSubscription;
 class QAbstractGrpcClient;
 class QAbstractProtobufSerializer;
 /*!
@@ -78,7 +79,7 @@ public:
      * \param[in] args serialized argument message
      * \param[in] handler callback that will be called when message recevied from the server-stream
      */
-    virtual void subscribe(const QString &method, const QString &service, const QByteArray &args, QAbstractGrpcClient *client, const std::function<void(const QByteArray &)> &handler) = 0;
+    virtual void subscribe(QGrpcSubscription *subscription, const QString &service, QAbstractGrpcClient *client) = 0;
 
     virtual std::shared_ptr<QAbstractProtobufSerializer> serializer() const = 0;
 protected:
@@ -86,16 +87,19 @@ protected:
     virtual ~QAbstractGrpcChannel() = default;
 
     /*!
-     * \brief aborts async call for given \p reply
-     *        \note by default abort is explicitly not supported by QAbstractGrpcChannel and throws assert when called
+     * \brief Aborts async call for given \p reply
      * \param[in] reply returned by asynchronous QAbstractGrpcChannel::call() method
      */
-    virtual void abort(QGrpcAsyncReply *reply) {
-        Q_UNUSED(reply)
-        assert("Abort is not supported by used channel");
-    }
+    virtual void abort(QGrpcAsyncReply *reply);
+
+    /*!
+     * \brief Cancels \p subscription
+     * \param[in] subscription returned by QAbstractGrpcChannel::subscribe() method
+     */
+    virtual void cancel(QGrpcSubscription *subscription);
 
     friend class QGrpcAsyncReply;
+    friend class QGrpcSubscription;
 private:
     Q_DISABLE_COPY(QAbstractGrpcChannel)
 };

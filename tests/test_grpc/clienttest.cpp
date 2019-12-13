@@ -214,6 +214,78 @@ TEST_F(ClientTest, StringEchoStreamTest)
     ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Stream1Stream2Stream3Stream4");
 }
 
+TEST_F(ClientTest, StringEchoStreamAbortTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, QGrpcInsecureCallCredentials() | QGrpcInsecureChannelCredentials()));
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("Stream");
+
+    QEventLoop waiter;
+
+    int i = 0;
+    QtProtobuf::QGrpcSubscription *subscription = testClient.subscribeTestMethodServerStreamUpdates(request);
+    QObject::connect(&testClient, &TestServiceClient::testMethodServerStreamUpdated, &m_app, [&result, &i, &waiter, subscription](const SimpleStringMessage &ret) {
+        ++i;
+
+        result.setTestFieldString(result.testFieldString() + ret.testFieldString());
+
+        if (i == 3) {
+            subscription->cancel();
+            QTimer::singleShot(4000, &waiter, &QEventLoop::quit);
+        }
+    });
+
+    QTimer::singleShot(20000, &waiter, &QEventLoop::quit);
+    waiter.exec();
+
+    ASSERT_EQ(i, 3);
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Stream1Stream2Stream3");
+}
+
+TEST_F(ClientTest, StringEchoStreamAbortByTimerTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, QGrpcInsecureCallCredentials() | QGrpcInsecureChannelCredentials()));
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("Stream");
+
+    QEventLoop waiter;
+
+
+    int i = 0;
+    QtProtobuf::QGrpcSubscription *subscription = testClient.subscribeTestMethodServerStreamUpdates(request);
+    QTimer::singleShot(3500, subscription, [subscription](){
+        subscription->cancel();
+    });
+
+    bool isFinished = false;
+    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::finished, [&isFinished](){
+        isFinished = true;
+    });
+
+    bool isError = false;
+    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::error, [&isError](){
+        isError = true;
+    });
+
+    QObject::connect(&testClient, &TestServiceClient::testMethodServerStreamUpdated, &m_app, [&result, &i](const SimpleStringMessage &ret) {
+        ++i;
+
+        result.setTestFieldString(result.testFieldString() + ret.testFieldString());
+    });
+
+    QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
+    waiter.exec();
+
+    ASSERT_EQ(i, 3);
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Stream1Stream2Stream3");
+    ASSERT_TRUE(isFinished);
+    ASSERT_TRUE(!isError);
+}
+
 TEST_F(ClientTest, StringEchoStreamTestRetUpdates)
 {
     TestServiceClient testClient;

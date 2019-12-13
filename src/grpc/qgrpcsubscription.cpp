@@ -23,41 +23,18 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "qprotobufserializerregistry_p.h"
-#include "qprotobufserializer.h"
-#include "qprotobufjsonserializer.h"
+#include "qgrpcsubscription.h"
 
-#include <QString>
-#include <QHash>
-
-namespace QtProtobuf {
-class QProtobufSerializerRegistryPrivate {
-public:
-    QProtobufSerializerRegistryPrivate() {
-        serializers["protobuf"] = std::shared_ptr<QAbstractProtobufSerializer>(new QProtobufSerializer);
-        serializers["json"] = std::shared_ptr<QAbstractProtobufSerializer>(new QProtobufJsonSerializer);
-    }
-    std::unordered_map<QString/*id*/,  std::shared_ptr<QAbstractProtobufSerializer>> serializers;
-};
-}
+#include <qtprotobuflogging.h>
 
 using namespace QtProtobuf;
 
-QProtobufSerializerRegistry::QProtobufSerializerRegistry() : d(new QProtobufSerializerRegistryPrivate)
+QGrpcSubscription::QGrpcSubscription(const std::shared_ptr<QAbstractGrpcChannel> &channel, const QString &method,
+                                     const QByteArray &arg, const std::function<void(const QByteArray&)> &handler) : QObject()
+  , m_channel(channel)
+  , m_method(method)
+  , m_arg(arg)
+  , m_handler(handler)
 {
 
-}
-
-QProtobufSerializerRegistry::~QProtobufSerializerRegistry() = default;
-
-
-std::shared_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::getSerializer(const QString &id)
-{
-    return d->serializers.at(id); //throws
-}
-
-std::unique_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::acquireSerializer(const QString &/*id*/)
-{
-    Q_ASSERT_X(false, "QProtobufSerializerRegistry", "acquireSerializer is unimplemented");
-    return std::unique_ptr<QAbstractProtobufSerializer>();
 }

@@ -30,6 +30,7 @@
 #include <type_traits>
 
 #include <QObject>
+#include <QPointer>
 #include <QByteArray>
 
 #include <qtprotobuflogging.h>
@@ -120,8 +121,8 @@ protected:
      */
     template<typename A, typename R, typename C,
              typename std::enable_if_t<std::is_base_of<QAbstractGrpcClient, C>::value, int> = 0>
-    void subscribe(const QString &method, const A &arg, void(C::*signal)(const R &)) {
-        subscribe(method, arg.serialize(serializer()), [this, signal](const QByteArray &data) {
+    QGrpcSubscription *subscribe(const QString &method, const A &arg, void(C::*signal)(const R &)) {
+        return subscribe(method, arg.serialize(serializer()), [this, signal](const QByteArray &data) {
             R ret;
             tryDeserialize(ret, data);
             C *client = static_cast<C *>(this);
@@ -139,18 +140,21 @@ protected:
      * \note If \p ret is used as property-fiels in other object, property NOTIFY signal won't be called in case of
      *       updated message recevied from server-stream
      */
-    template<typename A, typename R>
-    void subscribe(const QString &method, const A &arg, const QPointer<R> &ret) {
+    template<typename A, typename R, typename C,
+             typename std::enable_if_t<std::is_base_of<QAbstractGrpcClient, C>::value, int> = 0>
+    QGrpcSubscription *subscribe(const QString &method, const A &arg, const QPointer<R> &ret, void(C::*signal)(const R &)) {
         if (ret.isNull()) {
             static const QString nullPointerError("Unable to subscribe method: %1. Pointer to return data is null");
             error({QGrpcStatus::InvalidArgument, nullPointerError.arg(method)});
             qProtoCritical() << nullPointerError.arg(method);
-            return;
+            return nullptr;
         }
 
-        subscribe(method, arg.serialize(serializer()), [ret, this](const QByteArray &data) {
+        return subscribe(method, arg.serialize(serializer()), [ret, signal, this](const QByteArray &data) {
             if (!ret.isNull()) {
                 tryDeserialize(*ret, data);
+                C *client = static_cast<C *>(this);
+                (client->*signal)(*ret);
             } else {
                 static const QLatin1String nullPointerError("Pointer to return data is null while subscription update received");
                 error({QGrpcStatus::InvalidArgument, nullPointerError});
@@ -158,6 +162,12 @@ protected:
             }
         });
     }
+
+    /*!
+     * \brief Canceles all subscription for specified \p method
+     * \param[in] method Name of method subscription for to be canceled
+     */
+    void cancel(const QString &method);
 
     QAbstractProtobufSerializer *serializer() const;
 
@@ -176,7 +186,7 @@ private:
     /*!
      * \private
      */
-    void subscribe(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray &)> &handler);
+    QGrpcSubscription *subscribe(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray &)> &handler);
 
     /*!
      * \private

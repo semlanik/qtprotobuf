@@ -26,6 +26,7 @@
 #include "qabstractgrpcclient.h"
 
 #include "qgrpcasyncreply.h"
+#include "qgrpcsubscription.h"
 #include "qprotobufserializerregistry_p.h"
 
 #include <QTimer>
@@ -86,7 +87,7 @@ QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArr
             reply->deleteLater();
         });
 
-        connect(reply, &QGrpcAsyncReply::finished, this, [reply]() {
+        connect(reply, &QGrpcAsyncReply::finished, this, [reply] {
             reply->deleteLater();
         });
 
@@ -98,13 +99,28 @@ QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArr
     return reply;
 }
 
-void QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray&)> &handler)
+QGrpcSubscription *QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray&)> &handler)
 {
+    QGrpcSubscription *subscription = nullptr;
     if (dPtr->channel) {
-        dPtr->channel->subscribe(method, dPtr->service, arg, this, handler);
+        subscription = new QGrpcSubscription(dPtr->channel, method, arg, handler);
+
+        connect(subscription, &QGrpcSubscription::error, this, [this, subscription](const QGrpcStatus &status) {
+            qProtoWarning() << subscription->method() << "call" << dPtr->service << "subscription error: " << status.message();
+            error(status);
+            dPtr->channel->subscribe(subscription, dPtr->service, this);
+        });
+
+        connect(subscription, &QGrpcSubscription::finished, this, [this, subscription] {
+            qProtoWarning() << subscription->method() << "call" << dPtr->service << "subscription finished";
+            subscription->deleteLater();
+        });
+
+        dPtr->channel->subscribe(subscription, dPtr->service, this);
     } else {
         error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});
     }
+    return subscription;
 }
 
 QAbstractProtobufSerializer *QAbstractGrpcClient::serializer() const

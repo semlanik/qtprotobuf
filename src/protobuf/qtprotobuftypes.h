@@ -311,4 +311,12 @@ struct is_signed<QtProtobuf::sfixed32> : public is_signed<decltype(QtProtobuf::s
 //! \private
 template<>
 struct is_signed<QtProtobuf::sfixed64> : public is_signed<decltype(QtProtobuf::sfixed64::_t)> {};
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+template<> struct hash<QString> {
+    std::size_t operator()(const QString &s) const {
+        return std::hash<std::string>()(s.toStdString());
+    }
+};
+#endif
 }
