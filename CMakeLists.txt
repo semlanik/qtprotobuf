@@ -42,7 +42,7 @@ set(QTPROTOBUF_EXECUTABLE $<TARGET_FILE:${GENERATOR_TARGET}> CACHE STRING "QTPRO
 if(UNIX)
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         # using Clang
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-pessimizing-move -Wno-mismatched-tags -Wno-unused-private-field")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-pessimizing-move -Wno-mismatched-tags -Wno-unused-private-field -Wno-self-assign-overloaded")
     elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         # using GCC
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-error=deprecated-declarations")
