@@ -84,6 +84,9 @@ TestCase {
     }
 
     function test_simpleintmessage() {
+        if (qVersion < 0x050E00) {
+            skip("int32 type is not supported by Qt < 5.14")
+        }
         compare(int32Msg.testFieldInt == 2147483647, true, "SimpleIntMessage.testFieldInt: 2147483647: " + int32Msg.testFieldInt)
         int32Msg.testFieldInt = 0;
         compare(int32Msg.testFieldInt == 0, true, "SimpleIntMessage == 0")
@@ -154,6 +157,10 @@ TestCase {
     }
 
     function test_simplefixed32message() {
+        if (qVersion < 0x050E00) {
+            skip("fixed32 type is not supported by Qt < 5.14")
+        }
+
         compare(fixed32Msg.testFieldFixedInt32 == 4294967295, true, "SimpleFixedInt32Message.testFieldInt: 4294967295: " + fixed32Msg.testFieldFixedInt32)
         fixed32Msg.testFieldFixedInt32 = 0;
         compare(fixed32Msg.testFieldFixedInt32 == 0, true, "SimpleFixedInt32Message == 0")
@@ -172,6 +179,10 @@ TestCase {
     }
 
     function test_simplesfixed32message() {
+        if (qVersion < 0x050E00) {
+            skip("sfixed32 type is not supported by Qt < 5.14")
+        }
+
         compare(sfixed32Msg.testFieldFixedInt32 == 2147483647, true, "SimpleSFixedInt32Message.testFieldInt: 2147483647: " + sfixed32Msg.testFieldFixedInt32)
         sfixed32Msg.testFieldFixedInt32 = 0;
         compare(sfixed32Msg.testFieldFixedInt32 == 0, true, "SimpleSFixedInt32Message == 0")
