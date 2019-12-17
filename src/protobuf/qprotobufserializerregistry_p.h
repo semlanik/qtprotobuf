@@ -39,12 +39,16 @@
 namespace QtProtobuf {
 
 class QProtobufSerializerRegistryPrivate;
+
 /*!
  * \ingroup QtProtobuf
  * \private
- * \brief The QProtobufSerializerRegistry class provides api to register serializers
- *        Loads serializer plugins and constructs serializer based on identifier.
+ * \brief The QProtobufSerializerRegistry class provides api to register serializers,
+ *        loads serializer plugins and constructs serializer based on identifier.
  *
+ * \details Class reads list of plugins from folder defined by QT_INSTALL_PLUGINS variable.
+ *          User can choose specific plugin or list of plugins with serializer implementations.
+ *          Pay attention, QProtobufSerializerRegistry not load all plugins, but only required by user.
  */
 class Q_PROTOBUF_EXPORT QProtobufSerializerRegistry final
 {

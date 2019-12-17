@@ -36,12 +36,61 @@
 
 namespace QtProtobuf {
 
+/*!
+ * \ingroup QtProtobuf
+ * \brief The QProtobufSerializationPluginInterface class is interface that provides possibility
+ *        to load serialization/deserialization implementations to project via Qt plugin mechanism.
+ *
+ * \details This class should be used as parent of main plugin class. Inherited class should reimplement
+ *          scope of virtual methods that used by serialization/deserialization functionality. Plugin interface name
+ *          should be declared via Q_INTERFACES macros. Plugin must provide metadata information about itself.
+ *          Information is stored in json format and attached to plugin using Q_PLUGIN_METADATA macros.  \n
+ *          An example of class source code:
+ *
+ *          \code{.cpp}
+ *          class SERIALIZATIONSHARED_EXPORT QtSerializationPlugin : public QObject, QtProtobuf::QProtobufSerializationPluginInterface
+ *          {
+ *              Q_OBJECT
+ *              Q_PLUGIN_METADATA(IID SerializatorInterface_iid FILE "serializeinfo.json")
+ *              Q_INTERFACES(QtProtobuf::QProtobufSerializationPluginInterface)
+ *
+ *          public:
+ *              QtSerializationPlugin();
+ *              ~QtSerializationPlugin() = default;
+ *
+ *              virtual std::shared_ptr<QtProtobuf::QAbstractProtobufSerializer> serializer(const QString &serializerName);
+ *
+ *          }
+ *          \endcode
+ *
+ *          An example of json file:
+ *
+ *          \code{.json}
+ *          {
+ *             "name":"Test Plugin",
+ *             "author":"Jhon Smith",
+ *             "version":1.0,
+ *             "protobufVersion":1.0,
+ *             "types":["protobuf", "json"],
+ *             "rating":0
+ *          }
+ *          \endcode
+ *
+ *         Plugins are read by path that is defined by QT_PROTOBUF_PLUGIN_PATH variable.
+ *         QtProtobuf reads plugins metadata list from protobuf plugin folder and provides to user possibility to choose plugin and serializer for serialization/deserialization.
+ *
+ */
 class Q_PROTOBUF_EXPORT QProtobufSerializationPluginInterface
 {
 public:
     explicit QProtobufSerializationPluginInterface() = default;
     virtual ~QProtobufSerializationPluginInterface() = default;
 
+    /*!
+     * \brief Method finds and returns pointer to specific serialization implementation by serializer name, otherwise returns nullptr.
+     * \param[in] name of specific serializer that should be supplied by plugin.
+     * \return An object to serializer realization.
+     */
     virtual std::shared_ptr<QtProtobuf::QAbstractProtobufSerializer> serializer(const QString &serializerName) = 0;
 };
 
