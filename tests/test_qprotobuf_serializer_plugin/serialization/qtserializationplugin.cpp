@@ -33,10 +33,10 @@ QtSerializationPlugin::QtSerializationPlugin()
     m_serializers["json"] = std::shared_ptr<QtProtobuf::QAbstractProtobufSerializer>(new QProtobufJsonSerializerImpl());
 }
 
-QtProtobuf::QAbstractProtobufSerializer *QtSerializationPlugin::serializer(const QString &serializer_name)
+std::shared_ptr<QtProtobuf::QAbstractProtobufSerializer> QtSerializationPlugin::serializer(const QString &serializerName)
 {
-    if (m_serializers.find(serializer_name) == m_serializers.end())
+    if (m_serializers.find(serializerName) == m_serializers.end())
         return nullptr;
 
-    return m_serializers[serializer_name].get();
+    return m_serializers[serializerName];
 }

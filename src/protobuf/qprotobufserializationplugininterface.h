@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Tatyana Borisova <tanusshhka@mail.ru>, Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -39,10 +39,10 @@ namespace QtProtobuf {
 class Q_PROTOBUF_EXPORT QProtobufSerializationPluginInterface
 {
 public:
-    explicit QProtobufSerializationPluginInterface() {}
-    virtual ~QProtobufSerializationPluginInterface() {}
+    explicit QProtobufSerializationPluginInterface() = default;
+    virtual ~QProtobufSerializationPluginInterface() = default;
 
-    virtual QtProtobuf::QAbstractProtobufSerializer *serializer(const QString &serializer_name) = 0;
+    virtual std::shared_ptr<QtProtobuf::QAbstractProtobufSerializer> serializer(const QString &serializerName) = 0;
 };
 
 }

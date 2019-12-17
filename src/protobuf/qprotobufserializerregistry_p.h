@@ -32,8 +32,6 @@
 #include <type_traits>
 #include <unordered_map>
 
-#include "qtprotobuflogging.h"
-#include "qprotobufselfcheckiterator.h"
 #include "qabstractprotobufserializer.h"
 
 #include "qtprotobufglobal.h"
@@ -41,8 +39,6 @@
 namespace QtProtobuf {
 
 class QProtobufSerializerRegistryPrivate;
-class QProtobufSerializerRegistryPrivateRecord;
-const QString DefaultImpl("Default");
 /*!
  * \ingroup QtProtobuf
  * \private
@@ -53,14 +49,15 @@ const QString DefaultImpl("Default");
 class Q_PROTOBUF_EXPORT QProtobufSerializerRegistry final
 {
 public:
-    std::shared_ptr<QAbstractProtobufSerializer> getSerializer(const QString &id, const QString &plugin = DefaultImpl);
+    std::shared_ptr<QAbstractProtobufSerializer> getSerializer(const QString &id);
+    std::shared_ptr<QAbstractProtobufSerializer> getSerializer(const QString &id, const QString &plugin);
     std::unique_ptr<QAbstractProtobufSerializer> acquireSerializer(const QString &id, const QString &plugin);
     float pluginVersion(const QString &plugin);
     QStringList pluginSerializers(const QString &plugin);
     float pluginProtobufVersion(const QString &plugin);
     int pluginRating(const QString &plugin);
 
-    const QString &loadPlugin(const QString &path = "", const QString &name = "");
+    QString loadPlugin(const QString &name);
 
     static QProtobufSerializerRegistry &instance() {
         static QProtobufSerializerRegistry _instance;

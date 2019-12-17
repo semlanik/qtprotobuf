@@ -20,6 +20,9 @@ target_link_libraries(${TARGET} gtest_main gtest ${QtProtobuf_GENERATED} ${QTPRO
 add_target_windeployqt(TARGET ${TARGET}
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_test(NAME ${TARGET} COMMAND ${TARGET})
-
 add_subdirectory("serialization")
+
+add_test(NAME ${TARGET} COMMAND ${TARGET})
+set_tests_properties(${TARGET} PROPERTIES
+    ENVIRONMENT QT_PROTOBUF_PLUGIN_PATH=$<TARGET_FILE_DIR:serializationplugin>)
+

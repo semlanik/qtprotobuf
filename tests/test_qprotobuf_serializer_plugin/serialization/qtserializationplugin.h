@@ -43,7 +43,7 @@ public:
     QtSerializationPlugin();
     ~QtSerializationPlugin() = default;
 
-     virtual QtProtobuf::QAbstractProtobufSerializer *serializer(const QString &serializer_name);
+     virtual std::shared_ptr<QtProtobuf::QAbstractProtobufSerializer> serializer(const QString &serializerName);
 
 protected:
     std::unordered_map<QString/*id*/, std::shared_ptr<QtProtobuf::QAbstractProtobufSerializer>> m_serializers;

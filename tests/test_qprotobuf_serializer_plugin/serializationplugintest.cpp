@@ -32,6 +32,7 @@ using namespace QtProtobuf;
 namespace {
 const QLatin1String ProtobufSerializator("protobuf");
 const QLatin1String JsonSerializator("json");
+const QLatin1String Serializationplugin("serializationplugin");
 }
 
 QString SerializationPluginTest::loadedTestPlugin;
@@ -39,11 +40,11 @@ void SerializationPluginTest::SetUpTestCase()
 {
     //Register all types
     QtProtobuf::qRegisterProtobufTypes();
-    loadedTestPlugin = QProtobufSerializerRegistry::instance().loadPlugin();
 }
 
 void SerializationPluginTest::SetUp()
 {
+    loadedTestPlugin = QProtobufSerializerRegistry::instance().loadPlugin(Serializationplugin);
     serializers[ProtobufSerializator] = QProtobufSerializerRegistry::instance().getSerializer(ProtobufSerializator, loadedTestPlugin);
     serializers[JsonSerializator] = QProtobufSerializerRegistry::instance().getSerializer(JsonSerializator, loadedTestPlugin);
 }

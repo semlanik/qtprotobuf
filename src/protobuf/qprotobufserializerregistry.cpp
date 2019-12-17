@@ -23,6 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include "qtprotobuflogging.h"
 #include "qprotobufserializerregistry_p.h"
 #include "qprotobufserializer.h"
 #include "qprotobufjsonserializer.h"
@@ -36,7 +37,6 @@
 #include <QJsonArray>
 
 namespace {
-const QLatin1String Serializationplugin("serializationplugin");
 const QLatin1String TypeNames("types");
 const QLatin1String MetaData("MetaData");
 const QLatin1String Version("version");
@@ -46,25 +46,31 @@ const QLatin1String PluginName("name");
 const QLatin1String ProtobufSerializer("protobuf");
 const QLatin1String JsonSerializer("json");
 #ifdef _WIN32
-const QLatin1String libExtension(".dll");
-const QLatin1String libPrefix("");
+const QLatin1String LibExtension(".dll");
+const QLatin1String LibPrefix("");
 #else
-const QLatin1String libExtension(".so");
-const QLatin1String libPrefix("lib");
+const QLatin1String LibExtension(".so");
+const QLatin1String LibPrefix("lib");
 #endif
 
+static const char *QtProtobufPluginPath = QT_PROTOBUF_PLUGIN_PATH;
+const QString DefaultImpl("Default");
 }
 
-#define STRINGIFY2(s) #s
-#define STRINGIFY(s) STRINGIFY2(s)
-static const char *QtProtobufPluginPath = STRINGIFY(QT_PROTOBUF_PLUGIN_PATH)"/";
 
 namespace QtProtobuf {
 
-class QProtobufSerializerRegistryPrivateRecord final
+struct QProtobufSerializerRegistryPrivateRecord final
 {
-public:
     QProtobufSerializerRegistryPrivateRecord() : loader(nullptr) {}
+
+    ~QProtobufSerializerRegistryPrivateRecord() {
+        serializers.clear();
+        if (loader && loader->isLoaded()) {
+            loader->unload();
+        }
+        delete loader;
+    }
 
     void createDefaultImpl()
     {
@@ -76,18 +82,10 @@ public:
         }
     }
 
-    void loadPluginMetadata(const QString &path, const QString &pluginName)
+    void loadPluginMetadata(const QString &fullFilePath)
     {
-        // Load default plugin
-        if (path.isEmpty() || pluginName.isEmpty()){
-            libPath = QtProtobufPluginPath + libPrefix + Serializationplugin + libExtension;
-        }
-        // Use custom plugin
-        else {
-            libPath = path + libPrefix + pluginName + libExtension;
-        }
-
-        loader = new QPluginLoader(libPath);
+        libPath = fullFilePath;
+        loader = new QPluginLoader(fullFilePath);
         pluginData = loader->metaData();
 
         QVariantMap fullJson = pluginData.toVariantMap();
@@ -139,26 +137,36 @@ public:
         std::shared_ptr<QProtobufSerializerRegistryPrivateRecord> plugin = std::shared_ptr<QProtobufSerializerRegistryPrivateRecord>(new QProtobufSerializerRegistryPrivateRecord());
         plugin->createDefaultImpl();
         m_plugins[DefaultImpl] = plugin;
+        m_pluginPath = QString::fromUtf8(QtProtobufPluginPath);
+        QString envPluginPath = QString::fromUtf8(qgetenv("QT_PROTOBUF_PLUGIN_PATH"));
+        if (!envPluginPath.isEmpty()) {
+            m_pluginPath = envPluginPath;
+        }
     }
 
-    static const QString &loadPlugin(const QString &path, const QString &name)
+    QString loadPlugin(const QString &name)
     {
+        assert(!name.isEmpty());
+
         std::shared_ptr<QProtobufSerializerRegistryPrivateRecord> plugin = std::shared_ptr<QProtobufSerializerRegistryPrivateRecord>(new QProtobufSerializerRegistryPrivateRecord());
-        plugin->loadPluginMetadata(path, name);
+        QString libPath = m_pluginPath + QDir::separator() + LibPrefix + name + LibExtension;
+        plugin->loadPluginMetadata(libPath);
 
         const QString &pluginName = plugin->pluginLoadedName;
         if (m_plugins.find(pluginName) == m_plugins.end()) {
             plugin->loadPlugin();
             m_plugins[pluginName] = plugin;
+        } else {
+            plugin->loader = nullptr;
+            qProtoInfo() << "Serializer plugin with name" << pluginName << "is already loaded";
         }
         return pluginName;
     }
 
 
-    static std::unordered_map<QString/*pluginName*/, std::shared_ptr<QProtobufSerializerRegistryPrivateRecord>> m_plugins;
+    std::unordered_map<QString/*pluginName*/, std::shared_ptr<QProtobufSerializerRegistryPrivateRecord>> m_plugins;
+    QString m_pluginPath;
 };
-
-std::unordered_map<QString/*pluginName*/, std::shared_ptr<QProtobufSerializerRegistryPrivateRecord>> QProtobufSerializerRegistryPrivate::m_plugins;
 
 }
 
@@ -171,9 +179,14 @@ QProtobufSerializerRegistry::QProtobufSerializerRegistry() :
 
 QProtobufSerializerRegistry::~QProtobufSerializerRegistry() = default;
 
-const QString &QProtobufSerializerRegistry::loadPlugin(const QString &path, const QString &name)
+QString QProtobufSerializerRegistry::loadPlugin(const QString &name)
 {
-    return dPtr->loadPlugin(path, name);
+    return dPtr->loadPlugin(name);
+}
+
+std::shared_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::getSerializer(const QString &id)
+{
+    return dPtr->m_plugins[DefaultImpl]->serializers.at(id); //throws
 }
 
 std::shared_ptr<QAbstractProtobufSerializer> QProtobufSerializerRegistry::getSerializer(const QString &id, const QString &plugin)

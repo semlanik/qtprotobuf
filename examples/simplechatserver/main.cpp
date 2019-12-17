@@ -106,7 +106,7 @@ public:
         service->RequestmessageList(&ctx_, &request_, &writer_, cq_, cq_, &tag_);
         service->loginUser(this);
     }
-    int tag_;
+    unsigned int tag_;
     grpc::ServerContext ctx_;
     None request_;
     ::grpc::ServerAsyncWriter< ::qtprotobuf::examples::ChatMessages> writer_;
@@ -118,7 +118,7 @@ void SimpleChatService::loginUser(MessageListHandler *handler) {
     //TODO: update online if required here
 }
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
     std::string server_address("localhost:65002");
     SimpleChatService service;
@@ -145,9 +145,12 @@ int main(int argc, char *argv[])
     while (true) {
         unsigned int *tag;
         bool ok;
-        cq->Next((void**)&tag, &ok);
+        cq->Next(reinterpret_cast<void**>(&tag), &ok);
         if (tag == nullptr) {
             continue;
+        }
+        if (!ok) {
+            std::cout << "0xdeadbeef done";
         }
         if ((*tag) == 0xdeadbeef) {
             std::string name{""};
@@ -162,6 +165,8 @@ int main(int argc, char *argv[])
             std::cout << "Authentication ok update user chat" << std::endl;
             last->writer_.Write(service.m_messages, nullptr);
             last = new MessageListHandler(&service, cq.get());
+        } else {
+            std::cout << "0xdeadbeef done";
         }
     }
 }
