@@ -4,6 +4,10 @@ gRPC and Protobuf generator and bindings for Qt framework
 
 > see [Protobuf](https://developers.google.com/protocol-buffers) and [gRPC](https://grpc.io/) for more information
 
+## [API Reference](https://semlanik.github.io/qtprotobuf)
+
+![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master)
+
 ## Linux Build
 ### Prerequesties
 Check installation of following packages in your system:
@@ -140,6 +144,31 @@ int main(int argc, char *argv[])
 **For each generated class you also need to call 'qRegisterProtobufType&lt;GeneratedClassName&gt;' to enable serialization and QML support**
 
 **Other option is to include common "qtprotobuf_global.qpb.h" file and call apptopriate qRegisterProtobufTypes() method for you package**
+
+### Code exceptions
+
+If any prohibited Qt/QML keyword is used as field name, generator appends '*Proto*' suffix to generated filed name. It's required to omit overloading for example QML reserved names like '*id*' or '*objectName*'.
+
+E.g. for message:
+```
+message MessageReserved {
+    sint32 import = 1;
+    sint32 property = 2;
+    sint32 id = 3;
+}
+```
+
+Following properties will be generated:
+```cpp
+...
+    Q_PROPERTY(QtProtobuf::sint32 importProto READ importProto WRITE setImport NOTIFY importProtoChanged)
+    Q_PROPERTY(QtProtobuf::sint32 propertyProto READ propertyProto WRITE setProperty NOTIFY propertyProtoChanged)
+    Q_PROPERTY(QtProtobuf::sint32 idProto READ idProto WRITE setId NOTIFY idProtoChanged)
+...
+
+```
+
+**Note:** List of exceptions might be extended in future releases.
 
 ## CMake functions reference
 
