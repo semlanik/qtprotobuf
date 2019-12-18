@@ -56,9 +56,9 @@ AddressBookEngine::AddressBookEngine() : QObject()
     std::shared_ptr<QtProtobuf::QAbstractGrpcChannel> channel(new QtProtobuf::QGrpcHttp2Channel(QUrl("https://localhost:65001"), QtProtobuf::QGrpcSslCredentials(conf) |
                                                                                       QtProtobuf::QGrpcUserPasswordCredentials<>("authorizedUser", QCryptographicHash::hash("test", QCryptographicHash::Md5).toHex())));
     m_client->attachChannel(channel);
-    m_client->subscribeContactsUpdates(ListFrame());
-    connect(m_client, &AddressBookClient::contactsUpdated, this, [this](const Contacts &contacts) {
-        m_contacts->reset(contacts.list());
+    auto subscription = m_client->subscribeContactsUpdates(ListFrame());
+    connect(subscription, &QtProtobuf::QGrpcSubscription::updated, this, [this, subscription]() {
+        m_contacts->reset(subscription->read<Contacts>().list());
     });
     m_client->subscribeCallStatusUpdates(qtprotobuf::examples::None(), QPointer<CallStatus>(&m_callStatus));
 }

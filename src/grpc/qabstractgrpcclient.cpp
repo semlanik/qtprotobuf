@@ -41,6 +41,7 @@ public:
     std::shared_ptr<QAbstractGrpcChannel> channel;
     const QString service;
     std::shared_ptr<QAbstractProtobufSerializer> serializer;
+    std::vector<QGrpcSubscription *> activeSubscriptions;
 };
 }
 
@@ -99,11 +100,20 @@ QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArr
     return reply;
 }
 
-QGrpcSubscription *QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg, const std::function<void(const QByteArray&)> &handler)
+QGrpcSubscription *QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg, const QtProtobuf::SubscriptionHandler &handler)
 {
     QGrpcSubscription *subscription = nullptr;
     if (dPtr->channel) {
-        subscription = new QGrpcSubscription(dPtr->channel, method, arg, handler);
+        subscription = new QGrpcSubscription(dPtr->channel, method, arg, handler, this);
+
+        auto it = std::find_if(std::begin(dPtr->activeSubscriptions), std::end(dPtr->activeSubscriptions), [subscription](QGrpcSubscription *activeSubscription) {
+           return *activeSubscription == *subscription;
+        });
+
+        if (it != std::end(dPtr->activeSubscriptions)) {
+            (*it)->addHandler(handler);
+            return *it; //If subscription already exists return it for handling
+        }
 
         connect(subscription, &QGrpcSubscription::error, this, [this, subscription](const QGrpcStatus &status) {
             qProtoWarning() << subscription->method() << "call" << dPtr->service << "subscription error: " << status.message();
@@ -113,10 +123,18 @@ QGrpcSubscription *QAbstractGrpcClient::subscribe(const QString &method, const Q
 
         connect(subscription, &QGrpcSubscription::finished, this, [this, subscription] {
             qProtoWarning() << subscription->method() << "call" << dPtr->service << "subscription finished";
+            auto it = std::find_if(std::begin(dPtr->activeSubscriptions), std::end(dPtr->activeSubscriptions), [subscription](QGrpcSubscription *activeSubscription) {
+               return *activeSubscription == *subscription;
+            });
+
+            if (it != std::end(dPtr->activeSubscriptions)) {
+                dPtr->activeSubscriptions.erase(it);
+            }
             subscription->deleteLater();
         });
 
         dPtr->channel->subscribe(subscription, dPtr->service, this);
+        dPtr->activeSubscriptions.push_back(subscription);
     } else {
         error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});
     }

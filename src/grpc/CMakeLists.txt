@@ -14,7 +14,8 @@ set(CMAKE_AUTORCC ON)
 include(${QTPROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QTPROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
 
-file(GLOB SOURCES qgrpcasyncreply.cpp
+file(GLOB SOURCES qgrpcasyncoperationbase.cpp
+    qgrpcasyncreply.cpp
     qgrpcsubscription.cpp
     qgrpcstatus.cpp
     qabstractgrpcchannel.cpp
@@ -25,7 +26,8 @@ file(GLOB SOURCES qgrpcasyncreply.cpp
     qgrpcinsecurecredentials.cpp
     qgrpcuserpasswordcredentials.cpp)
 
-file(GLOB HEADERS qgrpcasyncreply.h
+file(GLOB HEADERS qgrpcasyncoperationbase_p.h
+    qgrpcasyncreply.h
     qgrpcsubscription.h
     qgrpcstatus.h
     qabstractgrpcchannel.h

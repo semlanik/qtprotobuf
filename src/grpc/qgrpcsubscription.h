@@ -31,17 +31,18 @@
 
 #include "qabstractgrpcchannel.h"
 #include "qabstractgrpcclient.h"
+#include "qgrpcasyncoperationbase_p.h"
 
 #include "qtgrpcglobal.h"
 
 namespace QtProtobuf {
 
-class Q_GRPC_EXPORT QGrpcSubscription final : public QObject
+class QAbstractGrpcClient;
+
+class Q_GRPC_EXPORT QGrpcSubscription final : public QGrpcAsyncOperationBase
 {
     Q_OBJECT
 public:
-    virtual ~QGrpcSubscription() = default;
-
     /*!
      * \brief Cancels this subscription and try to abort call in channel
      */
@@ -69,34 +70,36 @@ public:
      * \private
      * \brief Invokes handler method assigned to this subscription
      */
-    void handler(const QByteArray& data) const {
-        m_handler(data);
+    void handler(const QByteArray& data) {
+        setData(data);
+        updated();
+        for (auto handler : m_handlers) {
+            handler(data);
+        }
     }
+
+    bool operator ==(const QGrpcSubscription &other) const {
+        return other.method() == this->method() &&
+                other.arg() == this->arg();
+    }
+
 signals:
     /*!
      * \brief The signal is emitted when subscription is finished by user
      */
-    void finished();
-
-    /*!
-     * \brief The signal is emitted when error happend in channel or during serialization
-     *        \note QtGrpc automaically re-tries to restore subscription in case of any channel
-     *        or serialization error.
-     * \param code gRPC channel QGrpcStatus::StatusCode
-     * \param errorMessage Description of error occured
-     */
-    void error(const QGrpcStatus &status);
+    void updated();
 
 protected:
     QGrpcSubscription(const std::shared_ptr<QAbstractGrpcChannel> &channel, const QString &method,
-                      const QByteArray &arg, const std::function<void(const QByteArray&)> &handler);
+                      const QByteArray &arg, const SubscriptionHandler &handler, QAbstractGrpcClient *parent);
+    virtual ~QGrpcSubscription() = default;
 
+    void addHandler(const SubscriptionHandler &handler);
 private:
     friend class QAbstractGrpcClient;
-    std::shared_ptr<QAbstractGrpcChannel> m_channel;
     QString m_method;
     QByteArray m_arg;
-    std::function<void(const QByteArray&)> m_handler;
+    std::vector<SubscriptionHandler> m_handlers;
 };
 
 }

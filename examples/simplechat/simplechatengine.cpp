@@ -78,19 +78,19 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
         qCritical() << "Subscription error, cancel";
         subscription->cancel();
     });
-    QObject::connect(m_client, &SimpleChatClient::messageListUpdated, this, [this, name](const qtprotobuf::examples::ChatMessages &messages) {
+    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::updated, this, [this, name, subscription]() {
         if (m_userName != name) {
             m_userName = name;
             userNameChanged();
             loggedIn();
         }
-        m_messages.reset(messages.messages());
+        m_messages.reset(subscription->read<qtprotobuf::examples::ChatMessages>().messages());
     });
 }
 
 void SimpleChatEngine::sendMessage(const QString &content)
 {
-    m_client->sendMessage(ChatMessage(QDateTime::currentMSecsSinceEpoch(), content.toUtf8(), ChatMessage::ContentType::Text));
+    m_client->sendMessage(ChatMessage(static_cast<quint64>(QDateTime::currentMSecsSinceEpoch()), content.toUtf8(), ChatMessage::ContentType::Text));
 }
 
 qtprotobuf::examples::ChatMessage::ContentType SimpleChatEngine::clipBoardContentType() const
@@ -146,7 +146,7 @@ void SimpleChatEngine::sendImageFromClipboard()
         return;
     }
 
-    m_client->sendMessage(ChatMessage(QDateTime::currentMSecsSinceEpoch(), imgData, qtprotobuf::examples::ChatMessage::ContentType::Image));
+    m_client->sendMessage(ChatMessage(static_cast<quint64>(QDateTime::currentMSecsSinceEpoch()), imgData, qtprotobuf::examples::ChatMessage::ContentType::Image));
 }
 
 QString SimpleChatEngine::getImageThumbnail(const QByteArray &data) const
