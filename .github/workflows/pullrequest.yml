@@ -1,0 +1,16 @@
+name: Sanity Verification
+
+on: [pull_request]
+
+jobs:
+  build-ubuntu:
+    name: Build and Test Ubuntu Latest
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Init submodules
+      run: git submodule update --init --recursive
+    - name: Build the Ubuntu Latest Docker image
+      run: docker build . --file .ci/Dockerfile.ubuntu --tag ubuntu_debugimage:latest
+    - name: Run tests
+      run: docker run ubuntu_debugimage:latest ctest /build --output-on-failure
