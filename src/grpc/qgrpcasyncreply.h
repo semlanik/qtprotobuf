@@ -31,6 +31,7 @@
 
 #include "qabstractgrpcchannel.h"
 #include "qabstractgrpcclient.h"
+#include "qgrpcasyncoperationbase_p.h"
 
 #include "qtgrpcglobal.h"
 
@@ -42,43 +43,10 @@ namespace QtProtobuf {
  *        created it. QGrpcAsyncReply coul be used by QAbstractGrpcChannel implementations to control call work flow and
  *        abort calls if possible in case if QGrpcAsyncReply::abort method called by library user.
  */
-class Q_GRPC_EXPORT QGrpcAsyncReply final : public QObject
+class Q_GRPC_EXPORT QGrpcAsyncReply final : public QGrpcAsyncOperationBase
 {
     Q_OBJECT
 public:
-    /*!
-     * \brief Reads message from raw byte array stored in QGrpcAsyncReply
-     * \return Copy of deserialized message or non-initialized message in case of exceptional situation
-     */
-    template <typename T>
-    T read() {
-        QMutexLocker locker(&m_asyncLock);
-        T value;
-        try {
-            value.deserialize(static_cast<QAbstractGrpcClient*>(parent())->serializer(), m_data);
-        } catch (std::invalid_argument &) {
-            static const QLatin1String invalidArgumentErrorMessage("Response deserialization failed invalid field found");
-            error({QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage});
-        } catch (std::out_of_range &) {
-            static const QLatin1String outOfRangeErrorMessage("Invalid size of received buffer");
-            error({QGrpcStatus::OutOfRange, outOfRangeErrorMessage});
-        } catch (...) {
-            error({QGrpcStatus::Internal, QLatin1String("Unknown exception caught during deserialization")});
-        }
-        return value;
-    }
-
-    /*!
-     * \brief Interface for implementation of QAbstractGrpcChannel. Should be used to write raw data from channel to
-     *        reply
-     * \param data Raw data received from channel
-     */
-    void setData(const QByteArray &data)
-    {
-        QMutexLocker locker(&m_asyncLock);
-        m_data = data;
-    }
-
     /*!
      * \brief Aborts this reply and try to abort call in channel
      */
@@ -108,36 +76,17 @@ public:
         QObject::connect(this, &QGrpcAsyncReply::finished, receiver, finishCallback, type);
     }
 
-signals:
-    /*!
-     * \brief The signal is emitted when reply is ready for read. Usualy called by channel when all chunks of data
-     *        recevied
-     */
-    void finished();
-
-    /*!
-     * \brief The signal is emitted when error happend in channel or during serialization
-     * \param code gRPC channel QGrpcStatus::StatusCode
-     * \param errorMessage Description of error occured
-     */
-    void error(const QGrpcStatus &status);
-
 protected:
     //! \private
-    QGrpcAsyncReply(const std::shared_ptr<QAbstractGrpcChannel> &channel, QAbstractGrpcClient *parent = nullptr) : QObject(parent)
-    , m_channel(channel) {}
+    QGrpcAsyncReply(const std::shared_ptr<QAbstractGrpcChannel> &channel, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(channel, parent)
+    {}
     //! \private
-    ~QGrpcAsyncReply();
+    ~QGrpcAsyncReply() = default;
 
 private:
     QGrpcAsyncReply();
     Q_DISABLE_COPY_MOVE(QGrpcAsyncReply)
 
     friend class QAbstractGrpcClient;
-
-    std::shared_ptr<QAbstractGrpcChannel> m_channel;
-    QByteArray m_data;
-
-    QMutex m_asyncLock;
 };
 }

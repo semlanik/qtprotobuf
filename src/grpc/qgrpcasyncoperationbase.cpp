@@ -23,25 +23,16 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "qgrpcsubscription.h"
+#include "qgrpcasyncoperationbase_p.h"
 
 #include <qtprotobuflogging.h>
 
 using namespace QtProtobuf;
 
-QGrpcSubscription::QGrpcSubscription(const std::shared_ptr<QAbstractGrpcChannel> &channel, const QString &method,
-                                     const QByteArray &arg, const SubscriptionHandler &handler, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(channel, parent)
-  , m_method(method)
-  , m_arg(arg)
+QGrpcAsyncOperationBase::~QGrpcAsyncOperationBase()
 {
-    if (handler) {
-        m_handlers.push_back(handler);
-    }
-}
-
-void QGrpcSubscription::addHandler(const SubscriptionHandler &handler)
-{
-    if (handler) {
-        m_handlers.push_back(handler);
-    }
+    qProtoDebug() << "Trying ~QGrpcAsyncOperationBase" << this;
+    QMutexLocker locker(&m_asyncLock);
+    qProtoDebug() << "~QGrpcAsyncOperationBase" << this;
+    (void)locker;
 }

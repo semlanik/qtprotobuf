@@ -24,14 +24,5 @@
  */
 
 #include "qgrpcasyncreply.h"
-#include <qtprotobuflogging.h>
 
 using namespace QtProtobuf;
-
-QGrpcAsyncReply::~QGrpcAsyncReply()
-{
-    qProtoDebug() << "Trying ~QGrpcAsyncReply" << this;
-    QMutexLocker locker(&m_asyncLock);
-    qProtoDebug() << "~QGrpcAsyncReply" << this;
-    (void)locker;
-}

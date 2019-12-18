@@ -269,11 +269,11 @@ const char *Templates::ClientMethodServerStreamDeclarationTemplate = "QtProtobuf
 const char *Templates::ClientMethodServerStream2DeclarationTemplate = "QtProtobuf::QGrpcSubscription *subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
 const char *Templates::ClientMethodServerStreamDefinitionTemplate = "QtProtobuf::QGrpcSubscription *$classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$)\n"
                                                                     "{\n"
-                                                                    "    return subscribe(\"$method_name$\", $param_name$, &$classname$::$method_name$Updated);\n"
+                                                                    "    return subscribe(\"$method_name$\", $param_name$);\n"
                                                                     "}\n";
 const char *Templates::ClientMethodServerStream2DefinitionTemplate = "QtProtobuf::QGrpcSubscription *$classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
                                                                      "{\n"
-                                                                     "    return subscribe(\"$method_name$\", $param_name$, $return_name$, &$classname$::$method_name$Updated);\n"
+                                                                     "    return subscribe(\"$method_name$\", $param_name$, $return_name$);\n"
                                                                      "}\n";
 
 const char *Templates::ListSuffix = "Repeated";
