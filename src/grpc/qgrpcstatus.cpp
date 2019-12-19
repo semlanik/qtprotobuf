@@ -26,7 +26,7 @@
 #include "qgrpcstatus.h"
 
 namespace QtProtobuf {
-
+//! \private
 class QGrpcStatusPrivate {
 public:
     QGrpcStatusPrivate(QGrpcStatus::StatusCode code, const QString &message) : m_code(code)

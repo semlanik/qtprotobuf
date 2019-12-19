@@ -35,6 +35,11 @@ class EnumDescriptor;
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The EnumsGenerator class
+ */
 class EnumsGenerator : public ClassGeneratorBase
 {
     const google::protobuf::EnumDescriptor *mEnumDescriptor;

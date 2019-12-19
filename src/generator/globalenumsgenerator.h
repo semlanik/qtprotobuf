@@ -31,6 +31,11 @@
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The GlobalEnumsGenerator class
+ */
 class GlobalEnumsGenerator : public ClassGeneratorBase
 {
     PackagesList mPackageList;

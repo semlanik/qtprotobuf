@@ -59,7 +59,7 @@ const QString DefaultImpl("Default");
 
 
 namespace QtProtobuf {
-
+//! \private
 struct QProtobufSerializerRegistryPrivateRecord final
 {
     QProtobufSerializerRegistryPrivateRecord() : loader(nullptr) {}
@@ -126,7 +126,7 @@ struct QProtobufSerializerRegistryPrivateRecord final
     QVariantList typeArray;
 };
 
-
+//! \private
 class QProtobufSerializerRegistryPrivate
 {
 

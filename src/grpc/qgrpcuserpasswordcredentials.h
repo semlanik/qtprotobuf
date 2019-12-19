@@ -32,16 +32,32 @@ namespace QtProtobuf {
 constexpr char defaultUserFieldName[] = "user-name";
 constexpr char defaultPasswordFieldName[] = "user-password";
 
+/*!
+ * \ingroup QtGrpc
+ * \brief The QGrpcUserPasswordCredentials class is reference implementation of simple user-password call authentication.
+ * \details You may manually specify UserFieldName and PasswordFieldName in class template parameters to change header keys.
+ *          Default values for:
+ *          \code{cpp}
+ *          constexpr char defaultUserFieldName[] = "user-name";
+ *          constexpr char defaultPasswordFieldName[] = "user-password";
+ *          \endcode
+ */
 template<const char *UserFieldName = defaultUserFieldName,
          const char *PasswordFieldName = defaultPasswordFieldName>
 class QGrpcUserPasswordCredentials final : public QGrpcCallCredentials
 {
 public:
+    /*!
+     * \brief QGrpcUserPasswordCredentials constucts QGrpcUserPasswordCredentials
+     * \param userName value that will be assigned to UserFieldName header for each gRPC call
+     * \param password value that will be assigned to PasswordFieldName header for each gRPC call
+     */
     QGrpcUserPasswordCredentials(const QString &userName, const QString &password) :
         m_map(QtProtobuf::QGrpcCredentialMap{{QLatin1String(UserFieldName), QVariant::fromValue(userName)},
                                       {QLatin1String(PasswordFieldName), QVariant::fromValue(password)}})
 	{}
 
+    //!\private
 	QtProtobuf::QGrpcCredentialMap operator()() {
 		return m_map;
 	}

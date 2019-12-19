@@ -32,6 +32,11 @@
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The Templates class
+ */
 class Templates {
 public:
     static const std::vector<std::string> ListOfQmlExeptions;

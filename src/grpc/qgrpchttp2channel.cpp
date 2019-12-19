@@ -97,8 +97,9 @@ const int GrpcMessageSizeHeaderSize = 5;
 }
 
 namespace QtProtobuf {
-
+//! \private
 struct QGrpcHttp2ChannelPrivate {
+    //! \private
     struct ExpectedData {
         int expectedSize;
         QByteArray container;

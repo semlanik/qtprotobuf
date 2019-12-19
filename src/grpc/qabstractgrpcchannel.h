@@ -49,9 +49,10 @@ class Q_GRPC_EXPORT QAbstractGrpcChannel
 {
 public:
     /*!
-     * \brief Calls \p method synchronously with given serialized messge \p args and write result of call to \p ret.
-     *        \note This method is synchronous, that means it doesn't returns until call complete or aborted by timeout if it's
+     * \brief Calls \p method synchronously with given serialized message \p args and write result of call to \p ret.
+     *        \note This method is synchronous, that means it doesn't return until call is completed or aborted by timeout if it's
      *        implemented in inherited channel.
+     *        \note This method should not be called directly.
      * \param[in] method remote method is called
      * \param[in] service service identified in URL path format
      * \param[in] args serialized argument message
@@ -63,6 +64,7 @@ public:
     /*!
      * \brief Calls \p method asynchronously with given serialized messge \p args. Result of method call is written to QGrpcAsyncReply.
      *        \note This method is asynchronous, that means it returns control imediately after it is called.
+     *        \note This method should not be called directly.
      * \param[in] method remote method is called
      * \param[in] service service identified in URL path format
      * \param[in] args serialized argument message
@@ -74,6 +76,7 @@ public:
 
     /*!
      * \brief Subscribes to server-side stream to receive updates for given \p method.
+     *        \note This method should not be called directly.
      * \param[in] method remote method is called
      * \param[in] service service identified in URL path format
      * \param[in] args serialized argument message
@@ -83,16 +86,20 @@ public:
 
     virtual std::shared_ptr<QAbstractProtobufSerializer> serializer() const = 0;
 protected:
+    //! \private
     QAbstractGrpcChannel() = default;
+    //! \private
     virtual ~QAbstractGrpcChannel() = default;
 
     /*!
+     * \private
      * \brief Aborts async call for given \p reply
      * \param[in] reply returned by asynchronous QAbstractGrpcChannel::call() method
      */
     virtual void abort(QGrpcAsyncReply *reply);
 
     /*!
+     * \private
      * \brief Cancels \p subscription
      * \param[in] subscription returned by QAbstractGrpcChannel::subscribe() method
      */

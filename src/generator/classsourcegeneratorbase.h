@@ -33,6 +33,11 @@
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The ClassSourceGeneratorBase class implements source generation
+ */
 class ClassSourceGeneratorBase : public ClassGeneratorBase
 {
 public:

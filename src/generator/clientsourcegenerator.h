@@ -29,7 +29,11 @@
 
 namespace QtProtobuf {
 namespace generator {
-
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The ClientSourceGenerator class
+ */
 class ClientSourceGenerator : public ClassSourceGeneratorBase
 {
 public:

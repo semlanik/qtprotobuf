@@ -31,23 +31,34 @@
 #include <memory>
 
 namespace QtProtobuf {
-/*!
-*  \addtogroup QtGrpc
-*  \{
-*/
 
 /*!
- * \brief The QGrpcCallCredentials class
+ * \ingroup QtGrpc
+ * \brief The QGrpcCallCredentials is base class for gRPC call credentials.
+ *        You may inherrit of this calls to create you own credentials implementation,
+ *        that will be used for each method call.
+ *        Classes inherited of QGrpcCallCredentials should reimplement
+ *        QtProtobuf::QGrpcCredentialMap operator() method and return actual credentials
+ *        map for the call.
  */
 class Q_GRPC_EXPORT QGrpcCallCredentials {};
 
 /*!
- * \brief The QGrpcChannelCredentials class
+ * \ingroup QtGrpc
+ * \brief The QGrpcChannelCredentials is base class for gRPC channel credentials.
+ *        Channel credentials are used by channel once while communication channel
+ *        establishing. For example Ssl credentials or some session tockens.
+ *        Classes inherited of QGrpcChannelCredentials should implement
+ *        QGrpcCredentialMap channelCredentials() const method, that returns session
+ *        parameters for specific channel.
  */
 class Q_GRPC_EXPORT QGrpcChannelCredentials {};
 
 /*!
- * \brief The QGrpcCredentials class
+ * \ingroup QtGrpc
+ * \brief The QGrpcCredentials class is combination of call and channel credentials
+ *        that is used by gRPC channels to communicate to services with given
+ *        authentications parameters.
  */
 template<typename Call, typename Channel,
          typename std::enable_if_t<std::is_base_of<QtProtobuf::QGrpcCallCredentials, Call>::value &&
@@ -80,6 +91,7 @@ public:
     }
 
 private:
+    //! \private
     QGrpcCredentials() = default;
 
     Call mCall;

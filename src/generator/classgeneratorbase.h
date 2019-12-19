@@ -45,6 +45,11 @@ namespace generator {
 
 using PropertyMap = std::map<std::string, std::string>;
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The ClassGeneratorBase class is base of source code generation
+ */
 class ClassGeneratorBase
 {
 public:

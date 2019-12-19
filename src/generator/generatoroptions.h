@@ -30,6 +30,11 @@
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The GeneratorOptions class
+ */
 class GeneratorOptions
 {
     GeneratorOptions();

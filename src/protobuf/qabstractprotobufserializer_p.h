@@ -59,6 +59,7 @@ enum HandlerType {
 };
 
 /*!
+ * \private
  * \brief SerializationHandlers contains set of objects that required for class serializaion/deserialization
  */
 struct SerializationHandler {
@@ -235,6 +236,11 @@ void deserializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, Q
     previous = QVariant::fromValue<QMap<K, QSharedPointer<V>>>(out);
 }
 
+/*!
+ * \private
+ *
+ * \brief default deserializer template for enum type T
+ */
 template <typename T,
           typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
 void deserializeEnum(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &to) {
@@ -244,6 +250,11 @@ void deserializeEnum(const QtProtobuf::QAbstractProtobufSerializer *serializer, 
     to = QVariant::fromValue<T>(static_cast<T>(intValue._t));
 }
 
+/*!
+ * \private
+ *
+ * \brief default deserializer template for enumList type T
+ */
 template <typename T,
           typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
 void deserializeEnumList(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &previous) {

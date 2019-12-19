@@ -39,6 +39,10 @@ namespace QtProtobuf {
 
 class QAbstractGrpcClient;
 
+/*!
+ * \ingroup QtGrpc
+ * \brief The QGrpcSubscription class
+ */
 class Q_GRPC_EXPORT QGrpcSubscription final : public QGrpcAsyncOperationBase
 {
     Q_OBJECT
@@ -51,7 +55,6 @@ public:
     }
 
     /*!
-     * \private
      * \brief Returns method for this subscription
      */
     QString method() const {
@@ -59,7 +62,6 @@ public:
     }
 
     /*!
-     * \private
      * \brief Returns serialized arguments for this subscription
      */
     QByteArray arg() const {
@@ -67,7 +69,6 @@ public:
     }
 
     /*!
-     * \private
      * \brief Invokes handler method assigned to this subscription
      */
     void handler(const QByteArray& data) {
@@ -90,10 +91,13 @@ signals:
     void updated();
 
 protected:
+    //! \private
     QGrpcSubscription(const std::shared_ptr<QAbstractGrpcChannel> &channel, const QString &method,
                       const QByteArray &arg, const SubscriptionHandler &handler, QAbstractGrpcClient *parent);
+    //! \private
     virtual ~QGrpcSubscription() = default;
 
+    //! \private
     void addHandler(const SubscriptionHandler &handler);
 private:
     friend class QAbstractGrpcClient;

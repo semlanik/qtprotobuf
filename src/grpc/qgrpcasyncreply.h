@@ -40,7 +40,7 @@ namespace QtProtobuf {
 /*!
  * \ingroup QtGrpc
  * \brief The QGrpcAsyncReply class contains data for asynchronous call of gRPC client API. It's owned by client class, that
- *        created it. QGrpcAsyncReply coul be used by QAbstractGrpcChannel implementations to control call work flow and
+ *        created it. QGrpcAsyncReply could be used by QAbstractGrpcChannel implementations to control call work flow and
  *        abort calls if possible in case if QGrpcAsyncReply::abort method called by library user.
  */
 class Q_GRPC_EXPORT QGrpcAsyncReply final : public QGrpcAsyncOperationBase
@@ -84,6 +84,7 @@ protected:
     ~QGrpcAsyncReply() = default;
 
 private:
+    //! \private
     QGrpcAsyncReply();
     Q_DISABLE_COPY_MOVE(QGrpcAsyncReply)
 

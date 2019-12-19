@@ -38,6 +38,11 @@ class Message;
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The ClientGenerator class
+ */
 class ClientGenerator : public ServiceGeneratorBase
 {
 public:

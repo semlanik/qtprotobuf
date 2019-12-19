@@ -43,12 +43,9 @@ namespace QtProtobuf {
 
 class QProtobufMetaProperty;
 class QProtobufMetaObject;
-/*!
-*  \addtogroup QtProtobuf
-*  \{
-*/
 
 /*!
+ * \ingroup QtProtobuf
  * \brief The QAbstractProtobufSerializer class is interface that represents basic functions for serialization/deserialization
  *
  * \details The QAbstractProtobufSerializer class registers serializers/deserializers for classes inherited of QObject.
@@ -231,7 +228,7 @@ public:
 
 /*!
  * \brief Registers serializers for type T in QtProtobuf global serializers registry
- *
+ * \private
  * \details generates default serializers for type T. Type T has to be inherited of QObject.
  */
 template<typename T>
@@ -245,7 +242,7 @@ static void qRegisterProtobufType() {
 
 /*!
  * \brief Registers serializers for type QMap<K, V> in QtProtobuf global serializers registry
- *
+ * \private
  * \details generates default serializers for QMap<K, V>.
  */
 template<typename K, typename V,
@@ -257,7 +254,7 @@ inline void qRegisterProtobufMapType() {
 
 /*!
  * \brief Registers serializers for type QMap<K, V> in QtProtobuf global serializers registry
- *
+ * \private
  * \details generates default serializers for QMap<K, V>. Specialization for V type
  *          inherited of QObject.
  */
@@ -271,7 +268,7 @@ inline void qRegisterProtobufMapType() {
 
 /*!
  * \brief Registers serializers for enumeration type in QtProtobuf global serializers registry
- *
+ * \private
  * \details generates default serializers for enumeration and QList of enumerations.
  */
 template<typename T,

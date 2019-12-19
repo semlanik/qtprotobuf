@@ -44,6 +44,12 @@ class FileDescriptor;
 
 namespace QtProtobuf {
 namespace generator {
+
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The utils class
+ */
 class utils {
 public:
 static void split(const std::string &str, std::vector<std::string> &container, char delim)

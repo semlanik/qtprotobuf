@@ -40,6 +40,10 @@
 
 #include "qtgrpcglobal.h"
 
+/*!
+ * \defgroup QtGrpc
+ * \brief Qt framework based gRPC clients and services
+ */
 namespace QtProtobuf {
 
 class QGrpcAsyncReply;
@@ -139,7 +143,7 @@ protected:
      * \param[in] arg Protobuf message argument for \p method
      * \param[out] ret Pointer to preallocated return-message structure. \p ret Structure fields will be update each
      *        time message update recevied from server-stream.
-     * \note If \p ret is used as property-fiels in other object, property NOTIFY signal won't be called in case of
+     * \note If \p ret is used as property-fields in other object, property NOTIFY signal won't be called in case of
      *       updated message recevied from server-stream
      */
     template<typename A, typename R>
@@ -163,28 +167,26 @@ protected:
     }
 
     /*!
-     * \brief Canceles all subscription for specified \p method
+     * \brief Canceles all subscriptions for specified \p method
      * \param[in] method Name of method subscription for to be canceled
      */
     void cancel(const QString &method);
 
+    /*!
+     * \brief serializer provides assigned to client serializer
+     * \return pointer to serializer. Serializer is owned by QtProtobuf::QProtobufSerializerRegistry.
+     */
     QAbstractProtobufSerializer *serializer() const;
 
     friend class QGrpcAsyncOperationBase;
 private:
-    /*!
-     * \private
-     */
+    //!\private
     QGrpcStatus call(const QString &method, const QByteArray &arg, QByteArray &ret);
 
-    /*!
-     * \private
-     */
+    //!\private
     QGrpcAsyncReply *call(const QString &method, const QByteArray &arg);
 
-    /*!
-     * \private
-     */
+    //!\private
     QGrpcSubscription *subscribe(const QString &method, const QByteArray &arg, const QtProtobuf::SubscriptionHandler &handler = {});
 
     /*!

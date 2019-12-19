@@ -36,11 +36,22 @@ class QAbstractGrpcCredentials;
 struct QGrpcHttp2ChannelPrivate;
 /*!
  * \ingroup QtGrpc
- * \brief The QGrpcHttp2Channel class
+ * \brief The QGrpcHttp2Channel class is HTTP/2 implementation of QAbstractGrpcChannel interface
+ * \details For QGrpcHttp2Channel utilizes channel and call credentials.
+ *          For channel credential QGrpcHttp2Channel supports SslConfigCredential key. When https
+ *          is used, this key has to be explicitly specified and provide QSslConfiguration and value.
+ *          Provided QSslConfiguration will be used to establish HTTP/2 secured connection.
+ *          All keys passed as QGrpcCallCredentials will be used as HTTP/2 headers with related values
+ *          assigned.
  */
 class Q_GRPC_EXPORT QGrpcHttp2Channel final : public QAbstractGrpcChannel
 {
 public:
+    /*!
+     * \brief QGrpcHttp2Channel constructs QGrpcHttp2Channel
+     * \param url http/https url used to establish channel connection
+     * \param credentials call/channel credentials pair
+     */
     QGrpcHttp2Channel(const QUrl &url, std::unique_ptr<QAbstractGrpcCredentials> credentials);
     ~QGrpcHttp2Channel();
 

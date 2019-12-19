@@ -38,6 +38,11 @@
 
 namespace QtProtobuf {
 
+/*!
+ * \ingroup QtGrpc
+ * \private
+ * \brief The QGrpcAsyncOperationBase class implements subscription logic
+ */
 class Q_GRPC_EXPORT QGrpcAsyncOperationBase : public QObject
 {
     Q_OBJECT
@@ -84,8 +89,7 @@ signals:
 
     /*!
      * \brief The signal is emitted when error happend in channel or during serialization
-     * \param code gRPC channel QGrpcStatus::StatusCode
-     * \param errorMessage Description of error occured
+     * \param[out] status received from gRPC channel
      */
     void error(const QGrpcStatus &status);
 

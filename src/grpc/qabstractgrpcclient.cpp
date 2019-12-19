@@ -32,6 +32,8 @@
 #include <QTimer>
 
 namespace QtProtobuf {
+
+//! \private
 class QAbstractGrpcClientPrivate final {
 public:
     QAbstractGrpcClientPrivate(const QString &service) : service(service) {

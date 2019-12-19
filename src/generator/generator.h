@@ -40,7 +40,11 @@ class GeneratorContext;
 
 namespace QtProtobuf {
 namespace generator {
-
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The QtGenerator class
+ */
 class QtGenerator : public GeneratorBase
 {
 public:

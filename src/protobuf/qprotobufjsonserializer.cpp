@@ -31,7 +31,7 @@
 using namespace QtProtobuf;
 
 namespace QtProtobuf {
-
+//! \private
 class QProtobufJsonSerializerPrivate final
 {
     Q_DISABLE_COPY_MOVE(QProtobufJsonSerializerPrivate)
