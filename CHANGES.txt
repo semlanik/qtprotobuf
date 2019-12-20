@@ -1,0 +1,10 @@
+2019-12-20 version 0.1.0 (generator/QtProtobuf/QtGrpc)
+
+    QtProtobuf
+    * Implement basic protobuf serialization and deserialization
+    * Add possibility to extend serializers list using Qt plugins mechnism
+    QtGrpc
+    * Implement gRPC channels and clients
+    * Implement scalable gRPC credentials
+    generator
+    * Generator for protobuf messages and gRPC clients
