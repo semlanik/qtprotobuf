@@ -16,6 +16,18 @@ jobs:
       run: docker build . --file .ci/Dockerfile.ubuntu --tag ubuntu_debugimage:latest
     - name: Run tests
       run: docker run ubuntu_debugimage:latest ctest /build --output-on-failure
+  build-opensuse:
+    name: Build and Test OpenSUSE Latest
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Init submodules
+      run: git submodule update --init --recursive
+    - name: Build the OpenSUSE Latest Docker image
+      run: docker build . --file .ci/Dockerfile.opensuse --tag opensuse_debugimage:latest
+    - name: Run tests
+      run: docker run opensuse_debugimage:latest ctest /build --output-on-failure
+
   #build-windows:
     #runs-on: windows-latest
     #name: Build and Test Windows
