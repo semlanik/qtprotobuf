@@ -26,30 +26,53 @@
 #include <QMetaProperty>
 #include <QVariant>
 #include <QMetaObject>
+#include <QMutex>
 
 #include "qabstractprotobufserializer.h"
 
 using namespace QtProtobuf;
 
 namespace  {
-/*
- * SerializerRegistry is container to store mapping between metatype identifier and serialization handlers.
+
+/*!
+ * \private
+ * \brief The HandlersRegistry is container to store mapping between metatype identifier and serialization handlers.
  */
-using SerializerRegistry = std::unordered_map<int/*metatypeid*/, QtProtobufPrivate::SerializationHandler>;
-static SerializerRegistry registry;
-static QtProtobufPrivate::SerializationHandler empty;
+struct HandlersRegistry {
+
+    void registerHandler(int userType, const QtProtobufPrivate::SerializationHandler &handlers) {
+        QMutexLocker locker(&m_lock);
+        m_registry[userType] = handlers;
+    }
+
+    QtProtobufPrivate::SerializationHandler &findHandler(int userType) {
+        QMutexLocker locker(&m_lock);
+        auto it = m_registry.find(userType);
+        if (it != m_registry.end()) {
+            return it->second;
+        }
+        return empty;
+    }
+
+    static HandlersRegistry &instance() {
+        static HandlersRegistry _instance;
+        return _instance;
+    }
+private:
+    QMutex m_lock;
+    std::unordered_map<int/*metatypeid*/, QtProtobufPrivate::SerializationHandler> m_registry;
+    static QtProtobufPrivate::SerializationHandler empty;
+};
+
+QtProtobufPrivate::SerializationHandler HandlersRegistry::empty{};
 }
 
 void QtProtobufPrivate::registerHandler(int userType, const QtProtobufPrivate::SerializationHandler &handlers)
 {
-    registry[userType] = handlers;
+    HandlersRegistry::instance().registerHandler(userType, handlers);
 }
 
 QtProtobufPrivate::SerializationHandler &QtProtobufPrivate::findHandler(int userType)
 {
-    auto it = registry.find(userType);
-    if (it != registry.end()) {
-        return it->second;
-    }
-    return empty;
+    return HandlersRegistry::instance().findHandler(userType);
 }
