@@ -57,6 +57,7 @@ function(add_wellknowntype VARIABLE TYPENAME)
     else()
         set(${VARIABLE} ${${VARIABLE}} -Wl,--whole-archive ${QtProtobuf_GENERATED} -Wl,--no-whole-archive PARENT_SCOPE)
     endif()
+    add_dependencies(${TARGET} ${QtProtobuf_GENERATED})
 endfunction()
 
 add_library(${TARGET} SHARED ${SOURCES})
