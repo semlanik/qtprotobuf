@@ -196,7 +196,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
             if (field->is_repeated()) {
                 if (field->type() == FieldDescriptor::TYPE_FLOAT
                         || field->type() == FieldDescriptor::TYPE_DOUBLE) {
-                    typeName[0] = ::toupper(typeName[0]);
+                    typeName[0] =  static_cast<char>(::toupper(typeName[0]));
                     typeName = namespaceQtProtoDefinition.append(typeName);
                 }
                 typeName.append("List");
@@ -264,7 +264,7 @@ void ClassGeneratorBase::getMethodParameters(const MethodDescriptor *method, std
     std::string outputTypeName = method->output_type()->full_name();
     std::string methodName = method->name();
     std::string methodNameUpper = method->name();
-    methodNameUpper[0] = ::toupper(methodNameUpper[0]);
+    methodNameUpper[0] =  static_cast<char>(::toupper(methodNameUpper[0]));
     utils::replace(inputTypeName, ".", "::");
     utils::replace(outputTypeName, ".", "::");
     parameters = {{"classname", mClassName},
