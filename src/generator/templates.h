@@ -90,6 +90,7 @@ public:
     static const char *CopyComplexFieldTemplate;
     static const char *MoveMessageFieldTemplate;
     static const char *MoveComplexFieldTemplate;
+    static const char *MoveComplexFieldConstructorTemplate;
     static const char *MoveFieldTemplate;
     static const char *EnumMoveFieldTemplate;
     static const char *AssignmentOperatorDeclarationTemplate;
