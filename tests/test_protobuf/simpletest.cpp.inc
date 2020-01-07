@@ -751,6 +751,27 @@ TEST_F(SimpleTest, MoveOperatorTest)
     ASSERT_EQ(3, movedUpdateSpy.count());
 }
 
+TEST_F(SimpleTest, MoveOperatorRepeatedTest)
+{
+    const char *propertyName = "testRepeatedInt";
+    RepeatedIntMessage test;
+    RepeatedIntMessage test2{{55,44,11,33}};
+
+    QSignalSpy updateSpy(&test, &RepeatedIntMessage::testRepeatedIntChanged);
+    QSignalSpy movedUpdateSpy(&test2, &RepeatedIntMessage::testRepeatedIntChanged);
+
+    RepeatedIntMessage test3(std::move(test2));
+    test2.setTestRepeatedInt({55,44,11,35});
+
+    test.setProperty(propertyName, QVariant::fromValue<QtProtobuf::int32List>({55}));
+    test.setTestRepeatedInt({44});
+    test = std::move(test2);
+    ASSERT_EQ(QtProtobuf::int32List({55,44,11,35}), test.testRepeatedInt());
+    ASSERT_TRUE(test2.testRepeatedInt().isEmpty());
+    ASSERT_EQ(3, updateSpy.count());
+    ASSERT_EQ(3, movedUpdateSpy.count());
+}
+
 TEST_F(SimpleTest, UnderscoresTest)
 {
     //Sanity compilation checks
