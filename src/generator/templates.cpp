@@ -108,7 +108,18 @@ const char *Templates::DeletedMoveConstructorTemplate = "$classname$($classname$
 const char *Templates::CopyFieldTemplate = "set$property_name_cap$(other.m_$property_name$);\n";
 const char *Templates::CopyComplexFieldTemplate = "set$property_name_cap$(*other.m_$property_name$);\n";
 const char *Templates::MoveMessageFieldTemplate = "*m_$property_name$ = std::move(*other.m_$property_name$);\n";
-const char *Templates::MoveComplexFieldTemplate = "m_$property_name$ = std::move(other.m_$property_name$);\n";
+const char *Templates::MoveComplexFieldTemplate = "if (m_$property_name$ != other.m_$property_name$) {\n"
+                                                  "    m_$property_name$ = std::move(other.m_$property_name$);\n"
+                                                  "    $property_name$Changed();\n"
+                                                  "    other.$property_name$Changed();\n"
+                                                  "} else {\n"
+                                                  "    m_$property_name$ = std::move(other.m_$property_name$);\n"
+                                                  "    other.$property_name$Changed();\n"
+                                                  "}\n";
+
+const char *Templates::MoveComplexFieldConstructorTemplate = "m_$property_name$ = std::move(other.m_$property_name$);\n"
+                                                             "other.$property_name$Changed();\n";
+
 const char *Templates::MoveFieldTemplate = "set$property_name_cap$(std::exchange(other.m_$property_name$, 0));\n"
                                            "other.$property_name$Changed();\n";
 const char *Templates::EnumMoveFieldTemplate = "m_$property_name$ = other.m_$property_name$;\n";

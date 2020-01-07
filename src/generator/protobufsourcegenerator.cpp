@@ -291,7 +291,7 @@ void ProtobufSourceGenerator::printMoveSemantic()
             if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
                 printField(mMessage, field, Templates::MoveMessageFieldTemplate);
             } else {
-                printField(mMessage, field, Templates::MoveComplexFieldTemplate);
+                printField(mMessage, field, Templates::MoveComplexFieldConstructorTemplate);
             }
         } else {
             if (field->type() != FieldDescriptor::TYPE_ENUM) {
