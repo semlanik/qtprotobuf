@@ -43,6 +43,20 @@ file(GLOB HEADERS qgrpcasyncoperationbase_p.h
 protobuf_generate_qt_headers(PUBLIC_HEADERS ${HEADERS} COMPONENT ${TARGET})
 
 add_library(${TARGET} SHARED ${SOURCES})
+
+if(NOT DEFINED QT_QMAKE_EXECUTABLE)
+    find_program(QT_QMAKE_EXECUTABLE "qmake")
+    if(QT_QMAKE_EXECUTABLE STREQUAL QT_QMAKE_EXECUTABLE-NOTFOUND)
+        message(FATAL_ERROR "Could not find qmake executable")
+    endif()
+endif()
+
+execute_process(
+    COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_HOST_DATA
+    OUTPUT_VARIABLE QT_HOST_DATA
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 target_compile_definitions(${TARGET} PRIVATE QT_BUILD_GRPC_LIB)
 
 add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
@@ -81,5 +95,8 @@ export(TARGETS ${TARGET} NAMESPACE ${QTPROTOBUF_COMMON_NAMESPACE}:: FILE ${TARGE
 
 configure_file("${QTPROTOBUF_CMAKE_DIR}/gRPCLookup.cmake" "${QTPROTOBUF_BINARY_DIR}/gRPCLookup.cmake" COPYONLY)
 install(FILES "${QTPROTOBUF_BINARY_DIR}/gRPCLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_grpc.pri.in" "${QTPROTOBUF_BINARY_DIR}/qt_lib_grpc.pri" @ONLY)
+install(FILES "${QTPROTOBUF_BINARY_DIR}/qt_lib_grpc.pri" DESTINATION "${QT_HOST_DATA}/mkspecs/modules")
 
 add_coverage_target(TARGET ${TARGET})

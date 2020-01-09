@@ -1,12 +1,26 @@
 # QtProtobuf
 
 gRPC and Protobuf generator and bindings for Qt framework
-
 > see [Protobuf](https://developers.google.com/protocol-buffers) and [gRPC](https://grpc.io/) for more information
 
-## [API Reference](https://semlanik.github.io/qtprotobuf)
-
 ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master)
+
+# Table of contents
+
+[API Reference](https://semlanik.github.io/qtprotobuf)
+
+[Linux Build](#linux-build)
+
+[Windows Build](#windows-build)
+
+[Usage](#usage)
+
+[CMake functions reference](#cmake-functions-reference)
+
+[qmake integration](#qmake-integration)
+
+[Running tests](#running-tests)
+
 
 ## Linux Build
 ### Prerequesties
@@ -209,6 +223,40 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 *QTPROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON**, built-in examples will be built. **TRUE** by default
 
 *QTPROTOBUF_EXECUTABLE* - contains full path to QtProtobuf generator add_executable
+
+## qmake integration
+
+**Note:** Available in QtProtobuf version >=0.2.0
+
+QtProtobuf has limited qmake build procedures support. It's only available and tested on linux platforms. To use it in your qmake project, first you need build and install QtProtobuf as standalone project in your system paths:
+
+```bash
+mkdir build
+cd build
+cmake .. [-DCMAKE_PREFIX_PATH="<path/to/qt/installation>/Qt<qt_version>/<qt_version>/gcc_64/lib/cmake"] -DCMAKE_INSTALL_PREFIX=/usr -DQTPROTOBUF_MAKE_TESTS=OFF -DQTPROTOBUF_MAKE_EXAMPLES=OFF
+sudo cmake --build . [--config <RELEASE|DEBUG>] -- -j<N> install
+```
+
+Commands above will install qt protobuf into you system paths prefixed with */usr* folder.
+
+Once build and installation is finished, you may use QtProtobuf and QtGrpc in qmake project by adding following lines in .pro file:
+
+```bash
+QT += protobuf #for protobuf libraries support
+QT += grpc #for grpc libraries support
+```
+To generate source code and link it to you project use predefined *qtprotobuf_generate* function
+
+### qtprotobuf_generate([generate_qml=false])
+
+qtprotobuf_generate is qmake helper [test function](https://doc.qt.io/qt-5/qmake-language.html#test-functions) that generates QtProtobuf source code based on files provided by PROTO_FILES global context variable
+
+**Parameters:**
+
+*generate_qml* - Enables/disables QML code generation in protobuf classes. If set to `true` qml related code for lists and qml registration to be generated.
+
+
+**Note:** see examples/qmakeexample for details
 
 ## Running tests
 ```bash
