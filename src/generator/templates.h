@@ -147,7 +147,8 @@ public:
     static const char *MapSerializationRegisterTemplate;
     static const char *RegisterSerializersTemplate;
     static const char *RegisterEnumSerializersTemplate;
-    static const char *RegistratorTemplate;
+    static const char *RegistrarTemplate;
+    static const char *EnumRegistrarTemplate;
     static const char *QmlRegisterTypeTemplate;
     static const char *QmlRegisterTypeUncreatableTemplate;
     //Service templates
@@ -175,7 +176,6 @@ public:
     static const char *EnumClassSuffix;
 
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
-    static const std::string GlobalDeclarationsFilename;
 };
 
 } //namespace generator

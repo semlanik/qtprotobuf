@@ -31,6 +31,8 @@
 #include <QMetaType>
 
 #include <unordered_map>
+#include <functional>
+#include <list>
 
 namespace QtProtobuf {
 
@@ -237,6 +239,20 @@ using DoubleList = QList<double>;
 extern Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
 
 /*! \} */
+
+//!\private
+using RegisterFunction = std::function<void(void)>;
+
+//!\private
+extern Q_PROTOBUF_EXPORT std::list<RegisterFunction>& registerFunctions();
+
+//!\private
+template <typename T>
+struct ProtoTypeRegistrar {
+    ProtoTypeRegistrar(RegisterFunction initializer) {
+        registerFunctions().push_back(initializer);
+    }
+};
 }
 
 Q_DECLARE_METATYPE(QtProtobuf::int32)

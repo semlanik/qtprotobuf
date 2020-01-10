@@ -410,6 +410,7 @@ void ProtobufSourceGenerator::printGetters()
 
 void ProtobufSourceGenerator::printDestructor()
 {
+    mPrinter->Print({{"classname", mClassName}}, Templates::RegistrarTemplate);
     mPrinter->Print({{"classname", mClassName}}, "$classname$::~$classname$()\n"
                                                  "{}\n\n");
 }

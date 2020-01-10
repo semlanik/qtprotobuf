@@ -9,7 +9,8 @@ file(GLOB SOURCES main.cpp)
 file(GLOB QML_FILES qml/tst_simple.qml)
 
 add_executable(${TARGET} ${SOURCES} ${QML_FILES})
-target_link_libraries(${TARGET} Qt5::Core Qt5::Qml Qt5::Network Qt5::Quick Qt5::Test Qt5::QuickTest qtprotobuf_test_qtprotobuf_gen QtProtobufProject::QtProtobuf)
+target_link_libraries(${TARGET} Qt5::Core Qt5::Qml Qt5::Network Qt5::Quick Qt5::Test Qt5::QuickTest QtProtobufProject::QtProtobuf)
+qtprotobuf_link_archive(${TARGET} qtprotobuf_test_qtprotobuf_gen)
 
 add_target_qml(TARGET ${TARGET} QML_FILES ${QML_FILES})
 add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/qml)

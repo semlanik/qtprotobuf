@@ -29,8 +29,6 @@
 
 #include <gtest/gtest.h>
 
-#include "qtprotobuf_global.qpb.h"
-
 using namespace qtprotobufnamespace::tests;
 
 namespace QtProtobuf {
@@ -61,10 +59,6 @@ public:
 void SimpleTest::SetUpTestCase()
 {
     QtProtobuf::qRegisterProtobufTypes();
-    qtprotobufnamespace::tests::qRegisterProtobufTypes();
-    qtprotobufnamespace1::externaltests::qRegisterProtobufTypes();
-    qtprotobufnamespace::tests::globalenums::qRegisterProtobufTypes();
-    qtprotobufnamespace::tests::sequence::qRegisterProtobufTypes();
 }
 
 TEST_F(SimpleTest, SimpleBoolMessageTest)

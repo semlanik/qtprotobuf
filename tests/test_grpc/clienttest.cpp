@@ -24,7 +24,6 @@
  */
 
 #include "testservice_grpc.qpb.h"
-#include "qtprotobuf_global.qpb.h"
 #include <QGrpcHttp2Channel>
 #include <QGrpcCredentials>
 #include <QGrpcInsecureCredentials>
@@ -46,7 +45,6 @@ class ClientTest : public ::testing::Test
 protected:
     static void SetUpTestCase() {
         QtProtobuf::qRegisterProtobufTypes();
-        qRegisterProtobufType<SimpleStringMessage>();
     }
     static QCoreApplication m_app;
     static int m_argc;

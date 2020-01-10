@@ -73,7 +73,7 @@ void EnumsSourceGenerator::printRegisterBody()
                                                                        {"type", mClassName},
                                                                        {"namespaces", mNamespacesColonDelimited},
                                                                        {"package", packageName}};
-
+    mPrinter->Print(registrationProperties, Templates::EnumRegistrarTemplate);
     mPrinter->Print(registrationProperties, Templates::ManualRegistrationGlobalEnumDefinition);
     Indent();
     if (GeneratorOptions::instance().hasQml()) {

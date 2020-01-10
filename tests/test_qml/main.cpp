@@ -28,7 +28,6 @@
 #include <QQmlContext>
 
 #include "simpletest.qpb.h"
-#include "qtprotobuf_global.qpb.h"
 
 using namespace qtprotobufnamespace::tests;
 
@@ -37,8 +36,6 @@ class TestSetup : public QObject {
 public:
     TestSetup() {
         QtProtobuf::qRegisterProtobufTypes();
-        qtprotobufnamespace::tests::qRegisterProtobufTypes();
-
     }
     ~TestSetup() = default;
 public slots:
