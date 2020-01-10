@@ -30,7 +30,6 @@
 #include <qprotobufjsonserializer.h>
 
 #include "simpletest.qpb.h"
-#include "qtprotobuf_global.qpb.h"
 
 using namespace qtprotobufnamespace::tests;
 
@@ -44,9 +43,6 @@ public:
     void SetUp() override;
     static void SetUpTestCase() {
         QtProtobuf::qRegisterProtobufTypes();
-        qtprotobufnamespace::tests::qRegisterProtobufTypes();
-        qtprotobufnamespace1::externaltests::qRegisterProtobufTypes();
-        qtprotobufnamespace::tests::globalenums::qRegisterProtobufTypes();
     }
 
 protected:

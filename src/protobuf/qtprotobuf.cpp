@@ -82,6 +82,11 @@ void registerBasicConverters() {
 
 }
 
+std::list<RegisterFunction>& registerFunctions() {
+    static std::list<std::function<void(void)>> registrationList;
+    return registrationList;
+}
+
 void qRegisterProtobufTypes() {
     static bool registred = false;
     if (registred) {
@@ -119,5 +124,9 @@ void qRegisterProtobufTypes() {
     registerBasicConverters<sfixed64>();
     registerBasicConverters<fixed32>();
     registerBasicConverters<fixed64>();
+
+    for (auto registerFunc : registerFunctions()) {
+        registerFunc();
+    }
 }
 }

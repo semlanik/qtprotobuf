@@ -155,10 +155,6 @@ int main(int argc, char *argv[])
 }
 ```
 
-**For each generated class you also need to call 'qRegisterProtobufType&lt;GeneratedClassName&gt;' to enable serialization and QML support**
-
-**Other option is to include common "qtprotobuf_global.qpb.h" file and call apptopriate qRegisterProtobufTypes() method for you package**
-
 ### Code exceptions
 
 If any prohibited Qt/QML keyword is used as field name, generator appends '*Proto*' suffix to generated filed name. It's required to omit overloading for example QML reserved names like '*id*' or '*objectName*'.
@@ -213,6 +209,17 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 **Outcome:**
 
 *QtProtobuf_GENERATED* - variable that will contain generated STATIC library target name
+
+### qtprotobuf_link_archive
+
+qtprotobuf_link_archive is cmake helper function that links whole archive to your library or executable target. It's useful when you try to link generated target to shared library or/and to executable that doesn't utilize all protobuf generated classes directly from C++ code, but requires them from QML.
+
+**Parameters**
+
+*TARGET* - name of target to link to
+
+*GENERATED_TARGET* - protobuf generated target name
+
 
 ### Usefull definitions
 

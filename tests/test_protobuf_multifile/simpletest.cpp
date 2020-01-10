@@ -85,6 +85,7 @@
 #include "lowercasesequence2.h"
 #include "lowercasemessagename.h"
 #include "lowercasefieldmessagename.h"
+#include "messageuppercase.h"
 
 #include "globalenums.h"
 
