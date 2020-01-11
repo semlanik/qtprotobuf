@@ -113,7 +113,7 @@ file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.pr
 # Function below generates source files for specified PROTO_FILES,
 # writes result to STATIC library target and saves its name to 
 # ${QtProtobuf_GENERATED} variable
-generate_qtprotobuf(TARGET MyTarget
+qtprotobuf_generate(TARGET MyTarget
     OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
     PROTO_FILES ${PROTO_FILES})
 add_executable(MyTarget main.cpp) # Add your target here
@@ -133,7 +133,7 @@ set(GENERATED_HEADERS
     ...
     )
 ...
-generate_qtprotobuf(TARGET MyTarget
+qtprotobuf_generate(TARGET MyTarget
     OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
     PROTO_FILES ${PROTO_FILES}
     GENERATED_HEADERS ${GENERATED_HEADERS})
@@ -186,9 +186,9 @@ Following properties will be generated:
 
 ## CMake functions reference
 
-### generate_qtprotobuf
+### qtprotobuf_generate
 
-generate_qtprotobuf is cmake helper function that automatically generates STATIC library target from your .proto files
+qtprotobuf_generate is cmake helper function that automatically generates STATIC library target from your .proto files
 
 Due to cmake restrictions it's required to specify resulting artifacts manually as list of header files expected after generator job finished.
 
