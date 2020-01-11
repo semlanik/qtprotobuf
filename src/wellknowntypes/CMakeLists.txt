@@ -36,7 +36,7 @@ function(add_wellknowntype VARIABLE TYPENAME)
         file(GLOB PROTO_FILE ${INCLUDE_DIR}/google/protobuf/${TYPENAME}.proto)
         if (NOT "${PROTO_FILE}" STREQUAL "")
             message(STATUS "Add well-known type ${PROTO_FILE}")
-            generate_qtprotobuf(TARGET ${TYPENAME}
+            qtprotobuf_generate(TARGET ${TYPENAME}
                 OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/google/protobuf
                 PROTO_FILES ${PROTO_FILE}
                 PROTO_INCLUDES -I${QTPROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src

@@ -62,7 +62,7 @@ function(add_test_target)
         file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto)
     endif()
 
-    generate_qtprotobuf(TARGET ${add_test_target_TARGET}
+    qtprotobuf_generate(TARGET ${add_test_target_TARGET}
         OUT_DIR ${GENERATED_SOURCES_DIR}
         PROTO_FILES ${PROTO_FILES}
         GENERATED_HEADERS ${add_test_target_GENERATED_HEADERS}

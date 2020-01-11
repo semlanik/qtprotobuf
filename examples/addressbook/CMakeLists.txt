@@ -9,7 +9,7 @@ find_package(QtProtobufProject CONFIG REQUIRED COMPONENTS QtProtobuf QtGrpc)
 
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/addressbook.proto)
 
-generate_qtprotobuf(TARGET ${TARGET}
+qtprotobuf_generate(TARGET ${TARGET}
     OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
     PROTO_FILES ${PROTO_FILES}
     QML TRUE)

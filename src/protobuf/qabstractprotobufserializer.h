@@ -62,7 +62,7 @@ class QProtobufMetaObject;
  *          };
  *          \endcode
  *          Practically code above is generated automaticaly by running qtprotobufgenerator or using cmake build macro
- *          generate_qtprotobuf, based on .proto files. But it's still possible to reuse manually written code if needed.
+ *          qtprotobuf_generate, based on .proto files. But it's still possible to reuse manually written code if needed.
  *
  *          This class should be used as base for specific serializers. The handlers property contains all
  *          message-specific serializers and should be used while serialization/deserialization. Inherited classes should reimplement
