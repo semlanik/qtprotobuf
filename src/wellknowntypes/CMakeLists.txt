@@ -29,14 +29,14 @@ file(GLOB HEADERS
 file(GLOB PUBLIC_HEADERS
     qtprotobufwellknowntypes_global.qbp.h)
 
-function(add_wellknowntype VARIABLE TYPENAME)
+function(add_wellknowntype TYPENAME)
     list(APPEND LOOKUP_DIRS ${QTPROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src)
     list(APPEND LOOKUP_DIRS ${Protobuf_INCLUDE_DIRS})
     foreach(INCLUDE_DIR ${LOOKUP_DIRS})
         file(GLOB PROTO_FILE ${INCLUDE_DIR}/google/protobuf/${TYPENAME}.proto)
         if (NOT "${PROTO_FILE}" STREQUAL "")
             message(STATUS "Add well-known type ${PROTO_FILE}")
-            qtprotobuf_generate(TARGET ${TYPENAME}
+            qtprotobuf_generate(TARGET ${TARGET} GENERATED_TARGET ${TYPENAME}
                 OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/google/protobuf
                 PROTO_FILES ${PROTO_FILE}
                 PROTO_INCLUDES -I${QTPROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src
@@ -44,37 +44,23 @@ function(add_wellknowntype VARIABLE TYPENAME)
             break()
         endif()
     endforeach()
-    target_include_directories(${QtProtobuf_GENERATED} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/generated)
-    if(WIN32)
-        get_target_property(EXISTING_FLAGS ${TARGET} LINK_FLAGS)
-        set_target_properties(${QtProtobuf_GENERATED} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-        set_target_properties(${TARGET} PROPERTIES LINK_DIRECTORIES "$<TARGET_FILE_DIR:${QtProtobuf_GENERATED}>")
-        if("${EXISTING_FLAGS}" STREQUAL "EXISTING_FLAGS-NOTFOUND")
-            set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "/WHOLEARCHIVE:${QtProtobuf_GENERATED}")
-        else()
-            set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "${EXISTING_FLAGS} /WHOLEARCHIVE:${QtProtobuf_GENERATED}")
-        endif()
-    else()
-        set(${VARIABLE} ${${VARIABLE}} -Wl,--whole-archive ${QtProtobuf_GENERATED} -Wl,--no-whole-archive PARENT_SCOPE)
-    endif()
-    add_dependencies(${TARGET} ${QtProtobuf_GENERATED})
 endfunction()
 
 add_library(${TARGET} SHARED ${SOURCES})
 
-add_wellknowntype(GENERATED_TARGETS any)
-add_wellknowntype(GENERATED_TARGETS duration)
-add_wellknowntype(GENERATED_TARGETS empty)
-add_wellknowntype(GENERATED_TARGETS field_mask)
-add_wellknowntype(GENERATED_TARGETS source_context)
-add_wellknowntype(GENERATED_TARGETS struct)
-add_wellknowntype(GENERATED_TARGETS timestamp)
-add_wellknowntype(GENERATED_TARGETS wrappers)
+add_wellknowntype(any)
+add_wellknowntype(duration)
+add_wellknowntype(empty)
+add_wellknowntype(field_mask)
+add_wellknowntype(source_context)
+add_wellknowntype(struct)
+add_wellknowntype(timestamp)
+add_wellknowntype(wrappers)
 
-add_wellknowntype(GENERATED_TARGETS type)
-add_dependencies(type_qtprotobuf_gen any_qtprotobuf_gen source_context_qtprotobuf_gen)
-add_wellknowntype(GENERATED_TARGETS api)
-add_dependencies(api_qtprotobuf_gen type_qtprotobuf_gen source_context_qtprotobuf_gen)
+add_wellknowntype(type)
+add_dependencies(type any source_context)
+add_wellknowntype(api)
+add_dependencies(api type source_context)
 
 
 protobuf_generate_qt_headers(PUBLIC_HEADERS ${PUBLIC_HEADERS} COMPONENT ${TARGET})
@@ -93,7 +79,7 @@ target_include_directories(${TARGET} PUBLIC
     $<INSTALL_INTERFACE:${TARGET_INCLUDE_DIR}>
     )
 
-target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf PRIVATE ${GENERATED_TARGETS})
+target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf)
 target_compile_features(${TARGET} PUBLIC cxx_std_14
     cxx_auto_type
     cxx_decltype

@@ -190,7 +190,9 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 
 **Parameters:**
 
-*TARGET* - name of you target that will be base for generated target name
+*TARGET* - name of you target that generated code archive will be linked to
+
+*GENERATED_TARGET* - name that will be used for generated archive library target. It's usefull when you supposed to have multiple generated targets to be linked to single one.
 
 *OUT_DIR* - output directory that will contain generated artifacts. Usually subfolder in build directory should be used
 

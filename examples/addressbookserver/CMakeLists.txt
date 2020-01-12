@@ -15,7 +15,7 @@ protobuf_generate_all(TARGET ${TARGET}
     GENERATED_SOURCES ${GENERATED_SOURCES}
     PROTO_FILES ${PROTO_FILES})
 
-target_link_libraries(${TARGET} protobuf::libprotobuf gRPC::grpc++ gRPC::grpc)
+target_link_libraries(${TARGET} PRIVATE protobuf::libprotobuf gRPC::grpc++ gRPC::grpc)
 if(MSVC)
    target_compile_definitions(${TARGET} PRIVATE _WIN32_WINNT=0x600 _SCL_SECURE_NO_WARNINGS _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS)
 endif()

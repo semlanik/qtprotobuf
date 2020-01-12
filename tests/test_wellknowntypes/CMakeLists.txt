@@ -13,5 +13,5 @@ add_test_target(TARGET ${TARGET}
 add_target_windeployqt(TARGET ${TARGET}
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(${TARGET} ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobufWellKnownTypes)
+target_link_libraries(${TARGET} PRIVATE ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobufWellKnownTypes)
 add_test(NAME ${TARGET} COMMAND ${TARGET})
