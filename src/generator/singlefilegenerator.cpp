@@ -107,6 +107,9 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         outHeaderPrinter->Print({{"include", include}}, Templates::InternalIncludeTemplate);
     }
 
+    if (GeneratorOptions::instance().hasQml()) {
+        outSourcePrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+    }
     outSourcePrinter->Print({{"namespace", "QtProtobuf"}}, Templates::UsingNamespaceTemplate);
 
 

@@ -82,8 +82,28 @@ cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 ### Direct usage of generator
 
 ```bash
-protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin>/qtprotobufgen --qtprotobuf_out=<output_dir> <protofile>.proto [--qtprotobuf_opt=out=<output_dir>]
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
+
+**QT_PROTOBUF_OPTIONS**
+
+For protoc command you also may specify extra options using QT_PROTOBUF_OPTIONS environment variable and colon-separated format:
+
+``` bash
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+```
+
+Following options are supported:
+
+*SINGLE* - enables single-file generation when for each *.proto* file single pair of *.h* *.cpp* files is generated
+
+**Note:** Enabled by default. Excluded by SINGLE
+
+*MULTI* - enables multi-file generation when for each message separate pair of *.h* *.cpp*
+
+**Note:** Has higher priority than SINGLE
+
+*QML* - enables QML code generation in protobuf classes. If is set QML-related code for lists and QML registration to be generated.
 
 ### Integration with project
 
