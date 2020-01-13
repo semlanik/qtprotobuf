@@ -34,6 +34,7 @@
 #include "clientgenerator.h"
 #include "clientsourcegenerator.h"
 #include "utils.h"
+#include "generatoroptions.h"
 
 #include <iostream>
 #include <set>
@@ -136,8 +137,11 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
     outHeaderPrinter->Print(Templates::PreambleTemplate);
     outHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
 
-    outSourcePrinter->Print({{"include", globalEnumsFilename}}, Templates::InternalIncludeTemplate);
     outSourcePrinter->Print(Templates::DisclaimerTemplate);
+    outSourcePrinter->Print({{"include", globalEnumsFilename}}, Templates::InternalIncludeTemplate);
+    if (GeneratorOptions::instance().hasQml()) {
+        outSourcePrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+    }
 
     for (auto file : files) { //TODO: Each should be printed to separate file
         for(int i = 0; i < file->enum_type_count(); i++) {

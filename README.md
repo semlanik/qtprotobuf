@@ -94,10 +94,30 @@ cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 ## Usage
 
 ### Direct usage of generator
-
+                
 ```bash
-protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin>/qtprotobufgen --qtprotobuf_out=<output_dir> <protofile>.proto [--qtprotobuf_opt=out=<output_dir>]
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
+
+**QT_PROTOBUF_OPTIONS**
+
+For protoc command you also may specify extra options using QT_PROTOBUF_OPTIONS environment variable and colon-separated format:
+
+``` bash
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+```
+
+Following options are supported:
+
+*SINGLE* - enables single-file generation when for each *.proto* file single pair of *.h* *.cpp* files is generated
+
+**Note:** Enabled by default. Excluded by SINGLE
+
+*MULTI* - enables multi-file generation when for each message separate pair of *.h* *.cpp*
+
+**Note:** Has higher priority than SINGLE
+
+*QML* - enables QML code generation in protobuf classes. If is set QML-related code for lists and QML registration to be generated.
 
 ### Integration with project
 
@@ -111,13 +131,11 @@ file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.pr
                                ...
                                ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofileN.proto)
 # Function below generates source files for specified PROTO_FILES,
-# writes result to STATIC library target and saves its name to 
-# ${QtProtobuf_GENERATED} variable
+# and link them to the MyTarget as static library 
+add_executable(MyTarget main.cpp) # Add your target here
 qtprotobuf_generate(TARGET MyTarget
     OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
     PROTO_FILES ${PROTO_FILES})
-add_executable(MyTarget main.cpp) # Add your target here
-target_link_libraries(MyTarget ${QtProtobuf_GENERATED})
 
 ```
 
@@ -206,11 +224,7 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 
 **Note:** multi-files generation mode is defined as deprecated by QtProtobuf team, and might have poor support in future
 
-*QML* - Enables/disables QML code generation in protobuf classes. If set to TRUE qml related code for lists and qml registration to be generated.
-
-**Outcome:**
-
-*QtProtobuf_GENERATED* - variable that will contain generated STATIC library target name
+*QML* - Enables/disables QML code generation in protobuf classes. If set to TRUE QML related code for lists and QML registration to be generated.
 
 ### qtprotobuf_link_archive
 
@@ -262,7 +276,7 @@ qtprotobuf_generate is qmake helper [test function](https://doc.qt.io/qt-5/qmake
 
 **Parameters:**
 
-*generate_qml* - Enables/disables QML code generation in protobuf classes. If set to `true` qml related code for lists and qml registration to be generated.
+*generate_qml* - Enables/disables QML code generation in protobuf classes. If set to `true` QML-related code for lists and QML registration to be generated.
 
 
 **Note:** see examples/qmakeexample for details

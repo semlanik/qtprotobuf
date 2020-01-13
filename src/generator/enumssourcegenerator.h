@@ -45,7 +45,6 @@ public:
     virtual ~EnumsSourceGenerator() = default;
 
     void run() override;
-    void printHeaders();
     void printRegisterBody();
 };
 
