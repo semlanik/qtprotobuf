@@ -10,8 +10,8 @@ CONFIG += c++14
 defineTest(qtprotobuf_generate) {
     OK = false
 
-    QML_ENABLED = $$1
-    $$QML_ENABLED:GENERATOR_OPTIONS="$$GENERATOR_OPTIONS:QML"
+    QML_DISABLED = $$1
+    $$QML_DISABLED:GENERATOR_OPTIONS="$$GENERATOR_OPTIONS:NOQML"
 
     for(PROTO_FILE_REL, PROTO_FILES) {
         PROTO_FILE_ABS = $$absolute_path($$PROTO_FILE_REL)

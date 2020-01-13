@@ -11,7 +11,8 @@ add_test_target(TARGET ${TARGET}
     PROTO_FILES ${PROTO_FILES}
     EXCLUDE_HEADERS nestedsimpleintmessage.h
     SOURCES ${SOURCES}
-    MULTI TRUE)
+    MULTI TRUE
+    NOQML TRUE)
 add_target_windeployqt(TARGET ${TARGET}
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

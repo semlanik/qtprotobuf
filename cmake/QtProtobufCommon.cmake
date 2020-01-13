@@ -42,7 +42,7 @@ endfunction(protobuf_generate_all)
 
 function(add_test_target)
     set(options)
-    set(oneValueArgs QML_DIR TARGET MULTI QML)
+    set(oneValueArgs QML_DIR TARGET MULTI NOQML)
     set(multiValueArgs SOURCES GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
     cmake_parse_arguments(add_test_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -69,7 +69,7 @@ function(add_test_target)
         GENERATED_HEADERS ${add_test_target_GENERATED_HEADERS}
         EXCLUDE_HEADERS ${add_test_target_EXCLUDE_HEADERS}
         MULTI ${add_test_target_MULTI}
-        QML ${add_test_target_QML}
+        NOQML ${add_test_target_NOQML}
         PROTO_INCLUDES ${add_test_target_PROTO_INCLUDES})
 
     if(Qt5_POSITION_INDEPENDENT_CODE)
@@ -77,7 +77,7 @@ function(add_test_target)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     endif()
     target_link_libraries(${add_test_target_TARGET} PUBLIC gtest_main gtest ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf ${QTPROTOBUF_COMMON_NAMESPACE}::QtGrpc Qt5::Core Qt5::Test Qt5::Network ${CMAKE_THREAD_LIBS_INIT})
-    if (${add_test_target_QML})
+    if(NOT ${add_test_target_NOQML})
         target_link_libraries(${add_test_target_TARGET} PUBLIC Qt5::Qml)
     endif()
 

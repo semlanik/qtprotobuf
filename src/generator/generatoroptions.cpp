@@ -30,12 +30,12 @@
 #include <iostream>
 
 static const std::string MultifileBuildOption("MULTI");
-static const std::string QmlPluginOption("QML");
+static const std::string QmlPluginOption("NOQML");
 
 using namespace ::QtProtobuf::generator;
 
 GeneratorOptions::GeneratorOptions() : mIsMulti(false)
-  ,mHasQml(false)
+  ,mHasQml(true)
 {
 }
 
@@ -49,8 +49,8 @@ void GeneratorOptions::parseFromEnv(const std::string &options)
             QT_PROTOBUF_DEBUG("set mIsMulti: true");
             mIsMulti = true;
         } else if (option.compare(QmlPluginOption) == 0) {
-            QT_PROTOBUF_DEBUG("set mHasQml: true");
-            mHasQml = true;
+            QT_PROTOBUF_DEBUG("set mHasQml: false");
+            mHasQml = false;
         }
     }
 }

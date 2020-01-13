@@ -43,15 +43,6 @@ EnumsSourceGenerator::EnumsSourceGenerator(const google::protobuf::EnumDescripto
     ClassGeneratorBase(enumDesctiptor->full_name() + Templates::EnumClassSuffix, printer)
   , mEnumDescriptor(enumDesctiptor) {}
 
-
-void  EnumsSourceGenerator::printHeaders() {
-    mPrinter->Print("#include \"globalenums.h\"\n\n"
-                    "#include <QProtobufObject>\n\n");
-    if (GeneratorOptions::instance().hasQml()) {
-        mPrinter->Print("#include <QQmlEngine>");
-    }
-}
-
 void EnumsSourceGenerator::run() {
     printNamespaces(mNamespaces);
     printRegisterBody();

@@ -111,13 +111,11 @@ file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.pr
                                ...
                                ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofileN.proto)
 # Function below generates source files for specified PROTO_FILES,
-# writes result to STATIC library target and saves its name to 
-# ${QtProtobuf_GENERATED} variable
+# and link them to the MyTarget as static library 
 qtprotobuf_generate(TARGET MyTarget
     OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
     PROTO_FILES ${PROTO_FILES})
 add_executable(MyTarget main.cpp) # Add your target here
-target_link_libraries(MyTarget ${QtProtobuf_GENERATED})
 
 ```
 
@@ -206,11 +204,7 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 
 **Note:** multi-files generation mode is defined as deprecated by QtProtobuf team, and might have poor support in future
 
-*QML* - Enables/disables QML code generation in protobuf classes. If set to TRUE qml related code for lists and qml registration to be generated.
-
-**Outcome:**
-
-*QtProtobuf_GENERATED* - variable that will contain generated STATIC library target name
+*NOQML* - Enables/disables QML code generation in protobuf classes. If set to FALSE or not defined qml related code for lists and qml registration of protobuf classes will be generated.
 
 ### qtprotobuf_link_archive
 
@@ -256,13 +250,13 @@ QT += grpc #for grpc libraries support
 ```
 To generate source code and link it to you project use predefined *qtprotobuf_generate* function
 
-### qtprotobuf_generate([generate_qml=false])
+### qtprotobuf_generate([no_generate_qml=false])
 
 qtprotobuf_generate is qmake helper [test function](https://doc.qt.io/qt-5/qmake-language.html#test-functions) that generates QtProtobuf source code based on files provided by PROTO_FILES global context variable
 
 **Parameters:**
 
-*generate_qml* - Enables/disables QML code generation in protobuf classes. If set to `true` qml related code for lists and qml registration to be generated.
+*no_generate_qml* - Enables/disables QML code generation in protobuf classes. If set to `false`(default) qml related code for lists and qml registration to be generated.
 
 
 **Note:** see examples/qmakeexample for details
