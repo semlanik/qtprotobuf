@@ -39,7 +39,7 @@ function(add_wellknowntype TYPENAME)
             qtprotobuf_generate(TARGET ${TARGET} GENERATED_TARGET ${TYPENAME}
                 OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/google/protobuf
                 PROTO_FILES ${PROTO_FILE}
-                PROTO_INCLUDES -I${QTPROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src
+                PROTO_INCLUDES -I${INCLUDE_DIR}
                 QML TRUE)
             break()
         endif()
