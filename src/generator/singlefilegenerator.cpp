@@ -157,6 +157,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
                                         outHeaderPrinter);
 
         classGen.printNamespaces();
+        classGen.printComments(message);
         classGen.printClassDeclaration();
         classGen.printProperties();
         classGen.printPrivate();

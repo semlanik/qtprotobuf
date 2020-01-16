@@ -98,6 +98,25 @@ static std::string lowerCaseName(const std::string &name)
     return lowerCaseName;
 }
 
+inline static std::string& rtrim(std::string& s)
+{
+    s.erase(s.find_last_not_of(" \t\n\r\f\v") + 1);
+    return s;
+}
+
+// trim from beginning of string (left)
+inline static std::string& ltrim(std::string& s)
+{
+    s.erase(0, s.find_first_not_of(" \t\n\r\f\v"));
+    return s;
+}
+
+// trim from both ends of string (right then left)
+inline static std::string& trim(std::string& s)
+{
+    return ltrim(rtrim(s));
+}
+
 };
 
 #define UNUSED(expr) do { (void)(expr); } while (0)

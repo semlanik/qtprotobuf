@@ -226,6 +226,8 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 
 *QML* - Enables/disables QML code generation in protobuf classes. If set to TRUE QML related code for lists and QML registration to be generated.
 
+*COMMENTS* - Enables/disables comments copying from .proto files. If set to TRUE message and field related comments will be copied to generated header files.
+
 ### qtprotobuf_link_archive
 
 qtprotobuf_link_archive is cmake helper function that links whole archive to your library or executable target. It's useful when you try to link generated target to shared library or/and to executable that doesn't utilize all protobuf generated classes directly from C++ code, but requires them from QML.
