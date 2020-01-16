@@ -31,6 +31,7 @@
 
 #include "utils.h"
 #include "templates.h"
+#include "generatoroptions.h"
 
 namespace google { namespace protobuf {
 class FieldDescriptor;
@@ -120,6 +121,39 @@ public:
         Outdent();
     }
 
+    template<typename T>
+    void printComments(T *descriptor) {
+        if (!GeneratorOptions::instance().generateComments()) {
+            return;
+        }
+
+        ::google::protobuf::SourceLocation loc;
+        descriptor->GetSourceLocation(&loc);
+
+        utils::trim(loc.leading_comments);
+        if (loc.leading_comments.size() > 0) {
+            auto firstEntry = loc.leading_comments.find('\n');
+            bool isSingleLine = firstEntry == std::string::npos;
+
+            if (loc.leading_comments[0] != '!' && loc.leading_comments[0] != '*' && loc.leading_comments[0] != ' ') {
+                loc.leading_comments = " " + loc.leading_comments;
+                if (!isSingleLine) {
+                    loc.leading_comments = "\n" + loc.leading_comments;
+                }
+            }
+            mPrinter->Print("\n/*");
+            if (isSingleLine) {
+                mPrinter->Print(loc.leading_comments.c_str());
+            } else {
+                utils::replace(loc.leading_comments, "\n", "\n *");
+                mPrinter->Print(loc.leading_comments.c_str());
+                if (loc.leading_comments[loc.leading_comments.size() - 1] != '\n') {
+                    mPrinter->Print("\n");
+                }
+            }
+            mPrinter->Print(" */");
+        }
+    }
 
     void Indent() {
         mPrinter->Indent();

@@ -30,6 +30,7 @@
 #include <iostream>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream.h>
+#include <google/protobuf/descriptor.pb.h>
 
 using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
@@ -242,6 +243,8 @@ void ProtobufClassGenerator::printProperties()
 
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
+        printComments(field);
+        mPrinter->Print("\n");
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
             printField(mMessage, field, Templates::GetterPrivateMessageDeclarationTemplate);
             printField(mMessage, field, Templates::GetterMessageDeclarationTemplate);
@@ -333,6 +336,7 @@ void ProtobufClassGenerator::run()
     printIncludes();
     printNamespaces();
     printFieldClassDeclaration();
+    printComments(mMessage);
     printClassDeclaration();
     printProperties();
     printPrivate();

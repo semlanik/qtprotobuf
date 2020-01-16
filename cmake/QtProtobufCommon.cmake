@@ -70,6 +70,7 @@ function(add_test_target)
         EXCLUDE_HEADERS ${add_test_target_EXCLUDE_HEADERS}
         MULTI ${add_test_target_MULTI}
         QML ${add_test_target_QML}
+        COMMENTS TRUE
         PROTO_INCLUDES ${add_test_target_PROTO_INCLUDES})
 
     if(Qt5_POSITION_INDEPENDENT_CODE)

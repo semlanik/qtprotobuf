@@ -18,7 +18,7 @@ endfunction()
 
 function(qtprotobuf_generate)
     set(options)
-    set(oneValueArgs OUT_DIR TARGET GENERATED_TARGET MULTI QML GENERATED_HEADERS_VAR)
+    set(oneValueArgs OUT_DIR TARGET GENERATED_TARGET MULTI QML COMMENTS GENERATED_HEADERS_VAR)
     set(multiValueArgs GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
     cmake_parse_arguments(qtprotobuf_generate "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -48,6 +48,11 @@ function(qtprotobuf_generate)
     if("${qtprotobuf_generate_QML}" STREQUAL "TRUE")
         message(STATUS "Enabled QML generation for ${GENERATED_TARGET_NAME}")
         set(GENERATION_OPTIONS "${GENERATION_OPTIONS}:QML")
+    endif()
+
+    if("${qtprotobuf_generate_COMMENTS}" STREQUAL "TRUE")
+        message(STATUS "Enabled COMMENTS generation for ${GENERATED_TARGET_NAME}")
+        set(GENERATION_OPTIONS "${GENERATION_OPTIONS}:COMMENTS")
     endif()
 
     find_program(GO_EXECUTABLE "go")
