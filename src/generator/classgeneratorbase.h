@@ -132,11 +132,13 @@ public:
     }
 
     std::string getTypeName(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor);
+    std::string getQmlAliasTypeName(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor);
     static bool isLocalMessageEnum(const google::protobuf::Descriptor *message,
                             const ::google::protobuf::FieldDescriptor *field);
     template<typename T>
     static std::string getNamespacesList(const T *message, std::vector<std::string> &container, const std::string &localNamespace);
     static EnumVisibility getEnumVisibility(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor);
+    static bool hasQmlAlias(const ::google::protobuf::FieldDescriptor *field);
     void getMethodParameters(const ::google::protobuf::MethodDescriptor *method, std::map<std::string, std::string> &parameters);
 };
 

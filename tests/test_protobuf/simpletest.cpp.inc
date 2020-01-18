@@ -80,7 +80,7 @@ TEST_F(SimpleTest, SimpleBoolMessageTest)
 
 TEST_F(SimpleTest, SimpleIntMessageTest)
 {
-    const char *propertyName = "testFieldInt";
+    const char *propertyName = "testFieldInt_p";
     assertMessagePropertyRegistered<SimpleIntMessage, int32>(1, "QtProtobuf::int32", propertyName);
 
     SimpleIntMessage test;
@@ -146,7 +146,7 @@ TEST_F(SimpleTest, SimpleUInt64MessageTest)
 
 TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
 {
-    const char *propertyName = "testFieldFixedInt32";
+    const char *propertyName = "testFieldFixedInt32_p";
     assertMessagePropertyRegistered<SimpleFixedInt32Message, fixed32>(1, "QtProtobuf::fixed32", propertyName);
 
     SimpleFixedInt32Message test;
@@ -168,7 +168,7 @@ TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
 
 TEST_F(SimpleTest, SimpleSFixedInt32MessageTest)
 {
-    const char *propertyName = "testFieldFixedInt32";
+    const char *propertyName = "testFieldFixedInt32_p";
     assertMessagePropertyRegistered<SimpleSFixedInt32Message, sfixed32>(1, "QtProtobuf::sfixed32", propertyName);
 
     SimpleSFixedInt32Message test;

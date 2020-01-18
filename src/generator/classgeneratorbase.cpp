@@ -207,6 +207,22 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
     return typeName;
 }
 
+std::string ClassGeneratorBase::getQmlAliasTypeName(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor)
+{
+    if (!field->is_repeated() && !field->is_map()) {
+        switch(field->type()) {
+        case FieldDescriptor::TYPE_INT32:
+        case FieldDescriptor::TYPE_SFIXED32:
+            return "int";
+        case FieldDescriptor::TYPE_FIXED32:
+            return "unsigned int";
+        default:
+            break;//Do nothing
+        }
+    }
+    return getTypeName(field, messageFor);
+}
+
 template<typename T>
 std::string ClassGeneratorBase::getNamespacesList(const T *message, std::vector<std::string> &container, const std::string &localNamespace)
 {
@@ -299,7 +315,10 @@ void ClassGeneratorBase::printField(const google::protobuf::Descriptor *message,
 bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *message, const FieldDescriptor *field, PropertyMap &propertyMap)
 {
     assert(field != nullptr);
+    std::string scriptable = "true";
     std::string typeName = getTypeName(field, message);
+    std::string qmlAliasTypeName = getQmlAliasTypeName(field, message);
+    std::string getterType = typeName;
 
     if (typeName.size() <= 0) {
         std::cerr << "Type "
@@ -326,14 +345,34 @@ bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *
         }
     }
 
+    if (!field->is_map() && !field->is_repeated() && (field->type() == FieldDescriptor::TYPE_INT64
+                                                      || field->type() == FieldDescriptor::TYPE_SINT64
+                                                      || field->type() == FieldDescriptor::TYPE_FIXED64
+                                                      || field->type() == FieldDescriptor::TYPE_SFIXED64)) {
+        scriptable = "false";
+    }
+
+    if (field->type() == FieldDescriptor::TYPE_INT32
+         || field->type() == FieldDescriptor::TYPE_FIXED32
+         || field->type() == FieldDescriptor::TYPE_SFIXED32
+         || field->type() == FieldDescriptor::TYPE_INT64
+         || field->type() == FieldDescriptor::TYPE_FIXED64
+         || field->type() == FieldDescriptor::TYPE_SFIXED64) {
+        getterType = "const " + getterType;
+    }
+
     std::string fieldName = utils::lowerCaseName(field->name());
+
     fieldName = qualifiedName(fieldName);
     propertyMap = {{"type", typeName},
                    {"classname", utils::upperCaseName(message->name())},
                    {"type_lower", typeNameLower},
                    {"property_name", fieldName},
                    {"property_name_cap", capProperty},
-                   {"type_nolist", typeNameNoList}
+                   {"type_nolist", typeNameNoList},
+                   {"qml_alias_type", qmlAliasTypeName},
+                   {"scriptable", scriptable},
+                   {"getter_type", getterType}
                   };
     return true;
 }
@@ -413,3 +452,13 @@ void ClassGeneratorBase::printInclude(const google::protobuf::Descriptor *messag
         existingIncludes.insert(newInclude);
     }
 }
+
+bool ClassGeneratorBase::hasQmlAlias(const ::google::protobuf::FieldDescriptor *field)
+{
+    return !field->is_map() && !field->is_repeated()
+            && (field->type() == FieldDescriptor::TYPE_INT32
+                || field->type() == FieldDescriptor::TYPE_SFIXED32
+                || field->type() == FieldDescriptor::TYPE_FIXED32)
+            && GeneratorOptions::instance().hasQml();
+}
+

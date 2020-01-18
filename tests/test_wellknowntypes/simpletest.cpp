@@ -103,7 +103,7 @@ TEST_F(WellknowntypesTest, DurationTest)
 {
     ASSERT_GT(qMetaTypeId<Duration>(), 0);
     assertMessagePropertyRegistered<Duration, QtProtobuf::int64>(1, "QtProtobuf::int64", "seconds");
-    assertMessagePropertyRegistered<Duration, QtProtobuf::int32>(2, "QtProtobuf::int32", "nanos");
+    assertMessagePropertyRegistered<Duration, QtProtobuf::int32>(2, "QtProtobuf::int32", "nanos_p");
 }
 
 TEST_F(WellknowntypesTest, EmptyTest)
@@ -150,7 +150,7 @@ TEST_F(WellknowntypesTest, TimestampTest)
 {
     ASSERT_GT(qMetaTypeId<Timestamp>(), 0);
     assertMessagePropertyRegistered<Timestamp, QtProtobuf::int64>(1, "QtProtobuf::int64", "seconds");
-    assertMessagePropertyRegistered<Timestamp, QtProtobuf::int32>(2, "QtProtobuf::int32", "nanos");
+    assertMessagePropertyRegistered<Timestamp, QtProtobuf::int32>(2, "QtProtobuf::int32", "nanos_p");
 }
 
 TEST_F(WellknowntypesTest, TypeTest)
@@ -172,10 +172,10 @@ TEST_F(WellknowntypesTest, FieldTest)
 
     assertMessagePropertyRegistered<Field, Field::Kind>(1, "Kind", "kind");
     assertMessagePropertyRegistered<Field, Field::Cardinality>(2, "Cardinality", "cardinality");
-    assertMessagePropertyRegistered<Field, QtProtobuf::int32>(3, "QtProtobuf::int32", "number");
+    assertMessagePropertyRegistered<Field, QtProtobuf::int32>(3, "QtProtobuf::int32", "number_p");
     assertMessagePropertyRegistered<Field, QString>(4, "QString", "name");
     assertMessagePropertyRegistered<Field, QString>(6, "QString", "type_url");
-    assertMessagePropertyRegistered<Field, QtProtobuf::int32>(7, "QtProtobuf::int32", "oneof_index");
+    assertMessagePropertyRegistered<Field, QtProtobuf::int32>(7, "QtProtobuf::int32", "oneof_index_p");
     assertMessagePropertyRegistered<Field, bool>(8, "bool", "packed");
     assertMessagePropertyRegistered<Field, OptionRepeated>(9, "OptionRepeated", "options");
     assertMessagePropertyRegistered<Field, QString>(10, "QString", "json_name");
@@ -196,7 +196,7 @@ TEST_F(WellknowntypesTest, EnumValueTest)
 {
     ASSERT_GT(qMetaTypeId<EnumValue>(), 0);
     assertMessagePropertyRegistered<EnumValue, QString>(1, "QString", "name");
-    assertMessagePropertyRegistered<EnumValue, QtProtobuf::int32>(2, "QtProtobuf::int32", "number");
+    assertMessagePropertyRegistered<EnumValue, QtProtobuf::int32>(2, "QtProtobuf::int32", "number_p");
     assertMessagePropertyRegistered<EnumValue, OptionRepeated>(3, "OptionRepeated", "options");
 }
 
@@ -234,7 +234,7 @@ TEST_F(WellknowntypesTest, UInt64ValueTest)
 TEST_F(WellknowntypesTest, Int32ValueTest)
 {
     ASSERT_GT(qMetaTypeId<Int32Value>(), 0);
-    assertMessagePropertyRegistered<Int32Value, QtProtobuf::int32>(1, "QtProtobuf::int32", "value");
+    assertMessagePropertyRegistered<Int32Value, QtProtobuf::int32>(1, "QtProtobuf::int32", "value_p");
 }
 
 TEST_F(WellknowntypesTest, UInt32ValueTest)

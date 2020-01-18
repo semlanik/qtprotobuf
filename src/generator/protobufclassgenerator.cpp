@@ -212,6 +212,8 @@ void ProtobufClassGenerator::printProperties()
         const char *propertyTemplate = Templates::PropertyTemplate;
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
             propertyTemplate = Templates::MessagePropertyTemplate;
+        } else if (hasQmlAlias(field)) {
+            propertyTemplate = Templates::NonScriptablePropertyTemplate;
         }
         printField(mMessage, field, propertyTemplate);
     }
@@ -222,6 +224,8 @@ void ProtobufClassGenerator::printProperties()
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && field->is_repeated() && !field->is_map()
                 && GeneratorOptions::instance().hasQml()) {
             printField(mMessage, field, Templates::QmlListPropertyTemplate);
+        } else if (hasQmlAlias(field)) {
+            printField(mMessage, field, Templates::NonScriptableAliasPropertyTemplate);
         }
     }
 
@@ -273,7 +277,7 @@ void ProtobufClassGenerator::printProperties()
             printField(mMessage, field, Templates::SetterTemplateDeclarationComplexType);
             break;
         default:
-            printField(mMessage, field, Templates::SetterTemplateSimpleType);
+            printField(mMessage, field, Templates::SetterTemplate);
             break;
         }
     }
@@ -289,6 +293,17 @@ void ProtobufClassGenerator::printProperties()
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         printField(mMessage, mMessage->field(i), Templates::SignalTemplate);
+    }
+    Outdent();
+
+    printPrivate();
+    Indent();
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        auto field = mMessage->field(i);
+        if (hasQmlAlias(field)) {
+            printField(mMessage, field, Templates::NonScriptableGetterTemplate);
+            printField(mMessage, field, Templates::NonScriptableSetterTemplate);
+        }
     }
     Outdent();
 }
