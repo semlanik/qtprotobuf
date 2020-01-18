@@ -53,7 +53,7 @@ void JsonSerializationTest::SetUp() {
     serializer.reset(new QProtobufJsonSerializer);
 }
 
-TEST_F(JsonSerializationTest, FixedInt32MessageDeserializeTest)
+TEST_F(JsonSerializationTest, DISABLED_FixedInt32MessageDeserializeTest)
 {
     SimpleFixedInt32Message msg;
     msg.setTestFieldFixedInt32(555);

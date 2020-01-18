@@ -67,6 +67,8 @@ public:
     static const char *ClassDefinitionTemplate;
     static const char *QObjectMacro;
     static const char *PropertyTemplate;
+    static const char *NonScriptablePropertyTemplate;
+    static const char *NonScriptableAliasPropertyTemplate;
     static const char *MessagePropertyTemplate;
     static const char *QmlListPropertyTemplate;
     static const char *MemberTemplate;
@@ -109,6 +111,7 @@ public:
     static const char *GetterMessageDeclarationTemplate;
     static const char *GetterMessageDefinitionTemplate;
     static const char *GetterTemplate;
+    static const char *NonScriptableGetterTemplate;
     static const char *GetterContainerExtraDeclarationTemplate;
     static const char *GetterContainerExtraDefinitionTemplate;
     static const char *GetterQmlListDeclarationTemplate;
@@ -120,7 +123,8 @@ public:
     static const char *SetterTemplateDefinitionMessageType;
     static const char *SetterTemplateDeclarationComplexType;
     static const char *SetterTemplateDefinitionComplexType;
-    static const char *SetterTemplateSimpleType;
+    static const char *SetterTemplate;
+    static const char *NonScriptableSetterTemplate;
     static const char *SignalsBlockTemplate;
     static const char *SignalTemplate;
     static const char *FieldsOrderingContainerTemplate;
