@@ -83,7 +83,9 @@ const char *Templates::ProtoClassDefinitionTemplate = "\nclass $classname$ : pub
                                                       "    Q_PROTOBUF_OBJECT\n"
                                                       "    Q_DECLARE_PROTOBUF_SERIALIZERS($classname$)\n";
 
-const char *Templates::PropertyTemplate = "Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed)\n";
+const char *Templates::PropertyTemplate = "Q_PROPERTY($type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed SCRIPTABLE $scriptable$)\n";
+const char *Templates::NonScriptablePropertyTemplate = "Q_PROPERTY($type$ $property_name$_p READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed SCRIPTABLE false)\n";
+const char *Templates::NonScriptableAliasPropertyTemplate = "Q_PROPERTY($qml_alias_type$ $property_name$ READ $property_name$_p WRITE set$property_name_cap$_p NOTIFY $property_name$Changed SCRIPTABLE true)\n";
 const char *Templates::MessagePropertyTemplate = "Q_PROPERTY($type$ *$property_name$ READ $property_name$_p WRITE set$property_name_cap$_p NOTIFY $property_name$Changed)\n";
 const char *Templates::QmlListPropertyTemplate = "Q_PROPERTY(QQmlListProperty<$type_nolist$> $property_name$Data READ $property_name$_l NOTIFY $property_name$Changed)\n";
 
@@ -152,7 +154,11 @@ const char *Templates::GetterMessageDefinitionTemplate = "const $type$ &$classna
                                         "    return *m_$property_name$;\n"
                                         "}\n\n";
 
-const char *Templates::GetterTemplate = "const $type$ $property_name$() const {\n"
+const char *Templates::GetterTemplate = "$getter_type$ $property_name$() const {\n"
+                                        "    return m_$property_name$;\n"
+                                        "}\n\n";
+
+const char *Templates::NonScriptableGetterTemplate = "$qml_alias_type$ $property_name$_p() const {\n"
                                         "    return m_$property_name$;\n"
                                         "}\n\n";
 
@@ -196,7 +202,13 @@ const char *Templates::SetterTemplateDefinitionComplexType = "void $classname$::
                                                    "    }\n"
                                                    "}\n\n";
 
-const char *Templates::SetterTemplateSimpleType = "void set$property_name_cap$(const $type$ &$property_name$) {\n"
+const char *Templates::SetterTemplate = "void set$property_name_cap$(const $type$ &$property_name$) {\n"
+                                                   "    if (m_$property_name$ != $property_name$) {\n"
+                                                   "        m_$property_name$ = $property_name$;\n"
+                                                   "        $property_name$Changed();\n"
+                                                   "    }\n"
+                                                   "}\n\n";
+const char *Templates::NonScriptableSetterTemplate = "void set$property_name_cap$_p(const $qml_alias_type$ &$property_name$) {\n"
                                                    "    if (m_$property_name$ != $property_name$) {\n"
                                                    "        m_$property_name$ = $property_name$;\n"
                                                    "        $property_name$Changed();\n"

@@ -76,6 +76,14 @@ TestCase {
         id: lowerCaseMsg
     }
 
+    function test_1initialization() {
+        compare(int32Msg.testFieldInt, 2147483647, "SimpleIntMessage initialization")
+        compare(sint32Msg.testFieldInt, 2147483647, "SimpleSIntMessage initialization")
+        compare(uint32Msg.testFieldInt, 4294967295, "SimpleUIntMessage initialization")
+        compare(fixed32Msg.testFieldFixedInt32, 4294967295, "SimpleFixedInt32Message initialization")
+        compare(sfixed32Msg.testFieldFixedInt32, 2147483647, "SimpleSFixedInt32Message initialization")
+    }
+
     function test_simpleboolmessage() {
         boolMsg.testFieldBool = true;
         compare(boolMsg.testFieldBool, true, "SimpleBoolMessage == true")
@@ -84,36 +92,31 @@ TestCase {
     }
 
     function test_simpleintmessage() {
-        if (qVersion < 0x050E00) {
-            skip("int32 type is not supported by Qt < 5.14")
-        }
-        compare(int32Msg.testFieldInt == 2147483647, true, "SimpleIntMessage.testFieldInt: 2147483647: " + int32Msg.testFieldInt)
         int32Msg.testFieldInt = 0;
-        compare(int32Msg.testFieldInt == 0, true, "SimpleIntMessage == 0")
+        compare(int32Msg.testFieldInt, 0, "SimpleIntMessage == 0")
         int32Msg.testFieldInt = -128;
-        compare(int32Msg.testFieldInt == -128, true, "SimpleIntMessage == -128")
+        compare(int32Msg.testFieldInt, -128, "SimpleIntMessage == -128")
         int32Msg.testFieldInt = 127;
-        compare(int32Msg.testFieldInt == 127, true, "SimpleIntMessage == 127")
+        compare(int32Msg.testFieldInt, 127, "SimpleIntMessage == 127")
         int32Msg.testFieldInt = -256;
-        compare(int32Msg.testFieldInt == -256, true, "SimpleIntMessage == -256")
+        compare(int32Msg.testFieldInt, -256, "SimpleIntMessage == -256")
         int32Msg.testFieldInt = 255;
-        compare(int32Msg.testFieldInt == 255, true, "SimpleIntMessage == 255")
+        compare(int32Msg.testFieldInt, 255, "SimpleIntMessage == 255")
         int32Msg.testFieldInt = -32768;
-        compare(int32Msg.testFieldInt == -32768, true, "SimpleIntMessage == -32768")
+        compare(int32Msg.testFieldInt, -32768, "SimpleIntMessage == -32768")
         int32Msg.testFieldInt = 32767;
-        compare(int32Msg.testFieldInt == 32767, true, "SimpleIntMessage == 32767")
+        compare(int32Msg.testFieldInt, 32767, "SimpleIntMessage == 32767")
         int32Msg.testFieldInt = -65536;
-        compare(int32Msg.testFieldInt == -65536, true, "SimpleIntMessage == -65536")
+        compare(int32Msg.testFieldInt, -65536, "SimpleIntMessage == -65536")
         int32Msg.testFieldInt = 65535;
-        compare(int32Msg.testFieldInt == 65535, true, "SimpleIntMessage == 65535")
+        compare(int32Msg.testFieldInt, 65535, "SimpleIntMessage == 65535")
         int32Msg.testFieldInt = -2147483648;
-        compare(int32Msg.testFieldInt == -2147483648, true, "SimpleIntMessage == -2147483648")
+        compare(int32Msg.testFieldInt, -2147483648, "SimpleIntMessage == -2147483648")
         int32Msg.testFieldInt = 2147483647;
-        compare(int32Msg.testFieldInt == 2147483647, true, "SimpleIntMessage == 2147483647")
+        compare(int32Msg.testFieldInt, 2147483647, "SimpleIntMessage == 2147483647")
     }
 
     function test_simplesintmessage() {
-        compare(sint32Msg.testFieldInt == 2147483647, true, "SimpleSIntMessage.testFieldInt: 2147483647: " + sint32Msg.testFieldInt)
         sint32Msg.testFieldInt = 0;
         compare(sint32Msg.testFieldInt, 0, "SimpleSIntMessage == 0")
         sint32Msg.testFieldInt = -128;
@@ -139,73 +142,62 @@ TestCase {
     }
 
     function test_simpleuintmessage() {
-        compare(uint32Msg.testFieldInt == 4294967295, true, "SimpleUIntMessage.testFieldInt: 4294967295: " + uint32Msg.testFieldInt)
         uint32Msg.testFieldInt = 0;
-        compare(uint32Msg.testFieldInt == 0, true, "SimpleUIntMessage == 0")
+        compare(uint32Msg.testFieldInt, 0, "SimpleUIntMessage == 0")
         uint32Msg.testFieldInt = 127;
-        compare(uint32Msg.testFieldInt == 127, true, "SimpleUIntMessage == 127")
+        compare(uint32Msg.testFieldInt, 127, "SimpleUIntMessage == 127")
         uint32Msg.testFieldInt = 255;
-        compare(uint32Msg.testFieldInt == 255, true, "SimpleUIntMessage == 255")
+        compare(uint32Msg.testFieldInt, 255, "SimpleUIntMessage == 255")
         uint32Msg.testFieldInt = 32767;
-        compare(uint32Msg.testFieldInt == 32767, true, "SimpleUIntMessage == 32767")
+        compare(uint32Msg.testFieldInt, 32767, "SimpleUIntMessage == 32767")
         uint32Msg.testFieldInt = 65535;
-        compare(uint32Msg.testFieldInt == 65535, true, "SimpleUIntMessage == 65535")
+        compare(uint32Msg.testFieldInt, 65535, "SimpleUIntMessage == 65535")
         uint32Msg.testFieldInt = 2147483647;
-        compare(uint32Msg.testFieldInt == 2147483647, true, "SimpleUIntMessage == 2147483647")
+        compare(uint32Msg.testFieldInt, 2147483647, "SimpleUIntMessage == 2147483647")
         uint32Msg.testFieldInt = 4294967295;
-        compare(uint32Msg.testFieldInt == 4294967295, true, "SimpleUIntMessage == 4294967295")
+        compare(uint32Msg.testFieldInt, 4294967295, "SimpleUIntMessage == 4294967295")
     }
 
     function test_simplefixed32message() {
-        if (qVersion < 0x050E00) {
-            skip("fixed32 type is not supported by Qt < 5.14")
-        }
-
-        compare(fixed32Msg.testFieldFixedInt32 == 4294967295, true, "SimpleFixedInt32Message.testFieldInt: 4294967295: " + fixed32Msg.testFieldFixedInt32)
         fixed32Msg.testFieldFixedInt32 = 0;
-        compare(fixed32Msg.testFieldFixedInt32 == 0, true, "SimpleFixedInt32Message == 0")
+        compare(fixed32Msg.testFieldFixedInt32, 0, "SimpleFixedInt32Message == 0")
         fixed32Msg.testFieldFixedInt32 = 127;
-        compare(fixed32Msg.testFieldFixedInt32 == 127, true, "SimpleFixedInt32Message == 127")
+        compare(fixed32Msg.testFieldFixedInt32, 127, "SimpleFixedInt32Message == 127")
         fixed32Msg.testFieldFixedInt32 = 255;
-        compare(fixed32Msg.testFieldFixedInt32 == 255, true, "SimpleFixedInt32Message == 255")
+        compare(fixed32Msg.testFieldFixedInt32, 255, "SimpleFixedInt32Message == 255")
         fixed32Msg.testFieldFixedInt32 = 32767;
-        compare(fixed32Msg.testFieldFixedInt32 == 32767, true, "SimpleFixedInt32Message == 32767")
+        compare(fixed32Msg.testFieldFixedInt32, 32767, "SimpleFixedInt32Message == 32767")
         fixed32Msg.testFieldFixedInt32 = 65535;
-        compare(fixed32Msg.testFieldFixedInt32 == 65535, true, "SimpleFixedInt32Message == 65535")
+        compare(fixed32Msg.testFieldFixedInt32, 65535, "SimpleFixedInt32Message == 65535")
         fixed32Msg.testFieldFixedInt32 = 2147483647;
-        compare(fixed32Msg.testFieldFixedInt32 == 2147483647, true, "SimpleFixedInt32Message == 2147483647")
+        compare(fixed32Msg.testFieldFixedInt32, 2147483647, "SimpleFixedInt32Message == 2147483647")
         fixed32Msg.testFieldFixedInt32 = 4294967295;
-        compare(fixed32Msg.testFieldFixedInt32 == 4294967295, true, "SimpleFixedInt32Message == 4294967295")
+        compare(fixed32Msg.testFieldFixedInt32, 4294967295, "SimpleFixedInt32Message == 4294967295")
     }
 
     function test_simplesfixed32message() {
-        if (qVersion < 0x050E00) {
-            skip("sfixed32 type is not supported by Qt < 5.14")
-        }
-
-        compare(sfixed32Msg.testFieldFixedInt32 == 2147483647, true, "SimpleSFixedInt32Message.testFieldInt: 2147483647: " + sfixed32Msg.testFieldFixedInt32)
         sfixed32Msg.testFieldFixedInt32 = 0;
-        compare(sfixed32Msg.testFieldFixedInt32 == 0, true, "SimpleSFixedInt32Message == 0")
+        compare(sfixed32Msg.testFieldFixedInt32, 0, "SimpleSFixedInt32Message == 0")
         sfixed32Msg.testFieldFixedInt32 = -128;
-        compare(sfixed32Msg.testFieldFixedInt32 == -128, true, "SimpleSFixedInt32Message == -128")
+        compare(sfixed32Msg.testFieldFixedInt32, -128, "SimpleSFixedInt32Message == -128")
         sfixed32Msg.testFieldFixedInt32 = 127;
-        compare(sfixed32Msg.testFieldFixedInt32 == 127, true, "SimpleSFixedInt32Message == 127")
+        compare(sfixed32Msg.testFieldFixedInt32, 127, "SimpleSFixedInt32Message == 127")
         sfixed32Msg.testFieldFixedInt32 = -256;
-        compare(sfixed32Msg.testFieldFixedInt32 == -256, true, "SimpleSFixedInt32Message == -256")
+        compare(sfixed32Msg.testFieldFixedInt32, -256, "SimpleSFixedInt32Message == -256")
         sfixed32Msg.testFieldFixedInt32 = 255;
-        compare(sfixed32Msg.testFieldFixedInt32 == 255, true, "SimpleSFixedInt32Message == 255")
+        compare(sfixed32Msg.testFieldFixedInt32, 255, "SimpleSFixedInt32Message == 255")
         sfixed32Msg.testFieldFixedInt32 = -32768;
-        compare(sfixed32Msg.testFieldFixedInt32 == -32768, true, "SimpleSFixedInt32Message == -32768")
+        compare(sfixed32Msg.testFieldFixedInt32, -32768, "SimpleSFixedInt32Message == -32768")
         sfixed32Msg.testFieldFixedInt32 = 32767;
-        compare(sfixed32Msg.testFieldFixedInt32 == 32767, true, "SimpleSFixedInt32Message == 32767")
+        compare(sfixed32Msg.testFieldFixedInt32, 32767, "SimpleSFixedInt32Message == 32767")
         sfixed32Msg.testFieldFixedInt32 = -65536;
-        compare(sfixed32Msg.testFieldFixedInt32 == -65536, true, "SimpleSFixedInt32Message == -65536")
+        compare(sfixed32Msg.testFieldFixedInt32, -65536, "SimpleSFixedInt32Message == -65536")
         sfixed32Msg.testFieldFixedInt32 = 65535;
-        compare(sfixed32Msg.testFieldFixedInt32 == 65535, true, "SimpleSFixedInt32Message == 65535")
+        compare(sfixed32Msg.testFieldFixedInt32, 65535, "SimpleSFixedInt32Message == 65535")
         sfixed32Msg.testFieldFixedInt32 = -2147483648;
-        compare(sfixed32Msg.testFieldFixedInt32 == -2147483648, true, "SimpleSFixedInt32Message == -2147483648")
+        compare(sfixed32Msg.testFieldFixedInt32, -2147483648, "SimpleSFixedInt32Message == -2147483648")
         sfixed32Msg.testFieldFixedInt32 = 2147483647;
-        compare(sfixed32Msg.testFieldFixedInt32 == 2147483647, true, "SimpleSFixedInt32Message == 2147483647")
+        compare(sfixed32Msg.testFieldFixedInt32, 2147483647, "SimpleSFixedInt32Message == 2147483647")
     }
 
     function test_simplesstringmessage() {
@@ -229,7 +221,7 @@ TestCase {
 
     function test_caseSense() {
         caseSenseMsg.testField = 34;
-        compare(caseSenseMsg.testField == 34, true, "MessageUpperCase == 34")
+        compare(caseSenseMsg.testField, 34, "MessageUpperCase == 34")
 
         compare(MessageEnumReserved.EnumValue0 == 0, true, "MessageEnumReserved.EnumValue0 == 0")
         compare(MessageEnumReserved.EnumValue1 == 1, true, "MessageEnumReserved.EnumValue1 == 1")
@@ -238,11 +230,63 @@ TestCase {
 
     function test_underScoreField() {
         underScoreMsg._underScoreMessageField = 123
-        compare(underScoreMsg._underScoreMessageField == 123, true, "underScoreMsg._underScoreMessageField == 123")
+        compare(underScoreMsg._underScoreMessageField, 123, "underScoreMsg._underScoreMessageField == 123")
     }
 
     function test_lowerCaseMessage() {
         lowerCaseMsg.testField = 34
-        compare(lowerCaseMsg.testField == 34, true, "LowerCaseMessageName == 34")
+        compare(lowerCaseMsg.testField, 34, "LowerCaseMessageName == 34")
+    }
+
+    function test_int32ImplicitConversion() {
+        int32Msg.testFieldInt = 0
+        compare(int32Msg.testFieldInt ? true : false, false, "Invalid implicit conversion: " + int32Msg.testFieldInt + " should be false")
+
+        int32Msg.testFieldInt = 1
+        compare(int32Msg.testFieldInt ? true : false, true, "Invalid implicit conversion: " + int32Msg.testFieldInt + " should be true")
+    }
+
+    function test_int32LocaleStringConversion() {
+        compare(int32Msg.testFieldInt.toLocaleString(Qt.locale()), Number(int32Msg.testFieldInt).toLocaleString(Qt.locale()),
+                "Locale number string is not match " + int32Msg.testFieldInt.toLocaleString(Qt.locale()) + " != " + Number(int32Msg.testFieldInt).toLocaleString(Qt.locale()))
+    }
+
+    function test_fixed32ImplicitConversion() {
+        fixed32Msg.testFieldFixedInt32 = 0
+        compare(fixed32Msg.testFieldFixedInt32 ? true : false, false, "Invalid implicit conversion: " + fixed32Msg.testFieldInt + " should be false")
+
+        fixed32Msg.testFieldFixedInt32 = 1
+        compare(fixed32Msg.testFieldFixedInt32 ? true : false, true, "Invalid implicit conversion: " + fixed32Msg.testFieldInt + " should be true")
+    }
+
+    function test_fixed32LocaleStringConversion() {
+        compare(fixed32Msg.testFieldFixedInt32.toLocaleString(Qt.locale()), Number(fixed32Msg.testFieldFixedInt32).toLocaleString(Qt.locale()),
+                "Locale number string is not match " + fixed32Msg.testFieldFixedInt32.toLocaleString(Qt.locale()) + " != " + Number(fixed32Msg.testFieldFixedInt32).toLocaleString(Qt.locale()))
+    }
+
+    function test_sint32ImplicitConversion() {
+        sint32Msg.testFieldInt = 0
+        compare(sint32Msg.testFieldInt ? true : false, false, "Invalid implicit conversion: " + sint32Msg.testFieldInt + " should be false")
+
+        sint32Msg.testFieldInt = 1
+        compare(sint32Msg.testFieldInt ? true : false, true, "Invalid implicit conversion: " + sint32Msg.testFieldInt + " should be true")
+    }
+
+    function test_sint32LocaleStringConversion() {
+        compare(sint32Msg.testFieldInt.toLocaleString(Qt.locale()), Number(sint32Msg.testFieldInt).toLocaleString(Qt.locale()),
+                "Locale number string is not match " + sint32Msg.testFieldInt.toLocaleString(Qt.locale()) + " != " + Number(sint32Msg.testFieldInt).toLocaleString(Qt.locale()))
+    }
+
+    function test_sfixed32ImplicitConversion() {
+        sfixed32Msg.testFieldFixedInt32 = 0
+        compare(sfixed32Msg.testFieldFixedInt32 ? true : false, false, "Invalid implicit conversion: " + sfixed32Msg.testFieldInt + " should be false")
+
+        sfixed32Msg.testFieldFixedInt32 = 1
+        compare(sfixed32Msg.testFieldFixedInt32 ? true : false, true, "Invalid implicit conversion: " + sfixed32Msg.testFieldInt + " should be true")
+    }
+
+    function test_sfixed32LocaleStringConversion() {
+        compare(sfixed32Msg.testFieldFixedInt32.toLocaleString(Qt.locale()), Number(sfixed32Msg.testFieldFixedInt32).toLocaleString(Qt.locale()),
+                "Locale number string is not match " + sfixed32Msg.testFieldFixedInt32.toLocaleString(Qt.locale()) + " != " + Number(sfixed32Msg.testFieldFixedInt32).toLocaleString(Qt.locale()))
     }
 }
