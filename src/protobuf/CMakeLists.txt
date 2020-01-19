@@ -15,6 +15,7 @@ find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 
 include(${QTPROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QTPROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
 file(GLOB SOURCES
     qtprotobuf.cpp
@@ -69,17 +70,8 @@ if(NOT DEFINED QT_QMAKE_EXECUTABLE)
     endif()
 endif()
 
-execute_process(
-    COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_PLUGINS
-    OUTPUT_VARIABLE QT_INSTALL_PLUGINS
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
-execute_process(
-    COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_HOST_DATA
-    OUTPUT_VARIABLE QT_HOST_DATA
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+extract_qt_variable(QT_INSTALL_PLUGINS)
+extract_qt_variable(QT_HOST_DATA)
 
 set_target_properties(${TARGET} PROPERTIES QT_PROTOBUF_PLUGIN_PATH "${QT_INSTALL_PLUGINS}/protobuf")
 target_compile_definitions(${TARGET} PUBLIC QT_PROTOBUF_PLUGIN_PATH="${QT_INSTALL_PLUGINS}/protobuf")

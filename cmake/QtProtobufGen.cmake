@@ -17,8 +17,8 @@ function(qtprotobuf_link_archive TARGET GENERATED_TARGET)
 endfunction()
 
 function(qtprotobuf_generate)
-    set(options)
-    set(oneValueArgs OUT_DIR TARGET GENERATED_TARGET MULTI QML COMMENTS GENERATED_HEADERS_VAR)
+    set(options MULTI QML COMMENTS)
+    set(oneValueArgs OUT_DIR TARGET GENERATED_TARGET GENERATED_HEADERS_VAR)
     set(multiValueArgs GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
     cmake_parse_arguments(qtprotobuf_generate "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -38,19 +38,19 @@ function(qtprotobuf_generate)
     endif()
 
     set(GENERATION_TYPE "SINGLE")
-    if("${qtprotobuf_generate_MULTI}" STREQUAL "TRUE")
+    if(qtprotobuf_generate_MULTI)
         set(GENERATION_TYPE "MULTI")
         #TODO: add globalenums by default. But it's better to verify if proto file contains any global enum
         set(GENERATED_HEADERS ${GENERATED_HEADERS} globalenums.h)
     endif()
 
     set(GENERATION_OPTIONS ${GENERATION_TYPE})
-    if("${qtprotobuf_generate_QML}" STREQUAL "TRUE")
+    if(qtprotobuf_generate_QML)
         message(STATUS "Enabled QML generation for ${GENERATED_TARGET_NAME}")
         set(GENERATION_OPTIONS "${GENERATION_OPTIONS}:QML")
     endif()
 
-    if("${qtprotobuf_generate_COMMENTS}" STREQUAL "TRUE")
+    if(qtprotobuf_generate_COMMENTS)
         message(STATUS "Enabled COMMENTS generation for ${GENERATED_TARGET_NAME}")
         set(GENERATION_OPTIONS "${GENERATION_OPTIONS}:COMMENTS")
     endif()

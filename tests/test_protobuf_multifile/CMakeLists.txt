@@ -1,6 +1,6 @@
 set(TARGET qtprotobuf_test_multifile)
 
-include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
 
 file(GLOB SOURCES
     simpletest.cpp)
@@ -11,8 +11,8 @@ add_test_target(TARGET ${TARGET}
     PROTO_FILES ${PROTO_FILES}
     EXCLUDE_HEADERS nestedsimpleintmessage.h
     SOURCES ${SOURCES}
-    QML TRUE
-    MULTI TRUE)
+    QML
+    MULTI)
 add_target_windeployqt(TARGET ${TARGET}
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

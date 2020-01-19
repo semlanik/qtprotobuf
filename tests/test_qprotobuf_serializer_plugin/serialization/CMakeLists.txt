@@ -10,13 +10,6 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core REQUIRED)
 
-if(NOT DEFINED QT_QMAKE_EXECUTABLE)
-    find_program(QT_QMAKE_EXECUTABLE "qmake")
-    if(QT_QMAKE_EXECUTABLE STREQUAL QT_QMAKE_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "Could not find qmake executable")
-    endif()
-endif()
-
 file(GLOB SOURCES
     qtserializationplugin.cpp
     qprotobufjsonserializerimpl.cpp

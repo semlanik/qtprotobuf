@@ -7,20 +7,11 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 
-if(NOT DEFINED QT_QMAKE_EXECUTABLE)
-    find_program(QT_QMAKE_EXECUTABLE "qmake")
-    if(QT_QMAKE_EXECUTABLE STREQUAL QT_QMAKE_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "Could not find qmake executable")
-    endif()
-endif()
+include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
-execute_process(
-    COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_QML
-    OUTPUT_VARIABLE TARGET_IMPORTS_DIR
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+extract_qt_variable(QT_INSTALL_QML)
 
-set(TARGET_IMPORTS_DIR ${TARGET_IMPORTS_DIR}/QtProtobuf)
+set(TARGET_IMPORTS_DIR ${QT_INSTALL_QML}/QtProtobuf)
 
 file(GLOB SOURCES
     qtprotobufquickplugin.cpp)

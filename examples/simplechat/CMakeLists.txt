@@ -19,7 +19,7 @@ add_executable(${TARGET} ${SOURCES} resources.qrc)
 qtprotobuf_generate(TARGET ${TARGET}
     OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
     PROTO_FILES ${PROTO_FILES}
-    QML TRUE)
+    QML)
 
 add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

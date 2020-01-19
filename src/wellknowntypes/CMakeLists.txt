@@ -40,7 +40,7 @@ function(add_wellknowntype TYPENAME)
                 OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/google/protobuf
                 PROTO_FILES ${PROTO_FILE}
                 PROTO_INCLUDES -I${INCLUDE_DIR}
-                QML TRUE)
+                QML)
             break()
         endif()
     endforeach()

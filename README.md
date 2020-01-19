@@ -96,7 +96,7 @@ cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 ### Direct usage of generator
                 
 ```bash
-[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
 
 **QT_PROTOBUF_OPTIONS**
@@ -104,7 +104,7 @@ cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 For protoc command you also may specify extra options using QT_PROTOBUF_OPTIONS environment variable and colon-separated format:
 
 ``` bash
-[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
 
 Following options are supported:
@@ -118,6 +118,9 @@ Following options are supported:
 **Note:** Has higher priority than SINGLE
 
 *QML* - enables QML code generation in protobuf classes. If is set QML-related code for lists and QML registration to be generated.
+
+*COMMENTS* - enables comments copying from .proto files
+
 
 ### Integration with project
 
@@ -220,13 +223,15 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 
 *PROTO_FILES* - List of .proto files that will be used in generation procedure
 
-*MULTI* - Enables/disables multi-files generation mode. In case if this property is set to TRUE generator will create pair of header/source files for each message
+**Options**
+
+*MULTI* - Enables multi-files generation mode. If provided in parameter list generator will create pair of header/source files for each message
 
 **Note:** multi-files generation mode is defined as deprecated by QtProtobuf team, and might have poor support in future
 
-*QML* - Enables/disables QML code generation in protobuf classes. If set to TRUE QML related code for lists and QML registration to be generated.
+*QML* - Enables QML code generation in protobuf classes. If provided in parameter list QML related code for lists and QML registration to be generated.
 
-*COMMENTS* - Enables/disables comments copying from .proto files. If set to TRUE message and field related comments will be copied to generated header files.
+*COMMENTS* - Enables comments copying from .proto files. If provided in parameter list message and field related comments will be copied to generated header files.
 
 ### qtprotobuf_link_archive
 

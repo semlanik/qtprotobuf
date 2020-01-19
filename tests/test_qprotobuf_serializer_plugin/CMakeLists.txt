@@ -1,6 +1,6 @@
 set(TARGET qtprotobuf_plugin_test)
 
-include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
 
 find_package(Threads REQUIRED)
 find_package(Qt5 COMPONENTS Test REQUIRED)

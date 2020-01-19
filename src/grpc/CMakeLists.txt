@@ -13,6 +13,7 @@ set(CMAKE_AUTORCC ON)
 
 include(${QTPROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QTPROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
 file(GLOB SOURCES qgrpcasyncoperationbase.cpp
     qgrpcasyncreply.cpp
@@ -44,18 +45,7 @@ protobuf_generate_qt_headers(PUBLIC_HEADERS ${HEADERS} COMPONENT ${TARGET})
 
 add_library(${TARGET} SHARED ${SOURCES})
 
-if(NOT DEFINED QT_QMAKE_EXECUTABLE)
-    find_program(QT_QMAKE_EXECUTABLE "qmake")
-    if(QT_QMAKE_EXECUTABLE STREQUAL QT_QMAKE_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "Could not find qmake executable")
-    endif()
-endif()
-
-execute_process(
-    COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_HOST_DATA
-    OUTPUT_VARIABLE QT_HOST_DATA
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+extract_qt_variable(QT_HOST_DATA)
 
 target_compile_definitions(${TARGET} PRIVATE QT_BUILD_GRPC_LIB)
 

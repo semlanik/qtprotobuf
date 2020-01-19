@@ -3,7 +3,7 @@ set(TARGET qtprotobuf_qml_test)
 find_package(Qt5 COMPONENTS Core Quick Network Test QuickTest REQUIRED)
 find_package(QtProtobufProject COMPONENTS QtProtobuf REQUIRED)
 
-include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
+include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
 
 file(GLOB SOURCES main.cpp)
 file(GLOB QML_FILES qml/tst_simple.qml)
