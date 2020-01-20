@@ -5,6 +5,8 @@ QT.protobuf.includes = @CMAKE_INSTALL_PREFIX@/@TARGET_INCLUDE_DIR@
 QT.protobuf.private_includes =
 QT.protobuf.libs = @CMAKE_INSTALL_PREFIX@/@TARGET_LIB_DIR@
 QT.protobuf.depends = core qml
+QT.protobuf.module_config = @QTPROTOBUF_EXTRA_CONFIG@
+
 CONFIG += c++14
 
 defineTest(qtprotobuf_generate) {

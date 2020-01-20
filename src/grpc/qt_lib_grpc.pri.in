@@ -5,4 +5,6 @@ QT.grpc.includes = @CMAKE_INSTALL_PREFIX@/@TARGET_INCLUDE_DIR@
 QT.grpc.private_includes =
 QT.grpc.libs = @CMAKE_INSTALL_PREFIX@/@TARGET_LIB_DIR@
 QT.grpc.depends = core network protobuf
+QT.grpc.module_config = @QTPROTOBUF_EXTRA_CONFIG@
+
 CONFIG += c++14

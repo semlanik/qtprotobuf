@@ -41,16 +41,19 @@ file(GLOB HEADERS qgrpcasyncoperationbase_p.h
     qgrpcuserpasswordcredentials.h
     qtgrpcglobal.h)
 
-protobuf_generate_qt_headers(PUBLIC_HEADERS ${HEADERS} COMPONENT ${TARGET})
+protobuf_generate_qt_headers(PUBLIC_HEADER ${HEADERS} COMPONENT ${TARGET})
 
-add_library(${TARGET} SHARED ${SOURCES})
+if(QT_PROTOBUF_STATIC AND NOT WIN32)
+    add_library(${TARGET} STATIC ${SOURCES})
+else()
+    add_library(${TARGET} SHARED ${SOURCES})
+endif()
 
 extract_qt_variable(QT_HOST_DATA)
 
 target_compile_definitions(${TARGET} PRIVATE QT_BUILD_GRPC_LIB)
 
-add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
-set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS};${GENERATED_PUBLIC_HEADERS}" OUTPUT_NAME ${TARGET})
+set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS};${GENERATED_PUBLIC_HEADER}" OUTPUT_NAME ${TARGET})
 target_include_directories(${TARGET} PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${QTPROTOBUF_BINARY_DIR}/include/${TARGET}>
@@ -65,6 +68,9 @@ target_compile_features(${TARGET} PUBLIC cxx_std_14
                                          cxx_nullptr
                                          cxx_lambdas
                                          cxx_func_identifier)
+
+add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
+
 install(TARGETS ${TARGET}
     EXPORT ${TARGET_EXPORT}
     ARCHIVE DESTINATION ${TARGET_LIB_DIR}
@@ -86,6 +92,9 @@ export(TARGETS ${TARGET} NAMESPACE ${QTPROTOBUF_COMMON_NAMESPACE}:: FILE ${TARGE
 configure_file("${QTPROTOBUF_CMAKE_DIR}/gRPCLookup.cmake" "${QTPROTOBUF_BINARY_DIR}/gRPCLookup.cmake" COPYONLY)
 install(FILES "${QTPROTOBUF_BINARY_DIR}/gRPCLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
 
+if(QT_PROTOBUF_STATIC) #extra config for .pri file in case if static build enabled
+    set(QTPROTOBUF_EXTRA_CONFIG "staticlib")
+endif()
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_grpc.pri.in" "${QTPROTOBUF_BINARY_DIR}/qt_lib_grpc.pri" @ONLY)
 install(FILES "${QTPROTOBUF_BINARY_DIR}/qt_lib_grpc.pri" DESTINATION "${QT_HOST_DATA}/mkspecs/modules")
 

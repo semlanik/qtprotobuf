@@ -26,7 +26,7 @@ file(GLOB SOURCES
 file(GLOB HEADERS
     qtprotobufwellknowntypes_global.qbp.h)
 
-file(GLOB PUBLIC_HEADERS
+file(GLOB PUBLIC_HEADER
     qtprotobufwellknowntypes_global.qbp.h)
 
 function(add_wellknowntype TYPENAME)
@@ -41,12 +41,20 @@ function(add_wellknowntype TYPENAME)
                 PROTO_FILES ${PROTO_FILE}
                 PROTO_INCLUDES -I${INCLUDE_DIR}
                 QML)
+            target_include_directories(${TYPENAME} PRIVATE
+                $<TARGET_PROPERTY:${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
+            get_target_property(GENERATED_PUBLIC_HEADER_PRIVATE ${TYPENAME} PUBLIC_HEADER)
+            set(GENERATED_PUBLIC_HEADER "${GENERATED_PUBLIC_HEADER};${GENERATED_PUBLIC_HEADER_PRIVATE}" PARENT_SCOPE)
             break()
         endif()
     endforeach()
 endfunction()
 
-add_library(${TARGET} SHARED ${SOURCES})
+if(QT_PROTOBUF_STATIC AND NOT WIN32)
+    add_library(${TARGET} STATIC ${SOURCES})
+else()
+    add_library(${TARGET} SHARED ${SOURCES})
+endif()
 
 add_wellknowntype(any)
 add_wellknowntype(duration)
@@ -63,23 +71,14 @@ add_wellknowntype(api)
 add_dependencies(api type source_context)
 
 
-protobuf_generate_qt_headers(PUBLIC_HEADERS ${PUBLIC_HEADERS} COMPONENT ${TARGET})
+protobuf_generate_qt_headers(PUBLIC_HEADER ${PUBLIC_HEADER} COMPONENT ${TARGET})
 
 target_compile_definitions(${TARGET} PRIVATE QT_BUILD_PROTOBUF_WELLKNOWNTYPES_LIB PUBLIC QTPROTOBUF_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
     QTPROTOBUF_VERSION_MINOR=${PROJECT_VERSION_MINOR})
 
-add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
-set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${PUBLIC_HEADERS};${GENERATED_PUBLIC_HEADERS}" OUTPUT_NAME ${TARGET}
+set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${PUBLIC_HEADER};${GENERATED_PUBLIC_HEADER}" OUTPUT_NAME ${TARGET}
     PROTO_INCLUDES -I${QTPROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src)
-set_target_properties(${TARGET} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-target_include_directories(${TARGET} PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
-    $<BUILD_INTERFACE:${QTPROTOBUF_BINARY_DIR}/include/${TARGET}>
-    $<INSTALL_INTERFACE:${TARGET_INCLUDE_DIR}>
-    )
 
-target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf)
 target_compile_features(${TARGET} PUBLIC cxx_std_14
     cxx_auto_type
     cxx_decltype
@@ -88,6 +87,17 @@ target_compile_features(${TARGET} PUBLIC cxx_std_14
     cxx_nullptr
     cxx_lambdas
     cxx_func_identifier)
+
+target_include_directories(${TARGET} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
+    $<BUILD_INTERFACE:${QTPROTOBUF_BINARY_DIR}/include/${TARGET}>
+    $<INSTALL_INTERFACE:${TARGET_INCLUDE_DIR}>
+    )
+
+add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
+
+target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf)
 
 install(TARGETS ${TARGET}
     EXPORT ${TARGET_EXPORT}
