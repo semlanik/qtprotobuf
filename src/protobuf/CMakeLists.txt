@@ -44,7 +44,7 @@ file(GLOB HEADERS
     qprotobufmetaobject.h
     qprotobufserializationplugininterface.h)
 
-file(GLOB PUBLIC_HEADERS
+file(GLOB PUBLIC_HEADER
     qtprotobufglobal.h
     qtprotobuftypes.h
     qtprotobuflogging.h
@@ -59,9 +59,13 @@ file(GLOB PUBLIC_HEADERS
     qprotobufmetaobject.h
     qprotobufserializationplugininterface.h)
 
-protobuf_generate_qt_headers(PUBLIC_HEADERS ${PUBLIC_HEADERS} COMPONENT ${TARGET})
+protobuf_generate_qt_headers(PUBLIC_HEADER ${PUBLIC_HEADER} COMPONENT ${TARGET})
 
-add_library(${TARGET} SHARED ${SOURCES})
+if(QT_PROTOBUF_STATIC AND NOT WIN32)
+    add_library(${TARGET} STATIC ${SOURCES})
+else()
+    add_library(${TARGET} SHARED ${SOURCES})
+endif()
 
 if(NOT DEFINED QT_QMAKE_EXECUTABLE)
     find_program(QT_QMAKE_EXECUTABLE "qmake")
@@ -79,14 +83,13 @@ target_compile_definitions(${TARGET} PUBLIC QT_PROTOBUF_PLUGIN_PATH="${QT_INSTAL
 target_compile_definitions(${TARGET} PRIVATE QT_BUILD_PROTOBUF_LIB PUBLIC QTPROTOBUF_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
     QTPROTOBUF_VERSION_MINOR=${PROJECT_VERSION_MINOR})
 
-add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
-set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${PUBLIC_HEADERS};${GENERATED_PUBLIC_HEADERS}" OUTPUT_NAME ${TARGET})
+set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${PUBLIC_HEADER};${GENERATED_PUBLIC_HEADER}" OUTPUT_NAME ${TARGET})
 target_include_directories(${TARGET} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${QTPROTOBUF_BINARY_DIR}/include/${TARGET}>
     $<INSTALL_INTERFACE:${TARGET_INCLUDE_DIR}>
 )
-target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml)
+
 target_compile_features(${TARGET} PUBLIC cxx_std_14
                                          cxx_auto_type
                                          cxx_decltype
@@ -95,6 +98,10 @@ target_compile_features(${TARGET} PUBLIC cxx_std_14
                                          cxx_nullptr
                                          cxx_lambdas
                                          cxx_func_identifier)
+
+target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml)
+
+add_library(${QTPROTOBUF_COMMON_NAMESPACE}::${TARGET} ALIAS ${TARGET})
 
 install(TARGETS ${TARGET}
     EXPORT ${TARGET_EXPORT}
@@ -123,6 +130,9 @@ install(FILES "${QTPROTOBUF_BINARY_DIR}/parsemessages.go" DESTINATION "${TARGET_
 configure_file("${QTPROTOBUF_CMAKE_DIR}/ProtobufLookup.cmake" "${QTPROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
 install(FILES "${QTPROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}")
 
+if(QT_PROTOBUF_STATIC) #extra config for .pri file in case if static build enabled
+    set(QTPROTOBUF_EXTRA_CONFIG "staticlib")
+endif()
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_protobuf.pri.in" "${QTPROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" @ONLY)
 install(FILES "${QTPROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" DESTINATION "${QT_HOST_DATA}/mkspecs/modules")
 

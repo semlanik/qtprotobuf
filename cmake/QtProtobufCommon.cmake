@@ -77,17 +77,17 @@ if(WIN32)
 endif()
 endfunction()
 
-if(NOT DEFINED QT_QMAKE_EXECUTABLE)
-    find_program(QT_QMAKE_EXECUTABLE "qmake")
-    if(QT_QMAKE_EXECUTABLE STREQUAL QT_QMAKE_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "Could not find qmake executable")
-    endif()
-endif()
-
 function(extract_qt_variable VARIABLE)
+    if(NOT DEFINED QT_QMAKE_EXECUTABLE)
+        find_program(QT_QMAKE_EXECUTABLE "qmake")
+        if(QT_QMAKE_EXECUTABLE STREQUAL QT_QMAKE_EXECUTABLE-NOTFOUND)
+            message(FATAL_ERROR "Could not find qmake executable")
+        endif()
+    endif()
     execute_process(
         COMMAND ${QT_QMAKE_EXECUTABLE} -query ${VARIABLE}
         OUTPUT_VARIABLE ${VARIABLE}
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
+    set(${VARIABLE} ${${VARIABLE}} PARENT_SCOPE)
 endfunction()

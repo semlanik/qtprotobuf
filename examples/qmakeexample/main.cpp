@@ -25,12 +25,11 @@
 
 #include <QCoreApplication>
 
-#include "qtprotobuf_global.qpb.h"
+#include <QtProtobufTypes>
 
 int main(int argc, char *argv[])
 {
-    qtprotobufnamespace::tests::qRegisterProtobufTypes();
-    qtprotobufnamespace::tests2::qRegisterProtobufTypes();
+    QtProtobuf::qRegisterProtobufTypes();
     QCoreApplication a(argc, argv);
     return a.exec();
 }

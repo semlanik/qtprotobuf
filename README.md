@@ -228,7 +228,7 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 
 *PROTO_FILES* - List of .proto files that will be used in generation procedure
 
-**Options**
+**Options:**
 
 *MULTI* - Enables multi-files generation mode. If provided in parameter list generator will create pair of header/source files for each message
 
@@ -242,7 +242,7 @@ Due to cmake restrictions it's required to specify resulting artifacts manually 
 
 qtprotobuf_link_archive is cmake helper function that links whole archive to your library or executable target. It's useful when you try to link generated target to shared library or/and to executable that doesn't utilize all protobuf generated classes directly from C++ code, but requires them from QML.
 
-**Parameters**
+**Parameters:**
 
 *TARGET* - name of target to link to
 
@@ -251,11 +251,13 @@ qtprotobuf_link_archive is cmake helper function that links whole archive to you
 
 ### Usefull definitions
 
-*QTPROTOBUF_MAKE_COVERAGE* - if **TRUE/ON**, QtProtobuf will be built with gcov intergration, to collect code coverage reports(usefull for developers). **FALSE** by default
+*QTPROTOBUF_MAKE_COVERAGE* - if **TRUE/ON** for QtProtobuf project build, QtProtobuf will be built with gcov intergration, to collect code coverage reports(usefull for developers). **FALSE** by default
 
-*QTPROTOBUF_MAKE_TESTS* - if **TRUE/ON**, tests for QtProtobuf will be built. **TRUE** by default
+*QTPROTOBUF_MAKE_TESTS* - if **TRUE/ON** for QtProtobuf project build, tests for QtProtobuf will be built. **TRUE** by default
 
-*QTPROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON**, built-in examples will be built. **TRUE** by default
+*QTPROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON** for QtProtobuf project build, built-in examples will be built. **TRUE** by default
+
+*QT_PROTOBUF_STATIC* - if **TRUE/ON** for QtProtobuf project build, static libraries will be produced for all QtProtobuf targets except qml plugin. **FALSE** by default
 
 *QTPROTOBUF_EXECUTABLE* - contains full path to QtProtobuf generator add_executable
 
