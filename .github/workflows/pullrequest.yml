@@ -7,7 +7,7 @@ jobs:
     name: Build and Test Ubuntu Latest
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Init submodules
       run: git submodule update --init --recursive
     - name: Build the Ubuntu Latest Docker image
