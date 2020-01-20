@@ -4,9 +4,12 @@ gRPC and Protobuf generator and bindings for Qt framework
 
 > see [Protobuf](https://developers.google.com/protocol-buffers) and [gRPC](https://grpc.io/) for more information
 
-## [API Reference](https://semlanik.github.io/qtprotobuf)
+# Test results
 
-![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master)
+| Branch | Verification |
+| --- | --- |
+| [master](https://github.com/semlanik/qtprotobuf/tree/master) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master) |
+| [0.1.0](https://github.com/semlanik/qtprotobuf/tree/0.1.0) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.1.0) |
 
 ## Linux Build
 ### Prerequesties

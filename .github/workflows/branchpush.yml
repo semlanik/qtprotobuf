@@ -2,14 +2,15 @@ name: Test Verification
 
 on: 
   push:
-    branches:
-      - master
+    branches: 
+     - master
+     - 0.1.0
 jobs:
   build-ubuntu:
     name: Build and Test Ubuntu Latest
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Init submodules
       run: git submodule update --init --recursive
     - name: Build the Ubuntu Latest Docker image
@@ -20,7 +21,7 @@ jobs:
     name: Build and Test OpenSUSE Latest
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Init submodules
       run: git submodule update --init --recursive
     - name: Build the OpenSUSE Latest Docker image
@@ -32,7 +33,7 @@ jobs:
     #runs-on: windows-latest
     #name: Build and Test Windows
     #steps:
-    #- uses: actions/checkout@v1
+    #- uses: actions/checkout@v2
     #- name: Init submodules
       #run: git submodule update --init --recursive
     #- name: Build the Docker image
