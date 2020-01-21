@@ -1,4 +1,4 @@
-include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
+include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
 
 # clients
 add_test_target(TARGET qtgrpc_test

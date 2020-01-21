@@ -7,7 +7,7 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 
-include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
+include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
 extract_qt_variable(QT_INSTALL_QML)
 
@@ -21,13 +21,13 @@ file(GLOB HEADERS
     qtprotobufquick_global.h)
 
 add_library(${TARGET} SHARED ${SOURCES})
-target_link_libraries(${TARGET} PRIVATE Qt5::Core Qt5::Qml ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf)
+target_link_libraries(${TARGET} PRIVATE Qt5::Core Qt5::Qml ${QT_PROTOBUF_PROJECT}::QtProtobuf)
 set_target_properties(${TARGET} PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/QtProtobuf"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/QtProtobuf"
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}/QtProtobuf"
     RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}/QtProtobuf")
-target_compile_definitions(${TARGET} PRIVATE QTPROTOBUFQUICK_LIB)
+target_compile_definitions(${TARGET} PRIVATE QT_PROTOBUF_QUICK_LIB)
 
 #Check for QML private headers
 if(NOT DEFINED Qt5Qml_PRIVATE_INCLUDE_DIRS OR Qt5Qml_PRIVATE_INCLUDE_DIRS STREQUAL "")

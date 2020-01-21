@@ -1,6 +1,6 @@
 find_package(QtProtobufProject COMPONENTS QtProtobuf QtGrpc REQUIRED)
 
-include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
+include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
 function(add_test_target)
     set(options MULTI QML)
@@ -46,7 +46,7 @@ function(add_test_target)
         set_target_properties(${add_test_target_TARGET} PROPERTIES POSITION_INDEPENDENT_CODE FALSE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     endif()
-    target_link_libraries(${add_test_target_TARGET} PUBLIC gtest_main gtest ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf ${QTPROTOBUF_COMMON_NAMESPACE}::QtGrpc Qt5::Core Qt5::Test Qt5::Network ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(${add_test_target_TARGET} PUBLIC gtest_main gtest ${QT_PROTOBUF_PROJECT}::QtProtobuf ${QT_PROTOBUF_PROJECT}::QtGrpc Qt5::Core Qt5::Test Qt5::Network ${CMAKE_THREAD_LIBS_INIT})
     if (${add_test_target_QML})
         target_link_libraries(${add_test_target_TARGET} PUBLIC Qt5::Qml)
     endif()

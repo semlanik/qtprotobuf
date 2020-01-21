@@ -3,7 +3,7 @@ set(TARGET qtprotobuf_qml_test)
 find_package(Qt5 COMPONENTS Core Quick Network Test QuickTest REQUIRED)
 find_package(QtProtobufProject COMPONENTS QtProtobuf REQUIRED)
 
-include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
+include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
 
 file(GLOB SOURCES main.cpp)
 file(GLOB QML_FILES qml/tst_simple.qml)
@@ -17,7 +17,5 @@ add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/qml)
 
 add_test(NAME ${TARGET} COMMAND ${TARGET})
 
-set(QTPROTOBUF_QML2_IMPORT_PATH $<TARGET_FILE_DIR:protobufquickplugin>/..)
-
 set_tests_properties(${TARGET} PROPERTIES
-    ENVIRONMENT QML2_IMPORT_PATH=${QTPROTOBUF_QML2_IMPORT_PATH})
+    ENVIRONMENT QML2_IMPORT_PATH=$<TARGET_FILE_DIR:protobufquickplugin>/..)

@@ -1,6 +1,6 @@
 set(TARGET qtprotobuf_test_multifile)
 
-include(${QTPROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
+include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
 
 file(GLOB SOURCES
     simpletest.cpp)

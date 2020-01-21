@@ -1,8 +1,8 @@
-project(qtprotobufgen VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
+project(qtprotobufgen VERSION ${QT_PROTOBUF_VERSION} LANGUAGES CXX)
 
 set(TARGET ${PROJECT_NAME})
 set(TARGET_EXPORT ${TARGET}Targets)
-set(TARGET_BIN_DIR ${CMAKE_INSTALL_BINDIR})
+set(TARGET_BINDIR ${CMAKE_INSTALL_BINDIR})
 
 file(GLOB SOURCES main.cpp
     generator.cpp
@@ -47,4 +47,4 @@ endif()
 target_link_libraries(${TARGET} protobuf::libprotobuf protobuf::libprotoc)
 
 install(TARGETS ${TARGET}
-    RUNTIME DESTINATION ${TARGET_BIN_DIR})
+    RUNTIME DESTINATION ${TARGET_BINDIR})
