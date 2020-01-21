@@ -32,7 +32,7 @@
  * \private
  * \brief The QtProtobufQuickPlugin class
  */
-class QTPROTOBUFQUICKSHARED_EXPORT QtProtobufQuickPlugin : public QQmlExtensionPlugin
+class QT_PROTOBUF_QUICK_SHARED_EXPORT QtProtobufQuickPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)

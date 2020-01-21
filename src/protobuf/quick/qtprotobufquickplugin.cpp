@@ -38,7 +38,7 @@ static QVariant coverter(const QString &str) {
 void QtProtobufQuickPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("QtProtobuf"));
-    qmlRegisterModule(uri, QTPROTOBUF_VERSION_MAJOR, QTPROTOBUF_VERSION_MINOR);
+    qmlRegisterModule(uri, QT_PROTOBUF_VERSION_MAJOR, QT_PROTOBUF_VERSION_MINOR);
     QQmlMetaType::registerCustomStringConverter(qMetaTypeId<QtProtobuf::int32>(), coverter<QtProtobuf::int32>);
     QQmlMetaType::registerCustomStringConverter(qMetaTypeId<QtProtobuf::fixed32>(), coverter<QtProtobuf::fixed32>);
     QQmlMetaType::registerCustomStringConverter(qMetaTypeId<QtProtobuf::sfixed32>(), coverter<QtProtobuf::sfixed32>);
