@@ -6,10 +6,10 @@ gRPC and Protobuf generator and bindings for Qt framework
 
 # Test results
 
-| Branch | Verification |
-| --- | --- |
-| [master](https://github.com/semlanik/qtprotobuf/tree/master) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master) |
-| [0.1.0](https://github.com/semlanik/qtprotobuf/tree/0.1.0) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.1.0) |
+| Branch | Results Linux | Results Windows |
+| --- | --- | --- |
+| [master](https://github.com/semlanik/qtprotobuf/tree/master) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=master) |
+| [0.1.0](https://github.com/semlanik/qtprotobuf/tree/0.1.0) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.1.0) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.1.0) |
 
 ## Linux Build
 ### Prerequesties
