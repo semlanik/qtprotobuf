@@ -16,7 +16,7 @@ function(add_test_target)
         cmake_policy(SET CMP0071 NEW)
     endif()
 
-    set(GENERATED_SOURCES_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
+    set(GENERATED_SOURCES_DIR ${CMAKE_CURRENT_BINARY_DIR}/${add_test_target_TARGET}_generated)
 
     if(DEFINED add_test_target_PROTO_FILES)
         file(GLOB PROTO_FILES ABSOLUTE ${add_test_target_PROTO_FILES})
