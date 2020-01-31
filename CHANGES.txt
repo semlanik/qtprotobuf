@@ -1,3 +1,15 @@
+2020-01-21 version 0.1.1 (generator/QtProtobuf/QtGrpc)
+
+    QtProtobuf
+    * Implement qml aliasing for transparent fields
+    * Fix repeated field update signals
+    * Add update signals for repeated fields when move semantics is used
+    * Improve installation rules
+    * Add handlers container protection for multithreading
+    * Make return value of simple types getters constant
+    generator
+    * Fix warning of non-existing protoc includepath
+
 2019-12-20 version 0.1.0 (generator/QtProtobuf/QtGrpc)
 
     QtProtobuf

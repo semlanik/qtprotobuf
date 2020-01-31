@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(QTPROTOBUF_PROJECT_VERSION 0.1.0)
+set(QTPROTOBUF_PROJECT_VERSION 0.1.1)
 project(QtProtobufProject VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
 
 include(GNUInstallDirs)
