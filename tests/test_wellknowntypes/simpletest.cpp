@@ -26,8 +26,13 @@
 #include <QVariantList>
 #include <QMetaProperty>
 #include <QSignalSpy>
+#include <QProtobufSerializer>
+#include <QDateTime>
 
+#include <stdio.h>
+#include <iostream>
 #include <gtest/gtest.h>
+#include "wellknowntypes.qpb.h"
 #include <qtprotobufwellknowntypes_global.qbp.h>
 
 using namespace google::protobuf;
@@ -39,7 +44,8 @@ class WellknowntypesTest : public ::testing::Test
 {
 public:
     // see simpletest.proto for property names and their field indices
-    WellknowntypesTest() {}
+    WellknowntypesTest() {
+    }
 
     template<typename MessageType, typename PropertyType>
     static void assertMessagePropertyRegistered(int fieldIndex, const char *propertyTypeName, const char *propertyName, bool skipMetatypeCheck = false)
@@ -57,8 +63,13 @@ public:
     static void SetUpTestCase() {
         QtProtobuf::qRegisterProtobufTypes();
         google::protobuf::qRegisterProtobufTypes();
+        serializer.reset(new QProtobufSerializer);
     }
+
+    static std::unique_ptr<QProtobufSerializer> serializer;
 };
+
+std::unique_ptr<QProtobufSerializer> WellknowntypesTest::serializer;
 
 TEST_F(WellknowntypesTest, AnyTest)
 {
@@ -255,5 +266,33 @@ TEST_F(WellknowntypesTest, BytesValueTest)
     assertMessagePropertyRegistered<BytesValue, QByteArray>(1, "QByteArray", "value");
 }
 
+TEST_F(WellknowntypesTest, TimestampMessageTest)
+{
+    assertMessagePropertyRegistered<qtprotobufnamespace::wellknowntypes::tests::TimestampMessage, google::protobuf::Timestamp*>(1, "google::protobuf::Timestamp*", "testField");
+}
+
+TEST_F(WellknowntypesTest, TimestampMessageSerializationTest) {
+    qtprotobufnamespace::wellknowntypes::tests::TimestampMessage msg;
+
+    QDateTime deserializedDateTime;
+    QDateTime originalDateTime;
+
+    qint64 secsSinceEpoch = QDateTime::currentSecsSinceEpoch();
+    originalDateTime.setSecsSinceEpoch(secsSinceEpoch);
+    msg.setTestField({secsSinceEpoch, 0, nullptr});
+    ASSERT_EQ(msg.testField().seconds(), secsSinceEpoch);
+    ASSERT_EQ(msg.testField().nanos(), 0);
+
+    QByteArray val = msg.serialize(serializer.get());
+    msg.setTestField({0, 0, nullptr});
+
+    ASSERT_EQ(msg.testField().seconds(), 0);
+    ASSERT_EQ(msg.testField().nanos(), 0);
+
+    msg.deserialize(serializer.get(), val);
+    deserializedDateTime.setSecsSinceEpoch(msg.testField().seconds());
+
+    ASSERT_TRUE(deserializedDateTime == originalDateTime);
+}
 }
 }
