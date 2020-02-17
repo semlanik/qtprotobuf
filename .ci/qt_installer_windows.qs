@@ -6,11 +6,13 @@ function Controller() {
 }
 
 Controller.prototype.WelcomePageCallback = function() {
-    gui.clickButton(buttons.NextButton, 3000);
+    gui.clickButton(buttons.NextButton, 5000);
 }
 
 Controller.prototype.CredentialsPageCallback = function() {
-    gui.clickButton(buttons.NextButton);
+    gui.currentPageWidget().loginWidget.EmailLineEdit.setText("ci@semlanik.org");
+    gui.currentPageWidget().loginWidget.PasswordLineEdit.setText("1QazxsW2");
+    gui.clickButton(buttons.NextButton, 5000);
 }
 
 Controller.prototype.IntroductionPageCallback = function() {
