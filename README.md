@@ -37,6 +37,8 @@ gRPC and Protobuf generator and bindings for Qt framework
 ## Prerequesties
 
 Check installation of following packages in your system:
+- cmake 3.6 or higher
+- Qt 5.12.4 or higher
 - protobuf 3.6.0 or higher
 - grpc 1.15.0 or higher
 - golang 1.10 or higher (Mandatory dependency for any type of build)
@@ -44,18 +46,18 @@ Check installation of following packages in your system:
 >**Note:** Older versions could be supported as well but not officially tested.
 
 
-### For Ubuntu
+### For Ubuntu 19.04 or higher
 
-Install GRPC packages in system:
+Install dependencies:
 
 ```bash
-sudo apt-get install libgrpc++-dev protobuf-compiler-grpc libgrpc++1 libgrpc-dev libgrpc6
+sudo apt-get install qtdeclarative5-private-dev qtbase5-private-dev protobuf-compiler libprotoc-dev protobuf-compiler-grpc libgrpc++-dev libgrpc-dev libgtest-dev
 ```
 
 
 ### All-in-one build
 
-If required versions of libraries are not found in your system, you may use all-in-one build procedure for prerequesties
+If required versions of libraries are not found in your system, you may use all-in-one build procedure for prerequesties.
 
 Update submodules to fetch 3rdparty dependencies:
 
@@ -72,10 +74,23 @@ cmake .. [-DCMAKE_PREFIX_PATH="<path/to/qt/installation>/Qt<qt_version>/<qt_vers
 cmake --build . [--config <RELEASE|DEBUG>] -- -j<N>
 ```
 
+## Packaging
+QtProtobuf has packaging support based on CPack.
+
+### .deb
+You can create .deb package for debian-like operating systems, using commands below:
+
+```bash
+mkdir build
+cd build
+cmake .. -DQT_PROTOBUF_MAKE_TESTS=FALSE -DQT_PROTOBUF_MAKE_EXAMPLES=FALSE
+cpack -G DEB ..
+```
+
+>**Note:** Only tested on Ubuntu 19.04
 
 # Windows Build
 ## Prerequesties
-
 Download and install:
 
 - Qt 5.12.3 or higher [1](https://download.qt.io/official_releases/qt/)
