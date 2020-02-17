@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.6)
 
 set(QT_PROTOBUF_VERSION 0.1.1)
 set(QT_PROTOBUF_PROJECT QtProtobufProject)
@@ -76,7 +76,8 @@ endif()
 configure_package_config_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
     INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+install(FILES "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+    COMPONENT dev)
 
 export(PACKAGE ${PROJECT_NAME})
 
@@ -141,3 +142,6 @@ endif()
 if(QT_PROTOBUF_MAKE_EXAMPLES)
     add_subdirectory("examples")
 endif()
+
+include("${QT_PROTOBUF_CMAKE_DIR}/packaging.cmake")
+

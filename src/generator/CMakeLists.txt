@@ -47,4 +47,4 @@ endif()
 target_link_libraries(${TARGET} protobuf::libprotobuf protobuf::libprotoc)
 
 install(TARGETS ${TARGET}
-    RUNTIME DESTINATION ${TARGET_BINDIR})
+    RUNTIME DESTINATION ${TARGET_BINDIR} COMPONENT lib)
