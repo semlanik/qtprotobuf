@@ -51,12 +51,3 @@ jobs:
       run: docker build . --file .ci/Dockerfile.opensuse_static --tag opensuse_debugimage_static:latest
     - name: Run tests
       run: docker run opensuse_debugimage_static:latest ctest /build --output-on-failure
-  #build-windows:
-    #runs-on: windows-latest
-    #name: Build and Test Windows
-    #steps:
-    #- uses: actions/checkout@v2
-    #- name: Init submodules
-      #run: git submodule update --init --recursive
-    #- name: Build the Docker image
-      #run: docker build . --file .ci/Dockerfile.windows --isolation=hyperv --tag windows_debugimage:latest -m 2GB

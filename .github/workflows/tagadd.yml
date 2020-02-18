@@ -1,0 +1,55 @@
+name: Release build
+
+on:
+  create:
+    tags:
+      - v*
+  push:
+    branches:
+      - ci_check
+jobs:
+  build-deb:
+    name: Build release packages
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Ubuntu Latest Docker image
+      id: build_release
+      run: |
+        docker build . --file .ci/Dockerfile.ubuntu_deb --tag ubuntu_debimage:latest
+        mkdir artifacts
+        docker run --mount type=bind,source="$(pwd)"/artifacts,target=/artifacts ubuntu_debimage:latest sh -c "mv /build/*.deb /artifacts"
+        ls artifacts/*
+        cd artifacts
+        echo "##[set-output name=libpackage;]$(ls -1 libqtprotobuf_*.deb)"
+        echo "##[set-output name=devpackage;]$(ls -1 libqtprotobuf-dev_*.deb)"
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Upload release lib package
+      id: upload_lib
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ steps.build_release.outputs.libpackage }}
+        asset_name: ${{ steps.build_release.outputs.libpackage }}
+        asset_content_type: application/x-debian-package
+    - name: Upload release dev package
+      id: upload_dev
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ steps.build_release.outputs.devpackage }}
+        asset_name: ${{ steps.build_release.outputs.devpackage }}
+        asset_content_type: application/x-debian-package
