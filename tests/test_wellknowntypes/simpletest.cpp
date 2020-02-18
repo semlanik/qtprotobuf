@@ -32,8 +32,16 @@
 #include <stdio.h>
 #include <iostream>
 #include <gtest/gtest.h>
+#include <google/protobuf/any.qpb.h>
+#include <google/protobuf/api.qpb.h>
+#include <google/protobuf/type.qpb.h>
+#include <google/protobuf/struct.qpb.h>
+#include <google/protobuf/empty.qpb.h>
+#include <google/protobuf/duration.qpb.h>
+#include <google/protobuf/wrappers.qpb.h>
+#include <google/protobuf/field_mask.qpb.h>
+
 #include "wellknowntypes.qpb.h"
-#include <qtprotobufwellknowntypes_global.qbp.h>
 
 using namespace google::protobuf;
 
@@ -62,7 +70,6 @@ public:
 
     static void SetUpTestCase() {
         QtProtobuf::qRegisterProtobufTypes();
-        google::protobuf::qRegisterProtobufTypes();
         serializer.reset(new QProtobufSerializer);
     }
 

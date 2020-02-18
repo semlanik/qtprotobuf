@@ -21,13 +21,7 @@ include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake)
 
 file(GLOB SOURCES
-    timestamp.qpb.cpp)
-
-file(GLOB HEADERS
-    qtprotobufwellknowntypes_global.qbp.h)
-
-file(GLOB PUBLIC_HEADER
-    qtprotobufwellknowntypes_global.qbp.h)
+    dummy.cpp)
 
 function(add_wellknowntype TYPENAME)
     list(APPEND LOOKUP_DIRS ${QT_PROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src)

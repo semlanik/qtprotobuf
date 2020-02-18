@@ -94,7 +94,7 @@ cpack -G DEB ..
 Download and install:
 
 - Qt 5.12.3 or higher [1](https://download.qt.io/official_releases/qt/)
-- cmake-3.1 or higher [2](https://cmake.org/download/)
+- cmake-3.6 or higher [2](https://cmake.org/download/)
 - Strawberry perl 5.28 [3](http://strawberryperl.com/)
 - GoLang 1.10 or higher [4](https://golang.org/dl/)
 - Yasm 1.3 or higher [5](http://yasm.tortall.net/Download.html)
@@ -191,8 +191,6 @@ GENERATED_HEADERS ${GENERATED_HEADERS})
 
 qtprotobuf_generate is cmake helper function that automatically generates STATIC library target from your .proto files
 
-Due to cmake restrictions it's required to specify resulting artifacts manually as list of header files expected after generator job finished.
-
 ***Parameters:***
 
 *TARGET* - name of you target that generated code archive will be linked to
@@ -263,7 +261,7 @@ QT += grpc #for grpc libraries support
 ```
 To generate source code and link it to you project use predefined *qtprotobuf_generate* function
 
-### CMake functions reference
+### qmake functions reference
 #### qtprotobuf_generate([generate_qml=false])
 
 qtprotobuf_generate is qmake helper [test function](https://doc.qt.io/qt-5/qmake-language.html#test-functions) that generates QtProtobuf source code based on files provided by PROTO_FILES global context variable
