@@ -46,7 +46,7 @@ Check installation of following packages in your system:
 >**Note:** Older versions could be supported as well but not officially tested.
 
 
-### For Ubuntu 19.04 or higher
+### For Ubuntu 19.10 or higher
 
 Install dependencies:
 
@@ -87,7 +87,7 @@ cmake .. -DQT_PROTOBUF_MAKE_TESTS=FALSE -DQT_PROTOBUF_MAKE_EXAMPLES=FALSE
 cpack -G DEB ..
 ```
 
->**Note:** Only tested on Ubuntu 19.04
+>**Note:** Only tested on Ubuntu 19.10
 
 # Windows Build
 ## Prerequesties
