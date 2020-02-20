@@ -41,7 +41,7 @@
 #include <google/protobuf/wrappers.qpb.h>
 #include <google/protobuf/field_mask.qpb.h>
 
-#include "wellknowntypes.qpb.h"
+#include "qtprotobufnamespace/wellknowntypes/tests/wellknowntypes.qpb.h"
 
 using namespace google::protobuf;
 

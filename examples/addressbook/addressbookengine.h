@@ -26,7 +26,7 @@
 #pragma once
 
 #include <QObject>
-#include "addressbook.qpb.h"
+#include "qtprotobuf/examples/addressbook.qpb.h"
 
 #include "universallistmodel.h"
 
