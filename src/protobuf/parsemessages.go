@@ -17,9 +17,14 @@ func main() {
 	}
 
 	multi := false
-	if len(os.Args) > 2 {
-		if os.Args[2] == "MULTI" {
+	folder := false
+	for i := 2; i < len(os.Args); i++ {
+		if os.Args[i] == "MULTI" {
 			multi = true
+			folder = true //For multi-file generation folder-based approach is enabled by default and could not be switched off
+		}
+		if os.Args[i] == "FOLDER" {
+			folder = true
 		}
 	}
 
@@ -73,7 +78,7 @@ func main() {
 			}
 		}
 	} else {
-		if fullpath == "" {
+		if folder && fullpath == "" {
 			log.Fatalf("Package is not specified correctly in %s file\n", os.Args[1])
 		}
 		//Singlefile version
@@ -103,11 +108,19 @@ func main() {
 		}
 
 		if messageFound {
-			fmt.Printf("%s%s.qpb.h;", fullpath, basename)
+			if folder {
+				fmt.Printf("%s%s.qpb.h;", fullpath, basename)
+			} else {
+				fmt.Printf("%s.qpb.h;", basename)
+			}
 		}
 
 		if serviceFound {
-			fmt.Printf("%s%s_grpc.qpb.h;", fullpath, basename)
+			if folder {
+				fmt.Printf("%s%s_grpc.qpb.h;", fullpath, basename)
+			} else {
+				fmt.Printf("%s_grpc.qpb.h;", basename)
+			}
 		}
 	}
 

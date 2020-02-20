@@ -29,7 +29,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "qtprotobuf/examples/simplechat.qpb.h"
+#include "simplechat.qpb.h"
 
 #include "simplechatengine.h"
 

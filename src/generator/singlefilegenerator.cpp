@@ -73,7 +73,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         return true;
     }
 
-    std::string outFileBasename = generateBaseName(file);
+    std::string outFileBasename = generateBaseName(file, utils::extractFileBasename(file->name()));
     std::set<std::string> internalIncludes;
     std::set<std::string> externalIncludes;
     std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + Templates::ProtoFileSuffix + ".h"));
@@ -96,7 +96,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     externalIncludes.insert("QString");
 
     for (int i = 0; i < file->dependency_count(); i++) {
-        internalIncludes.insert(generateBaseName(file->dependency(i)) + Templates::ProtoFileSuffix);
+        internalIncludes.insert(utils::removeFileSuffix(file->dependency(i)->name()) + Templates::ProtoFileSuffix);
     }
 
     for(auto include : externalIncludes) {
@@ -198,7 +198,7 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
         return true;
     }
 
-    std::string outFileBasename = generateBaseName(file);
+    std::string outFileBasename = generateBaseName(file, utils::extractFileBasename(file->name()));
     std::set<std::string> internalIncludes;
     std::set<std::string> externalIncludes;
     std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix + ".h"));
@@ -221,11 +221,11 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
         for (int i = 0; i < service->method_count(); i++) {
             const MethodDescriptor *method = service->method(i);
             if (method->input_type()->file() != service->file()) {
-                internalIncludes.insert(utils::extractFileName(method->input_type()->file()->name()) + Templates::ProtoFileSuffix);
+                internalIncludes.insert(utils::removeFileSuffix(method->input_type()->file()->name()) + Templates::ProtoFileSuffix);
             }
 
             if (method->output_type()->file() != service->file()) {
-                internalIncludes.insert(utils::extractFileName(method->output_type()->file()->name()) + Templates::ProtoFileSuffix);
+                internalIncludes.insert(utils::removeFileSuffix(method->output_type()->file()->name()) + Templates::ProtoFileSuffix);
             }
         }
     }

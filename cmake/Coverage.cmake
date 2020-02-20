@@ -5,7 +5,7 @@ elseif(NOT DEFINED QT_PROTOBUF_MAKE_COVERAGE)
 endif()
 
 if(QT_PROTOBUF_MAKE_COVERAGE AND UNIX)
-    message(STATUS "-- Enable gcov")
+    message(STATUS "Enable gcov")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
 endif()

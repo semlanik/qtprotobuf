@@ -27,7 +27,7 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 
-#include "qtprotobufnamespace/tests/simpletest.qpb.h"
+#include "simpletest.qpb.h"
 
 using namespace qtprotobufnamespace::tests;
 

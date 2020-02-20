@@ -55,7 +55,7 @@ namespace generator {
  * \section Manual usage
  *
  * \code
- * [QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+ * [QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
  * \endcode
  *
  * Generator supports options that could be provided as environment variable to tune generation.
@@ -72,6 +72,8 @@ namespace generator {
  * *QML* - enables QML code generation in protobuf classes. If is set QML-related code for lists and QML registration to be generated.
  *
  * *COMMENTS* - enables comments copying from .proto files
+ *
+ * *FOLDER* - enables folder-based generation
  *
  * \section cmake CMake
  *
@@ -95,7 +97,7 @@ namespace generator {
  *        \note multi-files generation mode is defined as deprecated by QtProtobuf team, and might have poor support in future
  * \param QML Enables QML code generation in protobuf classes. If provided in parameter list QML related code for lists and QML registration to be generated.
  * \param COMMENTS Enables comments copying from .proto files. If provided in parameter list message and field related comments will be copied to generated header files.
- *
+ * \param FOLDER Enables folder based generation. If provided in parameter list generator will place generated artifacts to folder structure according to package of corresponding .proto file
  *
  * \subsection cmake_qtprotobuf_link_archive qtprotobuf_link_archive
  *

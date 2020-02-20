@@ -6,10 +6,12 @@ add_test_target(TARGET qtgrpc_test
 add_target_windeployqt(TARGET qtgrpc_test
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
+target_link_libraries(qtgrpc_test)
 add_test_target(TARGET qtgrpc_secure_test
     SOURCES sslclienttest.cpp)
 add_target_windeployqt(TARGET qtgrpc_secure_test
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(qtgrpc_secure_test)
 
 # servers
 add_subdirectory(echoserver)

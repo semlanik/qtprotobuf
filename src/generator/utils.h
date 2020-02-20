@@ -77,8 +77,14 @@ static void tolower(std::string &str) {
     std::transform(std::begin(str), std::end(str), std::begin(str), ::tolower);
 }
 
-static std::string extractFileName(std::string fileName) {
-    size_t index = fileName.rfind(".proto");
+static std::string removeFileSuffix(std::string fileName) {
+    size_t index = fileName.rfind(".");
+    fileName.resize(index);
+    return fileName;
+}
+
+static std::string extractFileBasename(std::string fileName) {
+    size_t index = fileName.rfind(".");
     fileName.resize(index);
     index = fileName.rfind("/");
     if (index != std::string::npos) {
