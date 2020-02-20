@@ -49,11 +49,13 @@ public:
     bool isMulti() const { return mIsMulti; }
     bool hasQml() const { return mHasQml; }
     bool generateComments() const { return mGenerateComments; }
+    bool isFolder() const { return mIsFolder; }
 
 private:
     bool mIsMulti;
     bool mHasQml;
     bool mGenerateComments;
+    bool mIsFolder;
 };
 
 }}

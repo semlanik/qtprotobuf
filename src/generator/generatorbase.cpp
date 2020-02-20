@@ -76,13 +76,13 @@ std::string GeneratorBase::generateBaseName(const ::google::protobuf::FileDescri
     std::vector<std::string> packages;
     utils::split(file->package(), packages, '.');
     std::string outFileBasename = "";
-    for (auto package : packages) {
-        outFileBasename += package + "/";
-    }
-    if (name != "") {
+    if (GeneratorOptions::instance().isFolder()) {
+        for (auto package : packages) {
+            outFileBasename += package + "/";
+        }
         outFileBasename += name;
     } else {
-        outFileBasename += utils::extractFileName(file->name());
+        outFileBasename = name;
     }
 
     return outFileBasename;

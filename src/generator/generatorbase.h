@@ -65,7 +65,7 @@ public:
 
 protected:
     void iterateNonNestedFileds(const ::google::protobuf::FileDescriptor *file, std::function<void(const ::google::protobuf::Descriptor *)> callback) const;
-    static std::string generateBaseName(const ::google::protobuf::FileDescriptor *file, std::string name = "");
+    static std::string generateBaseName(const ::google::protobuf::FileDescriptor *file, std::string name);
 private:
     Mode m_mode;
 };

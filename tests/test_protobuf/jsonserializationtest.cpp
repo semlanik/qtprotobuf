@@ -29,7 +29,7 @@
 
 #include <qprotobufjsonserializer.h>
 
-#include "qtprotobufnamespace/tests/simpletest.qpb.h"
+#include "simpletest.qpb.h"
 
 using namespace qtprotobufnamespace::tests;
 

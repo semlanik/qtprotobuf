@@ -124,7 +124,7 @@ cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 ## Direct usage of generator
 
 ```bash
-[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
 
 ### QT_PROTOBUF_OPTIONS
@@ -132,7 +132,7 @@ cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 For protoc command you also may specify extra options using QT_PROTOBUF_OPTIONS environment variable and colon-separated format:
 
 ``` bash
-[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
 
 Following options are supported:
@@ -148,6 +148,8 @@ Following options are supported:
 *QML* - enables QML code generation in protobuf classes. If is set QML-related code for lists and QML registration to be generated.
 
 *COMMENTS* - enables comments copying from .proto files
+
+*FOLDER* - enables folder-based generation
 
 ## Integration with CMake project
 
@@ -214,6 +216,10 @@ qtprotobuf_generate is cmake helper function that automatically generates STATIC
 *QML* - Enables QML code generation in protobuf classes. If provided in parameter list QML related code for lists and QML registration to be generated.
 
 *COMMENTS* - Enables comments copying from .proto files. If provided in parameter list message and field related comments will be copied to generated header files.
+
+*FOLDER* - Enables folder based generation. If provided in parameter list generator will place generated artifacts to folder structure according to package of corresponding .proto file
+
+>**Note:** enabled by default if MULTI option provided
 
 #### qtprotobuf_link_archive
 
