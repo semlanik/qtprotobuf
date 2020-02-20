@@ -11,7 +11,6 @@ file(GLOB SOURCES
     jsonserializationtest.cpp)
 
 add_test_target(TARGET ${TARGET}
-    EXCLUDE_HEADERS nestedsimpleintmessage.h
     SOURCES ${SOURCES}
     QML)
 add_target_windeployqt(TARGET ${TARGET}

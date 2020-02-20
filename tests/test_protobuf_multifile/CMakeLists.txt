@@ -9,7 +9,7 @@ file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/../test_protobuf/prot
 
 add_test_target(TARGET ${TARGET}
     PROTO_FILES ${PROTO_FILES}
-    EXCLUDE_HEADERS nestedsimpleintmessage.h
+    EXCLUDE_HEADERS qtprotobufnamespace/tests/nested/nestedsimpleintmessage.h
     SOURCES ${SOURCES}
     QML
     MULTI)
