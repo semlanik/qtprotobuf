@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
+	filepath "path/filepath"
 	"regexp"
 	"strings"
-	filepath "path/filepath"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func main() {
 	}
 
 	multi := false
-	if len(os.Args) > 2{
+	if len(os.Args) > 2 {
 		if os.Args[2] == "MULTI" {
 			multi = true
 		}
@@ -32,13 +33,30 @@ func main() {
 	if err != nil {
 		log.Fatalf("Invalid regexp %s\n", err)
 	}
-	
+
 	serviceFinder, err := regexp.Compile("^service\\s+([a-zA-Z0-9_]+)")
 	if err != nil {
 		log.Fatalf("Invalid regexp %s\n", err)
 	}
 
+	packageFinder, err := regexp.Compile("^package\\s+(.+);")
+	if err != nil {
+		log.Fatalf("Invalid regexp %s\n", err)
+	}
+
 	scanner := bufio.NewScanner(file)
+
+	fullpath := ""
+	for scanner.Scan() {
+		capture := packageFinder.FindStringSubmatch(scanner.Text())
+		if len(capture) == 2 {
+			packages := strings.Split(capture[1], ".")
+			fullpath = strings.Join(packages, "/")
+			fullpath += "/"
+			break
+		}
+	}
+
 	if multi {
 		for scanner.Scan() {
 			capture := messageFinder.FindStringSubmatch(scanner.Text())
@@ -52,13 +70,16 @@ func main() {
 			}
 		}
 	} else {
+		if fullpath == "" {
+			log.Fatalf("Package is not specified correctly in %s file\n", os.Args[1])
+		}
 		//Singlefile version
 		enumFinder, err := regexp.Compile("^enum\\s+([a-zA-Z0-9_]+)")
 		if err != nil {
 			log.Fatalf("Invalid regexp %s\n", err)
 		}
-
-		basename := strings.TrimSuffix(os.Args[1], filepath.Ext(os.Args[1]))
+		basename := path.Base(os.Args[1])
+		basename = strings.TrimSuffix(basename, filepath.Ext(basename))
 		messageFound := false
 		serviceFound := false
 		for scanner.Scan() {
@@ -79,11 +100,11 @@ func main() {
 		}
 
 		if messageFound {
-			fmt.Printf("%s.qpb.h;", basename)
+			fmt.Printf("%s%s.qpb.h;", fullpath, basename)
 		}
 
 		if serviceFound {
-			fmt.Printf("%s_grpc.qpb.h;", basename)
+			fmt.Printf("%s%s_grpc.qpb.h;", fullpath, basename)
 		}
 	}
 

@@ -80,6 +80,10 @@ static void tolower(std::string &str) {
 static std::string extractFileName(std::string fileName) {
     size_t index = fileName.rfind(".proto");
     fileName.resize(index);
+    index = fileName.rfind("/");
+    if (index != std::string::npos) {
+        return fileName.substr(index + 1, fileName.size() - 1);
+    }
     return fileName;
 }
 

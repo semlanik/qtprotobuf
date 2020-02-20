@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "testservice_grpc.qpb.h"
+#include "qtprotobufnamespace/tests/testservice_grpc.qpb.h"
 #include <QGrpcHttp2Channel>
 #include <QGrpcCredentials>
 #include <QGrpcInsecureCredentials>

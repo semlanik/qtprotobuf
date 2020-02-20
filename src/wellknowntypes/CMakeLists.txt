@@ -31,7 +31,7 @@ function(add_wellknowntype TYPENAME)
         if (NOT "${PROTO_FILE}" STREQUAL "")
             message(STATUS "Add well-known type ${PROTO_FILE}")
             qtprotobuf_generate(TARGET ${TARGET} GENERATED_TARGET ${TYPENAME}
-                OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/google/protobuf
+                OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
                 PROTO_FILES ${PROTO_FILE}
                 PROTO_INCLUDES -I${INCLUDE_DIR}
                 QML)
@@ -65,12 +65,10 @@ add_wellknowntype(api)
 add_dependencies(api type source_context)
 
 
-protobuf_generate_qt_headers(PUBLIC_HEADER ${PUBLIC_HEADER} COMPONENT ${TARGET})
-
 target_compile_definitions(${TARGET} PRIVATE QT_BUILD_PROTOBUF_WELLKNOWNTYPES_LIB PUBLIC QT_PROTOBUF_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
     QT_PROTOBUF_VERSION_MINOR=${PROJECT_VERSION_MINOR})
 
-set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${PUBLIC_HEADER};${GENERATED_PUBLIC_HEADER}" OUTPUT_NAME ${TARGET}
+set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${GENERATED_PUBLIC_HEADER}" OUTPUT_NAME ${TARGET}
     PROTO_INCLUDES -I${QT_PROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src)
 
 target_compile_features(${TARGET} PUBLIC cxx_std_14

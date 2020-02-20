@@ -48,6 +48,19 @@ using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 
+std::string generateBaseName(const FileDescriptor *file)
+{
+    std::vector<std::string> packages;
+    utils::split(file->package(), packages, '.');
+    std::string outFileBasename = "";
+    for (auto package : packages) {
+        outFileBasename += package + "/";
+    }
+    outFileBasename += utils::extractFileName(file->name());
+
+    return outFileBasename;
+}
+
 SingleFileGenerator::SingleFileGenerator() : GeneratorBase(GeneratorBase::SingleMode)
 {}
 
@@ -73,7 +86,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         return true;
     }
 
-    std::string outFileBasename = utils::extractFileName(file->name());
+    std::string outFileBasename = generateBaseName(file);
     std::set<std::string> internalIncludes;
     std::set<std::string> externalIncludes;
     std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + Templates::ProtoFileSuffix + ".h"));
@@ -96,7 +109,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     externalIncludes.insert("QString");
 
     for (int i = 0; i < file->dependency_count(); i++) {
-        internalIncludes.insert(utils::extractFileName(file->dependency(i)->name()) + Templates::ProtoFileSuffix);
+        internalIncludes.insert(generateBaseName(file->dependency(i)) + Templates::ProtoFileSuffix);
     }
 
     for(auto include : externalIncludes) {
@@ -198,7 +211,7 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
         return true;
     }
 
-    std::string outFileBasename = utils::extractFileName(file->name());
+    std::string outFileBasename = generateBaseName(file);
     std::set<std::string> internalIncludes;
     std::set<std::string> externalIncludes;
     std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix + ".h"));

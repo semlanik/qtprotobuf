@@ -30,7 +30,7 @@
 #include <QQmlContext>
 
 #include "addressbookengine.h"
-#include "addressbook.qpb.h"
+#include "qtprotobuf/examples/addressbook.qpb.h"
 
 #include <QMetaProperty>
 #include <QQmlPropertyMap>
