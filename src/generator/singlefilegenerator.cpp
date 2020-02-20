@@ -48,19 +48,6 @@ using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 
-std::string generateBaseName(const FileDescriptor *file)
-{
-    std::vector<std::string> packages;
-    utils::split(file->package(), packages, '.');
-    std::string outFileBasename = "";
-    for (auto package : packages) {
-        outFileBasename += package + "/";
-    }
-    outFileBasename += utils::extractFileName(file->name());
-
-    return outFileBasename;
-}
-
 SingleFileGenerator::SingleFileGenerator() : GeneratorBase(GeneratorBase::SingleMode)
 {}
 

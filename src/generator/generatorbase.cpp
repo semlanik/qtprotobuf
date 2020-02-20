@@ -70,3 +70,20 @@ bool GeneratorBase::GenerateAll(const std::vector<const FileDescriptor *> &files
 {
     return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
 }
+
+std::string GeneratorBase::generateBaseName(const ::google::protobuf::FileDescriptor *file, std::string name)
+{
+    std::vector<std::string> packages;
+    utils::split(file->package(), packages, '.');
+    std::string outFileBasename = "";
+    for (auto package : packages) {
+        outFileBasename += package + "/";
+    }
+    if (name != "") {
+        outFileBasename += name;
+    } else {
+        outFileBasename += utils::extractFileName(file->name());
+    }
+
+    return outFileBasename;
+}

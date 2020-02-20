@@ -412,9 +412,19 @@ void ClassGeneratorBase::printInclude(const google::protobuf::Descriptor *messag
             printInclude(message, field->message_type()->field(1), existingIncludes);
             includeTemplate = Templates::ExternalIncludeTemplate;
         } else {
+            std::string outFileBasename = "";
+            std::string fieldPackage = field->message_type()->file()->package();
+            if (fieldPackage != message->file()->package()) {
+                std::vector<std::string> packages;
+                utils::split(fieldPackage, packages, '.');
+                for (auto package : packages) {
+                    outFileBasename += package + "/";
+                }
+            }
+
             std::string typeName = field->message_type()->name();
             utils::tolower(typeName);
-            newInclude = typeName;
+            newInclude = outFileBasename + typeName;
             includeTemplate = Templates::InternalIncludeTemplate;
         }
         break;

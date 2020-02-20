@@ -84,6 +84,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 
         std::string baseFilename(message->name());
         utils::tolower(baseFilename);
+        baseFilename = generateBaseName(file, baseFilename);
 
         std::string filename = baseFilename + ".h";
         ProtobufClassGenerator classGen(message,
@@ -100,6 +101,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         const ServiceDescriptor *service = file->service(i);
         std::string baseFilename(service->name());
         utils::tolower(baseFilename);
+        baseFilename = generateBaseName(file, baseFilename);
 
         std::string fullFilename = baseFilename + "server.h";
         ServerGenerator serverGen(service,

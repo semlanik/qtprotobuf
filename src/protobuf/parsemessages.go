@@ -59,14 +59,17 @@ func main() {
 
 	if multi {
 		for scanner.Scan() {
+			if fullpath == "" {
+				log.Fatalf("Package is not specified correctly in %s file\n", os.Args[1])
+			}
 			capture := messageFinder.FindStringSubmatch(scanner.Text())
 			if len(capture) == 2 {
-				fmt.Printf("%s.h;", strings.ToLower(capture[1]))
+				fmt.Printf("%s%s.h;", fullpath, strings.ToLower(capture[1]))
 			}
 
 			capture = serviceFinder.FindStringSubmatch(scanner.Text())
 			if len(capture) == 2 {
-				fmt.Printf("%sclient.h;", strings.ToLower(capture[1]))
+				fmt.Printf("%s%sclient.h;", fullpath, strings.ToLower(capture[1]))
 			}
 		}
 	} else {
