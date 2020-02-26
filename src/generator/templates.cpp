@@ -27,7 +27,7 @@
 
 using namespace QtProtobuf::generator;
 
-const char *Templates::ProtoSufix = "Proto";
+const char *Templates::ProtoSufix = "_proto";
 
 const std::vector<std::string> Templates::ListOfQmlExeptions{"id", "property", "import"};
 

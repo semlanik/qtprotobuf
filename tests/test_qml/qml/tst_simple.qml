@@ -205,12 +205,12 @@ TestCase {
     }
 
     function test_reservedNames() {
-        reservedMsg.idProto = 34;
-        reservedMsg.importProto = 35;
-        reservedMsg.propertyProto = 36;
-        compare(reservedMsg.idProto, 34, "reservedMsg.idProto == 34")
-        compare(reservedMsg.importProto, 35, "reservedMsg.importProto == 35")
-        compare(reservedMsg.propertyProto, 36, "reservedMsg.propertyProto == 36")
+        reservedMsg.id_proto = 34;
+        reservedMsg.import_proto = 35;
+        reservedMsg.property_proto = 36;
+        compare(reservedMsg.id_proto, 34, "reservedMsg.id_proto == 34")
+        compare(reservedMsg.import_proto, 35, "reservedMsg.import_proto == 35")
+        compare(reservedMsg.property_proto, 36, "reservedMsg.property_proto == 36")
     }
 
     function test_reservedEnums() {
@@ -229,8 +229,8 @@ TestCase {
     }
 
     function test_underScoreField() {
-        underScoreMsg._underScoreMessageField = 123
-        compare(underScoreMsg._underScoreMessageField, 123, "underScoreMsg._underScoreMessageField == 123")
+        underScoreMsg.underScoreMessageField = 123
+        compare(underScoreMsg.underScoreMessageField, 123, "underScoreMsg.underScoreMessageField == 123")
     }
 
     function test_lowerCaseMessage() {
