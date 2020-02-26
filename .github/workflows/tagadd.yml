@@ -1,12 +1,11 @@
 name: Release build
 
 on:
-  create:
-    tags:
-      - v*
   push:
     branches:
       - ci_check
+    tags:
+      - 'v*'
 jobs:
   build-deb:
     name: Build release packages

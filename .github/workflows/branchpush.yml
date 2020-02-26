@@ -5,6 +5,7 @@ on:
     branches: 
      - master
      - 0.1.0
+     - 0.2
      - ci_check
 jobs:
   build-ubuntu:

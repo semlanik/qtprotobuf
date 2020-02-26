@@ -26,7 +26,7 @@
 import QtQuick 2.12
 import QtTest 1.0
 
-import QtProtobuf 0.1
+import QtProtobuf 0.2
 import qtprotobufnamespace.tests 1.0
 
 TestCase {

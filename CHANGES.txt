@@ -1,3 +1,21 @@
+2020-02-26 version 0.2.0 (generator/QtProtobuf)
+
+    QtProtobuf
+    * Rename generate_qtprotobuf to qtprotobuf_generate
+    * Migrate to new types registration approach. All protobuf types including generated might be registred by calling 'QtProtobuf::qRegisterProtobufTypes()'
+    * Add basic qmake build procedures support
+    * Update well-known types registration. Migrate to common types registration
+    * Add .deb package generation based on CPack
+    * Add static build support
+    * Migate to options-based parameters for qtprotobuf_generate
+    * Migrate to whole-archive linking for generated code
+    * Supress boringssl warning when compile for windows
+    generator
+    * Align cmake variable names to unified style
+    * Add folder-based generation for multi and single file generators
+    * Add code annotations generation
+    * Fix headers for generated enums when QML enabled
+
 2020-01-21 version 0.1.1 (generator/QtProtobuf/QtGrpc)
 
     QtProtobuf

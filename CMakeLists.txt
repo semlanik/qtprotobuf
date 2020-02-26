@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
-set(QT_PROTOBUF_VERSION 0.1.1)
+set(QT_PROTOBUF_VERSION 0.2.0)
 set(QT_PROTOBUF_PROJECT QtProtobufProject)
 
 project(${QT_PROTOBUF_PROJECT} VERSION ${QT_PROTOBUF_VERSION} LANGUAGES CXX)
@@ -92,6 +92,7 @@ if(DEFINED DOXYGEN_EXECUTABLE)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen/customdoxygen.css ${CMAKE_CURRENT_BINARY_DIR}/customdoxygen.css COPYONLY)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen/header.html ${CMAKE_CURRENT_BINARY_DIR}/header.html COPYONLY)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen/html)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen/TitilliumWeb.woff2 ${CMAKE_CURRENT_BINARY_DIR}/doxygen/html/TitilliumWeb.woff2 COPYONLY)
 
     add_custom_target(doc
