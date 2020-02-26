@@ -124,7 +124,7 @@ void ProtobufSourceGenerator::printConstructor()
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         std::string fieldTypeName = getTypeName(field, mMessage);
-        std::string fieldName = utils::lowerCaseName(field->name());
+        std::string fieldName = utils::lowerCaseName(field->camelcase_name());
         fieldName = qualifiedName(fieldName);
 
         if (field->is_repeated() || field->is_map()) {
@@ -169,7 +169,7 @@ void ProtobufSourceGenerator::printConstructor()
                          {"parameter_list", parameters}}, Templates::ProtoConstructorDefinitionTemplate);
         for (size_t j = 0; j < parameterList.size(); j++) {
             const FieldDescriptor *field = mMessage->field(j);
-            std::string fieldName = utils::lowerCaseName(field->name());
+            std::string fieldName = utils::lowerCaseName(field->camelcase_name());
             auto fieldTypeName = getTypeName(field, mMessage);
             fieldName = qualifiedName(fieldName);
             if (field->type() == FieldDescriptor::TYPE_MESSAGE
@@ -227,7 +227,7 @@ void ProtobufSourceGenerator::printCopyFunctionality()
                     Templates::CopyConstructorDefinitionTemplate);
     for (int j = 0; j < mMessage->field_count(); j++) {
         const FieldDescriptor *field = mMessage->field(j);
-        std::string fieldName = utils::lowerCaseName(field->name());
+        std::string fieldName = utils::lowerCaseName(field->camelcase_name());
         auto fieldTypeName = getTypeName(field, mMessage);
         fieldName = qualifiedName(fieldName);
 
@@ -273,7 +273,7 @@ void ProtobufSourceGenerator::printMoveSemantic()
                     Templates::MoveConstructorDefinitionTemplate);
     for (int j = 0; j < mMessage->field_count(); j++) {
         const FieldDescriptor *field = mMessage->field(j);
-        std::string fieldName = utils::lowerCaseName(field->name());
+        std::string fieldName = utils::lowerCaseName(field->camelcase_name());
         auto fieldTypeName = getTypeName(field, mMessage);
         fieldName = qualifiedName(fieldName);
 

@@ -81,7 +81,7 @@ std::unique_ptr<QProtobufSerializer> WellknowntypesTest::serializer;
 TEST_F(WellknowntypesTest, AnyTest)
 {
     ASSERT_GT(qMetaTypeId<Any>(), 0);
-    assertMessagePropertyRegistered<Any, QString>(1, "QString", "type_url");
+    assertMessagePropertyRegistered<Any, QString>(1, "QString", "typeUrl");
     assertMessagePropertyRegistered<Any, QByteArray>(2, "QByteArray", "value");
 }
 
@@ -93,7 +93,7 @@ TEST_F(WellknowntypesTest, ApiTest)
     assertMessagePropertyRegistered<Api, MethodRepeated>(2, "MethodRepeated", "methods");
     assertMessagePropertyRegistered<Api, OptionRepeated>(3, "OptionRepeated", "options");
     assertMessagePropertyRegistered<Api, QString>(4, "QString", "version");
-    assertMessagePropertyRegistered<Api, SourceContext>(5, "SourceContext*", "source_context", true);
+    assertMessagePropertyRegistered<Api, SourceContext>(5, "SourceContext*", "sourceContext", true);
     assertMessagePropertyRegistered<Api, MixinRepeated>(6, "MixinRepeated", "mixins");
     assertMessagePropertyRegistered<Api, SyntaxGadget::Syntax>(7, "google::protobuf::SyntaxGadget::Syntax", "syntax");
 }
@@ -102,10 +102,10 @@ TEST_F(WellknowntypesTest, MethodTest)
 {
     ASSERT_GT(qMetaTypeId<Method>(), 0);
     assertMessagePropertyRegistered<Method, QString>(1, "QString", "name");
-    assertMessagePropertyRegistered<Method, QString>(2, "QString", "request_type_url");
-    assertMessagePropertyRegistered<Method, bool>(3, "bool", "request_streaming");
-    assertMessagePropertyRegistered<Method, QString>(4, "QString", "response_type_url");
-    assertMessagePropertyRegistered<Method, bool>(5, "bool", "response_streaming");
+    assertMessagePropertyRegistered<Method, QString>(2, "QString", "requestTypeUrl");
+    assertMessagePropertyRegistered<Method, bool>(3, "bool", "requestStreaming");
+    assertMessagePropertyRegistered<Method, QString>(4, "QString", "responseTypeUrl");
+    assertMessagePropertyRegistered<Method, bool>(5, "bool", "responseStreaming");
     assertMessagePropertyRegistered<Method, OptionRepeated>(6, "OptionRepeated", "options");
     assertMessagePropertyRegistered<Method, SyntaxGadget::Syntax>(7, "google::protobuf::SyntaxGadget::Syntax", "syntax");
 }
@@ -138,7 +138,7 @@ TEST_F(WellknowntypesTest, FieldMaskTest)
 TEST_F(WellknowntypesTest, SourceContextTest)
 {
     ASSERT_GT(qMetaTypeId<SourceContext>(), 0);
-    assertMessagePropertyRegistered<SourceContext, QString>(1, "QString", "file_name");
+    assertMessagePropertyRegistered<SourceContext, QString>(1, "QString", "fileName");
 }
 
 TEST_F(WellknowntypesTest, StructTest)
@@ -150,12 +150,12 @@ TEST_F(WellknowntypesTest, StructTest)
 TEST_F(WellknowntypesTest, ValueTest)
 {
     ASSERT_GT(qMetaTypeId<Value>(), 0);
-    assertMessagePropertyRegistered<Value, NullValueGadget::NullValue>(1, "google::protobuf::NullValueGadget::NullValue", "null_value");
-    assertMessagePropertyRegistered<Value, double>(2, "double", "number_value");
-    assertMessagePropertyRegistered<Value, QString>(3, "QString", "string_value");
-    assertMessagePropertyRegistered<Value, bool>(4, "bool", "bool_value");
-    assertMessagePropertyRegistered<Value, Struct *>(5, "Struct*", "struct_value");
-    assertMessagePropertyRegistered<Value, ListValue *>(6, "ListValue*", "list_value");
+    assertMessagePropertyRegistered<Value, NullValueGadget::NullValue>(1, "google::protobuf::NullValueGadget::NullValue", "nullValue");
+    assertMessagePropertyRegistered<Value, double>(2, "double", "numberValue");
+    assertMessagePropertyRegistered<Value, QString>(3, "QString", "stringValue");
+    assertMessagePropertyRegistered<Value, bool>(4, "bool", "boolValue");
+    assertMessagePropertyRegistered<Value, Struct *>(5, "Struct*", "structValue");
+    assertMessagePropertyRegistered<Value, ListValue *>(6, "ListValue*", "listValue");
 }
 
 TEST_F(WellknowntypesTest, ListValueTest)
@@ -180,7 +180,7 @@ TEST_F(WellknowntypesTest, TypeTest)
     assertMessagePropertyRegistered<Type, FieldRepeated>(2, "FieldRepeated", "fields");
     assertMessagePropertyRegistered<Type, QStringList>(3, "QStringList", "oneofs");
     assertMessagePropertyRegistered<Type, OptionRepeated>(4, "OptionRepeated", "options");
-    assertMessagePropertyRegistered<Type, SourceContext *>(5, "SourceContext*", "source_context", true);
+    assertMessagePropertyRegistered<Type, SourceContext *>(5, "SourceContext*", "sourceContext", true);
     assertMessagePropertyRegistered<Type, SyntaxGadget::Syntax>(6, "google::protobuf::SyntaxGadget::Syntax", "syntax");
 }
 
@@ -192,12 +192,12 @@ TEST_F(WellknowntypesTest, FieldTest)
     assertMessagePropertyRegistered<Field, Field::Cardinality>(2, "Cardinality", "cardinality");
     assertMessagePropertyRegistered<Field, QtProtobuf::int32>(3, "QtProtobuf::int32", "number_p");
     assertMessagePropertyRegistered<Field, QString>(4, "QString", "name");
-    assertMessagePropertyRegistered<Field, QString>(6, "QString", "type_url");
-    assertMessagePropertyRegistered<Field, QtProtobuf::int32>(7, "QtProtobuf::int32", "oneof_index_p");
+    assertMessagePropertyRegistered<Field, QString>(6, "QString", "typeUrl");
+    assertMessagePropertyRegistered<Field, QtProtobuf::int32>(7, "QtProtobuf::int32", "oneofIndex_p");
     assertMessagePropertyRegistered<Field, bool>(8, "bool", "packed");
     assertMessagePropertyRegistered<Field, OptionRepeated>(9, "OptionRepeated", "options");
-    assertMessagePropertyRegistered<Field, QString>(10, "QString", "json_name");
-    assertMessagePropertyRegistered<Field, QString>(11, "QString", "default_value");
+    assertMessagePropertyRegistered<Field, QString>(10, "QString", "jsonName");
+    assertMessagePropertyRegistered<Field, QString>(11, "QString", "defaultValue");
 }
 
 TEST_F(WellknowntypesTest, EnumTest)
@@ -206,7 +206,7 @@ TEST_F(WellknowntypesTest, EnumTest)
     assertMessagePropertyRegistered<Enum, QString>(1, "QString", "name");
     assertMessagePropertyRegistered<Enum, EnumValueRepeated>(2, "EnumValueRepeated", "enumvalue");
     assertMessagePropertyRegistered<Enum, OptionRepeated>(3, "OptionRepeated", "options");
-//    assertMessagePropertyRegistered<Enum, SourceContext *>(4, "SourceContext*", "source_context");
+//    assertMessagePropertyRegistered<Enum, SourceContext *>(4, "SourceContext*", "sourceContext");
     assertMessagePropertyRegistered<Enum, SyntaxGadget::Syntax>(5, "google::protobuf::SyntaxGadget::Syntax", "syntax");
 }
 

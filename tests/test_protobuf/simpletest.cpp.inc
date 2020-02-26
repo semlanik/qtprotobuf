@@ -776,11 +776,11 @@ TEST_F(SimpleTest, UnderscoresTest)
     FollowingMessageUnderscoreField msg5;
     CombinedMessageUnderscoreField msg6;
 
-    assertMessagePropertyRegistered<MessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "underScore_Message_field");
-    assertMessagePropertyRegistered<PriorMessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "_underScoreMessageField");
-    assertMessagePropertyRegistered<PriorMessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "_underScoreMessageField");
-    assertMessagePropertyRegistered<FollowingMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "underScoreMessageField_");
-    assertMessagePropertyRegistered<CombinedMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "_underScoreMessage_Field_");
+    assertMessagePropertyRegistered<MessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "underScoreMessageField");
+    assertMessagePropertyRegistered<PriorMessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "underScoreMessageField");
+    assertMessagePropertyRegistered<PriorMessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "underScoreMessageField");
+    assertMessagePropertyRegistered<FollowingMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "underScoreMessageField");
+    assertMessagePropertyRegistered<CombinedMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "underScoreMessageField");
 }
 
 TEST_F(SimpleTest, SequenceTest)
@@ -802,16 +802,16 @@ TEST_F(SimpleTest, UpperCaseTest)
 
 TEST_F(SimpleTest, ReservedTest)
 {
-    assertMessagePropertyRegistered<MessageReserved, sint32>(1, "QtProtobuf::sint32", "importProto");
-    assertMessagePropertyRegistered<MessageReserved, sint32>(2, "QtProtobuf::sint32", "propertyProto");
-    assertMessagePropertyRegistered<MessageReserved, sint32>(3, "QtProtobuf::sint32", "idProto");
+    assertMessagePropertyRegistered<MessageReserved, sint32>(1, "QtProtobuf::sint32", "import_proto");
+    assertMessagePropertyRegistered<MessageReserved, sint32>(2, "QtProtobuf::sint32", "property_proto");
+    assertMessagePropertyRegistered<MessageReserved, sint32>(3, "QtProtobuf::sint32", "id_proto");
 }
 
 TEST_F(SimpleTest, ReservedUpperCaseTest)
 {
-    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(1, "QtProtobuf::sint32", "importProto");
-    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(2, "QtProtobuf::sint32", "propertyProto");
-    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(3, "QtProtobuf::sint32", "idProto");
+    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(1, "QtProtobuf::sint32", "import_proto");
+    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(2, "QtProtobuf::sint32", "property_proto");
+    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(3, "QtProtobuf::sint32", "id_proto");
 }
 
 TEST_F(SimpleTest, ReservedEnumTest)

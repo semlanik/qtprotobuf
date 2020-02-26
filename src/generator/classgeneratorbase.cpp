@@ -332,9 +332,6 @@ bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *
     std::string typeNameLower(typeName);
     utils::tolower(typeNameLower);
 
-    std::string capProperty = field->name();
-    capProperty[0] = static_cast<char>(::toupper(capProperty[0]));
-
     std::string typeNameNoList = typeName;
     if (field->is_repeated() && !field->is_map()) {
         if(field->type() == FieldDescriptor::TYPE_MESSAGE
@@ -361,9 +358,12 @@ bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *
         getterType = "const " + getterType;
     }
 
-    std::string fieldName = utils::lowerCaseName(field->name());
-
+    std::string fieldName = utils::lowerCaseName(field->camelcase_name());
     fieldName = qualifiedName(fieldName);
+
+    std::string capProperty = fieldName;
+    capProperty[0] = static_cast<char>(::toupper(capProperty[0]));
+
     propertyMap = {{"type", typeName},
                    {"classname", utils::upperCaseName(message->name())},
                    {"type_lower", typeNameLower},

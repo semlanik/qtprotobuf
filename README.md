@@ -297,23 +297,23 @@ QtProtobuf::qRegisterProtobufTypes();
 
 ## Code exceptions
 
-If any prohibited Qt/QML keyword is used as field name, generator appends '*Proto*' suffix to generated filed name. It's required to omit overloading for example QML reserved names like '*id*' or '*objectName*'.
+If any prohibited Qt/QML keyword is used as field name, generator appends '*_proto*' suffix to generated filed name. It's required to omit overloading for example QML reserved names like '*id*' or '*objectName*'.
 
 E.g. for message:
 ```
 message MessageReserved {
-sint32 import = 1;
-sint32 property = 2;
-sint32 id = 3;
+    sint32 import = 1;
+    sint32 property = 2;
+    sint32 id = 3;
 }
 ```
 
 Following properties will be generated:
 ```cpp
 ...
-Q_PROPERTY(QtProtobuf::sint32 importProto READ importProto WRITE setImport NOTIFY importProtoChanged)
-Q_PROPERTY(QtProtobuf::sint32 propertyProto READ propertyProto WRITE setProperty NOTIFY propertyProtoChanged)
-Q_PROPERTY(QtProtobuf::sint32 idProto READ idProto WRITE setId NOTIFY idProtoChanged)
+    Q_PROPERTY(QtProtobuf::sint32 import_proto READ import_proto WRITE setImport_proto NOTIFY import_protoChanged SCRIPTABLE true)
+    Q_PROPERTY(QtProtobuf::sint32 property_proto READ property_proto WRITE setProperty_proto NOTIFY property_protoChanged SCRIPTABLE true)
+    Q_PROPERTY(QtProtobuf::sint32 id_proto READ id_proto WRITE setId_proto NOTIFY id_protoChanged SCRIPTABLE true)
 ...
 
 ```
