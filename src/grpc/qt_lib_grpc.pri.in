@@ -8,3 +8,4 @@ QT.grpc.depends = core network protobuf
 QT.grpc.module_config = @QT_PROTOBUF_EXTRA_CONFIG@
 
 CONFIG += c++14
+DEFINES += @QT_PROTOBUF_EXTRA_COMPILE_DIFINITIONS@
