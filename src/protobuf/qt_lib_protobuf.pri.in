@@ -8,6 +8,7 @@ QT.protobuf.depends = core qml
 QT.protobuf.module_config = @QT_PROTOBUF_EXTRA_CONFIG@
 
 CONFIG += c++14
+DEFINES += @QT_PROTOBUF_EXTRA_COMPILE_DIFINITIONS@
 
 defineTest(qtprotobuf_generate) {
     OK = false

@@ -43,8 +43,12 @@ file(GLOB HEADERS qgrpcasyncoperationbase_p.h
 
 protobuf_generate_qt_headers(PUBLIC_HEADER ${HEADERS} COMPONENT ${TARGET})
 
-if(QT_PROTOBUF_STATIC AND NOT WIN32)
+if(QT_PROTOBUF_STATIC)
+    if(WIN32)
+        message(WARNING "Static version of QtProtobuf is not fully tested on Win32 platforms")
+    endif()
     add_library(${TARGET} STATIC ${SOURCES})
+    target_compile_definitions(${TARGET} PRIVATE QT_PROTOBUF_STATIC)
 else()
     add_library(${TARGET} SHARED ${SOURCES})
 endif()

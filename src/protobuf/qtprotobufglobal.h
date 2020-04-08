@@ -27,10 +27,14 @@
 
 #include <QtCore/QtGlobal>
 
-#if defined(QT_BUILD_PROTOBUF_LIB)
-#  define Q_PROTOBUF_EXPORT Q_DECL_EXPORT
+#ifndef QT_PROTOBUF_STATIC
+    #if defined(QT_BUILD_PROTOBUF_LIB)
+        #define Q_PROTOBUF_EXPORT Q_DECL_EXPORT
+    #else
+        #define Q_PROTOBUF_EXPORT Q_DECL_IMPORT
+    #endif
 #else
-#  define Q_PROTOBUF_EXPORT Q_DECL_IMPORT
+    #define Q_PROTOBUF_EXPORT
 #endif
 
 //Support macro for Qt versions < 5.13
@@ -42,7 +46,7 @@
 #endif
 
 #ifndef Q_DISABLE_COPY_MOVE
-#define Q_DISABLE_COPY_MOVE(Class) \
-    Q_DISABLE_COPY(Class) \
-    Q_DISABLE_MOVE(Class)
+    #define Q_DISABLE_COPY_MOVE(Class) \
+        Q_DISABLE_COPY(Class) \
+        Q_DISABLE_MOVE(Class)
 #endif
