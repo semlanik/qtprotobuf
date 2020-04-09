@@ -223,8 +223,17 @@ void ProtobufSourceGenerator::printConstructor()
 
 void ProtobufSourceGenerator::printCopyFunctionality()
 {
+    assert(mMessage != nullptr);
+
+    const char *constructorTemplate = Templates::CopyConstructorDefinitionTemplate;
+    const char *assignmentOperatorTemplate = Templates::AssignmentOperatorDefinitionTemplate;
+    if (mMessage->field_count() <= 0) {
+        constructorTemplate = Templates::EmptyCopyConstructorDefinitionTemplate;
+        assignmentOperatorTemplate = Templates::EmptyAssignmentOperatorDefinitionTemplate;
+    }
+
     mPrinter->Print({{"classname", mClassName}},
-                    Templates::CopyConstructorDefinitionTemplate);
+                    constructorTemplate);
     for (int j = 0; j < mMessage->field_count(); j++) {
         const FieldDescriptor *field = mMessage->field(j);
         std::string fieldName = utils::lowerCaseName(field->camelcase_name());
@@ -251,7 +260,7 @@ void ProtobufSourceGenerator::printCopyFunctionality()
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 
     mPrinter->Print({{"classname", mClassName}},
-                    Templates::AssignmentOperatorDefinitionTemplate);
+                    assignmentOperatorTemplate);
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         auto field = mMessage->field(i);
@@ -269,8 +278,16 @@ void ProtobufSourceGenerator::printCopyFunctionality()
 void ProtobufSourceGenerator::printMoveSemantic()
 {
     assert(mMessage != nullptr);
+
+    const char *constructorTemplate = Templates::MoveConstructorDefinitionTemplate;
+    const char *assignmentOperatorTemplate = Templates::MoveAssignmentOperatorDefinitionTemplate;
+    if (mMessage->field_count() <= 0) {
+        constructorTemplate = Templates::EmptyMoveConstructorDefinitionTemplate;
+        assignmentOperatorTemplate = Templates::EmptyMoveAssignmentOperatorDefinitionTemplate;
+    }
+
     mPrinter->Print({{"classname", mClassName}},
-                    Templates::MoveConstructorDefinitionTemplate);
+                    constructorTemplate);
     for (int j = 0; j < mMessage->field_count(); j++) {
         const FieldDescriptor *field = mMessage->field(j);
         std::string fieldName = utils::lowerCaseName(field->camelcase_name());
@@ -306,7 +323,7 @@ void ProtobufSourceGenerator::printMoveSemantic()
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 
     mPrinter->Print({{"classname", mClassName}},
-                    Templates::MoveAssignmentOperatorDefinitionTemplate);
+                    assignmentOperatorTemplate);
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
@@ -333,13 +350,16 @@ void ProtobufSourceGenerator::printMoveSemantic()
 void ProtobufSourceGenerator::printComparisonOperators()
 {
     assert(mMessage != nullptr);
+    if (mMessage->field_count() <= 0) {
+        mPrinter->Print({{"classname", mClassName}}, Templates::EmptyEqualOperatorDefinitionTemplate);
+        mPrinter->Print({{"classname", mClassName}}, Templates::NotEqualOperatorDefinitionTemplate);
+        return;
+    }
+
     PropertyMap properties;
     mPrinter->Print({{"classname", mClassName}}, Templates::EqualOperatorDefinitionTemplate);
 
     bool isFirst = true;
-    if (mMessage->field_count() <= 0) {
-        mPrinter->Print("true");
-    }
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         if (producePropertyMap(mMessage, field, properties)) {
