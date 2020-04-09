@@ -52,7 +52,7 @@ if(UNIX)
 elseif(WIN32)
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 #TODO: not all l4 warnings are fixed for MSVC. Enable options bellow
-#once fixed
+#      once fixed
 #        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX /W4 /MD")
 #        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /W4 /MD")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /bigobj /wd4005")

@@ -105,6 +105,8 @@ const char *Templates::CopyConstructorDeclarationTemplate = "$classname$(const $
 const char *Templates::MoveConstructorDeclarationTemplate = "$classname$($classname$ &&other);\n";
 const char *Templates::CopyConstructorDefinitionTemplate = "$classname$::$classname$(const $classname$ &other) : QObject()";
 const char *Templates::MoveConstructorDefinitionTemplate = "$classname$::$classname$($classname$ &&other) : QObject()";
+const char *Templates::EmptyCopyConstructorDefinitionTemplate = "$classname$::$classname$(const $classname$ &) : QObject()";
+const char *Templates::EmptyMoveConstructorDefinitionTemplate = "$classname$::$classname$($classname$ &&) : QObject()";
 const char *Templates::DeletedCopyConstructorTemplate = "$classname$(const $classname$ &) = delete;\n";
 const char *Templates::DeletedMoveConstructorTemplate = "$classname$($classname$ &&) = delete;\n";
 const char *Templates::CopyFieldTemplate = "set$property_name_cap$(other.m_$property_name$);\n";
@@ -128,14 +130,19 @@ const char *Templates::EnumMoveFieldTemplate = "m_$property_name$ = other.m_$pro
 
 const char *Templates::AssignmentOperatorDeclarationTemplate = "$classname$ &operator =(const $classname$ &other);\n";
 const char *Templates::AssignmentOperatorDefinitionTemplate = "$classname$ &$classname$::operator =(const $classname$ &other)\n{\n";
+const char *Templates::EmptyAssignmentOperatorDefinitionTemplate = "$classname$ &$classname$::operator =(const $classname$ &)\n{\n";
 const char *Templates::AssignmentOperatorReturnTemplate = "return *this;\n";
 
 const char *Templates::MoveAssignmentOperatorDeclarationTemplate = "$classname$ &operator =($classname$ &&other);\n";
 const char *Templates::MoveAssignmentOperatorDefinitionTemplate = "$classname$ &$classname$::operator =($classname$ &&other)\n{\n";
+const char *Templates::EmptyMoveAssignmentOperatorDefinitionTemplate = "$classname$ &$classname$::operator =($classname$ &&)\n{\n";
 
 const char *Templates::EqualOperatorDeclarationTemplate = "bool operator ==(const $classname$ &other) const;\n";
 const char *Templates::EqualOperatorDefinitionTemplate = "bool $classname$::operator ==(const $classname$ &other) const\n{\n"
-                                               "    return ";
+                                                         "    return ";
+const char *Templates::EmptyEqualOperatorDefinitionTemplate = "bool $classname$::operator ==(const $classname$ &) const\n{\n"
+                                                              "    return true;\n"
+                                                              "}\n\n";
 const char *Templates::EqualOperatorPropertyTemplate = "m_$property_name$ == other.m_$property_name$";
 const char *Templates::EqualOperatorMessagePropertyTemplate = "*m_$property_name$ == *other.m_$property_name$";
 
