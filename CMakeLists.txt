@@ -13,11 +13,11 @@ set(QT_PROTOBUF_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
-if(Qt5Core_VERSION VERSION_LESS "5.12.3")
-    # grpc target requires QT version not less than 5.12.3
+if(Qt5Core_VERSION VERSION_LESS "5.12.4")
+    # grpc target requires QT version not less than 5.12.4
     # earlier versions Http2DirectAttribute is broken: https://doc.qt.io/qt-5/whatsnew511.html
     #                                                  https://bugreports.qt.io/browse/QTBUG-74765
-    message(FATAL_ERROR "Required Qt version is 5.12.3+")
+    message(FATAL_ERROR "Required Qt version is 5.12.4+")
 endif()
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/grpc/CMakeLists.txt")

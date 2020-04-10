@@ -90,6 +90,18 @@ cpack -G DEB ..
 
 >**Note:** Only tested on Ubuntu 19.10
 
+### .rpm
+You can create .rpm package for rpm-based operating systems, using commands below:
+
+```bash
+mkdir build
+cd build
+cmake .. -DQT_PROTOBUF_MAKE_TESTS=FALSE -DQT_PROTOBUF_MAKE_EXAMPLES=FALSE
+cpack -G RPM ..
+```
+
+>**Note:** Only tested on OpenSUSE 15.2
+
 # Windows Build
 ## Prerequesties
 Download and install:
