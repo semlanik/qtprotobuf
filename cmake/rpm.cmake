@@ -1,1 +1,16 @@
-#TODO: implement rpm packaging
+set(CPACK_RPM_COMPONENT_INSTALL ON)
+
+set(CPACK_RPM_LIB_PACKAGE_NAME "libQtProtobuf")
+set(CPACK_RPM_DEV_PACKAGE_NAME "libQtProtobuf-devel")
+set(CPACK_RPM_PACKAGE_SUMMARY "Protobuf generator and bindings for Qt framework")
+set(CPACK_RPM_LIB_FILE_NAME "lib${CPACK_PACKAGE_NAME}-${QT_PROTOBUF_VERSION}.rpm")
+set(CPACK_RPM_DEV_FILE_NAME "lib${CPACK_PACKAGE_NAME}-${QT_PROTOBUF_VERSION}-devel.rpm")
+set(CPACK_RPM_PACKAGE_RELEASE 0)
+set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+set(CPACK_RPM_PACKAGE_GROUP "Development/Libraries")
+set(CPACK_RPM_PACKAGE_VENDOR "Alexey Edelev <semlanik@gmail.com>")
+set(CPACK_RPM_PACKAGE_URL "https://semlanik.github.io/qtprotobuf/")
+set(CPACK_RPM_PACKAGE_DESCRIPTION "gRPC and Protobuf generator and bindings for Qt framework")
+set(CPACK_RPM_COMPRESSION_TYPE "gzip")
+set(CPACK_RPM_PACKAGE_REQUIRES_PRE "libQt5Core5 >= 5.12.4, libQt5Network5 >= 5.12.4, libQtQuick5 >= 5.12.4, go >= 1.10.8, libprotoc22 >= 3.6.0")
+set(CPACK_RPM_DEV_PACKAGE_REQUIRES_PRE "${CPACK_RPM_LIB_PACKAGE_NAME} == ${QT_PROTOBUF_VERSION}, libqt5-qttools >= 5.12.4, libqt5-qtbase-devel >= 5.12.4, libqt5-qtdeclarative-devel >= 5.12.4, go >= 1.10.8, protobuf-devel >= 3.6.0, grpc-devel >= 1.25.0")
