@@ -206,7 +206,7 @@ TEST_F(WellknowntypesTest, EnumTest)
     assertMessagePropertyRegistered<Enum, QString>(1, "QString", "name");
     assertMessagePropertyRegistered<Enum, EnumValueRepeated>(2, "EnumValueRepeated", "enumvalue");
     assertMessagePropertyRegistered<Enum, OptionRepeated>(3, "OptionRepeated", "options");
-//    assertMessagePropertyRegistered<Enum, SourceContext *>(4, "SourceContext*", "sourceContext");
+    assertMessagePropertyRegistered<Enum, SourceContext *>(4, "SourceContext*", "sourceContext", true);
     assertMessagePropertyRegistered<Enum, SyntaxGadget::Syntax>(5, "google::protobuf::SyntaxGadget::Syntax", "syntax");
 }
 

@@ -24,10 +24,46 @@
  */
 
 #include "qprotobufmetaproperty.h"
+#include "qtprotobuftypes.h"
+
+#include <string>
+
+//TODO: Code under unnamed namespace should be moved to the common header that is relevant for generator and metaproperty
+namespace  {
+int constexpr constexpr_strlen(const char* str)
+{
+    return *str ? 1 + constexpr_strlen(str + 1) : 0;
+}
+const std::vector<std::string> ListOfQmlExeptions{"id", "property", "import"};
+constexpr const char *privateSuffix = "_p";
+constexpr const char *protoSuffix = "_proto";
+constexpr int privateSuffixLenght = constexpr_strlen(privateSuffix);
+constexpr int protoSuffixLenght = constexpr_strlen(protoSuffix);
+}
 
 using namespace QtProtobuf;
 QProtobufMetaProperty::QProtobufMetaProperty(const QMetaProperty &metaProperty, int fieldIndex) : QMetaProperty(metaProperty)
   , m_fieldIndex(fieldIndex)
 {
 
+}
+
+QString QProtobufMetaProperty::protoPropertyName() const
+{
+    QString protoName(name());
+    if ((userType() == qMetaTypeId<QtProtobuf::int32>()
+            || userType() == qMetaTypeId<QtProtobuf::fixed32>()
+            || userType() == qMetaTypeId<QtProtobuf::sfixed32>())
+            && protoName.endsWith(privateSuffix)) {
+        return protoName.mid(0, protoName.size() - privateSuffixLenght);
+    }
+
+    if (protoName.endsWith(protoSuffix)) {
+        auto tmpProtoName = protoName.mid(0, protoName.size() - protoSuffixLenght);
+        if (std::find(ListOfQmlExeptions.begin(), ListOfQmlExeptions.end(), protoName.toStdString()) != ListOfQmlExeptions.end()) {
+            return tmpProtoName;
+        }
+    }
+
+    return protoName;
 }
