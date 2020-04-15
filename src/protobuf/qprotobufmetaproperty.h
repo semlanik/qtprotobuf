@@ -40,6 +40,7 @@ class Q_PROTOBUF_EXPORT QProtobufMetaProperty : public QMetaProperty
 public:
     QProtobufMetaProperty(const QMetaProperty &, int fieldIndex);
     int protoFieldIndex() const { return m_fieldIndex; }
+    QString protoPropertyName() const;
 private:
     QProtobufMetaProperty();
     int m_fieldIndex;
