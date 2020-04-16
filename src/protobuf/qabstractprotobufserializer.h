@@ -143,6 +143,16 @@ public:
     virtual void deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const = 0;
 
     /*!
+     * \brief serializeListBegin Method called at the begining of object list serialization
+     * \param[in] metaProperty Information about property to be serialized
+     * \return Raw serialized data represented as byte array
+     */
+    virtual QByteArray serializeListBegin(const QProtobufMetaProperty &metaProperty) const {
+        Q_UNUSED(metaProperty);
+        return {};
+    }
+
+    /*!
      * \brief serializeListObject Method called to serialize \a object as a part of list property
      * \param[in] object Pointer to object that will be serialized
      * \param[in] metaObject Protobuf meta object information for given \a object
@@ -150,6 +160,18 @@ public:
      * \return Raw serialized data represented as byte array
      */
     virtual QByteArray serializeListObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const = 0;
+
+    /*!
+     * \brief serializeListEnd Method called at the end of object list serialization
+     * \param[in] buffer Buffer at and of list serialization
+     * \param[in] metaProperty Information about property to be serialized
+     * \return Raw serialized data represented as byte array
+     */
+    virtual QByteArray serializeListEnd(QByteArray &buffer, const QProtobufMetaProperty &metaProperty) const {
+        Q_UNUSED(metaProperty);
+        Q_UNUSED(buffer);
+        return {};
+    }
 
     /*!
      * \brief deserializeListObject Deserializes an \a object from byte stream as part of list property
@@ -161,6 +183,16 @@ public:
     virtual void deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const = 0;
 
     /*!
+     * \brief serializeMapEnd Method called at the begining of map serialization
+     * \param[in] metaProperty Information about property to be serialized
+     * \return Raw serialized data represented as byte array
+     */
+    virtual QByteArray serializeMapBegin(const QProtobufMetaProperty &metaProperty) const {
+        Q_UNUSED(metaProperty);
+        return {};
+    }
+
+    /*!
      * \brief serializeMapPair Serializes QMap pair of \a key and \a value to raw data buffer
      * \param[in] key Map key
      * \param[in] value Map value for given \a key
@@ -170,6 +202,17 @@ public:
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
      */
     virtual QByteArray serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const = 0;
+
+    /*!
+     * \brief serializeMapEnd Method called at the end of map serialization
+     * \param[in] buffer Buffer at and of list serialization
+     * \param[in] metaProperty Information about property to be serialized
+     * \return Raw serialized data represented as byte array
+     */
+    virtual QByteArray serializeMapEnd(QByteArray &buffer, const QProtobufMetaProperty &metaProperty) const {
+        Q_UNUSED(metaProperty);
+        return {};
+    }
 
     /*!
      * \brief deserializeMapPair Deserializes QMap pair of \a key and \a value from raw data

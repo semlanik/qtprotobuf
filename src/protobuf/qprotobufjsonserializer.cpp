@@ -53,7 +53,7 @@ public:
         if (!ok) {
             return QByteArray("NaN");
         }
-        return QString::number(value, 'g').toUtf8();
+        return QString::number(static_cast<double>(value), 'g').toUtf8();
     }
 
     static QByteArray serializeString(const QVariant &propertyValue) {
@@ -140,13 +140,10 @@ public:
     }
     ~QProtobufJsonSerializerPrivate() = default;
 
-    QByteArray serializeProperty(const QVariant &propertyValue, const QProtobufMetaProperty &metaProperty) {
+    QByteArray serializeValue(const QVariant &propertyValue, const QProtobufMetaProperty &metaProperty) {
         QByteArray buffer;
-        buffer.append("\"");
-        buffer.append(metaProperty.protoPropertyName().toUtf8());
-        buffer.append("\":");
-        auto userType = metaProperty.userType();
-        auto &value = QtProtobufPrivate::findHandler(metaProperty.userType());
+        auto userType = propertyValue.userType();
+        auto &value = QtProtobufPrivate::findHandler(userType);
         if (value.serializer) {
             value.serializer(q_ptr, propertyValue, metaProperty, buffer);
         } else {
@@ -158,6 +155,10 @@ public:
             }
         }
         return buffer;
+    }
+
+    QByteArray serializeProperty(const QVariant &propertyValue, const QProtobufMetaProperty &metaProperty) {
+        return QByteArray("\"") + metaProperty.protoPropertyName().toUtf8() + "\":" + serializeValue(propertyValue, metaProperty);
     }
 
     QByteArray serializeObject(const QObject *object, const QProtobufMetaObject &metaObject) {
@@ -217,9 +218,22 @@ void QProtobufJsonSerializer::deserializeObject(QObject *object, const QProtobuf
     Q_UNUSED(metaObject)
 }
 
+QByteArray QProtobufJsonSerializer::serializeListBegin(const QProtobufMetaProperty &/*metaProperty*/) const
+{
+    return {"["};
+}
+
 QByteArray QProtobufJsonSerializer::serializeListObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &/*metaProperty*/) const
 {
-    return dPtr->serializeObject(object, metaObject);
+    return dPtr->serializeObject(object, metaObject)+",";
+}
+
+QByteArray QProtobufJsonSerializer::serializeListEnd(QByteArray &buffer, const QProtobufMetaProperty &/*metaProperty*/) const
+{
+    if (buffer[buffer.size() - 1] == ',') {
+        buffer.resize(buffer.size() - 1);
+    }
+    return {"]"};
 }
 
 void QProtobufJsonSerializer::deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
@@ -229,12 +243,21 @@ void QProtobufJsonSerializer::deserializeListObject(QObject *object, const QProt
     Q_UNUSED(metaObject)
 }
 
+QByteArray QProtobufJsonSerializer::serializeMapBegin(const QProtobufMetaProperty &/*metaProperty*/) const
+{
+    return {"{"};
+}
 QByteArray QProtobufJsonSerializer::serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const
 {
-    Q_UNUSED(key)
-    Q_UNUSED(value)
-    Q_UNUSED(metaProperty)
-    return QByteArray();
+    return QByteArray("\"") + key.toString().toUtf8() + "\":" + dPtr->serializeValue(value, metaProperty) + ",";
+}
+
+QByteArray QProtobufJsonSerializer::serializeMapEnd(QByteArray &buffer, const QProtobufMetaProperty &/*metaProperty*/) const
+{
+    if (buffer[buffer.size() - 1] == ',') {
+        buffer.resize(buffer.size() - 1);
+    }
+    return {"}"};
 }
 
 void QProtobufJsonSerializer::deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const
