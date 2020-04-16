@@ -461,5 +461,114 @@ TEST_F(JsonSerializationTest, SimpleEnumListMessageTest)
     EXPECT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"localEnumList\":[]}");
 }
 
+TEST_F(JsonSerializationTest, SimpleFixed32StringMapSerializeTest)
+{
+    SimpleFixed32StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize(serializer.get());
+
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
+}
+
+TEST_F(JsonSerializationTest, SimpleSFixed32StringMapSerializeTest)
+{
+    SimpleSFixed32StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize(serializer.get());
+
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
+}
+
+TEST_F(JsonSerializationTest, SimpleInt32StringMapSerializeTest)
+{
+    SimpleInt32StringMapMessage test;
+    test.setMapField({{-10, {"minus ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize(serializer.get());
+
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"-10\":\"minus ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
+}
+
+TEST_F(JsonSerializationTest, SimpleSInt32StringMapSerializeTest)
+{
+    SimpleSInt32StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize(serializer.get());
+
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
+}
+
+TEST_F(JsonSerializationTest, SimpleUInt32StringMapSerializeTest)
+{
+    SimpleUInt32StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize(serializer.get());
+
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
+}
+
+TEST_F(JsonSerializationTest, SimpleFixed64StringMapSerializeTest)
+{
+    SimpleFixed64StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize(serializer.get());
+
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
+}
+
+TEST_F(JsonSerializationTest, SimpleSFixed64StringMapSerializeTest)
+{
+    SimpleSFixed64StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize(serializer.get());
+
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
+}
+
+TEST_F(JsonSerializationTest, SimpleInt64StringMapSerializeTest)
+{
+    SimpleInt64StringMapMessage test;
+    test.setMapField({{-10, {"minus ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize(serializer.get());
+
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"-10\":\"minus ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
+}
+
+TEST_F(JsonSerializationTest, SimpleSInt64StringMapSerializeTest)
+{
+    SimpleSInt64StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize(serializer.get());
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
+}
+
+TEST_F(JsonSerializationTest, SimpleUInt64StringMapSerializeTest)
+{
+    SimpleUInt64StringMapMessage test;
+    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
+    QByteArray result = test.serialize(serializer.get());
+
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
+}
+
+TEST_F(JsonSerializationTest, SimpleStringStringMapSerializeTest)
+{
+    SimpleStringStringMapMessage test;
+    test.setMapField({{"ben", "ten"}, {"what is the answer?", "fourty two"}, {"sweet", "fifteen"}});
+    QByteArray result = test.serialize(serializer.get());
+
+    ASSERT_STREQ(result.toStdString().c_str(),
+                 "{\"mapField\":{\"ben\":\"ten\",\"sweet\":\"fifteen\",\"what is the answer?\":\"fourty two\"}}");
+}
+
 }
 }

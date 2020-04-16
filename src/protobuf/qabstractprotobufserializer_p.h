@@ -94,10 +94,7 @@ void serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, co
 
     qProtoDebug() << __func__ << "listValue.count" << list.count();
 
-    if (list.count() <= 0) {
-        return;
-    }
-
+    buffer.append(serializer->serializeListBegin(metaProperty));
     for (auto &value : list) {
         if (!value) {
             qProtoWarning() << "Null pointer in list";
@@ -105,6 +102,7 @@ void serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, co
         }
         buffer.append(serializer->serializeListObject(value.data(), V::protobufMetaObject, metaProperty));
     }
+    buffer.append(serializer->serializeListEnd(buffer, metaProperty));
 }
 
 /*!
@@ -116,9 +114,11 @@ template<typename K, typename V,
 void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     QMap<K,V> mapValue = value.value<QMap<K,V>>();
+    buffer.append(serializer->serializeMapBegin(metaProperty));
     for (auto it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
         buffer.append(serializer->serializeMapPair(QVariant::fromValue<K>(it.key()), QVariant::fromValue<V>(it.value()), metaProperty));
     }
+    buffer.append(serializer->serializeMapEnd(buffer, metaProperty));
 }
 
 /*!
@@ -130,6 +130,7 @@ template<typename K, typename V,
 void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     QMap<K, QSharedPointer<V>> mapValue = value.value<QMap<K, QSharedPointer<V>>>();
+    buffer.append(serializer->serializeMapBegin(metaProperty));
     for (auto it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
         if (it.value().isNull()) {
             qProtoWarning() << __func__ << "Trying to serialize map value that contains nullptr";
@@ -137,6 +138,7 @@ void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, con
         }
         buffer.append(serializer->serializeMapPair(QVariant::fromValue<K>(it.key()), QVariant::fromValue<V *>(it.value().data()), metaProperty));
     }
+    buffer.append(serializer->serializeMapEnd(buffer, metaProperty));
 }
 
 /*!
