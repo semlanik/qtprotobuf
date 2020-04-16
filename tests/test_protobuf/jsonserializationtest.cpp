@@ -212,20 +212,23 @@ TEST_F(JsonSerializationTest, ComplexTypeSerializeTest)
     test.setTestFieldInt(42);
     test.setTestComplexField(stringMsg);
     QByteArray result = test.serialize(serializer.get());
-    EXPECT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":42}");
+    EXPECT_TRUE(QString::fromUtf8(result).toStdString() == std::string("{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":42}")
+                || QString::fromUtf8(result).toStdString() == std::string("{\"testFieldInt\":42,\"testComplexField\":{\"testFieldString\":\"qwerty\"}}"));
 
     stringMsg.setTestFieldString("YVRfJvjxqbgvFwS1YvOZXgtj5ffGLS7AiNHz9oZIoKbm7z8H79xBuyPkpQXvGoO09OY9xRawx3eOAs9xjoTA1xJhrw28TAcq1CebYlC9WUfQC6hIantaNdyHiKToffi0Zt7la42SRxXZSP4GuxbcZIp53pJnyCwfCy1qdFczT0dmn7h8fpyAdemEavwFeda4d0PApGfSU2jLt39X8kYUBxNM2WgALRBgHdVde87q6Pi5U69TjhMd28W1SFD1DxyogCCrqOct2ZPICoLnrqdF3OdNzjRVLfeyvQ8LgLvRNFR9WfWAyAz79nKgBamd8Ntlvt4Mg35E5gVS2g7AQ7rkm72cBdnW9sCEyGabeXAuH5j4GRbuLT7qBZWDcFLF4SsCdS3WfFGdNHfwaijzykByo71PvFVlTXH2WJWoFvR5FALjBTn7bCdP0pAiSbLCY8Xz2Msc3dBb5Ff9GISPbUpNmUvBdMZMHQvqOmTNXEPpN0b74MDOMQfWJShOo3NkAvMjs");
     test.setTestFieldInt(42);
     test.setTestComplexField(stringMsg);
     result = test.serialize(serializer.get());
-    EXPECT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"testComplexField\":{\"testFieldString\":\"YVRfJvjxqbgvFwS1YvOZXgtj5ffGLS7AiNHz9oZIoKbm7z8H79xBuyPkpQXvGoO09OY9xRawx3eOAs9xjoTA1xJhrw28TAcq1CebYlC9WUfQC6hIantaNdyHiKToffi0Zt7la42SRxXZSP4GuxbcZIp53pJnyCwfCy1qdFczT0dmn7h8fpyAdemEavwFeda4d0PApGfSU2jLt39X8kYUBxNM2WgALRBgHdVde87q6Pi5U69TjhMd28W1SFD1DxyogCCrqOct2ZPICoLnrqdF3OdNzjRVLfeyvQ8LgLvRNFR9WfWAyAz79nKgBamd8Ntlvt4Mg35E5gVS2g7AQ7rkm72cBdnW9sCEyGabeXAuH5j4GRbuLT7qBZWDcFLF4SsCdS3WfFGdNHfwaijzykByo71PvFVlTXH2WJWoFvR5FALjBTn7bCdP0pAiSbLCY8Xz2Msc3dBb5Ff9GISPbUpNmUvBdMZMHQvqOmTNXEPpN0b74MDOMQfWJShOo3NkAvMjs\"},\"testFieldInt\":42}");
+    EXPECT_TRUE(QString::fromUtf8(result).toStdString() == "{\"testComplexField\":{\"testFieldString\":\"YVRfJvjxqbgvFwS1YvOZXgtj5ffGLS7AiNHz9oZIoKbm7z8H79xBuyPkpQXvGoO09OY9xRawx3eOAs9xjoTA1xJhrw28TAcq1CebYlC9WUfQC6hIantaNdyHiKToffi0Zt7la42SRxXZSP4GuxbcZIp53pJnyCwfCy1qdFczT0dmn7h8fpyAdemEavwFeda4d0PApGfSU2jLt39X8kYUBxNM2WgALRBgHdVde87q6Pi5U69TjhMd28W1SFD1DxyogCCrqOct2ZPICoLnrqdF3OdNzjRVLfeyvQ8LgLvRNFR9WfWAyAz79nKgBamd8Ntlvt4Mg35E5gVS2g7AQ7rkm72cBdnW9sCEyGabeXAuH5j4GRbuLT7qBZWDcFLF4SsCdS3WfFGdNHfwaijzykByo71PvFVlTXH2WJWoFvR5FALjBTn7bCdP0pAiSbLCY8Xz2Msc3dBb5Ff9GISPbUpNmUvBdMZMHQvqOmTNXEPpN0b74MDOMQfWJShOo3NkAvMjs\"},\"testFieldInt\":42}"
+                || QString::fromUtf8(result).toStdString() == "{\"testFieldInt\":42,\"testComplexField\":{\"testFieldString\":\"YVRfJvjxqbgvFwS1YvOZXgtj5ffGLS7AiNHz9oZIoKbm7z8H79xBuyPkpQXvGoO09OY9xRawx3eOAs9xjoTA1xJhrw28TAcq1CebYlC9WUfQC6hIantaNdyHiKToffi0Zt7la42SRxXZSP4GuxbcZIp53pJnyCwfCy1qdFczT0dmn7h8fpyAdemEavwFeda4d0PApGfSU2jLt39X8kYUBxNM2WgALRBgHdVde87q6Pi5U69TjhMd28W1SFD1DxyogCCrqOct2ZPICoLnrqdF3OdNzjRVLfeyvQ8LgLvRNFR9WfWAyAz79nKgBamd8Ntlvt4Mg35E5gVS2g7AQ7rkm72cBdnW9sCEyGabeXAuH5j4GRbuLT7qBZWDcFLF4SsCdS3WfFGdNHfwaijzykByo71PvFVlTXH2WJWoFvR5FALjBTn7bCdP0pAiSbLCY8Xz2Msc3dBb5Ff9GISPbUpNmUvBdMZMHQvqOmTNXEPpN0b74MDOMQfWJShOo3NkAvMjs\"}}");
 
     stringMsg.setTestFieldString("qwerty");
     test.setTestFieldInt(-45);
     test.setTestComplexField(stringMsg);
 
     result = test.serialize(serializer.get());
-    EXPECT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":-45}");
+    EXPECT_TRUE(QString::fromUtf8(result).toStdString() == "{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":-45}"
+                || QString::fromUtf8(result).toStdString() == "{\"testFieldInt\":-45,\"testComplexField\":{\"testFieldString\":\"qwerty\"}}");
 }
 
 TEST_F(JsonSerializationTest, RepeatedIntMessageTest)
@@ -416,7 +419,8 @@ TEST_F(JsonSerializationTest, RepeatedComplexMessageTest)
     RepeatedComplexMessage test;
     test.setTestRepeatedComplex({msg, msg, msg});
     QByteArray result = test.serialize(serializer.get());
-    EXPECT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"testRepeatedComplex\":[{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25}]}");
+    EXPECT_TRUE(QString::fromUtf8(result).toStdString() == "{\"testRepeatedComplex\":[{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25}]}"
+                 || QString::fromUtf8(result).toStdString() == "{\"testRepeatedComplex\":[{\"testFieldInt\":25,\"testComplexField\":{\"testFieldString\":\"qwerty\"}},{\"testFieldInt\":25,\"testComplexField\":{\"testFieldString\":\"qwerty\"}},{\"testFieldInt\":25,\"testComplexField\":{\"testFieldString\":\"qwerty\"}}]}");
 
     test.setTestRepeatedComplex({});
     result = test.serialize(serializer.get());
