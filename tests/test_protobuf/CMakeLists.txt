@@ -8,7 +8,8 @@ file(GLOB SOURCES
     deserializationtest.cpp
     serializationcomplexmessagemap.cpp
     converterstest.cpp
-    jsonserializationtest.cpp)
+    jsonserializationtest.cpp
+    jsondeserializationtest.cpp)
 
 add_test_target(TARGET ${TARGET}
     SOURCES ${SOURCES}

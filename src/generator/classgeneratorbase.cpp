@@ -210,7 +210,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
 std::string ClassGeneratorBase::getQmlAliasTypeName(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor)
 {
     if (!field->is_repeated() && !field->is_map()) {
-        switch(field->type()) {
+        switch (field->type()) {
         case FieldDescriptor::TYPE_INT32:
         case FieldDescriptor::TYPE_SFIXED32:
             return "int";

@@ -12,6 +12,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
+find_package(microjson CONFIG REQUIRED)
 
 include(${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
@@ -104,7 +105,7 @@ target_compile_features(${TARGET} PUBLIC cxx_std_14
                                          cxx_lambdas
                                          cxx_func_identifier)
 
-target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml)
+target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml PRIVATE microjson)
 
 add_library(${QT_PROTOBUF_PROJECT}::${TARGET} ALIAS ${TARGET})
 

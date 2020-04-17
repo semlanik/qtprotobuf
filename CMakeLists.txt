@@ -13,6 +13,13 @@ set(QT_PROTOBUF_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
+
+if(NOT EXISTS "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson/CMakeLists.txt")
+    message(FATAL_ERROR "microjson is not found. Please initialize microjson module: git submodule init 3rdparty/microjson")
+else()
+    add_subdirectory("${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson")
+endif()
+
 if(Qt5Core_VERSION VERSION_LESS "5.12.4")
     # grpc target requires QT version not less than 5.12.4
     # earlier versions Http2DirectAttribute is broken: https://doc.qt.io/qt-5/whatsnew511.html

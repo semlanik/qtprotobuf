@@ -121,6 +121,14 @@ public:
     bool operator !=(const QByteArray::const_iterator &other) const {
         return other != m_it;
     }
+
+    const char *data() const {
+        return m_it;
+    }
+
+    int size() const {
+        return m_sizeLeft;
+    }
 private:
     int m_sizeLeft;
     int m_containerSize;

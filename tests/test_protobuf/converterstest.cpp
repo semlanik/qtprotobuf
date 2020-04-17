@@ -31,16 +31,16 @@
 namespace QtProtobuf {
 namespace tests {
 
-class CoverterTest : public ::testing::Test
+class ConverterTest : public ::testing::Test
 {
 public:
-    CoverterTest() = default;
+    ConverterTest() = default;
     static void SetUpTestCase() {
         QtProtobuf::qRegisterProtobufTypes();
     }
 };
 
-TEST_F(CoverterTest, TestFromTypeConverters)
+TEST_F(ConverterTest, TestFromTypeConverters)
 {
     QVariant testVariant;
 
@@ -63,7 +63,7 @@ TEST_F(CoverterTest, TestFromTypeConverters)
     ASSERT_EQ(47, testVariant.value<int64>()._t);
 }
 
-TEST_F(CoverterTest, TestToTypeConverters)
+TEST_F(ConverterTest, TestToTypeConverters)
 {
     bool ok = false;
     QVariant testVariant;

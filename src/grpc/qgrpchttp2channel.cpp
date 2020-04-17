@@ -342,7 +342,7 @@ void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString
         QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
 
         qProtoWarning() << subscription->method() << "call" << service << "subscription finished: " << errorString;
-        switch(networkError) {
+        switch (networkError) {
         case QNetworkReply::RemoteHostClosedError:
             qProtoDebug() << "Remote server closed connection. Reconnect silently";
             subscribe(subscription, service, client);
