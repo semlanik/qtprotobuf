@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2020 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -26,6 +26,10 @@
 #include "qprotobufjsonserializer.h"
 #include "qprotobufmetaobject.h"
 #include "qprotobufmetaproperty.h"
+#include "qtprotobuflogging.h"
+
+#include <microjson.h>
+
 #include <QMetaProperty>
 
 using namespace QtProtobuf;
@@ -38,7 +42,7 @@ class QProtobufJsonSerializerPrivate final
     Q_DISABLE_COPY_MOVE(QProtobufJsonSerializerPrivate)
 public:
     using Serializer = std::function<QByteArray(const QVariant&)>;
-    using Deserializer = std::function<void(void)>;
+    using Deserializer = std::function<QVariant(QByteArray)>;
 
     struct SerializationHandlers {
         Serializer serializer; /*!< serializer assigned to class */
@@ -117,25 +121,37 @@ public:
         return result;
     }
 
-    QProtobufJsonSerializerPrivate(QProtobufJsonSerializer *q) : q_ptr(q) {
+    QProtobufJsonSerializerPrivate(QProtobufJsonSerializer *q) : qPtr(q) {
         if (handlers.empty()) {
-            handlers[QMetaType::Float] = {QProtobufJsonSerializerPrivate::serializeFloat, []{}};
-            handlers[QMetaType::QString] = {QProtobufJsonSerializerPrivate::serializeString, []{}};
-            handlers[QMetaType::QByteArray] = {QProtobufJsonSerializerPrivate::serializeBytes, []{}};
-            handlers[qMetaTypeId<QtProtobuf::int32List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::int32List>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::int64List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::int64List>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::sint32List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::sint32List>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::sint64List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::sint64List>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::uint32List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::uint32List>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::uint64List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::uint64List>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::fixed32List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::fixed32List>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::fixed64List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::fixed64List>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::sfixed32List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::sfixed32List>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::sfixed64List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::sfixed64List>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::FloatList>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::FloatList>, []{}};
-            handlers[qMetaTypeId<QtProtobuf::DoubleList>()] = {QProtobufJsonSerializerPrivate::serializeDoubleList, []{}};
-            handlers[qMetaTypeId<QStringList>()] = {QProtobufJsonSerializerPrivate::serializeStringList,[]{}};
-            handlers[qMetaTypeId<QByteArrayList>()] = {QProtobufJsonSerializerPrivate::serializeBytesList,[]{}};
+            handlers[qMetaTypeId<QtProtobuf::int32>()] = {{}, QProtobufJsonSerializerPrivate::deserializeInt32};
+            handlers[qMetaTypeId<QtProtobuf::sfixed32>()] = {{}, QProtobufJsonSerializerPrivate::deserializeInt32};
+            handlers[qMetaTypeId<QtProtobuf::sint32>()] = {{}, QProtobufJsonSerializerPrivate::deserializeInt32};
+            handlers[qMetaTypeId<QtProtobuf::sint64>()] = {{}, QProtobufJsonSerializerPrivate::deserializeInt64};
+            handlers[qMetaTypeId<QtProtobuf::int64>()] = {{}, QProtobufJsonSerializerPrivate::deserializeInt64};
+            handlers[qMetaTypeId<QtProtobuf::sfixed64>()] = {{}, QProtobufJsonSerializerPrivate::deserializeInt64};
+            handlers[qMetaTypeId<QtProtobuf::uint32>()] = {{}, QProtobufJsonSerializerPrivate::deserializeUInt32};
+            handlers[qMetaTypeId<QtProtobuf::fixed32>()] = {{}, QProtobufJsonSerializerPrivate::deserializeUInt32};
+            handlers[qMetaTypeId<QtProtobuf::uint64>()] = {{}, QProtobufJsonSerializerPrivate::deserializeUInt64};
+            handlers[qMetaTypeId<QtProtobuf::fixed64>()] = {{}, QProtobufJsonSerializerPrivate::deserializeUInt64};
+            handlers[qMetaTypeId<bool>()] = {{}, QProtobufJsonSerializerPrivate::deserializeBool};
+            handlers[QMetaType::Float] = {QProtobufJsonSerializerPrivate::serializeFloat, QProtobufJsonSerializerPrivate::deserializeFloat};
+            handlers[QMetaType::Double] = {{}, QProtobufJsonSerializerPrivate::deserializeDouble};
+            handlers[QMetaType::QString] = {QProtobufJsonSerializerPrivate::serializeString, QProtobufJsonSerializerPrivate::deserializeString};
+            handlers[QMetaType::QByteArray] = {QProtobufJsonSerializerPrivate::serializeBytes, QProtobufJsonSerializerPrivate::deserializeByteArray};
+            handlers[qMetaTypeId<QtProtobuf::int32List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::int32List>, QProtobufJsonSerializerPrivate::deserializeList<QtProtobuf::int32>};
+            handlers[qMetaTypeId<QtProtobuf::int64List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::int64List>, QProtobufJsonSerializerPrivate::deserializeList<QtProtobuf::int64>};
+            handlers[qMetaTypeId<QtProtobuf::sint32List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::sint32List>, QProtobufJsonSerializerPrivate::deserializeList<QtProtobuf::sint32>};
+            handlers[qMetaTypeId<QtProtobuf::sint64List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::sint64List>, QProtobufJsonSerializerPrivate::deserializeList<QtProtobuf::sint64>};
+            handlers[qMetaTypeId<QtProtobuf::uint32List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::uint32List>, QProtobufJsonSerializerPrivate::deserializeList<QtProtobuf::uint32>};
+            handlers[qMetaTypeId<QtProtobuf::uint64List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::uint64List>, QProtobufJsonSerializerPrivate::deserializeList<QtProtobuf::uint64>};
+            handlers[qMetaTypeId<QtProtobuf::fixed32List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::fixed32List>, QProtobufJsonSerializerPrivate::deserializeList<QtProtobuf::fixed32>};
+            handlers[qMetaTypeId<QtProtobuf::fixed64List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::fixed64List>, QProtobufJsonSerializerPrivate::deserializeList<QtProtobuf::fixed64>};
+            handlers[qMetaTypeId<QtProtobuf::sfixed32List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::sfixed32List>, QProtobufJsonSerializerPrivate::deserializeList<QtProtobuf::sfixed32>};
+            handlers[qMetaTypeId<QtProtobuf::sfixed64List>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::sfixed64List>, QProtobufJsonSerializerPrivate::deserializeList<QtProtobuf::sfixed64>};
+            handlers[qMetaTypeId<QtProtobuf::FloatList>()] = {QProtobufJsonSerializerPrivate::serializeList<QtProtobuf::FloatList>, QProtobufJsonSerializerPrivate::deserializeList<float>};
+            handlers[qMetaTypeId<QtProtobuf::DoubleList>()] = {QProtobufJsonSerializerPrivate::serializeDoubleList, QProtobufJsonSerializerPrivate::deserializeList<double>};
+            handlers[qMetaTypeId<QStringList>()] = {QProtobufJsonSerializerPrivate::serializeStringList, QProtobufJsonSerializerPrivate::deserializeStringList};
+            handlers[qMetaTypeId<QByteArrayList>()] = {QProtobufJsonSerializerPrivate::serializeBytesList, QProtobufJsonSerializerPrivate::deserializeList<QByteArray>};
         }
     }
     ~QProtobufJsonSerializerPrivate() = default;
@@ -145,10 +161,10 @@ public:
         auto userType = propertyValue.userType();
         auto &value = QtProtobufPrivate::findHandler(userType);
         if (value.serializer) {
-            value.serializer(q_ptr, propertyValue, metaProperty, buffer);
+            value.serializer(qPtr, propertyValue, metaProperty, buffer);
         } else {
             auto handler = handlers.find(userType);
-            if (handler != handlers.end()) {
+            if (handler != handlers.end() && handler->second.serializer) {
                 buffer += handler->second.serializer(propertyValue);
             } else {
                 buffer += propertyValue.toString().toUtf8();
@@ -178,9 +194,97 @@ public:
         return result;
     }
 
+    static QVariant deserializeInt32(const QByteArray &data) {
+        return QVariant::fromValue(data.toInt());
+    }
+
+    static QVariant deserializeUInt32(const QByteArray &data) {
+        return QVariant::fromValue(data.toUInt());
+    }
+
+    static QVariant deserializeInt64(const QByteArray &data) {
+        return QVariant::fromValue(data.toLongLong());
+    }
+
+    static QVariant deserializeUInt64(const QByteArray &data) {
+        return QVariant::fromValue(data.toULongLong());
+    }
+
+    static QVariant deserializeFloat(const QByteArray &data) {
+        return QVariant::fromValue(data.toFloat());
+    }
+
+    static QVariant deserializeDouble(const QByteArray &data) {
+        return QVariant::fromValue(data.toDouble());
+    }
+
+    static QVariant deserializeBool(const QByteArray &data) {
+        return QVariant::fromValue(QString::fromUtf8(data));
+    }
+
+    static QVariant deserializeString(const QByteArray &data) {
+        return QVariant::fromValue(QString::fromUtf8(data).replace("\\\"", "\""));
+    }
+
+    static QVariant deserializeByteArray(const QByteArray &data) {
+        return QVariant::fromValue(QByteArray::fromBase64(data));
+    }
+
+    template<typename T>
+    static QVariant deserializeList(const QByteArray &data) {
+        QList<T> list;
+        auto arrayValues = microjson::parseJsonArray(data.data(), static_cast<size_t>(data.size()));
+        auto handler = handlers.find(qMetaTypeId<T>());
+        if (handler == handlers.end() || !handler->second.deserializer) {
+            qProtoWarning() << "Unable to deserialize simple type list. Could not find desrializer for type" << qMetaTypeId<T>();
+            return QVariant::fromValue(list);
+        }
+
+        for (auto &arrayValue : arrayValues) {
+            QVariant newValue = handler->second.deserializer(QByteArray::fromStdString(arrayValue.value));
+            list.append(newValue.value<T>());
+        }
+        return QVariant::fromValue(list);
+    }
+
+    static QVariant deserializeStringList(const QByteArray &data) {
+        QStringList list;
+        auto arrayValues = microjson::parseJsonArray(data.data(), static_cast<size_t>(data.size()));
+        for (auto &arrayValue : arrayValues) {
+            QVariant newValue = deserializeString(QByteArray::fromStdString(arrayValue.value));
+            list.append(newValue.value<QString>());
+        }
+        return QVariant::fromValue(list);
+    }
+
+    void deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, const char *data, int size) {
+        microjson::JsonObject obj = microjson::parseJsonObject(data, static_cast<size_t>(size));
+
+        for (auto &property : obj) {
+            auto name = property.first;
+            int propertyIndex = metaObject.staticMetaObject.indexOfProperty(name.data());
+            if (propertyIndex >= 0) {
+                QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
+                auto userType = metaProperty.userType();
+                auto &handler = QtProtobufPrivate::findHandler(userType);
+                QByteArray value = QByteArray::fromStdString(property.second.value);
+                if (handler.deserializer) {
+                    QVariant newValue;
+                    QtProtobuf::QProtobufSelfcheckIterator it(value);
+                    handler.deserializer(qPtr, it, newValue);
+                    object->setProperty(name.c_str(), newValue);
+                } else {
+                    auto handler = handlers.find(metaProperty.userType());
+                    if (handler != handlers.end() && handler->second.deserializer) {
+                        object->setProperty(name.c_str(), handler->second.deserializer(value));
+                    }
+                }
+            }
+        }
+    }
 private:
     static SerializerRegistry handlers;
-    QProtobufJsonSerializer *q_ptr;
+    QProtobufJsonSerializer *qPtr;
 };
 
 QProtobufJsonSerializerPrivate::SerializerRegistry QProtobufJsonSerializerPrivate::handlers = {};
@@ -201,9 +305,7 @@ QByteArray QProtobufJsonSerializer::serializeMessage(const QObject *object, cons
 
 void QProtobufJsonSerializer::deserializeMessage(QObject *object, const QProtobufMetaObject &metaObject, const QByteArray &data) const
 {
-    Q_UNUSED(object)
-    Q_UNUSED(data)
-    Q_UNUSED(metaObject)
+    dPtr->deserializeObject(object, metaObject, data.data(), data.size());
 }
 
 QByteArray QProtobufJsonSerializer::serializeObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &/*metaProperty*/) const
@@ -213,9 +315,7 @@ QByteArray QProtobufJsonSerializer::serializeObject(const QObject *object, const
 
 void QProtobufJsonSerializer::deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
 {
-    Q_UNUSED(object)
-    Q_UNUSED(it)
-    Q_UNUSED(metaObject)
+    dPtr->deserializeObject(object, metaObject, it.data(), it.size());
 }
 
 QByteArray QProtobufJsonSerializer::serializeListBegin(const QProtobufMetaProperty &/*metaProperty*/) const
@@ -225,7 +325,7 @@ QByteArray QProtobufJsonSerializer::serializeListBegin(const QProtobufMetaProper
 
 QByteArray QProtobufJsonSerializer::serializeListObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &/*metaProperty*/) const
 {
-    return dPtr->serializeObject(object, metaObject)+",";
+    return dPtr->serializeObject(object, metaObject) + ",";
 }
 
 QByteArray QProtobufJsonSerializer::serializeListEnd(QByteArray &buffer, const QProtobufMetaProperty &/*metaProperty*/) const
