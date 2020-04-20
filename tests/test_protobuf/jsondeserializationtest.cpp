@@ -388,6 +388,28 @@ TEST_F(JsonDeserializationTest, BoolMessageSerializeTest)
     EXPECT_FALSE(test.testFieldBool());
 }
 
+TEST_F(JsonDeserializationTest, SimpleEnumMessageSerializeTest)
+{
+    SimpleEnumMessage test;
+    test.deserialize(serializer.get(), "{\"localEnum\":\"LOCAL_ENUM_VALUE2\"}");
+    EXPECT_EQ(test.localEnum(), SimpleEnumMessage::LOCAL_ENUM_VALUE2);
+}
+
+
+TEST_F(JsonDeserializationTest, SimpleEnumListMessageTest)
+{
+    SimpleEnumListMessage test;
+    test.deserialize(serializer.get(), "{\"localEnumList\":[\"LOCAL_ENUM_VALUE0\",\"LOCAL_ENUM_VALUE1\",\"LOCAL_ENUM_VALUE2\",\"LOCAL_ENUM_VALUE1\",\"LOCAL_ENUM_VALUE2\",\"LOCAL_ENUM_VALUE3\"]}");
+    EXPECT_TRUE(test.localEnumList() == SimpleEnumListMessage::LocalEnumRepeated({SimpleEnumListMessage::LOCAL_ENUM_VALUE0,
+                                       SimpleEnumListMessage::LOCAL_ENUM_VALUE1,
+                                       SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
+                                       SimpleEnumListMessage::LOCAL_ENUM_VALUE1,
+                                       SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
+                                       SimpleEnumListMessage::LOCAL_ENUM_VALUE3}));
+    test.deserialize(serializer.get(), "{\"localEnumList\":[]}");
+    EXPECT_TRUE(test.localEnumList().isEmpty());
+}
+
 //TEST_F(JsonDeserializationTest, RepeatedComplexMessageTest)
 //{
 //    SimpleStringMessage stringMsg;
@@ -404,32 +426,6 @@ TEST_F(JsonDeserializationTest, BoolMessageSerializeTest)
 //    test.setTestRepeatedComplex({});
 //    result = test.serialize(serializer.get());
 //    EXPECT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"testRepeatedComplex\":[]}");
-//}
-
-//TEST_F(JsonDeserializationTest, SimpleEnumMessageSerializeTest)
-//{
-//    SimpleEnumMessage test;
-//    test.setLocalEnum(SimpleEnumMessage::LOCAL_ENUM_VALUE2);
-//    QByteArray result = test.serialize(serializer.get());
-//    EXPECT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"localEnum\":\"LOCAL_ENUM_VALUE2\"}");
-//}
-
-
-//TEST_F(JsonDeserializationTest, SimpleEnumListMessageTest)
-//{
-//    SimpleEnumListMessage msg;
-
-//    msg.setLocalEnumList({SimpleEnumListMessage::LOCAL_ENUM_VALUE0,
-//                          SimpleEnumListMessage::LOCAL_ENUM_VALUE1,
-//                          SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
-//                          SimpleEnumListMessage::LOCAL_ENUM_VALUE1,
-//                          SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
-//                          SimpleEnumListMessage::LOCAL_ENUM_VALUE3});
-//    QByteArray result = msg.serialize(serializer.get());
-//    EXPECT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"localEnumList\":[\"LOCAL_ENUM_VALUE0\",\"LOCAL_ENUM_VALUE1\",\"LOCAL_ENUM_VALUE2\",\"LOCAL_ENUM_VALUE1\",\"LOCAL_ENUM_VALUE2\",\"LOCAL_ENUM_VALUE3\"]}");
-//    msg.setLocalEnumList({});
-//    result = msg.serialize(serializer.get());
-//    EXPECT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"localEnumList\":[]}");
 //}
 
 //TEST_F(JsonDeserializationTest, SimpleFixed32StringMapSerializeTest)
