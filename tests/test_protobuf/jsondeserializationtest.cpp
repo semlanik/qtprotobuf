@@ -410,23 +410,21 @@ TEST_F(JsonDeserializationTest, SimpleEnumListMessageTest)
     EXPECT_TRUE(test.localEnumList().isEmpty());
 }
 
-//TEST_F(JsonDeserializationTest, RepeatedComplexMessageTest)
-//{
-//    SimpleStringMessage stringMsg;
-//    stringMsg.setTestFieldString("qwerty");
-//    QSharedPointer<ComplexMessage> msg(new ComplexMessage);
-//    msg->setTestFieldInt(25);
-//    msg->setTestComplexField(stringMsg);
-//    RepeatedComplexMessage test;
-//    test.setTestRepeatedComplex({msg, msg, msg});
-//    QByteArray result = test.serialize(serializer.get());
-//    EXPECT_TRUE(QString::fromUtf8(result).toStdString() == "{\"testRepeatedComplex\":[{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25}]}"
-//                 || QString::fromUtf8(result).toStdString() == "{\"testRepeatedComplex\":[{\"testFieldInt\":25,\"testComplexField\":{\"testFieldString\":\"qwerty\"}},{\"testFieldInt\":25,\"testComplexField\":{\"testFieldString\":\"qwerty\"}},{\"testFieldInt\":25,\"testComplexField\":{\"testFieldString\":\"qwerty\"}}]}");
+TEST_F(JsonDeserializationTest, RepeatedComplexMessageTest)
+{
+    RepeatedComplexMessage test;
+    test.deserialize(serializer.get(), "{\"testRepeatedComplex\":[{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25}]}");
+    ASSERT_EQ(test.testRepeatedComplex().size(), 3);
+    EXPECT_EQ(test.testRepeatedComplex()[0]->testFieldInt(), 25);
+    EXPECT_EQ(test.testRepeatedComplex()[1]->testFieldInt(), 25);
+    EXPECT_EQ(test.testRepeatedComplex()[2]->testFieldInt(), 25);
+    EXPECT_STREQ(test.testRepeatedComplex()[0]->testComplexField().testFieldString().toStdString().c_str(), "qwerty");
+    EXPECT_STREQ(test.testRepeatedComplex()[1]->testComplexField().testFieldString().toStdString().c_str(), "qwerty");
+    EXPECT_STREQ(test.testRepeatedComplex()[2]->testComplexField().testFieldString().toStdString().c_str(), "qwerty");
 
-//    test.setTestRepeatedComplex({});
-//    result = test.serialize(serializer.get());
-//    EXPECT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"testRepeatedComplex\":[]}");
-//}
+    test.deserialize(serializer.get(), "{\"testRepeatedComplex\":[]}");
+    EXPECT_TRUE(test.testRepeatedComplex().isEmpty());
+}
 
 //TEST_F(JsonDeserializationTest, SimpleFixed32StringMapSerializeTest)
 //{
