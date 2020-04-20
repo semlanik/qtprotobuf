@@ -389,14 +389,14 @@ QByteArray QProtobufJsonSerializer::serializeEnumList(const QList<int64> &values
 
 void QProtobufJsonSerializer::deserializeEnum(int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const
 {
-    Q_UNUSED(value)
-    Q_UNUSED(metaEnum)
-    Q_UNUSED(it)
+    value = metaEnum.keyToValue(it.data());
 }
 
 void QProtobufJsonSerializer::deserializeEnumList(QList<int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const
 {
-    Q_UNUSED(value)
-    Q_UNUSED(metaEnum)
-    Q_UNUSED(it)
+    auto arrayValues = microjson::parseJsonArray(it.data(), static_cast<size_t>(it.size()));
+
+    for (auto &arrayValue : arrayValues) {
+        value.append(metaEnum.keyToValue(arrayValue.value.c_str()));
+    }
 }
