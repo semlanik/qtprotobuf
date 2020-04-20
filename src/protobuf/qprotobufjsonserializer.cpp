@@ -270,8 +270,24 @@ public:
                 QByteArray value = QByteArray::fromStdString(property.second.value);
                 if (handler.deserializer) {
                     QVariant newValue;
-                    QtProtobuf::QProtobufSelfcheckIterator it(value);
-                    handler.deserializer(qPtr, it, newValue);
+                    if (property.second.type == microjson::JsonArrayType) {
+                        microjson::JsonArray arrayValues = microjson::parseJsonArray(property.second.value.data(), property.second.value.size());
+                        if (arrayValues.size() > 0) {
+                            if (arrayValues[0].type == microjson::JsonObjectType) {
+                                for (auto &arrayValue : arrayValues) {
+                                    QByteArray arrayBuffer = QByteArray::fromStdString(arrayValue.value);
+                                    QtProtobuf::QProtobufSelfcheckIterator it(arrayBuffer);
+                                    handler.deserializer(qPtr, it, newValue);
+                                }
+                            } else {
+                                QtProtobuf::QProtobufSelfcheckIterator it(value);
+                                handler.deserializer(qPtr, it, newValue);
+                            }
+                        }
+                    } else {
+                        QtProtobuf::QProtobufSelfcheckIterator it(value);
+                        handler.deserializer(qPtr, it, newValue);
+                    }
                     object->setProperty(name.c_str(), newValue);
                 } else {
                     auto handler = handlers.find(metaProperty.userType());
@@ -338,9 +354,7 @@ QByteArray QProtobufJsonSerializer::serializeListEnd(QByteArray &buffer, const Q
 
 void QProtobufJsonSerializer::deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
 {
-    Q_UNUSED(object)
-    Q_UNUSED(it)
-    Q_UNUSED(metaObject)
+    dPtr->deserializeObject(object, metaObject, it.data(), it.size());
 }
 
 QByteArray QProtobufJsonSerializer::serializeMapBegin(const QProtobufMetaProperty &/*metaProperty*/) const
