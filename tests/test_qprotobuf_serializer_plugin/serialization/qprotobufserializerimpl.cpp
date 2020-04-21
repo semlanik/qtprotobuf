@@ -78,11 +78,12 @@ QByteArray QProtobufSerializerImpl::serializeListObject(const QObject *object,
     return serializeObject(object, metaObject, metaProperty);
 }
 
-void QProtobufSerializerImpl::deserializeListObject(QObject *object,
+bool QProtobufSerializerImpl::deserializeListObject(QObject *object,
                                                     const QtProtobuf::QProtobufMetaObject &metaObject,
                                                     QtProtobuf::QProtobufSelfcheckIterator &it) const
 {
     deserializeObject(object, metaObject, it);
+    return true;
 }
 
 QByteArray QProtobufSerializerImpl::serializeMapPair(const QVariant &key,
@@ -95,13 +96,14 @@ QByteArray QProtobufSerializerImpl::serializeMapPair(const QVariant &key,
     return QByteArray();
 }
 
-void QProtobufSerializerImpl::deserializeMapPair(QVariant &key,
+bool QProtobufSerializerImpl::deserializeMapPair(QVariant &key,
                                                  QVariant &value,
                                                  QtProtobuf::QProtobufSelfcheckIterator &it) const
 {
     Q_UNUSED(value)
     Q_UNUSED(it)
     Q_UNUSED(key)
+    return true;
 }
 
 QByteArray QProtobufSerializerImpl::serializeEnum(QtProtobuf::int64 value,

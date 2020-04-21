@@ -180,7 +180,7 @@ public:
      *        property value and write new property to \a object
      * \param[in] it Pointer to beging of buffer where object serialized data is located
      */
-    virtual void deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const = 0;
+    virtual bool deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const = 0;
 
     /*!
      * \brief serializeMapEnd Method called at the begining of map serialization
@@ -224,7 +224,7 @@ public:
      *
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
      */
-    virtual void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const = 0;
+    virtual bool deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const = 0;
 
     /*!
      * \brief serializeEnum Serializes enum value represented as int64 type

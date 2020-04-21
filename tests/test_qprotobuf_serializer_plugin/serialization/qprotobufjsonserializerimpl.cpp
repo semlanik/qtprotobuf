@@ -76,13 +76,14 @@ QByteArray QProtobufJsonSerializerImpl::serializeListObject(const QObject *objec
     return QByteArray();
 }
 
-void QProtobufJsonSerializerImpl::deserializeListObject(QObject *object,
+bool QProtobufJsonSerializerImpl::deserializeListObject(QObject *object,
                                                         const QtProtobuf::QProtobufMetaObject &metaObject,
                                                         QtProtobuf::QProtobufSelfcheckIterator &it) const
 {
     Q_UNUSED(object)
     Q_UNUSED(it)
     Q_UNUSED(metaObject)
+    return true;
 }
 
 QByteArray QProtobufJsonSerializerImpl::serializeMapPair(const QVariant &key, const QVariant &value,
@@ -94,12 +95,13 @@ QByteArray QProtobufJsonSerializerImpl::serializeMapPair(const QVariant &key, co
     return QByteArray();
 }
 
-void QProtobufJsonSerializerImpl::deserializeMapPair(QVariant &key, QVariant &value,
+bool QProtobufJsonSerializerImpl::deserializeMapPair(QVariant &key, QVariant &value,
                                                      QtProtobuf::QProtobufSelfcheckIterator &it) const
 {
     Q_UNUSED(key)
     Q_UNUSED(value)
     Q_UNUSED(it)
+    return true;
 }
 
 QByteArray QProtobufJsonSerializerImpl::serializeEnum(QtProtobuf::int64 value,
