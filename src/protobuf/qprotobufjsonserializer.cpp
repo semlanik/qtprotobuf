@@ -257,6 +257,26 @@ public:
         return QVariant::fromValue(list);
     }
 
+    QVariant deserializeValue(int type, const QByteArray &data, microjson::JsonType jsonType) {
+        QVariant newValue;
+        auto &handler = QtProtobufPrivate::findHandler(type);
+        if (handler.deserializer) {
+            QtProtobuf::QProtobufSelfcheckIterator it(data);
+            QtProtobuf::QProtobufSelfcheckIterator last = it;
+            last += it.size();
+            while(it != last) {
+                handler.deserializer(qPtr, it, newValue);
+                qDebug() << "newValue" << newValue;
+            }
+        } else {
+            auto handler = handlers.find(type);
+            if (handler != handlers.end() && handler->second.deserializer) {
+                newValue = handler->second.deserializer(data);
+            }
+        }
+        return newValue;
+    }
+
     void deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, const char *data, int size) {
         microjson::JsonObject obj = microjson::parseJsonObject(data, static_cast<size_t>(size));
 
@@ -266,35 +286,8 @@ public:
             if (propertyIndex >= 0) {
                 QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
                 auto userType = metaProperty.userType();
-                auto &handler = QtProtobufPrivate::findHandler(userType);
                 QByteArray value = QByteArray::fromStdString(property.second.value);
-                if (handler.deserializer) {
-                    QVariant newValue;
-                    if (property.second.type == microjson::JsonArrayType) {
-                        microjson::JsonArray arrayValues = microjson::parseJsonArray(property.second.value.data(), property.second.value.size());
-                        if (arrayValues.size() > 0) {
-                            if (arrayValues[0].type == microjson::JsonObjectType) {
-                                for (auto &arrayValue : arrayValues) {
-                                    QByteArray arrayBuffer = QByteArray::fromStdString(arrayValue.value);
-                                    QtProtobuf::QProtobufSelfcheckIterator it(arrayBuffer);
-                                    handler.deserializer(qPtr, it, newValue);
-                                }
-                            } else {
-                                QtProtobuf::QProtobufSelfcheckIterator it(value);
-                                handler.deserializer(qPtr, it, newValue);
-                            }
-                        }
-                    } else {
-                        QtProtobuf::QProtobufSelfcheckIterator it(value);
-                        handler.deserializer(qPtr, it, newValue);
-                    }
-                    object->setProperty(name.c_str(), newValue);
-                } else {
-                    auto handler = handlers.find(metaProperty.userType());
-                    if (handler != handlers.end() && handler->second.deserializer) {
-                        object->setProperty(name.c_str(), handler->second.deserializer(value));
-                    }
-                }
+                object->setProperty(name.c_str(), deserializeValue(userType, value, property.second.type));
             }
         }
     }
@@ -332,6 +325,7 @@ QByteArray QProtobufJsonSerializer::serializeObject(const QObject *object, const
 void QProtobufJsonSerializer::deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
 {
     dPtr->deserializeObject(object, metaObject, it.data(), it.size());
+    it += it.size();
 }
 
 QByteArray QProtobufJsonSerializer::serializeListBegin(const QProtobufMetaProperty &/*metaProperty*/) const
@@ -352,9 +346,23 @@ QByteArray QProtobufJsonSerializer::serializeListEnd(QByteArray &buffer, const Q
     return {"]"};
 }
 
-void QProtobufJsonSerializer::deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
+bool QProtobufJsonSerializer::deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
 {
-    dPtr->deserializeObject(object, metaObject, it.data(), it.size());
+    if (*it == '[') {
+        qDebug() << "Begin of list";
+        ++it;
+    }
+
+    size_t i = 0;
+    microjson::JsonProperty property;
+    if (microjson::extractValue(it.data(), static_cast<size_t>(it.size()), i, ']', property)) {
+        dPtr->deserializeObject(object, metaObject, it.data() + property.valueBegin, property.valueSize());
+    } else {
+        it += it.size();
+        return false;
+    }
+    it += i;
+    return true;
 }
 
 QByteArray QProtobufJsonSerializer::serializeMapBegin(const QProtobufMetaProperty &/*metaProperty*/) const
@@ -374,11 +382,24 @@ QByteArray QProtobufJsonSerializer::serializeMapEnd(QByteArray &buffer, const QP
     return {"}"};
 }
 
-void QProtobufJsonSerializer::deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const
+bool QProtobufJsonSerializer::deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const
 {
-    Q_UNUSED(key)
-    Q_UNUSED(value)
-    Q_UNUSED(it)
+    if (*it == '{') {
+        qDebug() << "Begin of map";
+        ++it;
+    }
+
+    size_t i = 0;
+    microjson::JsonProperty property;
+    if (microjson::extractProperty(it.data(), static_cast<size_t>(it.size()), i, '}', property)) {
+        key = dPtr->deserializeValue(key.userType(), QByteArray(it.data() + property.nameBegin, property.nameSize()), microjson::JsonStringType);
+        value = dPtr->deserializeValue(value.userType(), QByteArray(it.data() + property.valueBegin, property.valueSize()), property.type);
+    } else {
+        it += it.size();
+        return false;
+    }
+    it += i;
+    return true;
 }
 
 QByteArray QProtobufJsonSerializer::serializeEnum(int64 value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &/*metaProperty*/) const
@@ -404,6 +425,7 @@ QByteArray QProtobufJsonSerializer::serializeEnumList(const QList<int64> &values
 void QProtobufJsonSerializer::deserializeEnum(int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const
 {
     value = metaEnum.keyToValue(it.data());
+    it += it.size();
 }
 
 void QProtobufJsonSerializer::deserializeEnumList(QList<int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const
@@ -413,4 +435,6 @@ void QProtobufJsonSerializer::deserializeEnumList(QList<int64> &value, const QMe
     for (auto &arrayValue : arrayValues) {
         value.append(metaEnum.keyToValue(arrayValue.value.c_str()));
     }
+
+    it += it.size();
 }

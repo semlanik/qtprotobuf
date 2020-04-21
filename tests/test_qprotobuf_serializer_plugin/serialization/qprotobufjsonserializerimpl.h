@@ -49,10 +49,10 @@ protected:
     void deserializeObject(QObject *object, const QtProtobuf::QProtobufMetaObject &metaObject, QtProtobuf::QProtobufSelfcheckIterator &it) const override;
 
     QByteArray serializeListObject(const QObject *object, const QtProtobuf::QProtobufMetaObject &metaObject, const QtProtobuf::QProtobufMetaProperty &metaProperty) const override;
-    void deserializeListObject(QObject *object, const QtProtobuf::QProtobufMetaObject &metaObject, QtProtobuf::QProtobufSelfcheckIterator &it) const override;
+    bool deserializeListObject(QObject *object, const QtProtobuf::QProtobufMetaObject &metaObject, QtProtobuf::QProtobufSelfcheckIterator &it) const override;
 
     QByteArray serializeMapPair(const QVariant &key, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty) const override;
-    void deserializeMapPair(QVariant &key, QVariant &value, QtProtobuf::QProtobufSelfcheckIterator &it) const override;
+    bool deserializeMapPair(QVariant &key, QVariant &value, QtProtobuf::QProtobufSelfcheckIterator &it) const override;
 
     QByteArray serializeEnum(QtProtobuf::int64 value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const override;
     QByteArray serializeEnumList(const QList<QtProtobuf::int64> &value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const override;

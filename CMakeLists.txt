@@ -17,7 +17,7 @@ find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
 if(NOT EXISTS "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson/CMakeLists.txt")
     message(FATAL_ERROR "microjson is not found. Please initialize microjson module: git submodule init 3rdparty/microjson")
 else()
-    add_subdirectory("${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson")
+    add_subdirectory("${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson" EXCLUDE_FROM_ALL)
 endif()
 
 if(Qt5Core_VERSION VERSION_LESS "5.12.4")

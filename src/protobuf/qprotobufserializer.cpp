@@ -119,9 +119,10 @@ QByteArray QProtobufSerializer::serializeListObject(const QObject *object, const
     return serializeObject(object, metaObject, metaProperty);
 }
 
-void QProtobufSerializer::deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
+bool QProtobufSerializer::deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
 {
     deserializeObject(object, metaObject, it);
+    return true;
 }
 
 QByteArray QProtobufSerializer::serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const
@@ -131,9 +132,10 @@ QByteArray QProtobufSerializer::serializeMapPair(const QVariant &key, const QVar
     return result;
 }
 
-void QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const
+bool QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const
 {
     dPtr->deserializeMapPair(key, value, it);
+    return true;
 }
 
 QByteArray QProtobufSerializer::serializeEnum(int64 value, const QMetaEnum &/*metaEnum*/, const QtProtobuf::QProtobufMetaProperty &metaProperty) const

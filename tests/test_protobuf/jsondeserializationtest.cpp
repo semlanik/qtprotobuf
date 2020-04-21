@@ -413,127 +413,167 @@ TEST_F(JsonDeserializationTest, SimpleEnumListMessageTest)
 TEST_F(JsonDeserializationTest, RepeatedComplexMessageTest)
 {
     RepeatedComplexMessage test;
-    test.deserialize(serializer.get(), "{\"testRepeatedComplex\":[{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25}]}");
+    test.deserialize(serializer.get(), "{\"testRepeatedComplex\":[{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"\"},\"testFieldInt\":25},{\"testComplexField\":{\"testFieldString\":\"qwerty\"},\"testFieldInt\":25}]}");
     ASSERT_EQ(test.testRepeatedComplex().size(), 3);
     EXPECT_EQ(test.testRepeatedComplex()[0]->testFieldInt(), 25);
     EXPECT_EQ(test.testRepeatedComplex()[1]->testFieldInt(), 25);
     EXPECT_EQ(test.testRepeatedComplex()[2]->testFieldInt(), 25);
     EXPECT_STREQ(test.testRepeatedComplex()[0]->testComplexField().testFieldString().toStdString().c_str(), "qwerty");
-    EXPECT_STREQ(test.testRepeatedComplex()[1]->testComplexField().testFieldString().toStdString().c_str(), "qwerty");
+    EXPECT_STREQ(test.testRepeatedComplex()[1]->testComplexField().testFieldString().toStdString().c_str(), "");
     EXPECT_STREQ(test.testRepeatedComplex()[2]->testComplexField().testFieldString().toStdString().c_str(), "qwerty");
 
     test.deserialize(serializer.get(), "{\"testRepeatedComplex\":[]}");
     EXPECT_TRUE(test.testRepeatedComplex().isEmpty());
 }
 
-//TEST_F(JsonDeserializationTest, SimpleFixed32StringMapSerializeTest)
-//{
-//    SimpleFixed32StringMapMessage test;
-//    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
-//    QByteArray result = test.serialize(serializer.get());
+TEST_F(JsonDeserializationTest, SimpleFixed32StringMapSerializeTest)
+{
+    SimpleFixed32StringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\",\"0\":\"\"}}");
 
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
-//}
+    ASSERT_EQ(test.mapField().size(), 4);
+    EXPECT_STREQ(test.mapField()[10].toStdString().c_str(), "ten");
+    EXPECT_STREQ(test.mapField()[42].toStdString().c_str(), "fourty two");
+    EXPECT_STREQ(test.mapField()[15].toStdString().c_str(), "fifteen");
+    EXPECT_STREQ(test.mapField()[0].toStdString().c_str(), "");
+}
 
-//TEST_F(JsonDeserializationTest, SimpleSFixed32StringMapSerializeTest)
-//{
-//    SimpleSFixed32StringMapMessage test;
-//    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
-//    QByteArray result = test.serialize(serializer.get());
+TEST_F(JsonDeserializationTest, SimpleSFixed32StringMapSerializeTest)
+{
+    SimpleSFixed32StringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
 
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
-//}
+    ASSERT_EQ(test.mapField().size(), 3);
+    EXPECT_STREQ(test.mapField()[10].toStdString().c_str(), "ten");
+    EXPECT_STREQ(test.mapField()[-42].toStdString().c_str(), "minus fourty two");
+    EXPECT_STREQ(test.mapField()[15].toStdString().c_str(), "fifteen");
+}
 
-//TEST_F(JsonDeserializationTest, SimpleInt32StringMapSerializeTest)
-//{
-//    SimpleInt32StringMapMessage test;
-//    test.setMapField({{-10, {"minus ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
-//    QByteArray result = test.serialize(serializer.get());
+TEST_F(JsonDeserializationTest, SimpleInt32StringMapSerializeTest)
+{
+    SimpleInt32StringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"-10\":\"minus ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
 
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"-10\":\"minus ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
-//}
+    ASSERT_EQ(test.mapField().size(), 3);
+    EXPECT_STREQ(test.mapField()[-10].toStdString().c_str(), "minus ten");
+    EXPECT_STREQ(test.mapField()[42].toStdString().c_str(), "fourty two");
+    EXPECT_STREQ(test.mapField()[15].toStdString().c_str(), "fifteen");
 
-//TEST_F(JsonDeserializationTest, SimpleSInt32StringMapSerializeTest)
-//{
-//    SimpleSInt32StringMapMessage test;
-//    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
-//    QByteArray result = test.serialize(serializer.get());
+    test.deserialize(serializer.get(), "{\"mapField\":{}}");
+    ASSERT_EQ(test.mapField().size(), 0);
+}
 
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
-//}
+TEST_F(JsonDeserializationTest, SimpleSInt32StringMapSerializeTest)
+{
+    SimpleSInt32StringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
 
-//TEST_F(JsonDeserializationTest, SimpleUInt32StringMapSerializeTest)
-//{
-//    SimpleUInt32StringMapMessage test;
-//    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
-//    QByteArray result = test.serialize(serializer.get());
+    ASSERT_EQ(test.mapField().size(), 3);
+    EXPECT_STREQ(test.mapField()[10].toStdString().c_str(), "ten");
+    EXPECT_STREQ(test.mapField()[-42].toStdString().c_str(), "minus fourty two");
+    EXPECT_STREQ(test.mapField()[15].toStdString().c_str(), "fifteen");
 
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
-//}
+    test.deserialize(serializer.get(), "{\"mapField\":{}}");
+    ASSERT_EQ(test.mapField().size(), 0);
+}
 
-//TEST_F(JsonDeserializationTest, SimpleFixed64StringMapSerializeTest)
-//{
-//    SimpleFixed64StringMapMessage test;
-//    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
-//    QByteArray result = test.serialize(serializer.get());
+TEST_F(JsonDeserializationTest, SimpleUInt32StringMapSerializeTest)
+{
+    SimpleUInt32StringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
 
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
-//}
+    ASSERT_EQ(test.mapField().size(), 3);
+    EXPECT_STREQ(test.mapField()[10].toStdString().c_str(), "ten");
+    EXPECT_STREQ(test.mapField()[42].toStdString().c_str(), "fourty two");
+    EXPECT_STREQ(test.mapField()[15].toStdString().c_str(), "fifteen");
 
-//TEST_F(JsonDeserializationTest, SimpleSFixed64StringMapSerializeTest)
-//{
-//    SimpleSFixed64StringMapMessage test;
-//    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
-//    QByteArray result = test.serialize(serializer.get());
+    test.deserialize(serializer.get(), "{\"mapField\":{}}");
+    ASSERT_EQ(test.mapField().size(), 0);
+}
 
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
-//}
+TEST_F(JsonDeserializationTest, SimpleFixed64StringMapSerializeTest)
+{
+    SimpleFixed64StringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
 
-//TEST_F(JsonDeserializationTest, SimpleInt64StringMapSerializeTest)
-//{
-//    SimpleInt64StringMapMessage test;
-//    test.setMapField({{-10, {"minus ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
-//    QByteArray result = test.serialize(serializer.get());
+    ASSERT_EQ(test.mapField().size(), 3);
+    EXPECT_STREQ(test.mapField()[10].toStdString().c_str(), "ten");
+    EXPECT_STREQ(test.mapField()[42].toStdString().c_str(), "fourty two");
+    EXPECT_STREQ(test.mapField()[15].toStdString().c_str(), "fifteen");
 
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"-10\":\"minus ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
-//}
+    test.deserialize(serializer.get(), "{\"mapField\":{}}");
+    ASSERT_EQ(test.mapField().size(), 0);
+}
 
-//TEST_F(JsonDeserializationTest, SimpleSInt64StringMapSerializeTest)
-//{
-//    SimpleSInt64StringMapMessage test;
-//    test.setMapField({{10, {"ten"}}, {-42, {"minus fourty two"}}, {15, {"fifteen"}}});
-//    QByteArray result = test.serialize(serializer.get());
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
-//}
+TEST_F(JsonDeserializationTest, SimpleSFixed64StringMapSerializeTest)
+{
+    SimpleSFixed64StringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
 
-//TEST_F(JsonDeserializationTest, SimpleUInt64StringMapSerializeTest)
-//{
-//    SimpleUInt64StringMapMessage test;
-//    test.setMapField({{10, {"ten"}}, {42, {"fourty two"}}, {15, {"fifteen"}}});
-//    QByteArray result = test.serialize(serializer.get());
+    ASSERT_EQ(test.mapField().size(), 3);
+    EXPECT_STREQ(test.mapField()[10].toStdString().c_str(), "ten");
+    EXPECT_STREQ(test.mapField()[-42].toStdString().c_str(), "minus fourty two");
+    EXPECT_STREQ(test.mapField()[15].toStdString().c_str(), "fifteen");
 
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"10\":\"ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
-//}
+    test.deserialize(serializer.get(), "{\"mapField\":{}}");
+    ASSERT_EQ(test.mapField().size(), 0);
+}
 
-//TEST_F(JsonDeserializationTest, SimpleStringStringMapSerializeTest)
-//{
-//    SimpleStringStringMapMessage test;
-//    test.setMapField({{"ben", "ten"}, {"what is the answer?", "fourty two"}, {"sweet", "fifteen"}});
-//    QByteArray result = test.serialize(serializer.get());
+TEST_F(JsonDeserializationTest, SimpleInt64StringMapSerializeTest)
+{
+    SimpleInt64StringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"-10\":\"minus ten\",\"15\":\"fifteen\",\"42\":\"fourty two\"}}");
 
-//    ASSERT_STREQ(result.toStdString().c_str(),
-//                 "{\"mapField\":{\"ben\":\"ten\",\"sweet\":\"fifteen\",\"what is the answer?\":\"fourty two\"}}");
-//}
+    ASSERT_EQ(test.mapField().size(), 3);
+    EXPECT_STREQ(test.mapField()[-10].toStdString().c_str(), "minus ten");
+    EXPECT_STREQ(test.mapField()[42].toStdString().c_str(), "fourty two");
+    EXPECT_STREQ(test.mapField()[15].toStdString().c_str(), "fifteen");
+
+    test.deserialize(serializer.get(), "{\"mapField\":{}}");
+    ASSERT_EQ(test.mapField().size(), 0);
+}
+
+TEST_F(JsonDeserializationTest, SimpleSInt64StringMapSerializeTest)
+{
+    SimpleSInt64StringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"-42\":\"minus fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
+
+    ASSERT_EQ(test.mapField().size(), 3);
+    EXPECT_STREQ(test.mapField()[10].toStdString().c_str(), "ten");
+    EXPECT_STREQ(test.mapField()[-42].toStdString().c_str(), "minus fourty two");
+    EXPECT_STREQ(test.mapField()[15].toStdString().c_str(), "fifteen");
+
+    test.deserialize(serializer.get(), "{\"mapField\":{}}");
+    ASSERT_EQ(test.mapField().size(), 0);
+}
+
+TEST_F(JsonDeserializationTest, SimpleUInt64StringMapSerializeTest)
+{
+    SimpleUInt64StringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"42\":\"fourty two\",\"10\":\"ten\",\"15\":\"fifteen\"}}");
+
+    ASSERT_EQ(test.mapField().size(), 3);
+    EXPECT_STREQ(test.mapField()[10].toStdString().c_str(), "ten");
+    EXPECT_STREQ(test.mapField()[42].toStdString().c_str(), "fourty two");
+    EXPECT_STREQ(test.mapField()[15].toStdString().c_str(), "fifteen");
+
+    test.deserialize(serializer.get(), "{\"mapField\":{}}");
+    ASSERT_EQ(test.mapField().size(), 0);
+}
+
+TEST_F(JsonDeserializationTest, SimpleStringStringMapSerializeTest)
+{
+    SimpleStringStringMapMessage test;
+    test.deserialize(serializer.get(), "{\"mapField\":{\"ben\":\"ten\",\"sweet\":\"fifteen\",\"what is the answer?\":\"fourty two\"}}");
+
+    ASSERT_EQ(test.mapField().size(), 3);
+    EXPECT_STREQ(test.mapField()["ben"].toStdString().c_str(), "ten");
+    EXPECT_STREQ(test.mapField()["what is the answer?"].toStdString().c_str(), "fourty two");
+    EXPECT_STREQ(test.mapField()["sweet"].toStdString().c_str(), "fifteen");
+
+    test.deserialize(serializer.get(), "{\"mapField\":{}}");
+    ASSERT_EQ(test.mapField().size(), 0);
+}
 
 }
 }

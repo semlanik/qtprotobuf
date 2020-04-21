@@ -192,9 +192,10 @@ void deserializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, 
 
     V *newValue = new V;
     QList<QSharedPointer<V>> list = previous.value<QList<QSharedPointer<V>>>();
-    serializer->deserializeListObject(newValue, V::protobufMetaObject, it);
-    list.append(QSharedPointer<V>(newValue));
-    previous.setValue(list);
+    if (serializer->deserializeListObject(newValue, V::protobufMetaObject, it)) {
+        list.append(QSharedPointer<V>(newValue));
+        previous.setValue(list);
+    }
 }
 
 /*!
@@ -212,9 +213,10 @@ void deserializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, Q
     QVariant key = QVariant::fromValue<K>(K());
     QVariant value = QVariant::fromValue<V>(V());
 
-    serializer->deserializeMapPair(key, value, it);
-    out[key.value<K>()] = value.value<V>();
-    previous = QVariant::fromValue<QMap<K, V>>(out);
+    if (serializer->deserializeMapPair(key, value, it)) {
+        out[key.value<K>()] = value.value<V>();
+        previous = QVariant::fromValue<QMap<K, V>>(out);
+    }
 }
 
 /*!
@@ -233,9 +235,10 @@ void deserializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, Q
     QVariant key = QVariant::fromValue<K>(K());
     QVariant value = QVariant::fromValue<V *>(nullptr);
 
-    serializer->deserializeMapPair(key, value, it);
-    out[key.value<K>()] = QSharedPointer<V>(value.value<V *>());
-    previous = QVariant::fromValue<QMap<K, QSharedPointer<V>>>(out);
+    if (serializer->deserializeMapPair(key, value, it)) {
+        out[key.value<K>()] = QSharedPointer<V>(value.value<V *>());
+        previous = QVariant::fromValue<QMap<K, QSharedPointer<V>>>(out);
+    }
 }
 
 /*!
