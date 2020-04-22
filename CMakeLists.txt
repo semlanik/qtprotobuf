@@ -14,8 +14,9 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
 
+set(MICROJSON_MAKE_TESTS OFF)
 if(NOT EXISTS "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson/CMakeLists.txt")
-    message(FATAL_ERROR "microjson is not found. Please initialize microjson module: git submodule init 3rdparty/microjson")
+    message(FATAL_ERROR "microjson is not found. Please initialize microjson module: git submodule update --init 3rdparty/microjson")
 else()
     add_subdirectory("${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson" EXCLUDE_FROM_ALL)
 endif()
