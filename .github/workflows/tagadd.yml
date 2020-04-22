@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Init submodules
+      run: git submodule update --init 3rdparty/microjson
     - name: Build release packages on ubuntu and opensuse latest
       id: build_release
       run: |
