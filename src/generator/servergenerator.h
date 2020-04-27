@@ -38,6 +38,11 @@ class Message;
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The ServerGenerator class
+ */
 class ServerGenerator : public ServiceGeneratorBase
 {
     const google::protobuf::ServiceDescriptor *mService;

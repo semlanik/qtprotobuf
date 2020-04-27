@@ -23,6 +23,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "simpletest.pb.h"
+#include "simpletest.qpb.h"
+#include "sequencetest.qpb.h"
+#include "externalpackagetest.qpb.h"
+#include "globalenums.qpb.h"
+#include "globalenumssamenamespace.qpb.h"
 
 #include "./simpletest.cpp.inc"

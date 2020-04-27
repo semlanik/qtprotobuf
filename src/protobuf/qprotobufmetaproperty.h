@@ -30,12 +30,17 @@
 #include "qtprotobufglobal.h"
 
 namespace QtProtobuf {
-
+/*!
+ * \ingroup QtProtobuf
+ * \private
+ * \brief The QProtobufMetaProperty class
+ */
 class Q_PROTOBUF_EXPORT QProtobufMetaProperty : public QMetaProperty
 {
 public:
     QProtobufMetaProperty(const QMetaProperty &, int fieldIndex);
     int protoFieldIndex() const { return m_fieldIndex; }
+    QString protoPropertyName() const;
 private:
     QProtobufMetaProperty();
     int m_fieldIndex;

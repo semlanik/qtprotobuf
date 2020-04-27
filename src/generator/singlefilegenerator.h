@@ -42,6 +42,11 @@ class GeneratorContext;
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The SingleFileGenerator class
+ */
 class SingleFileGenerator : public GeneratorBase
 {
 public:

@@ -1,0 +1,10 @@
+QT.grpc.VERSION = @QT_PROTOBUF_VERSION@
+QT.grpc.name = QtGrpc
+QT.grpc.module = QtGrpc
+QT.grpc.includes = @CMAKE_INSTALL_PREFIX@/@TARGET_INCLUDE_DIR@
+QT.grpc.private_includes =
+QT.grpc.libs = @CMAKE_INSTALL_PREFIX@/@TARGET_LIB_DIR@
+QT.grpc.depends = core network protobuf
+QT.grpc.module_config = @QT_PROTOBUF_EXTRA_CONFIG@
+
+CONFIG += c++14

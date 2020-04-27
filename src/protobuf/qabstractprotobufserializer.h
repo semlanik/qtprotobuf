@@ -43,12 +43,9 @@ namespace QtProtobuf {
 
 class QProtobufMetaProperty;
 class QProtobufMetaObject;
-/*!
-*  \addtogroup QtProtobuf
-*  \{
-*/
 
 /*!
+ * \ingroup QtProtobuf
  * \brief The QAbstractProtobufSerializer class is interface that represents basic functions for serialization/deserialization
  *
  * \details The QAbstractProtobufSerializer class registers serializers/deserializers for classes inherited of QObject.
@@ -65,7 +62,7 @@ class QProtobufMetaObject;
  *          };
  *          \endcode
  *          Practically code above is generated automaticaly by running qtprotobufgenerator or using cmake build macro
- *          generate_qtprotobuf, based on .proto files. But it's still possible to reuse manually written code if needed.
+ *          qtprotobuf_generate, based on .proto files. But it's still possible to reuse manually written code if needed.
  *
  *          This class should be used as base for specific serializers. The handlers property contains all
  *          message-specific serializers and should be used while serialization/deserialization. Inherited classes should reimplement
@@ -146,6 +143,16 @@ public:
     virtual void deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const = 0;
 
     /*!
+     * \brief serializeListBegin Method called at the begining of object list serialization
+     * \param[in] metaProperty Information about property to be serialized
+     * \return Raw serialized data represented as byte array
+     */
+    virtual QByteArray serializeListBegin(const QProtobufMetaProperty &metaProperty) const {
+        Q_UNUSED(metaProperty);
+        return {};
+    }
+
+    /*!
      * \brief serializeListObject Method called to serialize \a object as a part of list property
      * \param[in] object Pointer to object that will be serialized
      * \param[in] metaObject Protobuf meta object information for given \a object
@@ -155,13 +162,35 @@ public:
     virtual QByteArray serializeListObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const = 0;
 
     /*!
+     * \brief serializeListEnd Method called at the end of object list serialization
+     * \param[in] buffer Buffer at and of list serialization
+     * \param[in] metaProperty Information about property to be serialized
+     * \return Raw serialized data represented as byte array
+     */
+    virtual QByteArray serializeListEnd(QByteArray &buffer, const QProtobufMetaProperty &metaProperty) const {
+        Q_UNUSED(metaProperty);
+        Q_UNUSED(buffer);
+        return {};
+    }
+
+    /*!
      * \brief deserializeListObject Deserializes an \a object from byte stream as part of list property
      * \param[out] object Pointer to pre-allocated object, that will be appended to list property
      * \param[in] Protobuf meta object information for given \a object. Static meta object usualy is used to get actual
      *        property value and write new property to \a object
      * \param[in] it Pointer to beging of buffer where object serialized data is located
      */
-    virtual void deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const = 0;
+    virtual bool deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const = 0;
+
+    /*!
+     * \brief serializeMapEnd Method called at the begining of map serialization
+     * \param[in] metaProperty Information about property to be serialized
+     * \return Raw serialized data represented as byte array
+     */
+    virtual QByteArray serializeMapBegin(const QProtobufMetaProperty &metaProperty) const {
+        Q_UNUSED(metaProperty);
+        return {};
+    }
 
     /*!
      * \brief serializeMapPair Serializes QMap pair of \a key and \a value to raw data buffer
@@ -175,6 +204,17 @@ public:
     virtual QByteArray serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const = 0;
 
     /*!
+     * \brief serializeMapEnd Method called at the end of map serialization
+     * \param[in] buffer Buffer at and of list serialization
+     * \param[in] metaProperty Information about property to be serialized
+     * \return Raw serialized data represented as byte array
+     */
+    virtual QByteArray serializeMapEnd(QByteArray &buffer, const QProtobufMetaProperty &metaProperty) const {
+        Q_UNUSED(metaProperty);
+        return {};
+    }
+
+    /*!
      * \brief deserializeMapPair Deserializes QMap pair of \a key and \a value from raw data
      * \param[out] key Buffer that will be used to store deserialized key. When passed to function, QVariant
      *        already stores default constructed value. So it's possible to receive meta information about type from it.
@@ -184,7 +224,7 @@ public:
      *
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
      */
-    virtual void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const = 0;
+    virtual bool deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const = 0;
 
     /*!
      * \brief serializeEnum Serializes enum value represented as int64 type
@@ -231,7 +271,7 @@ public:
 
 /*!
  * \brief Registers serializers for type T in QtProtobuf global serializers registry
- *
+ * \private
  * \details generates default serializers for type T. Type T has to be inherited of QObject.
  */
 template<typename T>
@@ -245,7 +285,7 @@ static void qRegisterProtobufType() {
 
 /*!
  * \brief Registers serializers for type QMap<K, V> in QtProtobuf global serializers registry
- *
+ * \private
  * \details generates default serializers for QMap<K, V>.
  */
 template<typename K, typename V,
@@ -257,7 +297,7 @@ inline void qRegisterProtobufMapType() {
 
 /*!
  * \brief Registers serializers for type QMap<K, V> in QtProtobuf global serializers registry
- *
+ * \private
  * \details generates default serializers for QMap<K, V>. Specialization for V type
  *          inherited of QObject.
  */
@@ -271,7 +311,7 @@ inline void qRegisterProtobufMapType() {
 
 /*!
  * \brief Registers serializers for enumeration type in QtProtobuf global serializers registry
- *
+ * \private
  * \details generates default serializers for enumeration and QList of enumerations.
  */
 template<typename T,

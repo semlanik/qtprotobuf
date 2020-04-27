@@ -23,11 +23,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "testservice_grpc.pb.h"
-//#include "testserviceclient.h"
-#include "qgrpchttp2channel.h"
-//#include "blobmessage.h"
-#include <sslcredentials.h>
+#include "testservice_grpc.qpb.h"
+
+#include <QGrpcHttp2Channel>
+#include <QGrpcSslCredentials>
+#include <QGrpcInsecureCredentials>
 
 #include <QTimer>
 #include <QFile>
@@ -67,7 +67,7 @@ TEST_F(ClientTest, IncorrectSecureCredentialsTest)
     //  conf.setCaCertificates({QSslCertificate(cert)});
 
     TestServiceClient testClient;
-    testClient.attachChannel(std::make_shared<QtProtobuf::QGrpcHttp2Channel>(QUrl("https://localhost:60051", QUrl::StrictMode), QtProtobuf::SslCredentials(conf)));
+    testClient.attachChannel(std::make_shared<QtProtobuf::QGrpcHttp2Channel>(QUrl("https://localhost:60051", QUrl::StrictMode), QtProtobuf::QGrpcInsecureCallCredentials()|QtProtobuf::QGrpcSslCredentials(conf)));
 
     std::unique_ptr<SimpleStringMessage> result = std::make_unique<SimpleStringMessage>();
     EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, result.get()) == QGrpcStatus::Ok);

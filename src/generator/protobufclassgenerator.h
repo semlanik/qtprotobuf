@@ -43,6 +43,11 @@ namespace generator {
 
 using PropertyMap = std::map<std::string, std::string>;
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The ProtobufClassGenerator class
+ */
 class ProtobufClassGenerator : public ClassGeneratorBase
 {
     const ::google::protobuf::Descriptor *mMessage;

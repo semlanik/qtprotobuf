@@ -49,11 +49,17 @@ protected:
     QByteArray serializeObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const override;
     void deserializeObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const override;
 
+    QByteArray serializeListBegin(const QProtobufMetaProperty &metaProperty) const override;
     QByteArray serializeListObject(const QObject *object, const QProtobufMetaObject &metaObject, const QProtobufMetaProperty &metaProperty) const override;
-    void deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const override;
+    QByteArray serializeListEnd(QByteArray &buffer, const QProtobufMetaProperty &metaProperty) const override;
 
+    bool deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const override;
+
+    QByteArray serializeMapBegin(const QProtobufMetaProperty &metaProperty) const override;
     QByteArray serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const override;
-    void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const override;
+    QByteArray serializeMapEnd(QByteArray &buffer, const QProtobufMetaProperty &metaProperty) const override;
+
+    bool deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const override;
 
     QByteArray serializeEnum(int64 value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const override;
     QByteArray serializeEnumList(const QList<int64> &value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const override;
@@ -61,7 +67,7 @@ protected:
     void deserializeEnum(int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const override;
     void deserializeEnumList(QList<int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const override;
 private:
-    std::unique_ptr<QProtobufJsonSerializerPrivate> d_ptr;
+    std::unique_ptr<QProtobufJsonSerializerPrivate> dPtr;
 };
 
 }

@@ -30,6 +30,11 @@
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The ProtobufSourceGenerator class
+ */
 class ProtobufSourceGenerator : public ClassSourceGeneratorBase
 {
     const google::protobuf::Descriptor *mMessage;

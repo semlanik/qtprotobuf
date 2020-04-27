@@ -29,8 +29,6 @@
 
 #include <gtest/gtest.h>
 
-#include "qtprotobuf_global.pb.h"
-
 using namespace qtprotobufnamespace::tests;
 
 namespace QtProtobuf {
@@ -61,9 +59,6 @@ public:
 void SimpleTest::SetUpTestCase()
 {
     QtProtobuf::qRegisterProtobufTypes();
-    qtprotobufnamespace::tests::qRegisterProtobufTypes();
-    qtprotobufnamespace1::externaltests::qRegisterProtobufTypes();
-    qtprotobufnamespace::tests::globalenums::qRegisterProtobufTypes();
 }
 
 TEST_F(SimpleTest, SimpleBoolMessageTest)
@@ -79,7 +74,7 @@ TEST_F(SimpleTest, SimpleBoolMessageTest)
 
 TEST_F(SimpleTest, SimpleIntMessageTest)
 {
-    const char *propertyName = "testFieldInt";
+    const char *propertyName = "testFieldInt_p";
     assertMessagePropertyRegistered<SimpleIntMessage, int32>(1, "QtProtobuf::int32", propertyName);
 
     SimpleIntMessage test;
@@ -145,7 +140,7 @@ TEST_F(SimpleTest, SimpleUInt64MessageTest)
 
 TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
 {
-    const char *propertyName = "testFieldFixedInt32";
+    const char *propertyName = "testFieldFixedInt32_p";
     assertMessagePropertyRegistered<SimpleFixedInt32Message, fixed32>(1, "QtProtobuf::fixed32", propertyName);
 
     SimpleFixedInt32Message test;
@@ -167,7 +162,7 @@ TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
 
 TEST_F(SimpleTest, SimpleSFixedInt32MessageTest)
 {
-    const char *propertyName = "testFieldFixedInt32";
+    const char *propertyName = "testFieldFixedInt32_p";
     assertMessagePropertyRegistered<SimpleSFixedInt32Message, sfixed32>(1, "QtProtobuf::sfixed32", propertyName);
 
     SimpleSFixedInt32Message test;
@@ -270,10 +265,10 @@ TEST_F(SimpleTest, SimpleLocalEnumListTest)
 
 TEST_F(SimpleTest, SimpleExternalEnumMessageTest)
 {
-    using ExternalGlobalEnums = qtprotobufnamespace1::externaltests::GlobalEnums;
+    using ExternalGlobalEnums = qtprotobufnamespace1::externaltests::ExternalTestEnumGadget;
 
     const char *propertyName = "externalEnum";
-    assertMessagePropertyRegistered<SimpleExternalEnumMessage, ExternalGlobalEnums::ExternalTestEnum>(1, "qtprotobufnamespace1::externaltests::GlobalEnums::ExternalTestEnum", propertyName);
+    assertMessagePropertyRegistered<SimpleExternalEnumMessage, ExternalGlobalEnums::ExternalTestEnum>(1, "qtprotobufnamespace1::externaltests::ExternalTestEnumGadget::ExternalTestEnum", propertyName);
 
     SimpleExternalEnumMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<ExternalGlobalEnums::ExternalTestEnum>(ExternalGlobalEnums::EXTERNAL_TEST_ENUM_VALUE4)));
@@ -283,10 +278,10 @@ TEST_F(SimpleTest, SimpleExternalEnumMessageTest)
 
 TEST_F(SimpleTest, SimpleEnumsTest)
 {
-    EXPECT_GT(GlobalEnums::staticMetaObject.enumeratorCount(), 0);
+    EXPECT_GT(TestEnumGadget::staticMetaObject.enumeratorCount(), 0);
     QMetaEnum testEnum;
-    for (int i = 0; i < GlobalEnums::staticMetaObject.enumeratorCount(); i++) {
-        QMetaEnum tmp = GlobalEnums::staticMetaObject.enumerator(i);
+    for (int i = 0; i < TestEnumGadget::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = TestEnumGadget::staticMetaObject.enumerator(i);
         if (QString(tmp.name()) == QString("TestEnum")) {
             testEnum = tmp;
             break;
@@ -305,8 +300,8 @@ TEST_F(SimpleTest, SimpleEnumsTest)
     ASSERT_EQ(testEnum.value(3), 4);
     ASSERT_EQ(testEnum.value(4), 3);
 
-    for (int i = 0; i < GlobalEnums::staticMetaObject.enumeratorCount(); i++) {
-        QMetaEnum tmp = GlobalEnums::staticMetaObject.enumerator(i);
+    for (int i = 0; i < TestEnumSecondInFileGadget::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = TestEnumSecondInFileGadget::staticMetaObject.enumerator(i);
         if (QString(tmp.name()) == QString("TestEnumSecondInFile")) {
             testEnum = tmp;
             break;
@@ -326,16 +321,16 @@ TEST_F(SimpleTest, SimpleEnumsTest)
 TEST_F(SimpleTest, SimpleFileEnumsTest)
 {
     const char *propertyName = "globalEnumList";
-    assertMessagePropertyRegistered<SimpleFileEnumMessage, GlobalEnums::TestEnumRepeated>(2, "qtprotobufnamespace::tests::GlobalEnums::TestEnumRepeated", propertyName);
+    assertMessagePropertyRegistered<SimpleFileEnumMessage, TestEnumGadget::TestEnumRepeated>(2, "qtprotobufnamespace::tests::TestEnumGadget::TestEnumRepeated", propertyName);
 
-    GlobalEnums::TestEnumRepeated value({GlobalEnums::TEST_ENUM_VALUE1,
-                                     GlobalEnums::TEST_ENUM_VALUE3,
-                                     GlobalEnums::TEST_ENUM_VALUE4,
-                                     GlobalEnums::TEST_ENUM_VALUE2,
-                                     GlobalEnums::TEST_ENUM_VALUE1});
+    TestEnumGadget::TestEnumRepeated value{TestEnumGadget::TEST_ENUM_VALUE1,
+                                     TestEnumGadget::TEST_ENUM_VALUE3,
+                                     TestEnumGadget::TEST_ENUM_VALUE4,
+                                     TestEnumGadget::TEST_ENUM_VALUE2,
+                                     TestEnumGadget::TEST_ENUM_VALUE1};
     SimpleFileEnumMessage test;
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<GlobalEnums::TestEnumRepeated>(value)));
-    ASSERT_TRUE(test.property(propertyName).value<GlobalEnums::TestEnumRepeated>() == value);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<TestEnumGadget::TestEnumRepeated>(value)));
+    ASSERT_TRUE(test.property(propertyName).value<TestEnumGadget::TestEnumRepeated>() == value);
     ASSERT_TRUE(test.globalEnumList() == value);
 }
 
@@ -750,6 +745,27 @@ TEST_F(SimpleTest, MoveOperatorTest)
     ASSERT_EQ(3, movedUpdateSpy.count());
 }
 
+TEST_F(SimpleTest, MoveOperatorRepeatedTest)
+{
+    const char *propertyName = "testRepeatedInt";
+    RepeatedIntMessage test;
+    RepeatedIntMessage test2{{55,44,11,33}};
+
+    QSignalSpy updateSpy(&test, &RepeatedIntMessage::testRepeatedIntChanged);
+    QSignalSpy movedUpdateSpy(&test2, &RepeatedIntMessage::testRepeatedIntChanged);
+
+    RepeatedIntMessage test3(std::move(test2));
+    test2.setTestRepeatedInt({55,44,11,35});
+
+    test.setProperty(propertyName, QVariant::fromValue<QtProtobuf::int32List>({55}));
+    test.setTestRepeatedInt({44});
+    test = std::move(test2);
+    ASSERT_EQ(QtProtobuf::int32List({55,44,11,35}), test.testRepeatedInt());
+    ASSERT_TRUE(test2.testRepeatedInt().isEmpty());
+    ASSERT_EQ(3, updateSpy.count());
+    ASSERT_EQ(3, movedUpdateSpy.count());
+}
+
 TEST_F(SimpleTest, UnderscoresTest)
 {
     //Sanity compilation checks
@@ -760,11 +776,11 @@ TEST_F(SimpleTest, UnderscoresTest)
     FollowingMessageUnderscoreField msg5;
     CombinedMessageUnderscoreField msg6;
 
-    assertMessagePropertyRegistered<MessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "underScore_Message_field");
-    assertMessagePropertyRegistered<PriorMessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "_underScoreMessageField");
-    assertMessagePropertyRegistered<PriorMessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "_underScoreMessageField");
-    assertMessagePropertyRegistered<FollowingMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "underScoreMessageField_");
-    assertMessagePropertyRegistered<CombinedMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "_underScoreMessage_Field_");
+    assertMessagePropertyRegistered<MessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "underScoreMessageField");
+    assertMessagePropertyRegistered<PriorMessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "underScoreMessageField");
+    assertMessagePropertyRegistered<PriorMessageUnderscoreField, sint32>(1, "QtProtobuf::sint32", "underScoreMessageField");
+    assertMessagePropertyRegistered<FollowingMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "underScoreMessageField");
+    assertMessagePropertyRegistered<CombinedMessageUnderscoreField , sint32>(1, "QtProtobuf::sint32", "underScoreMessageField");
 }
 
 TEST_F(SimpleTest, SequenceTest)
@@ -782,8 +798,64 @@ TEST_F(SimpleTest, CyclingTest)
 TEST_F(SimpleTest, UpperCaseTest)
 {
     assertMessagePropertyRegistered<MessageUpperCase, sint32>(1, "QtProtobuf::sint32", "testField");
-    assertMessagePropertyRegistered<MessageUpperCase, sint32>(2, "QtProtobuf::sint32", "propertyProto");
-    assertMessagePropertyRegistered<MessageUpperCase, sint32>(3, "QtProtobuf::sint32", "idProto");
+}
+
+TEST_F(SimpleTest, ReservedTest)
+{
+    assertMessagePropertyRegistered<MessageReserved, sint32>(1, "QtProtobuf::sint32", "import_proto");
+    assertMessagePropertyRegistered<MessageReserved, sint32>(2, "QtProtobuf::sint32", "property_proto");
+    assertMessagePropertyRegistered<MessageReserved, sint32>(3, "QtProtobuf::sint32", "id_proto");
+}
+
+TEST_F(SimpleTest, ReservedUpperCaseTest)
+{
+    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(1, "QtProtobuf::sint32", "import_proto");
+    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(2, "QtProtobuf::sint32", "property_proto");
+    assertMessagePropertyRegistered<MessageUpperCaseReserved, sint32>(3, "QtProtobuf::sint32", "id_proto");
+}
+
+TEST_F(SimpleTest, ReservedEnumTest)
+{
+    ASSERT_GT(MessageEnumReserved::staticMetaObject.enumeratorCount(), 0);
+    QMetaEnum simpleEnum;
+    for (int i = 0; i < MessageEnumReserved::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = MessageEnumReserved::staticMetaObject.enumerator(i);
+        if (QString(tmp.name()) == QString("ReservedEnum")) {
+            simpleEnum = tmp;
+            break;
+        }
+    }
+    ASSERT_TRUE(simpleEnum.isValid());
+    ASSERT_STREQ(simpleEnum.key(0), "Import");
+    ASSERT_STREQ(simpleEnum.key(1), "Property");
+    ASSERT_STREQ(simpleEnum.key(2), "Id");
+
+    ASSERT_EQ(simpleEnum.value(0), 0);
+    ASSERT_EQ(simpleEnum.value(1), 1);
+    ASSERT_EQ(simpleEnum.value(2), 2);
+}
+
+TEST_F(SimpleTest, LowerCaseEnumTest)
+{
+    ASSERT_GT(MessageEnumReserved::staticMetaObject.enumeratorCount(), 0);
+    QMetaEnum simpleEnum;
+    for (int i = 0; i < MessageEnumReserved::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = MessageEnumReserved::staticMetaObject.enumerator(i);
+        if (QString(tmp.name()) == QString("LowerCaseEnum")) {
+            simpleEnum = tmp;
+            break;
+        }
+    }
+    ASSERT_TRUE(simpleEnum.isValid());
+    ASSERT_STREQ(simpleEnum.key(0), "EnumValue0");
+    ASSERT_STREQ(simpleEnum.key(1), "EnumValue1");
+    ASSERT_STREQ(simpleEnum.key(2), "EnumValue2");
+}
+
+TEST_F(SimpleTest, MapRepeatedFieldSequenceTest)
+{
+    assertMessagePropertyRegistered<sequence::RepeatedFieldSequence, sequence::RepeatedFieldSequence2Repeated>(1, "RepeatedFieldSequence2Repeated", "testField");
+    assertMessagePropertyRegistered<sequence::MapFieldSequence, sequence::MapFieldSequence::TestFieldEntry>(1, "MapFieldSequence::TestFieldEntry", "testField");
 }
 
 } // tests

@@ -32,6 +32,11 @@
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The Templates class
+ */
 class Templates {
 public:
     static const std::vector<std::string> ListOfQmlExeptions;
@@ -52,7 +57,7 @@ public:
     static const char *ComplexListTypeUsingTemplate;
     static const char *MapTypeUsingTemplate;
     static const char *MessageMapTypeUsingTemplate;
-    static const char *EnumTypeUsingTemplate;
+    static const char *EnumTypeRepeatedTemplate;
     static const char *NamespaceTemplate;
     static const char *UsingNamespaceTemplate;
     static const char *NonProtoClassDefinitionTemplate;
@@ -62,6 +67,8 @@ public:
     static const char *ClassDefinitionTemplate;
     static const char *QObjectMacro;
     static const char *PropertyTemplate;
+    static const char *NonScriptablePropertyTemplate;
+    static const char *NonScriptableAliasPropertyTemplate;
     static const char *MessagePropertyTemplate;
     static const char *QmlListPropertyTemplate;
     static const char *MemberTemplate;
@@ -79,21 +86,27 @@ public:
     static const char *MoveConstructorDeclarationTemplate;
     static const char *CopyConstructorDefinitionTemplate;
     static const char *MoveConstructorDefinitionTemplate;
+    static const char *EmptyCopyConstructorDefinitionTemplate;
+    static const char *EmptyMoveConstructorDefinitionTemplate;
     static const char *DeletedCopyConstructorTemplate;
     static const char *DeletedMoveConstructorTemplate;
     static const char *CopyFieldTemplate;
     static const char *CopyComplexFieldTemplate;
     static const char *MoveMessageFieldTemplate;
     static const char *MoveComplexFieldTemplate;
+    static const char *MoveComplexFieldConstructorTemplate;
     static const char *MoveFieldTemplate;
     static const char *EnumMoveFieldTemplate;
     static const char *AssignmentOperatorDeclarationTemplate;
     static const char *AssignmentOperatorDefinitionTemplate;
+    static const char *EmptyAssignmentOperatorDefinitionTemplate;
     static const char *AssignmentOperatorReturnTemplate;
     static const char *MoveAssignmentOperatorDeclarationTemplate;
     static const char *MoveAssignmentOperatorDefinitionTemplate;
+    static const char *EmptyMoveAssignmentOperatorDefinitionTemplate;
     static const char *EqualOperatorDeclarationTemplate;
     static const char *EqualOperatorDefinitionTemplate;
+    static const char *EmptyEqualOperatorDefinitionTemplate;
     static const char *EqualOperatorPropertyTemplate;
     static const char *EqualOperatorMessagePropertyTemplate;
     static const char *NotEqualOperatorDeclarationTemplate;
@@ -103,6 +116,7 @@ public:
     static const char *GetterMessageDeclarationTemplate;
     static const char *GetterMessageDefinitionTemplate;
     static const char *GetterTemplate;
+    static const char *NonScriptableGetterTemplate;
     static const char *GetterContainerExtraDeclarationTemplate;
     static const char *GetterContainerExtraDefinitionTemplate;
     static const char *GetterQmlListDeclarationTemplate;
@@ -114,7 +128,8 @@ public:
     static const char *SetterTemplateDefinitionMessageType;
     static const char *SetterTemplateDeclarationComplexType;
     static const char *SetterTemplateDefinitionComplexType;
-    static const char *SetterTemplateSimpleType;
+    static const char *SetterTemplate;
+    static const char *NonScriptableSetterTemplate;
     static const char *SignalsBlockTemplate;
     static const char *SignalTemplate;
     static const char *FieldsOrderingContainerTemplate;
@@ -141,7 +156,8 @@ public:
     static const char *MapSerializationRegisterTemplate;
     static const char *RegisterSerializersTemplate;
     static const char *RegisterEnumSerializersTemplate;
-    static const char *RegistratorTemplate;
+    static const char *RegistrarTemplate;
+    static const char *EnumRegistrarTemplate;
     static const char *QmlRegisterTypeTemplate;
     static const char *QmlRegisterTypeUncreatableTemplate;
     //Service templates
@@ -166,9 +182,9 @@ public:
     static const char *ListSuffix;
     static const char *ProtoFileSuffix;
     static const char *GrpcFileSuffix;
+    static const char *EnumClassSuffix;
 
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
-    static const std::string GlobalDeclarationsFilename;
 };
 
 } //namespace generator

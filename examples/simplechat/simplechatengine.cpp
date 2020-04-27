@@ -25,11 +25,11 @@
 
 #include "simplechatengine.h"
 
-#include "simplechat_grpc.pb.h"
+#include "simplechat_grpc.qpb.h"
 
 #include <QGrpcHttp2Channel>
-#include <InsecureCredentials>
-#include <SslCredentials>
+#include <QGrpcUserPasswordCredentials>
+#include <QGrpcSslCredentials>
 
 #include <QDebug>
 #include <QFile>
@@ -44,14 +44,6 @@
 #include <QBuffer>
 
 using namespace qtprotobuf::examples;
-
-class AuthCredentials : public QtProtobuf::CallCredentials
-{
-public:
-    AuthCredentials(const QString &userName, const QString &password) :
-        CallCredentials(CredentialMap{{QLatin1String("user-name"), QVariant::fromValue(userName)},
-    {QLatin1String("user-password"), QVariant::fromValue(password)}}) {}
-};
 
 SimpleChatEngine::SimpleChatEngine(QObject *parent) : QObject(parent), m_client(new SimpleChatClient)
   , m_clipBoard(QGuiApplication::clipboard())
@@ -77,24 +69,28 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
     conf.setAllowedNextProtocols({QSslConfiguration::ALPNProtocolHTTP2});
 
     QUrl url("https://localhost:65002");
-    std::shared_ptr<QtProtobuf::QAbstractGrpcChannel> channel(new QtProtobuf::QGrpcHttp2Channel(url, QtProtobuf::SslCredentials(conf) |
-                                                                                      AuthCredentials(name, QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())));
+    std::shared_ptr<QtProtobuf::QAbstractGrpcChannel> channel(new QtProtobuf::QGrpcHttp2Channel(url, QtProtobuf::QGrpcSslCredentials(conf) |
+                                                                                      QtProtobuf::QGrpcUserPasswordCredentials<>(name, QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())));
 
     m_client->attachChannel(channel);
-    m_client->subscribeMessageListUpdates(None());
-    QObject::connect(m_client, &SimpleChatClient::messageListUpdated, this, [this, name](const qtprotobuf::examples::ChatMessages &messages) {
+    QtProtobuf::QGrpcSubscription *subscription = m_client->subscribeMessageListUpdates(None());
+    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::error, this, [subscription] {
+        qCritical() << "Subscription error, cancel";
+        subscription->cancel();
+    });
+    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::updated, this, [this, name, subscription]() {
         if (m_userName != name) {
             m_userName = name;
             userNameChanged();
             loggedIn();
         }
-        m_messages.reset(messages.messages());
+        m_messages.reset(subscription->read<qtprotobuf::examples::ChatMessages>().messages());
     });
 }
 
 void SimpleChatEngine::sendMessage(const QString &content)
 {
-    m_client->sendMessage(ChatMessage(QDateTime::currentMSecsSinceEpoch(), content.toUtf8(), ChatMessage::ContentType::Text));
+    m_client->sendMessage(ChatMessage(static_cast<quint64>(QDateTime::currentMSecsSinceEpoch()), content.toUtf8(), ChatMessage::ContentType::Text));
 }
 
 qtprotobuf::examples::ChatMessage::ContentType SimpleChatEngine::clipBoardContentType() const
@@ -150,7 +146,7 @@ void SimpleChatEngine::sendImageFromClipboard()
         return;
     }
 
-    m_client->sendMessage(ChatMessage(QDateTime::currentMSecsSinceEpoch(), imgData, qtprotobuf::examples::ChatMessage::ContentType::Image));
+    m_client->sendMessage(ChatMessage(static_cast<quint64>(QDateTime::currentMSecsSinceEpoch()), imgData, qtprotobuf::examples::ChatMessage::ContentType::Image));
 }
 
 QString SimpleChatEngine::getImageThumbnail(const QByteArray &data) const
@@ -162,4 +158,3 @@ QString SimpleChatEngine::getImageThumbnail(const QByteArray &data) const
     img.save(&buffer, "PNG");
     return getImage(scaledData);
 }
-

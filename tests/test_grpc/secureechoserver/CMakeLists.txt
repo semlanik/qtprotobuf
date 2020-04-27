@@ -8,7 +8,7 @@ set(GENERATED_SOURCES
 set_source_files_properties(${GENERATED_SOURCES} PROPERTIES GENERATED TRUE)
 
 add_executable(${TARGET} main.cpp ${GENERATED_SOURCES})
-target_link_libraries(${TARGET} gRPC::grpc++ protobuf::libprotobuf)
+target_link_libraries(${TARGET} PRIVATE gRPC::grpc++ protobuf::libprotobuf)
 target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 if(MSVC)
    target_compile_definitions(${TARGET} PRIVATE _WIN32_WINNT=0x600 _SCL_SECURE_NO_WARNINGS _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS)

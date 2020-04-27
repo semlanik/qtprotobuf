@@ -1,16 +1,16 @@
-project(qtprotobufgen VERSION ${QTPROTOBUF_PROJECT_VERSION} LANGUAGES CXX)
+project(qtprotobufgen VERSION ${QT_PROTOBUF_VERSION} LANGUAGES CXX)
 
 set(TARGET ${PROJECT_NAME})
 set(TARGET_EXPORT ${TARGET}Targets)
-set(TARGET_BIN_DIR ${CMAKE_INSTALL_BINDIR})
+set(TARGET_BINDIR ${CMAKE_INSTALL_BINDIR})
 
 file(GLOB SOURCES main.cpp
     generator.cpp
     classgeneratorbase.cpp
     servergenerator.cpp
     protobufclassgenerator.cpp
-    globalenumsgenerator.cpp
-    globalenumssourcegenerator.cpp
+    enumsgenerator.cpp
+    enumssourcegenerator.cpp
     servicegeneratorbase.cpp
     templates.cpp
     clientgenerator.cpp
@@ -26,8 +26,8 @@ file(GLOB HEADERS classgeneratorbase.h
     clientgenerator.h
     clientsourcegenerator.h
     generator.h
-    globalenumsgenerator.h
-    globalenumssourcegenerator.h
+    enumsgenerator.h
+    enumssourcegenerator.h
     protobufclassgenerator.h
     protobufsourcegenerator.h
     servergenerator.h
@@ -47,4 +47,4 @@ endif()
 target_link_libraries(${TARGET} protobuf::libprotobuf protobuf::libprotoc)
 
 install(TARGETS ${TARGET}
-    RUNTIME DESTINATION ${TARGET_BIN_DIR})
+    RUNTIME DESTINATION ${TARGET_BINDIR} COMPONENT lib)

@@ -70,6 +70,7 @@ void ClientGenerator::printClientIncludes()
     std::unordered_set<std::string> includeSet;
     includeSet.insert("QAbstractGrpcClient");
     includeSet.insert("QGrpcAsyncReply");
+    includeSet.insert("QGrpcSubscription");
     for (auto type : includeSet) {
         mPrinter->Print({{"include", type}}, Templates::ExternalIncludeTemplate);
     }
@@ -84,7 +85,6 @@ void ClientGenerator::printClientMethodsDeclaration()
         getMethodParameters(method, parameters);
 
         if (method->server_streaming()) {
-            mPrinter->Print(parameters, Templates::ClientMethodSignalDeclarationTemplate);
             mPrinter->Print(parameters, Templates::ClientMethodServerStreamDeclarationTemplate);
             mPrinter->Print(parameters, Templates::ClientMethodServerStream2DeclarationTemplate);
         } else {

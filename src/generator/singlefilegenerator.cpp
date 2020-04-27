@@ -28,8 +28,8 @@
 #include "classgeneratorbase.h"
 #include "protobufclassgenerator.h"
 #include "protobufsourcegenerator.h"
-#include "globalenumsgenerator.h"
-#include "globalenumssourcegenerator.h"
+#include "enumsgenerator.h"
+#include "enumssourcegenerator.h"
 #include "servergenerator.h"
 #include "clientgenerator.h"
 #include "clientsourcegenerator.h"
@@ -69,11 +69,11 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
                                            const std::string &,
                                            ::google::protobuf::compiler::GeneratorContext *generatorContext,
                                            std::string *) const {
-    if (file->message_type_count() <= 0) {
+    if (file->message_type_count() <= 0 && file->enum_type_count() <= 0) {
         return true;
     }
 
-    std::string outFileBasename = utils::extractFileName(file->name());
+    std::string outFileBasename = generateBaseName(file, utils::extractFileBasename(file->name()));
     std::set<std::string> internalIncludes;
     std::set<std::string> externalIncludes;
     std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + Templates::ProtoFileSuffix + ".h"));
@@ -96,7 +96,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     externalIncludes.insert("QString");
 
     for (int i = 0; i < file->dependency_count(); i++) {
-        internalIncludes.insert(utils::extractFileName(file->dependency(i)->name()) + Templates::ProtoFileSuffix);
+        internalIncludes.insert(utils::removeFileSuffix(file->dependency(i)->name()) + Templates::ProtoFileSuffix);
     }
 
     for(auto include : externalIncludes) {
@@ -107,20 +107,27 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         outHeaderPrinter->Print({{"include", include}}, Templates::InternalIncludeTemplate);
     }
 
+    if (GeneratorOptions::instance().hasQml()) {
+        outSourcePrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+    }
     outSourcePrinter->Print({{"namespace", "QtProtobuf"}}, Templates::UsingNamespaceTemplate);
 
 
     PackagesList packageList;
     packageList[file->package()].push_back(file);
 
-    GlobalEnumsGenerator enumGen(packageList,
-                                 outHeaderPrinter);
-    enumGen.run();
+    for(int i = 0; i < file->enum_type_count(); i++) {
+        EnumsGenerator enumGen2(file->enum_type(i),
+                                outHeaderPrinter);
+        enumGen2.run();
+    }
 
-    GlobalEnumsSourceGenerator enumSourceGen(packageList,
-                                             outSourcePrinter);
-    enumSourceGen.run();
-
+    for(int i = 0; i < file->enum_type_count(); i++) {
+        auto enumType = file->enum_type(i);
+        EnumsSourceGenerator enumSourceGen2(enumType,
+                                outSourcePrinter);
+        enumSourceGen2.run();
+    }
 
     std::vector<std::string> namespaces;
     std::string namespacesColonDelimited;
@@ -136,7 +143,9 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     }
 
     iterateNonNestedFileds(file, [&outHeaderPrinter](const ::google::protobuf::Descriptor *message){
-        outHeaderPrinter->Print({{"classname", message->name()}}, Templates::ProtoClassDeclarationTemplate);
+        std::string qualifiedClassName = utils::upperCaseName(message->name());
+        outHeaderPrinter->Print({{"classname", qualifiedClassName}}, Templates::ProtoClassDeclarationTemplate);
+        outHeaderPrinter->Print({{"classname", qualifiedClassName}}, Templates::ComplexListTypeUsingTemplate);
     });
 
     for (size_t i = 0; i < namespaces.size(); i++) {
@@ -148,6 +157,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
                                         outHeaderPrinter);
 
         classGen.printNamespaces();
+        classGen.printComments(message);
         classGen.printClassDeclaration();
         classGen.printProperties();
         classGen.printPrivate();
@@ -155,7 +165,6 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         classGen.printPublic();
         classGen.printDestructor();
         classGen.encloseClass();
-        classGen.printListType();
         classGen.encloseNamespaces();
         classGen.printMetaTypeDeclaration();
         classGen.printMapsMetaTypesDeclaration();
@@ -189,7 +198,7 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
         return true;
     }
 
-    std::string outFileBasename = utils::extractFileName(file->name());
+    std::string outFileBasename = generateBaseName(file, utils::extractFileBasename(file->name()));
     std::set<std::string> internalIncludes;
     std::set<std::string> externalIncludes;
     std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix + ".h"));
@@ -212,18 +221,18 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
         for (int i = 0; i < service->method_count(); i++) {
             const MethodDescriptor *method = service->method(i);
             if (method->input_type()->file() != service->file()) {
-                internalIncludes.insert(utils::extractFileName(method->input_type()->file()->name()) + Templates::ProtoFileSuffix);
+                internalIncludes.insert(utils::removeFileSuffix(method->input_type()->file()->name()) + Templates::ProtoFileSuffix);
             }
 
             if (method->output_type()->file() != service->file()) {
-                internalIncludes.insert(utils::extractFileName(method->output_type()->file()->name()) + Templates::ProtoFileSuffix);
+                internalIncludes.insert(utils::removeFileSuffix(method->output_type()->file()->name()) + Templates::ProtoFileSuffix);
             }
         }
     }
 
-
     externalIncludes.insert("QAbstractGrpcClient");
     externalIncludes.insert("QGrpcAsyncReply");
+    externalIncludes.insert("QGrpcSubscription");
 
     if (file->message_type_count() > 0) {
         internalIncludes.insert(outFileBasename + Templates::ProtoFileSuffix);

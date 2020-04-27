@@ -31,11 +31,16 @@
 
 static const std::string MultifileBuildOption("MULTI");
 static const std::string QmlPluginOption("QML");
+static const std::string CommentsGenerationOption("COMMENTS");
+static const std::string FolderGenerationOption("FOLDER");
+
 
 using namespace ::QtProtobuf::generator;
 
 GeneratorOptions::GeneratorOptions() : mIsMulti(false)
-  ,mHasQml(false)
+  , mHasQml(false)
+  , mGenerateComments(false)
+  , mIsFolder(false)
 {
 }
 
@@ -45,12 +50,18 @@ void GeneratorOptions::parseFromEnv(const std::string &options)
     utils::split(options, optionsList, ':');
     for (auto option : optionsList) {
         QT_PROTOBUF_DEBUG("option: " << option);
-        if(option.compare(MultifileBuildOption) == 0) {
+        if (option.compare(MultifileBuildOption) == 0) {
             QT_PROTOBUF_DEBUG("set mIsMulti: true");
             mIsMulti = true;
         } else if (option.compare(QmlPluginOption) == 0) {
             QT_PROTOBUF_DEBUG("set mHasQml: true");
             mHasQml = true;
+        } else if (option.compare(CommentsGenerationOption) == 0) {
+            QT_PROTOBUF_DEBUG("set mGenerateComments: true");
+            mGenerateComments = true;
+        } else if (option.compare(FolderGenerationOption) == 0) {
+            QT_PROTOBUF_DEBUG("set mIsFolder: true");
+            mIsFolder = true;
         }
     }
 }

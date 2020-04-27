@@ -34,12 +34,12 @@
 namespace QtProtobuf {
 
 /*!
+ * \ingroup QtProtobuf
  * \private
- *
  * \brief The QProtobufSerializerPrivate class
  */
 class QProtobufSerializer;
-
+//! \private
 class QProtobufSerializerPrivate final
 {
     Q_DISABLE_COPY_MOVE(QProtobufSerializerPrivate)
@@ -55,6 +55,7 @@ public:
     using Deserializer = void(*)(QProtobufSelfcheckIterator &, QVariant &);
 
     /*!
+     * \private
      * \brief SerializationHandlers contains set of objects that required for class serializaion/deserialization
      */
     struct SerializationHandlers {
@@ -442,8 +443,9 @@ public:
     QByteArray serializeProperty(const QVariant &propertyValue, const QProtobufMetaProperty &metaProperty);
     void deserializeProperty(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it);
 
-    static SerializerRegistry handlers;
+    void deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it);
 private:
+    static SerializerRegistry handlers;
     QProtobufSerializer *q_ptr;
 };
 

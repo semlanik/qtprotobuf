@@ -30,6 +30,20 @@
 #include "generatoroptions.h"
 #include "utils.h"
 
+/*! \mainpage
+ * QtProtobuf is project that provides gRPC and Protobuf generator and bindings for Qt framework
+ *
+ * Look at project <a href="https://github.com/semlanik/qtprotobuf/blob/master/README.md">README</a> for installation and usage details.
+ *
+ * QtProtobuf distributed in terms of MIT license and is free for modification and use under MIT
+ * license <a href="https://github.com/semlanik/qtprotobuf/blob/master/LICENSE">terms</a>.
+ *
+ * QtProtobuf has 4 modules:
+ *  - \ref generator
+ *  - \ref QtProtobuf
+ *  - \ref QtGrpc
+ *  - \ref QtProtobufWellKnownTypes
+ */
 using namespace ::QtProtobuf::generator;
 int main(int argc, char *argv[])
 {

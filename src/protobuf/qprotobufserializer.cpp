@@ -74,7 +74,7 @@ void QProtobufSerializerPrivate::deserializeList<QString>(QProtobufSelfcheckIter
 
 QProtobufSerializer::~QProtobufSerializer() = default;
 
-QProtobufSerializer::QProtobufSerializer() : d_ptr(new QProtobufSerializerPrivate(this))
+QProtobufSerializer::QProtobufSerializer() : dPtr(new QProtobufSerializerPrivate(this))
 {
 }
 
@@ -88,7 +88,7 @@ QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QP
         QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
         const QVariant &propertyValue = object->property(propertyName);
-        result.append(d_ptr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
+        result.append(dPtr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
     }
 
     return result;
@@ -97,7 +97,7 @@ QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QP
 void QProtobufSerializer::deserializeMessage(QObject *object, const QProtobufMetaObject &metaObject, const QByteArray &data) const
 {
     for (QProtobufSelfcheckIterator it(data); it != data.end();) {
-        d_ptr->deserializeProperty(object, metaObject, it);
+        dPtr->deserializeProperty(object, metaObject, it);
     }
 }
 
@@ -119,44 +119,23 @@ QByteArray QProtobufSerializer::serializeListObject(const QObject *object, const
     return serializeObject(object, metaObject, metaProperty);
 }
 
-void QProtobufSerializer::deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
+bool QProtobufSerializer::deserializeListObject(QObject *object, const QProtobufMetaObject &metaObject, QProtobufSelfcheckIterator &it) const
 {
     deserializeObject(object, metaObject, it);
+    return true;
 }
 
 QByteArray QProtobufSerializer::serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const
 {
     QByteArray result = QProtobufSerializerPrivate::encodeHeader(metaProperty.protoFieldIndex(), LengthDelimited);
-    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(d_ptr->serializeProperty(key, QProtobufMetaProperty(metaProperty, 1)) + d_ptr->serializeProperty(value, QProtobufMetaProperty(metaProperty, 2))));
+    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(dPtr->serializeProperty(key, QProtobufMetaProperty(metaProperty, 1)) + dPtr->serializeProperty(value, QProtobufMetaProperty(metaProperty, 2))));
     return result;
 }
 
-void QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const
+bool QProtobufSerializer::deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const
 {
-    int mapIndex = 0;
-    WireTypes type = WireTypes::UnknownWireType;
-    unsigned int count = QProtobufSerializerPrivate::deserializeVarintCommon<uint32>(it);
-    qProtoDebug() << __func__ << "count:" << count;
-    QProtobufSelfcheckIterator last = it + count;
-    while (it != last) {
-        QProtobufSerializerPrivate::decodeHeader(it, mapIndex, type);
-        if (mapIndex == 1) {
-            //Only simple types are supported as keys
-            int userType = key.userType();
-            auto &handler = QProtobufSerializerPrivate::handlers.at(userType);//throws if not found
-            handler.deserializer(it, key);
-        } else {
-            //TODO: replace with some common function
-            int userType = value.userType();
-            auto basicIt = QProtobufSerializerPrivate::handlers.find(userType);
-            if (basicIt != QProtobufSerializerPrivate::handlers.end()) {
-                basicIt->second.deserializer(it, value);
-            } else {
-                auto &handler = QtProtobufPrivate::findHandler(userType);
-                handler.deserializer(this, it, value);//throws if not implemented
-            }
-        }
-    }
+    dPtr->deserializeMapPair(key, value, it);
+    return true;
 }
 
 QByteArray QProtobufSerializer::serializeEnum(int64 value, const QMetaEnum &/*metaEnum*/, const QtProtobuf::QProtobufMetaProperty &metaProperty) const
@@ -284,8 +263,8 @@ QByteArray QProtobufSerializerPrivate::serializeProperty(const QVariant &propert
 
     //TODO: replace with some common function
     int fieldIndex = metaProperty.protoFieldIndex();
-    auto basicIt = QProtobufSerializerPrivate::handlers.find(userType);
-    if (basicIt != QProtobufSerializerPrivate::handlers.end()) {
+    auto basicIt = handlers.find(userType);
+    if (basicIt != handlers.end()) {
         type = basicIt->second.type;
         result.append(basicIt->second.serializer(propertyValue, fieldIndex));
         if (fieldIndex != QtProtobufPrivate::NotUsedFieldIndex
@@ -330,14 +309,43 @@ void QProtobufSerializerPrivate::deserializeProperty(QObject *object, const QPro
     int userType = metaProperty.userType();
 
     //TODO: replace with some common function
-    auto basicIt = QProtobufSerializerPrivate::handlers.find(userType);
-    if (basicIt != QProtobufSerializerPrivate::handlers.end()) {
+    auto basicIt = handlers.find(userType);
+    if (basicIt != handlers.end()) {
         basicIt->second.deserializer(it, newPropertyValue);
     } else {
         auto &handler = QtProtobufPrivate::findHandler(userType);
         handler.deserializer(q_ptr, it, newPropertyValue);
     }
+
     metaProperty.write(object, newPropertyValue);
+}
+
+void QProtobufSerializerPrivate::deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it)
+{
+    int mapIndex = 0;
+    WireTypes type = WireTypes::UnknownWireType;
+    unsigned int count = QProtobufSerializerPrivate::deserializeVarintCommon<uint32>(it);
+    qProtoDebug() << __func__ << "count:" << count;
+    QProtobufSelfcheckIterator last = it + count;
+    while (it != last) {
+        QProtobufSerializerPrivate::decodeHeader(it, mapIndex, type);
+        if (mapIndex == 1) {
+            //Only simple types are supported as keys
+            int userType = key.userType();
+            auto &handler = handlers.at(userType);//throws if not found
+            handler.deserializer(it, key);
+        } else {
+            //TODO: replace with some common function
+            int userType = value.userType();
+            auto basicIt = handlers.find(userType);
+            if (basicIt != handlers.end()) {
+                basicIt->second.deserializer(it, value);
+            } else {
+                auto &handler = QtProtobufPrivate::findHandler(userType);
+                handler.deserializer(q_ptr, it, value);//throws if not implemented
+            }
+        }
+    }
 }
 
 QProtobufSerializerPrivate::SerializerRegistry QProtobufSerializerPrivate::handlers = {};

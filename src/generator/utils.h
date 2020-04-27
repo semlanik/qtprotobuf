@@ -44,6 +44,12 @@ class FileDescriptor;
 
 namespace QtProtobuf {
 namespace generator {
+
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The utils class
+ */
 class utils {
 public:
 static void split(const std::string &str, std::vector<std::string> &container, char delim)
@@ -71,10 +77,54 @@ static void tolower(std::string &str) {
     std::transform(std::begin(str), std::end(str), std::begin(str), ::tolower);
 }
 
-static std::string extractFileName(std::string fileName) {
-    size_t index = fileName.rfind(".proto");
+static std::string removeFileSuffix(std::string fileName) {
+    size_t index = fileName.rfind(".");
     fileName.resize(index);
     return fileName;
+}
+
+static std::string extractFileBasename(std::string fileName) {
+    size_t index = fileName.rfind(".");
+    fileName.resize(index);
+    index = fileName.rfind("/");
+    if (index != std::string::npos) {
+        return fileName.substr(index + 1, fileName.size() - 1);
+    }
+    return fileName;
+}
+
+
+static std::string upperCaseName(const std::string &name)
+{
+    std::string upperCaseName(name);
+    upperCaseName[0] = static_cast<char>(::toupper(upperCaseName[0]));
+    return upperCaseName;
+}
+
+static std::string lowerCaseName(const std::string &name)
+{
+    std::string lowerCaseName(name);
+    lowerCaseName[0] = static_cast<char>(::tolower(lowerCaseName[0]));
+    return lowerCaseName;
+}
+
+inline static std::string& rtrim(std::string& s)
+{
+    s.erase(s.find_last_not_of(" \t\n\r\f\v") + 1);
+    return s;
+}
+
+// trim from beginning of string (left)
+inline static std::string& ltrim(std::string& s)
+{
+    s.erase(0, s.find_first_not_of(" \t\n\r\f\v"));
+    return s;
+}
+
+// trim from both ends of string (right then left)
+inline static std::string& trim(std::string& s)
+{
+    return ltrim(rtrim(s));
 }
 
 };

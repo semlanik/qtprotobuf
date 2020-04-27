@@ -31,6 +31,11 @@
 #include <QMetaObject>
 namespace QtProtobuf {
 
+/*!
+ * \ingroup QtProtobuf
+ * \private
+ * \brief The QProtobufMetaObject class
+ */
 class Q_PROTOBUF_EXPORT QProtobufMetaObject
 {
 public:

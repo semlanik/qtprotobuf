@@ -29,8 +29,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "simplechat.pb.h"
-#include "qtprotobuf_global.pb.h"
+#include "simplechat.qpb.h"
 
 #include "simplechatengine.h"
 
@@ -43,7 +42,6 @@ using namespace qtprotobuf::examples;
 int main(int argc, char *argv[])
 {
     QtProtobuf::qRegisterProtobufTypes();
-    qtprotobuf::examples::qRegisterProtobufTypes();
 
     QGuiApplication app(argc, argv);
 

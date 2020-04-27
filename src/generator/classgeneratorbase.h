@@ -29,7 +29,9 @@
 #include <memory>
 #include <list>
 
+#include "utils.h"
 #include "templates.h"
+#include "generatoroptions.h"
 
 namespace google { namespace protobuf {
 class FieldDescriptor;
@@ -44,6 +46,11 @@ namespace generator {
 
 using PropertyMap = std::map<std::string, std::string>;
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The ClassGeneratorBase class is base of source code generation
+ */
 class ClassGeneratorBase
 {
 public:
@@ -99,8 +106,8 @@ public:
             Indent();
             for (int j = 0; j < enumDescr->value_count(); j++) {
                 const auto valueDescr = enumDescr->value(j);
-                mPrinter->Print({{"enumvalue", valueDescr->name()},
-                                {"value", std::to_string(valueDescr->number())}}, Templates::EnumFieldTemplate);
+                mPrinter->Print({{"enumvalue", utils::upperCaseName(valueDescr->name())},
+                                 {"value", std::to_string(valueDescr->number())}}, Templates::EnumFieldTemplate);
             }
             Outdent();
             mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);
@@ -109,11 +116,44 @@ public:
 
         for (int i = 0; i < message->enum_type_count(); i++) {
             const auto enumDescr = message->enum_type(i);
-            mPrinter->Print({{"enum", enumDescr->name()}}, Templates::EnumTypeUsingTemplate);
+            mPrinter->Print({{"enum", enumDescr->name()}}, Templates::EnumTypeRepeatedTemplate);
         }
         Outdent();
     }
 
+    template<typename T>
+    void printComments(T *descriptor) {
+        if (!GeneratorOptions::instance().generateComments()) {
+            return;
+        }
+
+        ::google::protobuf::SourceLocation loc;
+        descriptor->GetSourceLocation(&loc);
+
+        utils::trim(loc.leading_comments);
+        if (loc.leading_comments.size() > 0) {
+            auto firstEntry = loc.leading_comments.find('\n');
+            bool isSingleLine = firstEntry == std::string::npos;
+
+            if (loc.leading_comments[0] != '!' && loc.leading_comments[0] != '*' && loc.leading_comments[0] != ' ') {
+                loc.leading_comments = " " + loc.leading_comments;
+                if (!isSingleLine) {
+                    loc.leading_comments = "\n" + loc.leading_comments;
+                }
+            }
+            mPrinter->Print("\n/*");
+            if (isSingleLine) {
+                mPrinter->Print(loc.leading_comments.c_str());
+            } else {
+                utils::replace(loc.leading_comments, "\n", "\n *");
+                mPrinter->Print(loc.leading_comments.c_str());
+                if (loc.leading_comments[loc.leading_comments.size() - 1] != '\n') {
+                    mPrinter->Print("\n");
+                }
+            }
+            mPrinter->Print(" */");
+        }
+    }
 
     void Indent() {
         mPrinter->Indent();
@@ -126,11 +166,13 @@ public:
     }
 
     std::string getTypeName(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor);
+    std::string getQmlAliasTypeName(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor);
     static bool isLocalMessageEnum(const google::protobuf::Descriptor *message,
                             const ::google::protobuf::FieldDescriptor *field);
     template<typename T>
     static std::string getNamespacesList(const T *message, std::vector<std::string> &container, const std::string &localNamespace);
     static EnumVisibility getEnumVisibility(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor);
+    static bool hasQmlAlias(const ::google::protobuf::FieldDescriptor *field);
     void getMethodParameters(const ::google::protobuf::MethodDescriptor *method, std::map<std::string, std::string> &parameters);
 };
 

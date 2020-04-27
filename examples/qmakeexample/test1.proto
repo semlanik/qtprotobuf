@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package qtprotobufnamespace.tests;
+
+message EmptyMessage {
+}
+
+message SimpleBoolMessage {
+    bool testFieldBool = 1;
+}
+
+message SimpleIntMessage {
+    int32 testFieldInt = 1;
+}
+
+message SimpleSIntMessage {
+    sint32 testFieldInt = 1;
+}
+
+message SimpleUIntMessage {
+    uint32 testFieldInt = 1;
+}
+
+message SimpleInt64Message {
+    int64 testFieldInt = 1;
+}
+
+message SimpleSInt64Message {
+    sint64 testFieldInt = 1;
+}
+
+message SimpleUInt64Message {
+    uint64 testFieldInt = 1;
+}
+
+message SimpleStringMessage {
+    string testFieldString = 6;
+}
+
+message SimpleFloatMessage {
+    float testFieldFloat = 7;
+}
+
+message SimpleDoubleMessage {
+    double testFieldDouble = 8;
+}
+
+message SimpleBytesMessage {
+    bytes testFieldBytes = 1;
+}
+
+message SimpleFixedInt32Message {
+    fixed32 testFieldFixedInt32 = 1;
+}
+
+message SimpleFixedInt64Message {
+    fixed64 testFieldFixedInt64 = 1;
+}
+
+message SimpleSFixedInt32Message {
+    sfixed32 testFieldFixedInt32 = 1;
+}
+
+message SimpleSFixedInt64Message {
+    sfixed64 testFieldFixedInt64 = 1;
+}
+
+message ComplexMessage {
+    int32 testFieldInt = 1;
+    SimpleStringMessage testComplexField = 2;
+}
+
+message RepeatedStringMessage {
+    repeated string testRepeatedString = 1;
+}
+
+message RepeatedDoubleMessage {
+    repeated double testRepeatedDouble = 1;
+}
+
+message RepeatedBytesMessage {
+    repeated bytes testRepeatedBytes = 1;
+}

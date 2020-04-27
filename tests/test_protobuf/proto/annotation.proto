@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package qtprotobufnamespace.annotationtest;
+
+//test annotation
+message AnnotatedMessage1 {
+    sint32 testField = 1;
+}
+
+/*test annotation*/
+message AnnotatedMessage2 {
+    sint32 testField = 1;
+}
+
+/*
+ * test annotation
+ */
+message AnnotatedMessage3 {
+    sint32 testField = 1;
+}
+
+/*
+  test annotation
+ */
+message AnnotatedMessage4 {
+    sint32 testField = 1;
+}
+
+//! \brief test annotation
+message AnnotatedMessage5 {
+    sint32 testField = 1;
+}
+
+//* \brief test annotation
+message AnnotatedMessage6 {
+    sint32 testField = 1;
+}
+
+/*!
+ * \brief test annotation
+ */
+message AnnotatedMessage7 {
+    sint32 testField = 1;
+}
+
+/**
+ * \brief test annotation
+ */
+message AnnotatedMessage8 {
+    sint32 testField = 1;
+}
+
+/*
+ * test annotation
+ * test annotation secondline
+ */
+message AnnotatedMessage9 {
+    sint32 testField = 1;
+}
+
+
+message AnnotatedMessage10 {
+    //Field annotation
+    sint32 testField = 1;
+}
+
+message AnnotatedMessage11 {
+    /*Field annotation*/
+    sint32 testField = 1;
+}
+
+message AnnotatedMessage12 {
+    //! Field annotation
+    sint32 testField = 1;
+}
+
+message AnnotatedMessage13 {
+    //* Field annotation
+    sint32 testField = 1;
+}
+
+message AnnotatedMessage14 {
+    //* Field annotation
+    sint32 testField = 1;
+}
+
+message AnnotatedMessage15 {
+    /*
+     * Field annotation
+     */
+    sint32 testField = 1;
+}
+
+message AnnotatedMessage16 {
+    /*
+     * Field annotation
+     * Field annotation secondline
+     */
+    sint32 testField = 1;
+}
+
+message AnnotatedMessage17 {
+    /*!
+     * \brief Field annotation
+     */
+    sint32 testField = 1;
+}
+
+message AnnotatedMessage18 {
+    /**
+     * \brief Field annotation
+     */
+    sint32 testField = 1;
+}

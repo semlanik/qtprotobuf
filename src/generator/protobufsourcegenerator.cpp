@@ -124,8 +124,7 @@ void ProtobufSourceGenerator::printConstructor()
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         std::string fieldTypeName = getTypeName(field, mMessage);
-        std::string fieldName = field->name();
-        fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
+        std::string fieldName = utils::lowerCaseName(field->camelcase_name());
         fieldName = qualifiedName(fieldName);
 
         if (field->is_repeated() || field->is_map()) {
@@ -170,9 +169,8 @@ void ProtobufSourceGenerator::printConstructor()
                          {"parameter_list", parameters}}, Templates::ProtoConstructorDefinitionTemplate);
         for (size_t j = 0; j < parameterList.size(); j++) {
             const FieldDescriptor *field = mMessage->field(j);
-            std::string fieldName = field->name();
+            std::string fieldName = utils::lowerCaseName(field->camelcase_name());
             auto fieldTypeName = getTypeName(field, mMessage);
-            fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
             fieldName = qualifiedName(fieldName);
             if (field->type() == FieldDescriptor::TYPE_MESSAGE
                     && !field->is_map() && !field->is_repeated()) {
@@ -225,13 +223,21 @@ void ProtobufSourceGenerator::printConstructor()
 
 void ProtobufSourceGenerator::printCopyFunctionality()
 {
+    assert(mMessage != nullptr);
+
+    const char *constructorTemplate = Templates::CopyConstructorDefinitionTemplate;
+    const char *assignmentOperatorTemplate = Templates::AssignmentOperatorDefinitionTemplate;
+    if (mMessage->field_count() <= 0) {
+        constructorTemplate = Templates::EmptyCopyConstructorDefinitionTemplate;
+        assignmentOperatorTemplate = Templates::EmptyAssignmentOperatorDefinitionTemplate;
+    }
+
     mPrinter->Print({{"classname", mClassName}},
-                    Templates::CopyConstructorDefinitionTemplate);
+                    constructorTemplate);
     for (int j = 0; j < mMessage->field_count(); j++) {
         const FieldDescriptor *field = mMessage->field(j);
-        std::string fieldName = field->name();
+        std::string fieldName = utils::lowerCaseName(field->camelcase_name());
         auto fieldTypeName = getTypeName(field, mMessage);
-        fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
         fieldName = qualifiedName(fieldName);
 
         if (field->type() == FieldDescriptor::TYPE_MESSAGE
@@ -254,7 +260,7 @@ void ProtobufSourceGenerator::printCopyFunctionality()
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 
     mPrinter->Print({{"classname", mClassName}},
-                    Templates::AssignmentOperatorDefinitionTemplate);
+                    assignmentOperatorTemplate);
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         auto field = mMessage->field(i);
@@ -272,13 +278,20 @@ void ProtobufSourceGenerator::printCopyFunctionality()
 void ProtobufSourceGenerator::printMoveSemantic()
 {
     assert(mMessage != nullptr);
+
+    const char *constructorTemplate = Templates::MoveConstructorDefinitionTemplate;
+    const char *assignmentOperatorTemplate = Templates::MoveAssignmentOperatorDefinitionTemplate;
+    if (mMessage->field_count() <= 0) {
+        constructorTemplate = Templates::EmptyMoveConstructorDefinitionTemplate;
+        assignmentOperatorTemplate = Templates::EmptyMoveAssignmentOperatorDefinitionTemplate;
+    }
+
     mPrinter->Print({{"classname", mClassName}},
-                    Templates::MoveConstructorDefinitionTemplate);
+                    constructorTemplate);
     for (int j = 0; j < mMessage->field_count(); j++) {
         const FieldDescriptor *field = mMessage->field(j);
-        std::string fieldName = field->name();
+        std::string fieldName = utils::lowerCaseName(field->camelcase_name());
         auto fieldTypeName = getTypeName(field, mMessage);
-        fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
         fieldName = qualifiedName(fieldName);
 
         if (field->type() == FieldDescriptor::TYPE_MESSAGE
@@ -295,7 +308,7 @@ void ProtobufSourceGenerator::printMoveSemantic()
             if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
                 printField(mMessage, field, Templates::MoveMessageFieldTemplate);
             } else {
-                printField(mMessage, field, Templates::MoveComplexFieldTemplate);
+                printField(mMessage, field, Templates::MoveComplexFieldConstructorTemplate);
             }
         } else {
             if (field->type() != FieldDescriptor::TYPE_ENUM) {
@@ -310,7 +323,7 @@ void ProtobufSourceGenerator::printMoveSemantic()
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 
     mPrinter->Print({{"classname", mClassName}},
-                    Templates::MoveAssignmentOperatorDefinitionTemplate);
+                    assignmentOperatorTemplate);
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
@@ -337,13 +350,16 @@ void ProtobufSourceGenerator::printMoveSemantic()
 void ProtobufSourceGenerator::printComparisonOperators()
 {
     assert(mMessage != nullptr);
+    if (mMessage->field_count() <= 0) {
+        mPrinter->Print({{"classname", mClassName}}, Templates::EmptyEqualOperatorDefinitionTemplate);
+        mPrinter->Print({{"classname", mClassName}}, Templates::NotEqualOperatorDefinitionTemplate);
+        return;
+    }
+
     PropertyMap properties;
     mPrinter->Print({{"classname", mClassName}}, Templates::EqualOperatorDefinitionTemplate);
 
     bool isFirst = true;
-    if (mMessage->field_count() <= 0) {
-        mPrinter->Print("true");
-    }
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         if (producePropertyMap(mMessage, field, properties)) {
@@ -414,6 +430,7 @@ void ProtobufSourceGenerator::printGetters()
 
 void ProtobufSourceGenerator::printDestructor()
 {
+    mPrinter->Print({{"classname", mClassName}}, Templates::RegistrarTemplate);
     mPrinter->Print({{"classname", mClassName}}, "$classname$::~$classname$()\n"
                                                  "{}\n\n");
 }

@@ -1,0 +1,54 @@
+name: Test Verification
+
+on: 
+  push:
+    branches: 
+     - master
+     - 0.1.0
+     - 0.2
+     - ci_check
+jobs:
+  build-ubuntu:
+    name: Build and Test Ubuntu Latest
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Init submodules
+      run: git submodule update --init --recursive
+    - name: Build the Ubuntu Latest Docker image
+      run: docker build . --file .ci/Dockerfile.ubuntu --tag ubuntu_debugimage:latest
+    - name: Run tests
+      run: docker run ubuntu_debugimage:latest ctest /build --output-on-failure
+  build-opensuse:
+    name: Build and Test OpenSUSE Latest
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Init submodules
+      run: git submodule update --init --recursive
+    - name: Build the OpenSUSE Latest Docker image
+      run: docker build . --file .ci/Dockerfile.opensuse --tag opensuse_debugimage:latest
+    - name: Run tests
+      run: docker run opensuse_debugimage:latest ctest /build --output-on-failure
+  build-ubuntu-static:
+    name: Static Build and Test Ubuntu Latest
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Init submodules
+      run: git submodule update --init --recursive
+    - name: Build the Ubuntu Latest Docker image
+      run: docker build . --file .ci/Dockerfile.ubuntu_static --tag ubuntu_debugimage_static:latest
+    - name: Run tests
+      run: docker run ubuntu_debugimage_static:latest ctest /build --output-on-failure
+  build-opensuse-static:
+    name: Static Build and Test OpenSUSE Latest
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Init submodules
+      run: git submodule update --init --recursive
+    - name: Build the OpenSUSE Latest Docker image
+      run: docker build . --file .ci/Dockerfile.opensuse_static --tag opensuse_debugimage_static:latest
+    - name: Run tests
+      run: docker run opensuse_debugimage_static:latest ctest /build --output-on-failure

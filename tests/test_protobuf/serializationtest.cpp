@@ -25,8 +25,7 @@
 
 #include "serializationtest.h"
 
-#include "simpletest.pb.h"
-#include "qtprotobuf_global.pb.h"
+#include "simpletest.qpb.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf::tests;
@@ -37,9 +36,6 @@ void SerializationTest::SetUpTestCase()
 {
     //Register all types
     QtProtobuf::qRegisterProtobufTypes();
-    qtprotobufnamespace::tests::qRegisterProtobufTypes();
-    qtprotobufnamespace1::externaltests::qRegisterProtobufTypes();
-    qtprotobufnamespace::tests::globalenums::qRegisterProtobufTypes();
 }
 
 void SerializationTest::SetUp()
@@ -53,23 +49,17 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
     test.setTestFieldInt(15);
     QByteArray result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x0f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "080f");
 
     test.setTestFieldInt(300);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xac');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ac02");
 
     test.setTestFieldInt(65545);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x89');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08898004");
 
     test.setTestFieldInt(0);
     result = test.serialize(serializer.get());
@@ -78,41 +68,27 @@ TEST_F(SerializationTest, IntMessageSerializeTest)
     test.setTestFieldInt(INT8_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088001");
 
     test.setTestFieldInt(INT16_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08808002");
 
     test.setTestFieldInt(INT8_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x7f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "087f");
 
     test.setTestFieldInt(INT16_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffff01");
 
     test.setTestFieldInt(INT32_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\x07');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffff07");
 
     test.setTestFieldInt(-1);
     result = test.serialize(serializer.get());
@@ -153,23 +129,17 @@ TEST_F(SerializationTest, UIntMessageSerializeTest)
     test.setTestFieldInt(15);
     QByteArray result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x0f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "080f");
 
     test.setTestFieldInt(300);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xac');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ac02");
 
     test.setTestFieldInt(65545);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x89');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08898004");
 
     test.setTestFieldInt(0);
     result = test.serialize(serializer.get());
@@ -178,42 +148,27 @@ TEST_F(SerializationTest, UIntMessageSerializeTest)
     test.setTestFieldInt(UINT8_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088002");
 
     test.setTestFieldInt(UINT16_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08808004");
 
     test.setTestFieldInt(UINT8_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ff01");
 
     test.setTestFieldInt(UINT16_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\x03');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffff03");
 
     test.setTestFieldInt(UINT32_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\x0f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffff0f");
 }
 
 TEST_F(SerializationTest, SIntMessageSerializeTest)
@@ -222,23 +177,17 @@ TEST_F(SerializationTest, SIntMessageSerializeTest)
     test.setTestFieldInt(15);
     QByteArray result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x1e');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "081e");
 
     test.setTestFieldInt(300);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xd8');
-    ASSERT_EQ(result.at(2), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08d804");
 
     test.setTestFieldInt(65545);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x92');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x08');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08928008");
 
     test.setTestFieldInt(0);
     result = test.serialize(serializer.get());
@@ -247,103 +196,67 @@ TEST_F(SerializationTest, SIntMessageSerializeTest)
     test.setTestFieldInt(INT8_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088002");
 
     test.setTestFieldInt(INT16_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08808004");
 
     test.setTestFieldInt(INT8_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xfe');
-    ASSERT_EQ(result.at(2), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08fe01");
 
     test.setTestFieldInt(INT16_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xfe');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\x03');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08feff03");
 
     test.setTestFieldInt(INT32_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xfe');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\x0f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08feffffff0f");
 
     test.setTestFieldInt(-1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0801");
 
     test.setTestFieldInt(-462);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x9b');
-    ASSERT_EQ(result.at(2), '\x07');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "089b07");
 
     test.setTestFieldInt(-63585);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xc1');
-    ASSERT_EQ(result.at(2), '\xe1');
-    ASSERT_EQ(result.at(3), '\x07');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08c1e107");
 
     test.setTestFieldInt(INT8_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ff01");
 
     test.setTestFieldInt(INT16_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\x03');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffff03");
 
     test.setTestFieldInt(INT32_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\x0f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffff0f");
 
     test.setTestFieldInt(INT8_MIN - 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x81');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088102");
 
     test.setTestFieldInt(INT16_MIN - 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x81');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08818004");
 }
 
 TEST_F(SerializationTest, Int64MessageSerializeTest)
@@ -352,23 +265,17 @@ TEST_F(SerializationTest, Int64MessageSerializeTest)
     test.setTestFieldInt(15);
     QByteArray result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x0f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "080f");
 
     test.setTestFieldInt(300);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xac');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ac02");
 
     test.setTestFieldInt(65545);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x89');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08898004");
 
     test.setTestFieldInt(0);
     result = test.serialize(serializer.get());
@@ -377,215 +284,87 @@ TEST_F(SerializationTest, Int64MessageSerializeTest)
     test.setTestFieldInt(INT8_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088001");
 
     test.setTestFieldInt(INT16_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08808002");
 
     test.setTestFieldInt((qlonglong)(INT32_MAX) + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x80');
-    ASSERT_EQ(result.at(4), '\x80');
-    ASSERT_EQ(result.at(5), '\x08');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088080808008");
 
     test.setTestFieldInt(INT8_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x7f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "087f");
 
     test.setTestFieldInt(INT16_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffff01");
 
     test.setTestFieldInt(INT32_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\x07');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffff07");
 
     test.setTestFieldInt(INT64_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 10);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\x7f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffffffffffff7f");
 
     test.setTestFieldInt(-1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffffffffffffff01");
 
     test.setTestFieldInt(-462);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xb2');
-    ASSERT_EQ(result.at(2), '\xfc');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08b2fcffffffffffffff01");
 
     test.setTestFieldInt(-63585);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x9f');
-    ASSERT_EQ(result.at(2), '\x8f');
-    ASSERT_EQ(result.at(3), '\xfc');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "089f8ffcffffffffffff01");
 
     test.setTestFieldInt(INT8_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0880ffffffffffffffff01");
 
     test.setTestFieldInt(INT16_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\xfe');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088080feffffffffffff01");
 
     test.setTestFieldInt(INT32_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x80');
-    ASSERT_EQ(result.at(4), '\x80');
-    ASSERT_EQ(result.at(5), '\xf8');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0880808080f8ffffffff01");
 
     test.setTestFieldInt(INT8_MIN - 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xfe');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08fffeffffffffffffff01");
 
     test.setTestFieldInt(INT16_MIN - 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xfd');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08fffffdffffffffffff01");
 
     test.setTestFieldInt((qlonglong)INT32_MIN - 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xf7');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08fffffffff7ffffffff01");
 
     test.setTestFieldInt(INT64_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x80');
-    ASSERT_EQ(result.at(4), '\x80');
-    ASSERT_EQ(result.at(5), '\x80');
-    ASSERT_EQ(result.at(6), '\x80');
-    ASSERT_EQ(result.at(7), '\x80');
-    ASSERT_EQ(result.at(8), '\x80');
-    ASSERT_EQ(result.at(9), '\x80');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0880808080808080808001");
 }
 
 TEST_F(SerializationTest, UInt64MessageSerializeTest)
@@ -594,23 +373,17 @@ TEST_F(SerializationTest, UInt64MessageSerializeTest)
     test.setTestFieldInt(15);
     QByteArray result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x0f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "080f");
 
     test.setTestFieldInt(300);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xac');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ac02");
 
     test.setTestFieldInt(65545);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x89');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08898004");
 
     test.setTestFieldInt(0);
     result = test.serialize(serializer.get());
@@ -619,67 +392,37 @@ TEST_F(SerializationTest, UInt64MessageSerializeTest)
     test.setTestFieldInt(UINT8_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088002");
 
     test.setTestFieldInt(UINT16_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08808004");
 
     test.setTestFieldInt(((uint64_t)UINT32_MAX) + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x80');
-    ASSERT_EQ(result.at(4), '\x80');
-    ASSERT_EQ(result.at(5), '\x10');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088080808010");
 
     test.setTestFieldInt(UINT8_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ff01");
 
     test.setTestFieldInt(UINT16_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\x03');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffff03");
 
     test.setTestFieldInt(UINT32_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\x0f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffff0f");
 
     test.setTestFieldInt(UINT64_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffffffffffffff01");
 }
 
 TEST_F(SerializationTest, SInt64MessageSerializeTest)
@@ -688,23 +431,17 @@ TEST_F(SerializationTest, SInt64MessageSerializeTest)
     test.setTestFieldInt(15);
     QByteArray result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x1e');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "081e");
 
     test.setTestFieldInt(300);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xd8');
-    ASSERT_EQ(result.at(2), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08d804");
 
     test.setTestFieldInt(65545);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x92');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x08');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08928008");
 
     test.setTestFieldInt(0);
     result = test.serialize(serializer.get());
@@ -713,143 +450,82 @@ TEST_F(SerializationTest, SInt64MessageSerializeTest)
     test.setTestFieldInt(INT8_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088002");
 
     test.setTestFieldInt(INT16_MAX + 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x80');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08808004");
 
     test.setTestFieldInt(INT8_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xfe');
-    ASSERT_EQ(result.at(2), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08fe01");
 
     test.setTestFieldInt(INT16_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xfe');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\x03');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08feff03");
 
     test.setTestFieldInt(INT32_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xfe');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\x0f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08feffffff0f");
 
     test.setTestFieldInt(INT64_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xfe');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08feffffffffffffffff01");
 
     test.setTestFieldInt(-1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0801");
 
     test.setTestFieldInt(-462);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x9b');
-    ASSERT_EQ(result.at(2), '\x07');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "089b07");
 
     test.setTestFieldInt(-63585);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xc1');
-    ASSERT_EQ(result.at(2), '\xe1');
-    ASSERT_EQ(result.at(3), '\x07');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08c1e107");
 
     test.setTestFieldInt(INT8_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ff01");
 
     test.setTestFieldInt(INT16_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\x03');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffff03");
 
     test.setTestFieldInt(INT32_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\x0f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffff0f");
 
     test.setTestFieldInt(INT64_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 11);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xff');
-    ASSERT_EQ(result.at(8), '\xff');
-    ASSERT_EQ(result.at(9), '\xff');
-    ASSERT_EQ(result.at(10), '\x01');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08ffffffffffffffffff01");
 
     test.setTestFieldInt(INT8_MIN - 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 3);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x81');
-    ASSERT_EQ(result.at(2), '\x02');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088102");
 
     test.setTestFieldInt(INT16_MIN - 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 4);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x81');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x04');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "08818004");
 
     test.setTestFieldInt((qlonglong)INT32_MIN - 1);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 6);
-    ASSERT_EQ(result.at(0), 0x08);
-    ASSERT_EQ(result.at(1), '\x81');
-    ASSERT_EQ(result.at(2), '\x80');
-    ASSERT_EQ(result.at(3), '\x80');
-    ASSERT_EQ(result.at(4), '\x80');
-    ASSERT_EQ(result.at(5), '\x10');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "088180808010");
 }
 
 TEST_F(SerializationTest, FixedInt32MessageSerializeTest)
@@ -1134,47 +810,29 @@ TEST_F(SerializationTest, FloatMessageSerializeTest)
     test.setTestFieldFloat(0.1f);
     QByteArray result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), FloatMessageSize);
-    ASSERT_EQ(result.at(0), 0x3d);
-    ASSERT_EQ(result.at(1), '\xcd');
-    ASSERT_EQ(result.at(2), '\xcc');
-    ASSERT_EQ(result.at(3), '\xcc');
-    ASSERT_EQ(result.at(4), '\x3d');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "3dcdcccc3d");
 
     test.setTestFieldFloat(FLT_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), FloatMessageSize);
-    ASSERT_EQ(result.at(0), 0x3d);
-    ASSERT_EQ(result.at(1), '\x00');
-    ASSERT_EQ(result.at(2), '\x00');
-    ASSERT_EQ(result.at(3), '\x80');
-    ASSERT_EQ(result.at(4), '\x00');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "3d00008000");
 
     test.setTestFieldFloat(FLT_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), FloatMessageSize);
     ASSERT_EQ(result.at(0), 0x3d);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\x7f');
-    ASSERT_EQ(result.at(4), '\x7f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "3dffff7f7f");
 
     test.setTestFieldFloat(-4.2f);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), FloatMessageSize);
     ASSERT_EQ(result.at(0), 0x3d);
-    ASSERT_EQ(result.at(1), '\x66');
-    ASSERT_EQ(result.at(2), '\x66');
-    ASSERT_EQ(result.at(3), '\x86');
-    ASSERT_EQ(result.at(4), '\xc0');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "3d666686c0");
 
     test.setTestFieldFloat(-0.0f);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), FloatMessageSize);
-    ASSERT_EQ(result.at(0), 0x3d);
-    ASSERT_EQ(result.at(1), '\x00');
-    ASSERT_EQ(result.at(2), '\x00');
-    ASSERT_EQ(result.at(3), '\x00');
-    ASSERT_EQ(result.at(4), '\x80');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "3d00000080");
 }
 
 TEST_F(SerializationTest, DoubleMessageSerializeTest)
@@ -1184,67 +842,27 @@ TEST_F(SerializationTest, DoubleMessageSerializeTest)
     test.setTestFieldDouble(0.1);
     QByteArray result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), DoubleMessageSize);
-    ASSERT_EQ(result.at(0), 0x41);
-    ASSERT_EQ(result.at(1), '\x9a');
-    ASSERT_EQ(result.at(2), '\x99');
-    ASSERT_EQ(result.at(3), '\x99');
-    ASSERT_EQ(result.at(4), '\x99');
-    ASSERT_EQ(result.at(5), '\x99');
-    ASSERT_EQ(result.at(6), '\x99');
-    ASSERT_EQ(result.at(7), '\xb9');
-    ASSERT_EQ(result.at(8), '\x3f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "419a9999999999b93f");
 
     test.setTestFieldDouble(DBL_MIN);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), DoubleMessageSize);
-    ASSERT_EQ(result.at(0), 0x41);
-    ASSERT_EQ(result.at(1), '\x00');
-    ASSERT_EQ(result.at(2), '\x00');
-    ASSERT_EQ(result.at(3), '\x00');
-    ASSERT_EQ(result.at(4), '\x00');
-    ASSERT_EQ(result.at(5), '\x00');
-    ASSERT_EQ(result.at(6), '\x00');
-    ASSERT_EQ(result.at(7), '\x10');
-    ASSERT_EQ(result.at(8), '\x00');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "410000000000001000");
 
     test.setTestFieldDouble(DBL_MAX);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), DoubleMessageSize);
-    ASSERT_EQ(result.at(0), 0x41);
-    ASSERT_EQ(result.at(1), '\xff');
-    ASSERT_EQ(result.at(2), '\xff');
-    ASSERT_EQ(result.at(3), '\xff');
-    ASSERT_EQ(result.at(4), '\xff');
-    ASSERT_EQ(result.at(5), '\xff');
-    ASSERT_EQ(result.at(6), '\xff');
-    ASSERT_EQ(result.at(7), '\xef');
-    ASSERT_EQ(result.at(8), '\x7f');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "41ffffffffffffef7f");
 
     test.setTestFieldDouble(-4.2);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), DoubleMessageSize);
-    ASSERT_EQ(result.at(0), 0x41);
-    ASSERT_EQ(result.at(1), '\xcd');
-    ASSERT_EQ(result.at(2), '\xcc');
-    ASSERT_EQ(result.at(3), '\xcc');
-    ASSERT_EQ(result.at(4), '\xcc');
-    ASSERT_EQ(result.at(5), '\xcc');
-    ASSERT_EQ(result.at(6), '\xcc');
-    ASSERT_EQ(result.at(7), '\x10');
-    ASSERT_EQ(result.at(8), '\xc0');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "41cdcccccccccc10c0");
 
     test.setTestFieldDouble(0.0);
     result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), DoubleMessageSize);
-    ASSERT_EQ(result.at(0), 0x41);
-    ASSERT_EQ(result.at(1), '\x00');
-    ASSERT_EQ(result.at(2), '\x00');
-    ASSERT_EQ(result.at(3), '\x00');
-    ASSERT_EQ(result.at(4), '\x00');
-    ASSERT_EQ(result.at(5), '\x00');
-    ASSERT_EQ(result.at(6), '\x00');
-    ASSERT_EQ(result.at(7), '\x00');
-    ASSERT_EQ(result.at(8), '\x00');
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "410000000000000000");
 }
 
 TEST_F(SerializationTest, StringMessageSerializeTest)
@@ -1252,11 +870,11 @@ TEST_F(SerializationTest, StringMessageSerializeTest)
     SimpleStringMessage test;
     test.setTestFieldString("qwerty");
     QByteArray result = test.serialize(serializer.get());
-    ASSERT_TRUE(result == QByteArray::fromHex("3206717765727479"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "3206717765727479");
 
     test.setTestFieldString("oepSNLIVG08UJpk2W7JtTkkBxyK06X0lQ6ML7IMd55K8XC1Tpsc1kDWym5v8z68b4FQup9O95QSgAvjHIA15OX6Bu68esbQFT9LPzSADJ6qSGBTYBHX5QSZg32trCdHMj80XuDHqyBgM4uf6RKq2mgWb8Ovxxr0NwLxjHOfhJ8Mrfd2R7hbUgjespbYoQhbgHEj2gKEV3QvnumYmrVXe1BkCzZhKVXodDhj0OfAE67viAy4i3Oag1hr1z4Azo8O5Xq68POEZ1CsZPo2DXNNR8ebVCdYOz0Q6JLPSl5jasLCFrQN7EiVNjQmCrSsZHRgLNylvgoEFxGYxXJ9gmK4mr0OGdZcGJORRGZOQCpQMhXmhezFalNIJXMPPXaRVXiRhRAPCNUEie8DtaCWAMqz4nNUxRMZ5UcXBXsXPshygzkyyXnNWTIDojFlrcsnKqSkQ1G6E85gSZbtIYBh7sqO6GDXHjOrXVaVCVCUubjcJKThlyslt29zHuIs5JGppXxX1");
     result = test.serialize(serializer.get());
-    ASSERT_TRUE(result == QByteArray::fromHex("3280046f6570534e4c4956473038554a706b3257374a74546b6b4278794b303658306c51364d4c37494d6435354b3858433154707363316b4457796d3576387a3638623446517570394f393551536741766a48494131354f583642753638657362514654394c507a5341444a367153474254594248583551535a67333274724364484d6a383058754448717942674d34756636524b71326d675762384f76787872304e774c786a484f66684a384d726664325237686255676a65737062596f5168626748456a32674b45563351766e756d596d7256586531426b437a5a684b56586f6444686a304f6641453637766941793469334f6167316872317a34417a6f384f3558713638504f455a3143735a506f3244584e4e52386562564364594f7a3051364a4c50536c356a61734c434672514e374569564e6a516d437253735a4852674c4e796c76676f454678475978584a39676d4b346d72304f47645a63474a4f5252475a4f514370514d68586d68657a46616c4e494a584d50505861525658695268524150434e55456965384474614357414d717a346e4e5578524d5a355563584258735850736879677a6b7979586e4e575449446f6a466c7263736e4b71536b5131473645383567535a6274495942683773714f36474458486a4f72585661564356435575626a634a4b54686c79736c7432397a48754973354a47707058785831"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "3280046f6570534e4c4956473038554a706b3257374a74546b6b4278794b303658306c51364d4c37494d6435354b3858433154707363316b4457796d3576387a3638623446517570394f393551536741766a48494131354f583642753638657362514654394c507a5341444a367153474254594248583551535a67333274724364484d6a383058754448717942674d34756636524b71326d675762384f76787872304e774c786a484f66684a384d726664325237686255676a65737062596f5168626748456a32674b45563351766e756d596d7256586531426b437a5a684b56586f6444686a304f6641453637766941793469334f6167316872317a34417a6f384f3558713638504f455a3143735a506f3244584e4e52386562564364594f7a3051364a4c50536c356a61734c434672514e374569564e6a516d437253735a4852674c4e796c76676f454678475978584a39676d4b346d72304f47645a63474a4f5252475a4f514370514d68586d68657a46616c4e494a584d50505861525658695268524150434e55456965384474614357414d717a346e4e5578524d5a355563584258735850736879677a6b7979586e4e575449446f6a466c7263736e4b71536b5131473645383567535a6274495942683773714f36474458486a4f72585661564356435575626a634a4b54686c79736c7432397a48754973354a47707058785831");
 }
 
 TEST_F(SerializationTest, ComplexTypeSerializeTest)
@@ -1299,8 +917,7 @@ TEST_F(SerializationTest, RepeatedIntMessageTest)
     RepeatedIntMessage test;
     test.setTestRepeatedInt({0, 1, 321, -65999, 123245, -3, 3});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "RepeatedIntMessage result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a120001c102b1fcfbff0fedc207fdffffff0f03"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a120001c102b1fcfbff0fedc207fdffffff0f03");
     test.setTestRepeatedInt(int32List());
     result = test.serialize(serializer.get());
     ASSERT_TRUE(result.isEmpty());
@@ -1311,8 +928,7 @@ TEST_F(SerializationTest, RepeatedSIntMessageTest)
     RepeatedSIntMessage test;
     test.setTestRepeatedInt({1, 321, -65999, 123245, -3, 3, 0});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "RepeatedSIntMessage result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a0c0282059d8708da850f050600"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a0c0282059d8708da850f050600");
 
     test.setTestRepeatedInt(sint32List());
     result = test.serialize(serializer.get());
@@ -1324,8 +940,7 @@ TEST_F(SerializationTest, RepeatedUIntMessageTest)
     RepeatedUIntMessage test;
     test.setTestRepeatedInt({1, 0, 321, 65999, 123245, 3});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a0b0100c102cf8304edc20703"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a0b0100c102cf8304edc20703");
 
     test.setTestRepeatedInt(uint32List());
     result = test.serialize(serializer.get());
@@ -1337,8 +952,7 @@ TEST_F(SerializationTest, RepeatedInt64MessageTest)
     RepeatedInt64Message test;
     test.setTestRepeatedInt({1, 321, -65999, 12324523123123, -3, 0, 3});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a2001c102b1fcfbffffffffffff01b3c3cab6d8e602fdffffffffffffffff010003"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a2001c102b1fcfbffffffffffff01b3c3cab6d8e602fdffffffffffffffff010003");
 
     test.setTestRepeatedInt(int64List());
     result = test.serialize(serializer.get());
@@ -1350,8 +964,7 @@ TEST_F(SerializationTest, RepeatedSInt64MessageTest)
     RepeatedSInt64Message test;
     test.setTestRepeatedInt({1, 321, -65999, 12324523123123, 0, -3, 3});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a100282059d8708e68695edb0cd05000506"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a100282059d8708e68695edb0cd05000506");
 
     test.setTestRepeatedInt(sint64List());
     result = test.serialize(serializer.get());
@@ -1363,8 +976,7 @@ TEST_F(SerializationTest, RepeatedUInt64MessageTest)
     RepeatedUInt64Message test;
     test.setTestRepeatedInt({1, 321, 0, 65999, 123245, 123245324235425234, 3});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a1401c10200cf8304edc207d28b9fda82dff6da0103"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a1401c10200cf8304edc207d28b9fda82dff6da0103");
 
     test.setTestRepeatedInt(uint64List());
     result = test.serialize(serializer.get());
@@ -1376,7 +988,6 @@ TEST_F(SerializationTest, RepeatedFixedIntMessageTest)
     RepeatedFixedIntMessage test;
     test.setTestRepeatedInt({1, 321, 65999, 12324523, 3, 3, 0});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
     ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a1c0100000041010000cf010100ab0ebc00030000000300000000000000");
     test.setTestRepeatedInt(fixed32List());
     result = test.serialize(serializer.get());
@@ -1388,7 +999,6 @@ TEST_F(SerializationTest, RepeatedSFixedIntMessageTest)
     RepeatedSFixedIntMessage test;
     test.setTestRepeatedInt({0, 1, 321, -65999, 12324523, -3, 3});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
     ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a1c00000000010000004101000031fefeffab0ebc00fdffffff03000000");
 
     test.setTestRepeatedInt(sfixed32List());
@@ -1401,8 +1011,7 @@ TEST_F(SerializationTest, RepeatedFixedInt64MessageTest)
     RepeatedFixedInt64Message test;
     test.setTestRepeatedInt({1, 321, 65999, 123245324235425234, 3, 3, 0});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a3801000000000000004101000000000000cf01010000000000d2c5472bf8dab501030000000000000003000000000000000000000000000000"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a3801000000000000004101000000000000cf01010000000000d2c5472bf8dab501030000000000000003000000000000000000000000000000");
 
     test.setTestRepeatedInt(fixed64List());
     result = test.serialize(serializer.get());
@@ -1414,8 +1023,7 @@ TEST_F(SerializationTest, RepeatedSFixedInt64MessageTest)
     RepeatedSFixedInt64Message test;
     test.setTestRepeatedInt({1, 321, -65999, 123245324235425234, -3, 3, 0});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a380100000000000000410100000000000031fefeffffffffffd2c5472bf8dab501fdffffffffffffff03000000000000000000000000000000"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a380100000000000000410100000000000031fefeffffffffffd2c5472bf8dab501fdffffffffffffff03000000000000000000000000000000");
 
     test.setTestRepeatedInt(sfixed64List());
     result = test.serialize(serializer.get());
@@ -1427,7 +1035,6 @@ TEST_F(SerializationTest, RepeatedStringMessageTest)
     RepeatedStringMessage test;
     test.setTestRepeatedString({"aaaa","bbbbb","ccc","dddddd","eeeee", ""});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
     ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a04616161610a0562626262620a036363630a066464646464640a0565656565650a00");
 
     test.setTestRepeatedString(QStringList());
@@ -1440,8 +1047,7 @@ TEST_F(SerializationTest, RepeatedDoubleMessageTest)
     RepeatedDoubleMessage test;
     test.setTestRepeatedDouble({0.1, 0.2, 0.3, 0.4, 0.5});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a289a9999999999b93f9a9999999999c93f333333333333d33f9a9999999999d93f000000000000e03f"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a289a9999999999b93f9a9999999999c93f333333333333d33f9a9999999999d93f000000000000e03f");
 
     test.setTestRepeatedDouble(DoubleList());
     result = test.serialize(serializer.get());
@@ -1456,7 +1062,7 @@ TEST_F(SerializationTest, RepeatedBytesMessageTest)
                                QByteArray::fromHex("eaeaeaeaea"),
                                QByteArray::fromHex("010203040506")});
     QByteArray result = test.serialize(serializer.get());
-    ASSERT_TRUE(result == QByteArray::fromHex("0a060102030405060a04ffffffff0a05eaeaeaeaea0a06010203040506"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a060102030405060a04ffffffff0a05eaeaeaeaea0a06010203040506");
 
     test.setTestRepeatedBytes(QByteArrayList());
     result = test.serialize(serializer.get());
@@ -1467,7 +1073,6 @@ TEST_F(SerializationTest, RepeatedBytesMessageTest)
                                QByteArray::fromHex("eaeaeaeaea"),
                                QByteArray::fromHex("010203040506")});
     result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
     ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a060102030405060a000a05eaeaeaeaea0a06010203040506");
 }
 
@@ -1476,8 +1081,7 @@ TEST_F(SerializationTest, RepeatedFloatMessageTest)
     RepeatedFloatMessage test;
     test.setTestRepeatedFloat({0.4f, 1.2f, 0.5f, 1.4f, 0.6f});
     QByteArray result = test.serialize(serializer.get());
-    //qDebug() << "result " << result.toHex();
-    ASSERT_TRUE(result == QByteArray::fromHex("0a14cdcccc3e9a99993f0000003f3333b33f9a99193f"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0a14cdcccc3e9a99993f0000003f3333b33f9a99193f");
 
     test.setTestRepeatedFloat(FloatList());
     result = test.serialize(serializer.get());
@@ -1510,12 +1114,12 @@ TEST_F(SerializationTest, BoolMessageSerializeTest)
     test.setTestFieldBool(true);
     QByteArray result = test.serialize(serializer.get());
     ASSERT_EQ(2, result.size());
-    ASSERT_TRUE(result == QByteArray::fromHex("0801"));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "0801");
 
     test.setTestFieldBool(false);
     result = test.serialize(serializer.get());
     ASSERT_EQ(0, result.size());
-    ASSERT_TRUE(result == QByteArray::fromHex(""));
+    ASSERT_STREQ(result.toHex().toStdString().c_str(), "");
 }
 
 TEST_F(SerializationTest, SimpleEnumMessageSerializeTest)

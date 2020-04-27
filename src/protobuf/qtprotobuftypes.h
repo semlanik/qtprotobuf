@@ -31,14 +31,13 @@
 #include <QMetaType>
 
 #include <unordered_map>
+#include <functional>
+#include <list>
 
 namespace QtProtobuf {
-/*!
-*  \addtogroup QtProtobuf
-*  \{
-*/
 
 /*!
+ * \ingroup QtProtobuf
  * \brief The WireTypes enumeration reflects protobuf default wiretypes
  *
  * \see https://developers.google.com/protocol-buffers/docs/encoding for details.
@@ -59,7 +58,7 @@ using QProtobufPropertyOrdering = std::unordered_map<int, int>;
 
 /*!
  * \private
- *
+ * \ingroup QtProtobuf
  * \brief the transparent class is template to define set of extra types for integral types, to cover protobuf needs
  */
 template<typename T, int = 0>
@@ -78,9 +77,9 @@ struct transparent {
 
 /*!
  * \brief int32 signed 32-bit integer
- *
+ * \ingroup QtProtobuf
  * \details int32 is regular signed 32-bit integer that is represented in protobuf as variable size integer
- * aka WireTypes::Varint without modificators
+ *          aka WireTypes::Varint without modificators
  */
 using int32 = transparent<int32_t>;
 
@@ -88,31 +87,31 @@ using int32 = transparent<int32_t>;
  * \brief int64 signed 64-bit integer
  *
  * \details int64 is regular signed 64-bit integer that is represented in protobuf as variable size integer
- * aka WireTypes::Varint without modificators
+ *          aka WireTypes::Varint without modificators
  */
 using int64 = transparent<int64_t>;
 
 /*!
  * \brief uint32 unsigned 32-bit integer
- *
+ * \ingroup QtProtobuf
  * \details uint32 is unsigned 32-bit integer that is represented in protobuf as variable size integer
- * aka WireTypes::Varint without modificators
+ *          aka WireTypes::Varint without modificators
  */
 using uint32 = uint32_t;
 
 /*!
  * \brief uint64 unsigned 64-bit integer
- *
+ * \ingroup QtProtobuf
  * \details uint64 is unsigned 64-bit integer that is represented in protobuf as variable size integer
- * aka WireTypes::Varint without modificators
+ *          aka WireTypes::Varint without modificators
  */
 using uint64 = uint64_t;
 
 /*!
  * \brief sint32 signed 32-bit ZigZag integer
- *
+ * \ingroup QtProtobuf
  * \details sint32 is 32-bit integer with forced sign marker that is represented in protobuf as variable size integer
- * aka WireTypes::Varint. sint32 type serialized using ZigZag convertion to reduce size of negative numbers.
+ *          aka WireTypes::Varint. sint32 type serialized using ZigZag convertion to reduce size of negative numbers.
  *
  * \see https://developers.google.com/protocol-buffers/docs/encoding#signed-integers for details.
  */
@@ -120,9 +119,9 @@ using sint32 = int32_t;
 
 /*!
  * \brief sint64 signed 64-bit ZigZag integer
- *
+ * \ingroup QtProtobuf
  * \details sint64 is 64-bit integer with forced sign marker that is represented in protobuf as variable size integer
- * aka WireTypes::Varint. sint64 type serialized using ZigZag convertion to reduce size of negative numbers.
+ *          aka WireTypes::Varint. sint64 type serialized using ZigZag convertion to reduce size of negative numbers.
  *
  * \see https://developers.google.com/protocol-buffers/docs/encoding#signed-integers for details.
  */
@@ -130,103 +129,130 @@ using sint64 = int64_t;
 
 /*!
  * \brief fixed32 unsigned 32-bit fixed size integer
- *
+ * \ingroup QtProtobuf
  * \details fixed32 is unsigned 32-bit integer that is represented in protobuf as fixed size 32-bit field
- * aka WireTypes::Fixed32
+ *          aka WireTypes::Fixed32
  */
 using fixed32 = transparent<uint32_t, 1>;
 
 /*!
  * \brief fixed64 unsigned 64-bit fixed size integer
- *
+ * \ingroup QtProtobuf
  * \details fixed64 is unsigned 64-bit integer that is represented in protobuf as fixed size 64-bit field
- * aka WireTypes::Fixed64
+ *          aka WireTypes::Fixed64
  */
 using fixed64 = transparent<uint64_t, 1>;
 
 /*!
  * \brief fixed32 signed 32-bit fixed size integer
- *
+ * \ingroup QtProtobuf
  * \details fixed32 is signed 32-bit integer that is represented in protobuf as fixed size 32-bit field
- * aka WireTypes::Fixed32
+ *          aka WireTypes::Fixed32
  */
 using sfixed32 = transparent<int32_t, 1>;
 
 /*!
  * \brief fixed64 signed 64-bit fixed size integer
- *
+ * \ingroup QtProtobuf
  * \details fixed64 is signed 64-bit integer that is represented in protobuf as fixed size 64-bit field
  * aka WireTypes::Fixed64
  */
 using sfixed64 = transparent<int64_t, 1>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::int32
  */
 using int32List = QList<int32>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::int64
  */
 using int64List = QList<int64>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::uint32
  */
 using uint32List = QList<uint32>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::uint64
  */
 using uint64List = QList<uint64>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::sint32
  */
 using sint32List = QList<sint32>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::sint64
  */
 using sint64List = QList<sint64>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::fixed32
  */
 using fixed32List = QList<fixed32>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::fixed64
  */
 using fixed64List = QList<fixed64>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::sfixed32
  */
 using sfixed32List = QList<sfixed32>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::sfixed64
  */
 using sfixed64List = QList<sfixed64>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::float
  */
 using FloatList = QList<float>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::double
  */
 using DoubleList = QList<double>;
 
 /*!
+ * \ingroup QtProtobuf
  * \brief registerTypes
  * This method should be called in all applications that supposed to use QtProtobuf
  */
-Q_PROTOBUF_EXPORT extern void qRegisterProtobufTypes();
+extern Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
 
 /*! \} */
+
+//!\private
+using RegisterFunction = std::function<void(void)>;
+
+//!\private
+extern Q_PROTOBUF_EXPORT std::list<RegisterFunction>& registerFunctions();
+
+//!\private
+template <typename T>
+struct ProtoTypeRegistrar {
+    ProtoTypeRegistrar(RegisterFunction initializer) {
+        registerFunctions().push_back(initializer);
+    }
+};
 }
 
 Q_DECLARE_METATYPE(QtProtobuf::int32)
@@ -311,4 +337,12 @@ struct is_signed<QtProtobuf::sfixed32> : public is_signed<decltype(QtProtobuf::s
 //! \private
 template<>
 struct is_signed<QtProtobuf::sfixed64> : public is_signed<decltype(QtProtobuf::sfixed64::_t)> {};
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+template<> struct hash<QString> {
+    std::size_t operator()(const QString &s) const {
+        return std::hash<std::string>()(s.toStdString());
+    }
+};
+#endif
 }

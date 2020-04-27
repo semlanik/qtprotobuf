@@ -25,7 +25,7 @@
 
 #include "serializationtest.h"
 
-#include "simpletest.pb.h"
+#include "simpletest.qpb.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf::tests;

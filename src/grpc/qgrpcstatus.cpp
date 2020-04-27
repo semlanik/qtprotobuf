@@ -26,7 +26,7 @@
 #include "qgrpcstatus.h"
 
 namespace QtProtobuf {
-
+//! \private
 class QGrpcStatusPrivate {
 public:
     QGrpcStatusPrivate(QGrpcStatus::StatusCode code, const QString &message) : m_code(code)
@@ -40,26 +40,26 @@ public:
 };
 
 QGrpcStatus::QGrpcStatus(StatusCode code, const QString &message) :
-    d_ptr(std::make_unique<QGrpcStatusPrivate>(code, message))
+    dPtr(std::make_unique<QGrpcStatusPrivate>(code, message))
 {}
 
-QGrpcStatus::QGrpcStatus(const QGrpcStatus &other) : d_ptr(std::make_unique<QGrpcStatusPrivate>(other.d_ptr->m_code, other.d_ptr->m_message))
+QGrpcStatus::QGrpcStatus(const QGrpcStatus &other) : dPtr(std::make_unique<QGrpcStatusPrivate>(other.dPtr->m_code, other.dPtr->m_message))
 {}
 
-QGrpcStatus::QGrpcStatus(QGrpcStatus &&other) : d_ptr(std::move(other.d_ptr))
+QGrpcStatus::QGrpcStatus(QGrpcStatus &&other) : dPtr(std::move(other.dPtr))
 {
 }
 
 QGrpcStatus &QGrpcStatus::operator =(const QGrpcStatus &other)
 {
-    d_ptr->m_code = other.d_ptr->m_code;
-    d_ptr->m_message = other.d_ptr->m_message;
+    dPtr->m_code = other.dPtr->m_code;
+    dPtr->m_message = other.dPtr->m_message;
     return *this;
 }
 
 QGrpcStatus &QGrpcStatus::operator =(QGrpcStatus &&other)
 {
-    d_ptr = std::move(other.d_ptr);
+    dPtr = std::move(other.dPtr);
     return *this;
 }
 
@@ -68,27 +68,27 @@ QGrpcStatus::~QGrpcStatus()
 
 QString QGrpcStatus::message() const
 {
-    return d_ptr->m_message;
+    return dPtr->m_message;
 }
 
 QGrpcStatus::StatusCode QGrpcStatus::code() const
 {
-    return d_ptr->m_code;
+    return dPtr->m_code;
 }
 
 bool QGrpcStatus::operator ==(StatusCode code) const
 {
-    return d_ptr->m_code == code;
+    return dPtr->m_code == code;
 }
 
 bool QGrpcStatus::operator !=(StatusCode code) const
 {
-    return d_ptr->m_code != code;
+    return dPtr->m_code != code;
 }
 
 bool QGrpcStatus::operator ==(const QGrpcStatus &other) const
 {
-    return d_ptr->m_code == other.d_ptr->m_code;
+    return dPtr->m_code == other.dPtr->m_code;
 }
 
 }

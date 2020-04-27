@@ -25,8 +25,7 @@
 
 #include "deserializationtest.h"
 
-#include "simpletest.pb.h"
-#include "qtprotobuf_global.pb.h"
+#include "simpletest.qpb.h"
 
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf::tests;
@@ -36,9 +35,6 @@ void DeserializationTest::SetUpTestCase()
 {
     //Register all types
     QtProtobuf::qRegisterProtobufTypes();
-    qtprotobufnamespace::tests::qRegisterProtobufTypes();
-    qtprotobufnamespace1::externaltests::qRegisterProtobufTypes();
-    qtprotobufnamespace::tests::globalenums::qRegisterProtobufTypes();
 }
 
 void DeserializationTest::SetUp()

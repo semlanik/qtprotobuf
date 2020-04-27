@@ -1,5 +1,3 @@
-find_package(QtProtobufProject COMPONENTS QtProtobuf QtGrpc REQUIRED)
-
 function(protobuf_generate_all)
     set(options)
     set(oneValueArgs OUT_DIR TARGET)
@@ -10,7 +8,7 @@ function(protobuf_generate_all)
 
     foreach(PROTO_FILE IN LISTS protobuf_generate_all_PROTO_FILES)
         get_filename_component(BASE_DIR ${PROTO_FILE} DIRECTORY)
-        set(PROTO_INCLUDES -I"${BASE_DIR}" ${PROTO_INCUDES})
+        set(PROTO_INCLUDES -I"${BASE_DIR}" ${PROTO_INCLUDES})
     endforeach()
 
     if(NOT DEFINED protobuf_generate_all_OUT_DIR)
@@ -39,50 +37,6 @@ function(protobuf_generate_all)
     add_custom_target(${GEN_TARGET} DEPENDS ${protobuf_generate_all_PROTO_FILES} ${GENERATED_SOURCES})
     add_dependencies(${protobuf_generate_all_TARGET} ${GEN_TARGET})
 endfunction(protobuf_generate_all)
-
-function(add_test_target)
-    set(options)
-    set(oneValueArgs QML_DIR TARGET MULTI QML)
-    set(multiValueArgs SOURCES GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES)
-    cmake_parse_arguments(add_test_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    find_package(Threads REQUIRED)
-    find_package(Qt5 COMPONENTS Test REQUIRED)
-    ## test sources build
-    # policy enables automoc for generated files
-    if(${CMAKE_VERSION} VERSION_GREATER "3.10.0")
-        cmake_policy(SET CMP0071 NEW)
-    endif()
-
-    set(GENERATED_SOURCES_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
-
-    if(DEFINED add_test_target_PROTO_FILES)
-        file(GLOB PROTO_FILES ABSOLUTE ${add_test_target_PROTO_FILES})
-    else()
-        file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto)
-    endif()
-
-    generate_qtprotobuf(TARGET ${add_test_target_TARGET}
-        OUT_DIR ${GENERATED_SOURCES_DIR}
-        PROTO_FILES ${PROTO_FILES}
-        GENERATED_HEADERS ${add_test_target_GENERATED_HEADERS}
-        EXCLUDE_HEADERS ${add_test_target_EXCLUDE_HEADERS}
-        MULTI ${add_test_target_MULTI}
-        QML ${add_test_target_QML})
-
-    add_executable(${add_test_target_TARGET} ${add_test_target_SOURCES})
-
-    if(Qt5_POSITION_INDEPENDENT_CODE)
-        set_target_properties(${add_test_target_TARGET} PROPERTIES POSITION_INDEPENDENT_CODE FALSE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-    endif()
-    add_dependencies(${add_test_target_TARGET} ${QtProtobuf_GENERATED})
-    target_link_libraries(${add_test_target_TARGET} gtest_main gtest ${QtProtobuf_GENERATED} ${QTPROTOBUF_COMMON_NAMESPACE}::QtProtobuf ${QTPROTOBUF_COMMON_NAMESPACE}::QtGrpc Qt5::Core Qt5::Test Qt5::Network ${CMAKE_THREAD_LIBS_INIT})
-    if (${add_test_target_QML})
-        target_link_libraries(${add_test_target_TARGET} Qt5::Qml)
-    endif()
-
-endfunction(add_test_target)
 
 function(add_target_qml)
     set(options)
@@ -121,4 +75,19 @@ if(WIN32)
             COMMAND ${WINDEPLOYQT_EXECUTABLE} ${QML_DIR} $<TARGET_FILE_DIR:${add_target_windeployqt_TARGET}>)
     endif()
 endif()
+endfunction()
+
+function(extract_qt_variable VARIABLE)
+    if(NOT DEFINED QT_QMAKE_EXECUTABLE)
+        find_program(QT_QMAKE_EXECUTABLE "qmake")
+        if(QT_QMAKE_EXECUTABLE STREQUAL QT_QMAKE_EXECUTABLE-NOTFOUND)
+            message(FATAL_ERROR "Could not find qmake executable")
+        endif()
+    endif()
+    execute_process(
+        COMMAND ${QT_QMAKE_EXECUTABLE} -query ${VARIABLE}
+        OUTPUT_VARIABLE ${VARIABLE}
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    set(${VARIABLE} ${${VARIABLE}} PARENT_SCOPE)
 endfunction()

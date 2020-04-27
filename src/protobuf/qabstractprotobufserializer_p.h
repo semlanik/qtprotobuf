@@ -59,6 +59,7 @@ enum HandlerType {
 };
 
 /*!
+ * \private
  * \brief SerializationHandlers contains set of objects that required for class serializaion/deserialization
  */
 struct SerializationHandler {
@@ -93,10 +94,7 @@ void serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, co
 
     qProtoDebug() << __func__ << "listValue.count" << list.count();
 
-    if (list.count() <= 0) {
-        return;
-    }
-
+    buffer.append(serializer->serializeListBegin(metaProperty));
     for (auto &value : list) {
         if (!value) {
             qProtoWarning() << "Null pointer in list";
@@ -104,6 +102,7 @@ void serializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, co
         }
         buffer.append(serializer->serializeListObject(value.data(), V::protobufMetaObject, metaProperty));
     }
+    buffer.append(serializer->serializeListEnd(buffer, metaProperty));
 }
 
 /*!
@@ -115,9 +114,11 @@ template<typename K, typename V,
 void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     QMap<K,V> mapValue = value.value<QMap<K,V>>();
+    buffer.append(serializer->serializeMapBegin(metaProperty));
     for (auto it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
         buffer.append(serializer->serializeMapPair(QVariant::fromValue<K>(it.key()), QVariant::fromValue<V>(it.value()), metaProperty));
     }
+    buffer.append(serializer->serializeMapEnd(buffer, metaProperty));
 }
 
 /*!
@@ -129,6 +130,7 @@ template<typename K, typename V,
 void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &metaProperty, QByteArray &buffer) {
     Q_ASSERT_X(serializer != nullptr, "QAbstractProtobufSerializer", "Serializer is null");
     QMap<K, QSharedPointer<V>> mapValue = value.value<QMap<K, QSharedPointer<V>>>();
+    buffer.append(serializer->serializeMapBegin(metaProperty));
     for (auto it = mapValue.constBegin(); it != mapValue.constEnd(); it++) {
         if (it.value().isNull()) {
             qProtoWarning() << __func__ << "Trying to serialize map value that contains nullptr";
@@ -136,6 +138,7 @@ void serializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, con
         }
         buffer.append(serializer->serializeMapPair(QVariant::fromValue<K>(it.key()), QVariant::fromValue<V *>(it.value().data()), metaProperty));
     }
+    buffer.append(serializer->serializeMapEnd(buffer, metaProperty));
 }
 
 /*!
@@ -189,9 +192,10 @@ void deserializeList(const QtProtobuf::QAbstractProtobufSerializer *serializer, 
 
     V *newValue = new V;
     QList<QSharedPointer<V>> list = previous.value<QList<QSharedPointer<V>>>();
-    serializer->deserializeListObject(newValue, V::protobufMetaObject, it);
-    list.append(QSharedPointer<V>(newValue));
-    previous.setValue(list);
+    if (serializer->deserializeListObject(newValue, V::protobufMetaObject, it)) {
+        list.append(QSharedPointer<V>(newValue));
+        previous.setValue(list);
+    }
 }
 
 /*!
@@ -209,9 +213,10 @@ void deserializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, Q
     QVariant key = QVariant::fromValue<K>(K());
     QVariant value = QVariant::fromValue<V>(V());
 
-    serializer->deserializeMapPair(key, value, it);
-    out[key.value<K>()] = value.value<V>();
-    previous = QVariant::fromValue<QMap<K, V>>(out);
+    if (serializer->deserializeMapPair(key, value, it)) {
+        out[key.value<K>()] = value.value<V>();
+        previous = QVariant::fromValue<QMap<K, V>>(out);
+    }
 }
 
 /*!
@@ -230,11 +235,17 @@ void deserializeMap(const QtProtobuf::QAbstractProtobufSerializer *serializer, Q
     QVariant key = QVariant::fromValue<K>(K());
     QVariant value = QVariant::fromValue<V *>(nullptr);
 
-    serializer->deserializeMapPair(key, value, it);
-    out[key.value<K>()] = QSharedPointer<V>(value.value<V *>());
-    previous = QVariant::fromValue<QMap<K, QSharedPointer<V>>>(out);
+    if (serializer->deserializeMapPair(key, value, it)) {
+        out[key.value<K>()] = QSharedPointer<V>(value.value<V *>());
+        previous = QVariant::fromValue<QMap<K, QSharedPointer<V>>>(out);
+    }
 }
 
+/*!
+ * \private
+ *
+ * \brief default deserializer template for enum type T
+ */
 template <typename T,
           typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
 void deserializeEnum(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &to) {
@@ -244,6 +255,11 @@ void deserializeEnum(const QtProtobuf::QAbstractProtobufSerializer *serializer, 
     to = QVariant::fromValue<T>(static_cast<T>(intValue._t));
 }
 
+/*!
+ * \private
+ *
+ * \brief default deserializer template for enumList type T
+ */
 template <typename T,
           typename std::enable_if_t<std::is_enum<T>::value, int> = 0>
 void deserializeEnumList(const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &previous) {

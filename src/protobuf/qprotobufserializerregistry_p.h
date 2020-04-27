@@ -30,9 +30,8 @@
 
 #include <memory>
 #include <type_traits>
+#include <unordered_map>
 
-#include "qtprotobuflogging.h"
-#include "qprotobufselfcheckiterator.h"
 #include "qabstractprotobufserializer.h"
 
 #include "qtprotobufglobal.h"
@@ -40,19 +39,29 @@
 namespace QtProtobuf {
 
 class QProtobufSerializerRegistryPrivate;
+
 /*!
  * \ingroup QtProtobuf
  * \private
- * \brief The QProtobufSerializerRegistry class provides api to register serializers
- *        Loads serializer plugins and constructs serializer based on identifier.
+ * \brief The QProtobufSerializerRegistry class provides api to register serializers,
+ *        loads serializer plugins and constructs serializer based on identifier.
  *
+ * \details Class reads list of plugins from folder defined by QT_INSTALL_PLUGINS variable.
+ *          User can choose specific plugin or list of plugins with serializer implementations.
+ *          Pay attention, QProtobufSerializerRegistry not load all plugins, but only required by user.
  */
-
 class Q_PROTOBUF_EXPORT QProtobufSerializerRegistry final
 {
 public:
     std::shared_ptr<QAbstractProtobufSerializer> getSerializer(const QString &id);
-    std::unique_ptr<QAbstractProtobufSerializer> acquireSerializer(const QString &id);
+    std::shared_ptr<QAbstractProtobufSerializer> getSerializer(const QString &id, const QString &plugin);
+    std::unique_ptr<QAbstractProtobufSerializer> acquireSerializer(const QString &id, const QString &plugin);
+    float pluginVersion(const QString &plugin);
+    QStringList pluginSerializers(const QString &plugin);
+    float pluginProtobufVersion(const QString &plugin);
+    int pluginRating(const QString &plugin);
+
+    QString loadPlugin(const QString &name);
 
     static QProtobufSerializerRegistry &instance() {
         static QProtobufSerializerRegistry _instance;
@@ -65,6 +74,6 @@ private:
 
     Q_DISABLE_COPY_MOVE(QProtobufSerializerRegistry)
 
-    std::unique_ptr<QProtobufSerializerRegistryPrivate> d;
+    std::unique_ptr<QProtobufSerializerRegistryPrivate> dPtr;
 };
 }

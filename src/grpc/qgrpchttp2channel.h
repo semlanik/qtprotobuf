@@ -32,29 +32,36 @@
 
 namespace QtProtobuf {
 
-class AbstractCredentials;
+class QAbstractGrpcCredentials;
 struct QGrpcHttp2ChannelPrivate;
 /*!
  * \ingroup QtGrpc
- * \brief The QGrpcHttp2Channel class
+ * \brief The QGrpcHttp2Channel class is HTTP/2 implementation of QAbstractGrpcChannel interface
+ * \details For QGrpcHttp2Channel utilizes channel and call credentials.
+ *          For channel credential QGrpcHttp2Channel supports SslConfigCredential key. When https
+ *          is used, this key has to be explicitly specified and provide QSslConfiguration and value.
+ *          Provided QSslConfiguration will be used to establish HTTP/2 secured connection.
+ *          All keys passed as QGrpcCallCredentials will be used as HTTP/2 headers with related values
+ *          assigned.
  */
 class Q_GRPC_EXPORT QGrpcHttp2Channel final : public QAbstractGrpcChannel
 {
 public:
-    QGrpcHttp2Channel(const QUrl &url, const AbstractCredentials &credentials);
+    /*!
+     * \brief QGrpcHttp2Channel constructs QGrpcHttp2Channel
+     * \param url http/https url used to establish channel connection
+     * \param credentials call/channel credentials pair
+     */
+    QGrpcHttp2Channel(const QUrl &url, std::unique_ptr<QAbstractGrpcCredentials> credentials);
     ~QGrpcHttp2Channel();
 
     QGrpcStatus call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
     void call(const QString &method, const QString &service, const QByteArray &args, QtProtobuf::QGrpcAsyncReply *reply) override;
-    void subscribe(const QString &method, const QString &service, const QByteArray &args, QAbstractGrpcClient *client, const std::function<void (const QByteArray &)> &handler) override;
+    void subscribe(QGrpcSubscription *subscription, const QString &service, QAbstractGrpcClient *client) override;
     std::shared_ptr<QAbstractProtobufSerializer> serializer() const override;
-
-protected:
-    void abort(QGrpcAsyncReply *reply) override;
-
 private:
     Q_DISABLE_COPY_MOVE(QGrpcHttp2Channel)
 
-    std::unique_ptr<QGrpcHttp2ChannelPrivate> d_ptr;
+    std::unique_ptr<QGrpcHttp2ChannelPrivate> dPtr;
 };
 }

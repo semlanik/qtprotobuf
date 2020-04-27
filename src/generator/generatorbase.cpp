@@ -68,69 +68,22 @@ void GeneratorBase::iterateNonNestedFileds(const ::google::protobuf::FileDescrip
 
 bool GeneratorBase::GenerateAll(const std::vector<const FileDescriptor *> &files, const string &parameter, GeneratorContext *generatorContext, string *error) const
 {
-    PackagesList packageList;
-    for (auto file : files) {
-        packageList[file->package()].push_back(file);
-    }
-
-    std::shared_ptr<io::ZeroCopyOutputStream> outfHeader(generatorContext->Open(Templates::GlobalDeclarationsFilename + Templates::ProtoFileSuffix + ".h"));
-    std::shared_ptr<::google::protobuf::io::Printer> outfHeaderPrinter(new ::google::protobuf::io::Printer(outfHeader.get(), '$'));
-
-    outfHeaderPrinter->Print(Templates::DisclaimerTemplate);
-    outfHeaderPrinter->Print(Templates::PreambleTemplate);
-    outfHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
-
-    if (GeneratorOptions::instance().hasQml()) {
-        outfHeaderPrinter->Print(Templates::QmlProtobufIncludesTemplate);
-    }
-
-    bool addGlobalEnumsHeader = false;
-    for (auto file : files) {
-        if (m_mode == SingleMode) {
-            if (file->message_type_count() > 0) {
-                outfHeaderPrinter->Print({{"include", utils::extractFileName(file->name()) + Templates::ProtoFileSuffix}}, Templates::InternalIncludeTemplate);
-            }
-        } else {
-            iterateNonNestedFileds(file, [&outfHeaderPrinter, file, &addGlobalEnumsHeader](const ::google::protobuf::Descriptor *message) {
-                std::string messageName = message->name();
-                utils::tolower(messageName);
-                outfHeaderPrinter->Print({{"include", messageName}}, Templates::InternalIncludeTemplate);
-                if (file->enum_type_count() > 0) {
-                    addGlobalEnumsHeader = true;
-                }
-            });
-        }
-    }
-
-    if (addGlobalEnumsHeader) {
-        outfHeaderPrinter->Print({{"include", "globalenums"}}, Templates::InternalIncludeTemplate);
-    }
-
-    for (auto package : packageList) {
-        std::vector<std::string> namespaces;
-        utils::split(package.first, namespaces, '.');
-        for (auto ns : namespaces) {
-            outfHeaderPrinter->Print({{"namespace", ns}}, Templates::NamespaceTemplate);
-        }
-        outfHeaderPrinter->Print("inline void qRegisterProtobufTypes() {\n");
-        outfHeaderPrinter->Indent();
-        outfHeaderPrinter->Indent();
-        for (auto file : package.second) {
-            iterateNonNestedFileds(file, [&outfHeaderPrinter](const ::google::protobuf::Descriptor *message) {
-                outfHeaderPrinter->Print({{"classname", message->name()}}, "qRegisterProtobufType<$classname$>();\n");
-            });
-
-            if (file->enum_type_count() > 0) {
-                outfHeaderPrinter->Print("GlobalEnums::registerTypes();\n");
-            }
-        }
-        outfHeaderPrinter->Outdent();
-        outfHeaderPrinter->Outdent();
-        outfHeaderPrinter->Print("}\n");
-        for (size_t i = 0; i < namespaces.size(); i++) {
-            outfHeaderPrinter->Print("}\n");
-        }
-    }
-
     return CodeGenerator::GenerateAll(files, parameter, generatorContext, error);
+}
+
+std::string GeneratorBase::generateBaseName(const ::google::protobuf::FileDescriptor *file, std::string name)
+{
+    std::vector<std::string> packages;
+    utils::split(file->package(), packages, '.');
+    std::string outFileBasename = "";
+    if (GeneratorOptions::instance().isFolder()) {
+        for (auto package : packages) {
+            outFileBasename += package + "/";
+        }
+        outFileBasename += name;
+    } else {
+        outFileBasename = name;
+    }
+
+    return outFileBasename;
 }

@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package qtprotobufnamespace.tests2;
+
+message RepeatedFloatMessage {
+    repeated float testRepeatedFloat = 1;
+}

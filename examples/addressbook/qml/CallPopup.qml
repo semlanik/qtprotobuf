@@ -151,7 +151,7 @@ Rectangle {
     QtObject {
         id: _d
         function getCallStatusText() {
-            switch(callStatus.status) {
+            switch (callStatus.status) {
             case CallStatus.Active:
                 return qsTr("Active call to %1...").arg("+" + callStatus.phoneNumber.countryCode + " " + callStatus.phoneNumber.number)
             case CallStatus.Ended:

@@ -30,6 +30,11 @@
 namespace QtProtobuf {
 namespace generator {
 
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The GeneratorOptions class
+ */
 class GeneratorOptions
 {
     GeneratorOptions();
@@ -43,9 +48,14 @@ public:
 
     bool isMulti() const { return mIsMulti; }
     bool hasQml() const { return mHasQml; }
+    bool generateComments() const { return mGenerateComments; }
+    bool isFolder() const { return mIsFolder; }
+
 private:
     bool mIsMulti;
     bool mHasQml;
+    bool mGenerateComments;
+    bool mIsFolder;
 };
 
 }}

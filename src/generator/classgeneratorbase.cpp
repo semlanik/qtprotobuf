@@ -26,7 +26,6 @@
 #include "classgeneratorbase.h"
 
 #include "templates.h"
-#include "utils.h"
 #include "generatoroptions.h"
 
 #include <google/protobuf/descriptor.h>
@@ -44,7 +43,7 @@ ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, const s
 {
     utils::split(fullClassName, mNamespaces, '.');
     assert(mNamespaces.size() > 0);
-    mClassName = mNamespaces.back();
+    mClassName = utils::upperCaseName(mNamespaces.back());
     mNamespaces.erase(mNamespaces.end() - 1);
     for (size_t i = 0; i < mNamespaces.size(); i++) {
         if (i > 0) {
@@ -152,10 +151,10 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
     if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
         const Descriptor *msg = field->message_type();
         namespaceTypeName = getNamespacesList(msg, typeNamespace, mNamespacesColonDelimited);
-        typeName = namespaceTypeName.append(msg->name());
+        typeName = namespaceTypeName.append(utils::upperCaseName(msg->name()));
 
         if (field->is_map()) {
-            return mClassName + "::" + field->message_type()->name();
+            return mClassName + "::" + utils::upperCaseName(msg->name());
         }
         if (field->is_repeated()) {
             return namespaceTypeName.append(Templates::ListSuffix);
@@ -174,7 +173,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
             }
         } else if (visibility == GLOBAL_ENUM) {
             namespaceTypeName = getNamespacesList(enumType, typeNamespace, "");
-            typeName = namespaceTypeName.append(Templates::GlobalEnumClassNameTemplate)
+            typeName = namespaceTypeName.append(enumType->name() + Templates::EnumClassSuffix)
                     .append("::").append(enumType->name());
         } else {
             typeName = namespaceTypeName.append(enumType->name());
@@ -197,7 +196,7 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
             if (field->is_repeated()) {
                 if (field->type() == FieldDescriptor::TYPE_FLOAT
                         || field->type() == FieldDescriptor::TYPE_DOUBLE) {
-                    typeName[0] = ::toupper(typeName[0]);
+                    typeName[0] =  static_cast<char>(::toupper(typeName[0]));
                     typeName = namespaceQtProtoDefinition.append(typeName);
                 }
                 typeName.append("List");
@@ -206,6 +205,22 @@ std::string ClassGeneratorBase::getTypeName(const FieldDescriptor *field, const 
     }
 
     return typeName;
+}
+
+std::string ClassGeneratorBase::getQmlAliasTypeName(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *messageFor)
+{
+    if (!field->is_repeated() && !field->is_map()) {
+        switch (field->type()) {
+        case FieldDescriptor::TYPE_INT32:
+        case FieldDescriptor::TYPE_SFIXED32:
+            return "int";
+        case FieldDescriptor::TYPE_FIXED32:
+            return "unsigned int";
+        default:
+            break;//Do nothing
+        }
+    }
+    return getTypeName(field, messageFor);
 }
 
 template<typename T>
@@ -265,7 +280,7 @@ void ClassGeneratorBase::getMethodParameters(const MethodDescriptor *method, std
     std::string outputTypeName = method->output_type()->full_name();
     std::string methodName = method->name();
     std::string methodNameUpper = method->name();
-    methodNameUpper[0] = ::toupper(methodNameUpper[0]);
+    methodNameUpper[0] =  static_cast<char>(::toupper(methodNameUpper[0]));
     utils::replace(inputTypeName, ".", "::");
     utils::replace(outputTypeName, ".", "::");
     parameters = {{"classname", mClassName},
@@ -300,7 +315,10 @@ void ClassGeneratorBase::printField(const google::protobuf::Descriptor *message,
 bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *message, const FieldDescriptor *field, PropertyMap &propertyMap)
 {
     assert(field != nullptr);
+    std::string scriptable = "true";
     std::string typeName = getTypeName(field, message);
+    std::string qmlAliasTypeName = getQmlAliasTypeName(field, message);
+    std::string getterType = typeName;
 
     if (typeName.size() <= 0) {
         std::cerr << "Type "
@@ -314,9 +332,6 @@ bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *
     std::string typeNameLower(typeName);
     utils::tolower(typeNameLower);
 
-    std::string capProperty = field->name();
-    capProperty[0] = static_cast<char>(::toupper(capProperty[0]));
-
     std::string typeNameNoList = typeName;
     if (field->is_repeated() && !field->is_map()) {
         if(field->type() == FieldDescriptor::TYPE_MESSAGE
@@ -326,16 +341,38 @@ bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *
             typeNameNoList.resize(typeNameNoList.size() - strlen("List"));
         }
     }
-    std::string fieldName = field->name();
-    fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
+
+    if (!field->is_map() && !field->is_repeated() && (field->type() == FieldDescriptor::TYPE_INT64
+                                                      || field->type() == FieldDescriptor::TYPE_SINT64
+                                                      || field->type() == FieldDescriptor::TYPE_FIXED64
+                                                      || field->type() == FieldDescriptor::TYPE_SFIXED64)) {
+        scriptable = "false";
+    }
+
+    if (field->type() == FieldDescriptor::TYPE_INT32
+         || field->type() == FieldDescriptor::TYPE_FIXED32
+         || field->type() == FieldDescriptor::TYPE_SFIXED32
+         || field->type() == FieldDescriptor::TYPE_INT64
+         || field->type() == FieldDescriptor::TYPE_FIXED64
+         || field->type() == FieldDescriptor::TYPE_SFIXED64) {
+        getterType = "const " + getterType;
+    }
+
+    std::string fieldName = utils::lowerCaseName(field->camelcase_name());
     fieldName = qualifiedName(fieldName);
 
+    std::string capProperty = fieldName;
+    capProperty[0] = static_cast<char>(::toupper(capProperty[0]));
+
     propertyMap = {{"type", typeName},
-                   {"classname", message->name()},
+                   {"classname", utils::upperCaseName(message->name())},
                    {"type_lower", typeNameLower},
                    {"property_name", fieldName},
                    {"property_name_cap", capProperty},
-                   {"type_nolist", typeNameNoList}
+                   {"type_nolist", typeNameNoList},
+                   {"qml_alias_type", qmlAliasTypeName},
+                   {"scriptable", scriptable},
+                   {"getter_type", getterType}
                   };
     return true;
 }
@@ -375,9 +412,19 @@ void ClassGeneratorBase::printInclude(const google::protobuf::Descriptor *messag
             printInclude(message, field->message_type()->field(1), existingIncludes);
             includeTemplate = Templates::ExternalIncludeTemplate;
         } else {
+            std::string outFileBasename = "";
+            std::string fieldPackage = field->message_type()->file()->package();
+            if (fieldPackage != message->file()->package()) {
+                std::vector<std::string> packages;
+                utils::split(fieldPackage, packages, '.');
+                for (auto package : packages) {
+                    outFileBasename += package + "/";
+                }
+            }
+
             std::string typeName = field->message_type()->name();
             utils::tolower(typeName);
-            newInclude = typeName;
+            newInclude = outFileBasename + typeName;
             includeTemplate = Templates::InternalIncludeTemplate;
         }
         break;
@@ -415,3 +462,13 @@ void ClassGeneratorBase::printInclude(const google::protobuf::Descriptor *messag
         existingIncludes.insert(newInclude);
     }
 }
+
+bool ClassGeneratorBase::hasQmlAlias(const ::google::protobuf::FieldDescriptor *field)
+{
+    return !field->is_map() && !field->is_repeated()
+            && (field->type() == FieldDescriptor::TYPE_INT32
+                || field->type() == FieldDescriptor::TYPE_SFIXED32
+                || field->type() == FieldDescriptor::TYPE_FIXED32)
+            && GeneratorOptions::instance().hasQml();
+}
+

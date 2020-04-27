@@ -28,12 +28,13 @@
 #include "classgeneratorbase.h"
 #include "protobufclassgenerator.h"
 #include "protobufsourcegenerator.h"
-#include "globalenumsgenerator.h"
-#include "globalenumssourcegenerator.h"
+#include "enumsgenerator.h"
+#include "enumssourcegenerator.h"
 #include "servergenerator.h"
 #include "clientgenerator.h"
 #include "clientsourcegenerator.h"
 #include "utils.h"
+#include "generatoroptions.h"
 
 #include <iostream>
 #include <set>
@@ -83,6 +84,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
 
         std::string baseFilename(message->name());
         utils::tolower(baseFilename);
+        baseFilename = generateBaseName(file, baseFilename);
 
         std::string filename = baseFilename + ".h";
         ProtobufClassGenerator classGen(message,
@@ -99,6 +101,7 @@ bool QtGenerator::Generate(const FileDescriptor *file,
         const ServiceDescriptor *service = file->service(i);
         std::string baseFilename(service->name());
         utils::tolower(baseFilename);
+        baseFilename = generateBaseName(file, baseFilename);
 
         std::string fullFilename = baseFilename + "server.h";
         ServerGenerator serverGen(service,
@@ -122,22 +125,43 @@ bool QtGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, 
 {
     std::string globalEnumsFilename = "globalenums";
 
+    std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(globalEnumsFilename + ".h"));
+    std::shared_ptr<io::ZeroCopyOutputStream> outSource(generatorContext->Open(globalEnumsFilename + ".cpp"));
+    std::shared_ptr<::google::protobuf::io::Printer> outHeaderPrinter(new ::google::protobuf::io::Printer(outHeader.get(), '$'));
+    std::shared_ptr<::google::protobuf::io::Printer> outSourcePrinter(new ::google::protobuf::io::Printer(outSource.get(), '$'));
+
     PackagesList packageList;
     for (auto file : files) {
         packageList[file->package()].push_back(file);
     }
 
-    GlobalEnumsGenerator enumGen(packageList,
-                                 std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".h")));
-    enumGen.printDisclaimer();
-    enumGen.printPreamble();
-    enumGen.run();
+    outHeaderPrinter->Print(Templates::DisclaimerTemplate);
+    outHeaderPrinter->Print(Templates::PreambleTemplate);
+    outHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
 
-    GlobalEnumsSourceGenerator enumSourceGen(packageList,
-                                             std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(globalEnumsFilename + ".cpp")));
-    enumSourceGen.printDisclaimer();
-    enumSourceGen.printHeaders();
-    enumSourceGen.run();
+    outSourcePrinter->Print(Templates::DisclaimerTemplate);
+    outSourcePrinter->Print({{"include", globalEnumsFilename}}, Templates::InternalIncludeTemplate);
+    if (GeneratorOptions::instance().hasQml()) {
+        outSourcePrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+    }
+
+    for (auto file : files) { //TODO: Each should be printed to separate file
+        for(int i = 0; i < file->enum_type_count(); i++) {
+            auto enumType = file->enum_type(i);
+            EnumsGenerator enumGen2(enumType,
+                                    outHeaderPrinter);
+            enumGen2.run();
+        }
+    }
+
+    for (auto file : files) { //TODO: Each should be printed to separate file
+        for(int i = 0; i < file->enum_type_count(); i++) {
+            auto enumType = file->enum_type(i);
+            EnumsSourceGenerator enumSourceGen2(enumType,
+                                    outSourcePrinter);
+            enumSourceGen2.run();
+        }
+    }
 
     return GeneratorBase::GenerateAll(files, parameter, generatorContext, error);
 }

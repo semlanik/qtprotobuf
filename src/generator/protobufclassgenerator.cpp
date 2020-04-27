@@ -30,6 +30,7 @@
 #include <iostream>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream.h>
+#include <google/protobuf/descriptor.pb.h>
 
 using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
@@ -106,8 +107,7 @@ void ProtobufClassGenerator::printConstructor()
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         std::string fieldTypeName = getTypeName(field, mMessage);
-        std::string fieldName = field->name();
-        fieldName[0] = static_cast<char>(::tolower(fieldName[0]));
+        std::string fieldName = utils::lowerCaseName(field->name());
         fieldName = qualifiedName(fieldName);
 
         if (field->is_repeated() || field->is_map()) {
@@ -169,9 +169,9 @@ void ProtobufClassGenerator::printMaps()
                 mapTemplate = Templates::MessageMapTypeUsingTemplate;
             }
 
-            mPrinter->Print({{"classname",field->message_type()->name()},
-                            {"key", keyType},
-                            {"value", valueType}}, mapTemplate);
+            mPrinter->Print({{"classname", utils::upperCaseName(field->message_type()->name())},
+                             {"key", keyType},
+                             {"value", valueType}}, mapTemplate);
         }
     }
     Outdent();
@@ -186,7 +186,7 @@ void ProtobufClassGenerator::printLocalEnumsMetaTypesDeclaration()
 
         if (field->type() == FieldDescriptor::TYPE_ENUM
                 && isLocalMessageEnum(mMessage, field)) {
-             mPrinter->Print({{"classname", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
+            mPrinter->Print({{"classname", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
                              {"namespaces", mNamespacesColonDelimited}}, Templates::DeclareMetaTypeTemplate);
         }
     }
@@ -213,6 +213,8 @@ void ProtobufClassGenerator::printProperties()
         const char *propertyTemplate = Templates::PropertyTemplate;
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
             propertyTemplate = Templates::MessagePropertyTemplate;
+        } else if (hasQmlAlias(field)) {
+            propertyTemplate = Templates::NonScriptablePropertyTemplate;
         }
         printField(mMessage, field, propertyTemplate);
     }
@@ -223,6 +225,8 @@ void ProtobufClassGenerator::printProperties()
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && field->is_repeated() && !field->is_map()
                 && GeneratorOptions::instance().hasQml()) {
             printField(mMessage, field, Templates::QmlListPropertyTemplate);
+        } else if (hasQmlAlias(field)) {
+            printField(mMessage, field, Templates::NonScriptableAliasPropertyTemplate);
         }
     }
 
@@ -243,6 +247,8 @@ void ProtobufClassGenerator::printProperties()
 
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
+        printComments(field);
+        mPrinter->Print("\n");
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
             printField(mMessage, field, Templates::GetterPrivateMessageDeclarationTemplate);
             printField(mMessage, field, Templates::GetterMessageDeclarationTemplate);
@@ -274,7 +280,7 @@ void ProtobufClassGenerator::printProperties()
             printField(mMessage, field, Templates::SetterTemplateDeclarationComplexType);
             break;
         default:
-            printField(mMessage, field, Templates::SetterTemplateSimpleType);
+            printField(mMessage, field, Templates::SetterTemplate);
             break;
         }
     }
@@ -292,12 +298,22 @@ void ProtobufClassGenerator::printProperties()
         printField(mMessage, mMessage->field(i), Templates::SignalTemplate);
     }
     Outdent();
+
+    printPrivate();
+    Indent();
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        auto field = mMessage->field(i);
+        if (hasQmlAlias(field)) {
+            printField(mMessage, field, Templates::NonScriptableGetterTemplate);
+            printField(mMessage, field, Templates::NonScriptableSetterTemplate);
+        }
+    }
+    Outdent();
 }
 
 void ProtobufClassGenerator::printListType()
 {
     mPrinter->Print({{"classname", mClassName}}, Templates::ComplexListTypeUsingTemplate);
-
 }
 
 void ProtobufClassGenerator::printClassMembers()
@@ -335,6 +351,7 @@ void ProtobufClassGenerator::run()
     printIncludes();
     printNamespaces();
     printFieldClassDeclaration();
+    printComments(mMessage);
     printClassDeclaration();
     printProperties();
     printPrivate();
@@ -360,7 +377,7 @@ void ProtobufClassGenerator::printFieldClassDeclaration()
         auto field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_MESSAGE
                 && !field->is_map() && !field->is_repeated()) {
-            mPrinter->Print({{"classname", field->message_type()->name()}}, Templates::ProtoClassDeclarationTemplate);
+            mPrinter->Print({{"classname", utils::upperCaseName(field->message_type()->name())}}, Templates::ProtoClassDeclarationTemplate);
         }
     }
 }

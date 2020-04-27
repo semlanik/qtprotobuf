@@ -30,8 +30,7 @@
 #include <QQmlContext>
 
 #include "addressbookengine.h"
-#include "addressbook.pb.h"
-#include "qtprotobuf_global.pb.h"
+#include "addressbook.qpb.h"
 
 #include <QMetaProperty>
 #include <QQmlPropertyMap>
@@ -41,7 +40,6 @@ using namespace qtprotobuf::examples;
 int main(int argc, char *argv[])
 {
     QtProtobuf::qRegisterProtobufTypes();
-    qtprotobuf::examples::qRegisterProtobufTypes();
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 

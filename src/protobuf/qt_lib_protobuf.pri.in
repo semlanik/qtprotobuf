@@ -1,0 +1,38 @@
+QT.protobuf.VERSION = @QT_PROTOBUF_VERSION@
+QT.protobuf.name = QtProtobuf
+QT.protobuf.module = QtProtobuf
+QT.protobuf.includes = @CMAKE_INSTALL_PREFIX@/@TARGET_INCLUDE_DIR@
+QT.protobuf.private_includes =
+QT.protobuf.libs = @CMAKE_INSTALL_PREFIX@/@TARGET_LIB_DIR@
+QT.protobuf.depends = core qml
+QT.protobuf.module_config = @QT_PROTOBUF_EXTRA_CONFIG@
+
+CONFIG += c++14
+DEFINES += @QT_PROTOBUF_EXTRA_COMPILE_DIFINITIONS@
+
+defineTest(qtprotobuf_generate) {
+    OK = false
+
+    QML_ENABLED = $$1
+    $$QML_ENABLED:GENERATOR_OPTIONS="$$GENERATOR_OPTIONS:QML"
+
+    for(PROTO_FILE_REL, PROTO_FILES) {
+        PROTO_FILE_ABS = $$absolute_path($$PROTO_FILE_REL)
+        PROTO_FILES_PRIV *= $$PROTO_FILE_ABS
+        PROTO_INCLUDES_PRIV = "$$PROTO_INCLUDES_PRIV -I$$dirname(PROTO_FILE_ABS)"
+    }
+
+    GENERATED_OUT_DIR = $$OUT_PWD/generated
+    system("mkdir $$GENERATED_OUT_DIR")
+    message("QT_PROTOBUF_OPTIONS=$$GENERATOR_OPTIONS protoc --plugin=protoc-gen-@GENERATOR_TARGET@=@QT_PROTOBUF_EXECUTABLE_INSTALL@ --@GENERATOR_TARGET@_out=$$GENERATED_OUT_DIR $$PROTO_INCLUDES_PRIV $$PROTO_FILES_PRIV")
+    system("QT_PROTOBUF_OPTIONS=$$GENERATOR_OPTIONS protoc --plugin=protoc-gen-@GENERATOR_TARGET@=@QT_PROTOBUF_EXECUTABLE_INSTALL@ --@GENERATOR_TARGET@_out=$$GENERATED_OUT_DIR $$PROTO_INCLUDES_PRIV $$PROTO_FILES_PRIV"):OK=true
+    SOURCES += $$files($$GENERATED_OUT_DIR/*.cpp)
+    HEADERS += $$files($$GENERATED_OUT_DIR/*.h)
+    INCLUDEPATH += $$GENERATED_OUT_DIR
+
+    export(SOURCES)
+    export(HEADERS)
+    export(INCLUDEPATH)
+
+    return($$OK)
+}

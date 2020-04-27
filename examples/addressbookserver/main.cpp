@@ -141,7 +141,7 @@ public:
         service->Requestcontacts(&ctx_, &request_, &writer_, cq_, cq_, &tag_);
         service->registerWriter(this);
     }
-    int tag_;
+    unsigned int tag_;
     grpc::ServerContext ctx_;
     ListFrame request_;
     ::grpc::ServerAsyncWriter< ::qtprotobuf::examples::Contacts> writer_;
@@ -172,7 +172,7 @@ void AddressBookService::registerCallStatusHandler(CallHandler *handler) {
     m_callClients.push_back(&(handler->writer_));
 }
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
     std::string server_address("localhost:65001");
     AddressBookService service;
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
     while (true) {
         unsigned int *tag;
         bool ok;
-        cq->Next((void**)&tag, &ok);
+        cq->Next(reinterpret_cast<void**>(&tag), &ok);
         if (tag == nullptr) {
             std::cout << "Some request";
             continue;
