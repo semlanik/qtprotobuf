@@ -1,3 +1,15 @@
+2020-05-01 version 0.3.0 (generator/QtProtobuf)
+
+    QtProtobuf
+    * Add static compilation for win32 platforms
+    * Add rpm package distribution
+    * Implement json serialization
+    * Use microjson as json deserialization library
+    QtGrpc
+    * Add static compilation for win32 platforms
+    generator
+    * Fix empty message warning for copy and move operators
+    
 2020-02-26 version 0.2.0 (generator/QtProtobuf)
 
     QtProtobuf
