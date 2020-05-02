@@ -3,6 +3,7 @@
 gRPC and Protobuf generator and bindings for Qt framework
 > see [Protobuf](https://developers.google.com/protocol-buffers) and [gRPC](https://grpc.io/) for more information
 
+QtProtobuf provides Qt-native support of Google protocol buffers. Generated code doesn't depend on any framework except Qt framework. QtProtobuf uses existing Qt meta-object information to access object fields and supports most of features of original C++ protocol buffers. It's not just a wrapper arround protocol buffers, but pure Qt generator with own serializers. Our target to provide deep Qt, protocol buffers and gRPC intergration.
 
 ### Test results
 
