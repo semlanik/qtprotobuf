@@ -64,6 +64,12 @@ TEST_F(JsonDeserializationTest, FixedInt32MessageSerializeTest)
 
     msg.deserialize(serializer.get(), QByteArray("{\"testFieldFixedInt32\":555}"));
     EXPECT_EQ(msg.testFieldFixedInt32(), 555);
+
+    msg.deserialize(serializer.get(), QByteArray("{\"testFieldFixedInt32\":555}"));
+    EXPECT_EQ(msg.testFieldFixedInt32(), 555);
+
+    msg.deserialize(serializer.get(), QByteArray("{\"testFieldFixedInt32\":null}"));
+    EXPECT_EQ(msg.testFieldFixedInt32(), 0);
 }
 
 TEST_F(JsonDeserializationTest, SFixedInt32MessageSerializeTest)
@@ -74,6 +80,9 @@ TEST_F(JsonDeserializationTest, SFixedInt32MessageSerializeTest)
 
     msg.deserialize(serializer.get(), QByteArray("{\"testFieldFixedInt32\":-555}"));
     EXPECT_EQ(msg.testFieldFixedInt32(), -555);
+
+    msg.deserialize(serializer.get(), QByteArray("{\"testFieldFixedInt32\":null}"));
+    EXPECT_EQ(msg.testFieldFixedInt32(), 0);
 }
 
 TEST_F(JsonDeserializationTest, Int32MessageSerializeTest)
@@ -91,6 +100,9 @@ TEST_F(JsonDeserializationTest, SInt32MessageSerializeTest)
 
     msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":-555}"));
     EXPECT_EQ(msg.testFieldInt(), -555);
+
+    msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":null}"));
+    EXPECT_EQ(msg.testFieldInt(), 0);
 }
 
 TEST_F(JsonDeserializationTest, UInt32MessageSerializeTest)
@@ -98,6 +110,9 @@ TEST_F(JsonDeserializationTest, UInt32MessageSerializeTest)
     SimpleUIntMessage msg;
     msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":555}"));
     EXPECT_EQ(msg.testFieldInt(), 555);
+
+    msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":null}"));
+    EXPECT_EQ(msg.testFieldInt(), 0);
 }
 
 TEST_F(JsonDeserializationTest, FixedInt64MessageSerializeTest)
@@ -105,6 +120,9 @@ TEST_F(JsonDeserializationTest, FixedInt64MessageSerializeTest)
     SimpleFixedInt64Message msg;
     msg.deserialize(serializer.get(), QByteArray("{\"testFieldFixedInt64\":555}"));
     EXPECT_EQ(msg.testFieldFixedInt64(), 555);
+
+    msg.deserialize(serializer.get(), QByteArray("{\"testFieldFixedInt64\":null}"));
+    EXPECT_EQ(msg.testFieldFixedInt64(), 0);
 }
 
 TEST_F(JsonDeserializationTest, Int64MessageSerializeTest)
@@ -112,6 +130,9 @@ TEST_F(JsonDeserializationTest, Int64MessageSerializeTest)
     SimpleInt64Message msg;
     msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":555}"));
     EXPECT_EQ(msg.testFieldInt(), 555);
+
+    msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":null}"));
+    EXPECT_EQ(msg.testFieldInt(), 0);
 }
 
 TEST_F(JsonDeserializationTest, SInt64MessageSerializeTest)
@@ -122,6 +143,9 @@ TEST_F(JsonDeserializationTest, SInt64MessageSerializeTest)
 
     msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":-555}"));
     EXPECT_EQ(msg.testFieldInt(), -555);
+
+    msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":null}"));
+    EXPECT_EQ(msg.testFieldInt(), 0);
 }
 
 TEST_F(JsonDeserializationTest, UInt64MessageSerializeTest)
@@ -129,6 +153,9 @@ TEST_F(JsonDeserializationTest, UInt64MessageSerializeTest)
     SimpleUInt64Message msg;
     msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":555}"));
     EXPECT_EQ(msg.testFieldInt(), 555);
+
+    msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":null}"));
+    EXPECT_EQ(msg.testFieldInt(), 0);
 }
 
 
@@ -152,6 +179,22 @@ TEST_F(JsonDeserializationTest, FloatMessageSerializeTest)
 
     test.deserialize(serializer.get(), QByteArray("{\"testFieldFloat\": 0.0}"));
     EXPECT_EQ(test.testFieldFloat(), 0.0f);
+
+    test.setTestFieldFloat(-4.2f);
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldFloat\":null}"));
+    EXPECT_EQ(test.testFieldFloat(), 0);
+
+    test.setTestFieldFloat(-4.2f);
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldFloat\":\"NaN\"}"));
+    EXPECT_EQ(test.testFieldFloat(), 0);
+
+    test.setTestFieldFloat(-4.2f);
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldFloat\":\"Infinity\"}"));
+    EXPECT_EQ(test.testFieldFloat(), 0);
+
+    test.setTestFieldFloat(-4.2f);
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldFloat\":\"-Infinity\"}"));
+    EXPECT_EQ(test.testFieldFloat(), 0);
 }
 
 TEST_F(JsonDeserializationTest, DoubleMessageSerializeTest)
@@ -171,6 +214,22 @@ TEST_F(JsonDeserializationTest, DoubleMessageSerializeTest)
 
     test.deserialize(serializer.get(), QByteArray("{\"testFieldDouble\": 0.0}"));
     EXPECT_EQ(test.testFieldDouble(), 0);
+
+    test.setTestFieldDouble(-4.2);
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldDouble\":null}"));
+    EXPECT_EQ(test.testFieldDouble(), 0);
+
+    test.setTestFieldDouble(-4.2);
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldDouble\":\"NaN\"}"));
+    EXPECT_EQ(test.testFieldDouble(), 0);
+
+    test.setTestFieldDouble(-4.2);
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldDouble\":\"Infinity\"}"));
+    EXPECT_EQ(test.testFieldDouble(), 0);
+
+    test.setTestFieldDouble(-4.2);
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldDouble\":\"-Infinity\"}"));
+    EXPECT_EQ(test.testFieldDouble(), 0);
 }
 
 TEST_F(JsonDeserializationTest, StringMessageSerializeTest)
@@ -178,6 +237,25 @@ TEST_F(JsonDeserializationTest, StringMessageSerializeTest)
     SimpleStringMessage test;
     test.deserialize(serializer.get(), QByteArray("{\"testFieldString\":\"qwerty\"}"));
     EXPECT_STREQ(test.testFieldString().toStdString().c_str(), "qwerty");
+
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldString\":\"\"}"));
+    EXPECT_STREQ(test.testFieldString().toStdString().c_str(), "");
+
+    test.setTestFieldString("qwerty");
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldString\":null}"));
+    EXPECT_STREQ(test.testFieldString().toStdString().c_str(), "");
+
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldString\":\"null\"}"));
+    EXPECT_STREQ(test.testFieldString().toStdString().c_str(), "null");
+
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldString\":\"NaN\"}"));
+    EXPECT_STREQ(test.testFieldString().toStdString().c_str(), "NaN");
+
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldString\":\"Infinity\"}"));
+    EXPECT_STREQ(test.testFieldString().toStdString().c_str(), "Infinity");
+
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldString\":\"-Infinity\"}"));
+    EXPECT_STREQ(test.testFieldString().toStdString().c_str(), "-Infinity");
 }
 
 TEST_F(JsonDeserializationTest, BytesMessageSerializeTest)
@@ -185,6 +263,13 @@ TEST_F(JsonDeserializationTest, BytesMessageSerializeTest)
     SimpleBytesMessage test;
     test.deserialize(serializer.get(), QByteArray("{\"testFieldBytes\":\"ABKEBDKBBFlWAFJmSnZqeHFiZ3ZGd1MxWXZPWlhndGo1ZmZHTFM3QAFpTkh6OW9aSW9LYm03ejhIATc5eEJ1cAlQa3BRWHZHb08wOU9ZOXhSYXd4M2VPQXM5eGpvVEExeEpocncyOFRBY3ExQ2ViWWxDOVdVZlFDNmhJYW50YU5keUhpS1RvZmZpMFp0N2xhNDJTUnhYWlNQNEd1eGJjWklwNTNwSm55Q3dmQ3kxcWRGY3pUMGRtbjdoOGZweUFkZW1FYXZ3RmVkYTRkMFBBcEdmU1Uyakx0MzlYOGtZVUJ4Tk0yV2dBTFJCZ0hkVmRlODdxNlBpNVU2OVRqaE1kMjhXMVNGRDFEeHlvZ0NDcnFPY3QyWlBJQ29MbnJxZEYzT2ROempSVkxmZXl2UThMZ0x2Uk5GUjlXZldBeUF6NzluS2dCYW1kOE50bHZ0NE1nMzVFNWdWUzJnN0FRN3JrbTcyY0Jkblc5c0NFeUdhYmVYQXVINWo0R1JidUxUN3FCWldEY0ZMRjRTc0NkUzNXZkZHZE5IZndhaWp6eWtCeW83MVB2RlZsVFhIMldKV29GdlI1RkFMakJUbjdiQ2RQMHBBaVNiTENZOFh6Mk1zYzNkQmI1RmY5R0lTUGJVcE5tVXZCZE1aTUhRdnFPbVROWEVQcE4wYjc0TURPTVFmV0pTaE9vM05rQXZNanMIKg\"}"));
     EXPECT_STREQ(test.testFieldBytes().toHex().toStdString().c_str(), "0012840432810459560052664a766a78716267764677533159764f5a5867746a356666474c53374001694e487a396f5a496f4b626d377a38480137397842757009506b70515876476f4f30394f5939785261777833654f417339786a6f544131784a68727732385441637131436562596c43395755665143366849616e74614e647948694b546f666669305a74376c613432535278585a53503447757862635a49703533704a6e79437766437931716446637a5430646d6e3768386670794164656d456176774665646134643050417047665355326a4c74333958386b595542784e4d325767414c524267486456646538377136506935553639546a684d6432385731534644314478796f67434372714f6374325a5049436f4c6e72716446334f644e7a6a52564c6665797651384c674c76524e4652395766574179417a37396e4b6742616d64384e746c7674344d6733354535675653326737415137726b6d37326342646e5739734345794761626558417548356a34475262754c543771425a574463464c463453734364533357664647644e48667761696a7a796b42796f3731507646566c54584832574a576f4676523546414c6a42546e37624364503070416953624c435938587a324d73633364426235466639474953506255704e6d557642644d5a4d485176714f6d544e584550704e306237344d444f4d5166574a53684f6f334e6b41764d6a73082a");
+
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldBytes\":\"\"}"));
+    EXPECT_TRUE(test.testFieldBytes().isEmpty());
+
+    test.setTestFieldBytes("qwerty");
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldBytes\":null}"));
+    EXPECT_TRUE(test.testFieldBytes().isEmpty());
 }
 
 TEST_F(JsonDeserializationTest, ComplexTypeSerializeTest)
@@ -224,6 +309,11 @@ TEST_F(JsonDeserializationTest, ComplexTypeSerializeTest)
     test.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":-45,\"testComplexField\":{\"testFieldString\":\"qwerty\"}}"));
     EXPECT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");
     EXPECT_EQ(test.testFieldInt(), -45);
+
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":-45,\"testComplexField\":null"));
+    EXPECT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");
+    EXPECT_EQ(test.testFieldInt(), -45);
+
 }
 
 TEST_F(JsonDeserializationTest, RepeatedIntMessageTest)
@@ -233,6 +323,12 @@ TEST_F(JsonDeserializationTest, RepeatedIntMessageTest)
     EXPECT_TRUE(test.testRepeatedInt() == QtProtobuf::int32List({0, 1, 321, -65999, 123245, -3, 3}));
 
     test.deserialize(serializer.get(), "{\"testRepeatedInt\":[]}");
+    EXPECT_TRUE(test.testRepeatedInt().isEmpty());
+
+    test.deserialize(serializer.get(), "{\"testRepeatedInt\":[0,1,321,-65999,123245,-3,3,null]}");
+    EXPECT_TRUE(test.testRepeatedInt() == QtProtobuf::int32List({0, 1, 321, -65999, 123245, -3, 3,0}));
+
+    test.deserialize(serializer.get(), "{\"testRepeatedInt\":null}");
     EXPECT_TRUE(test.testRepeatedInt().isEmpty());
 }
 
@@ -337,6 +433,12 @@ TEST_F(JsonDeserializationTest, RepeatedStringMessageTest)
 
     test.deserialize(serializer.get(), "{\"testRepeatedString\":[]}");
     EXPECT_TRUE(test.testRepeatedString().isEmpty());
+
+    test.deserialize(serializer.get(), "{\"testRepeatedString\":[\"aaaa\",\"bbbbb\",\"ccc\",\"dddddd\",\"eeeee\",null]}");
+    EXPECT_TRUE(test.testRepeatedString() == QStringList({"aaaa","bbbbb","ccc","dddddd","eeeee",""}));
+
+    test.deserialize(serializer.get(), "{\"testRepeatedString\":null}");
+    EXPECT_TRUE(test.testRepeatedString().isEmpty());
 }
 
 TEST_F(JsonDeserializationTest, RepeatedDoubleMessageTest)
@@ -347,6 +449,18 @@ TEST_F(JsonDeserializationTest, RepeatedDoubleMessageTest)
 
     test.deserialize(serializer.get(), "{\"testRepeatedDouble\":[]}");
     EXPECT_TRUE(test.testRepeatedDouble().isEmpty());
+
+    test.deserialize(serializer.get(), "{\"testRepeatedDouble\":[0.4,1.2,0.5,1.4,0.6,null]}");
+    EXPECT_TRUE(test.testRepeatedDouble() == QList<double>({0.4, 1.2, 0.5, 1.4, 0.6, 0.0}));
+
+    test.deserialize(serializer.get(), "{\"testRepeatedDouble\":null}");
+    EXPECT_TRUE(test.testRepeatedDouble().isEmpty());
+
+    test.deserialize(serializer.get(), "{\"testRepeatedDouble\":[0.4,1.2,0.5,1.4,0.6,\"NaN\"]}");
+    EXPECT_TRUE(test.testRepeatedDouble() == QList<double>({0.4, 1.2, 0.5, 1.4, 0.6, 0.0}));
+
+    test.deserialize(serializer.get(), "{\"testRepeatedDouble\":[\"Infinity\",1.4,\"-Infinity\",\"NaN\"]}");
+    EXPECT_TRUE(test.testRepeatedDouble() == QList<double>({0.0, 1.4, 0.0, 0.0}));
 }
 
 TEST_F(JsonDeserializationTest, RepeatedBytesMessageTest)
@@ -366,6 +480,15 @@ TEST_F(JsonDeserializationTest, RepeatedBytesMessageTest)
                                                                QByteArray::fromHex(""),
                                                                QByteArray::fromHex("eaeaeaeaea"),
                                                                QByteArray::fromHex("010203040506")}));
+
+    test.deserialize(serializer.get(), "{\"testRepeatedBytes\":null}");
+    EXPECT_TRUE(test.testRepeatedBytes().isEmpty());
+
+    test.deserialize(serializer.get(), "{\"testRepeatedBytes\":[\"AQIDBAUG\",null,\"6urq6uo=\",\"AQIDBAUG\"]}");
+    EXPECT_TRUE(test.testRepeatedBytes() == QList<QByteArray>({QByteArray::fromHex("010203040506"),
+                                                               QByteArray::fromHex(""),
+                                                               QByteArray::fromHex("eaeaeaeaea"),
+                                                               QByteArray::fromHex("010203040506")}));
 }
 
 TEST_F(JsonDeserializationTest, RepeatedFloatMessageTest)
@@ -376,6 +499,18 @@ TEST_F(JsonDeserializationTest, RepeatedFloatMessageTest)
 
     test.deserialize(serializer.get(), "{\"testRepeatedFloat\":[]}");
     EXPECT_TRUE(test.testRepeatedFloat().isEmpty());
+
+    test.deserialize(serializer.get(), "{\"testRepeatedFloat\":[0.4,1.2,0.5,1.4,0.6,null]}");
+    EXPECT_TRUE(test.testRepeatedFloat() == QList<float>({0.4f, 1.2f, 0.5f, 1.4f, 0.6f, 0.0f}));
+
+    test.deserialize(serializer.get(), "{\"testRepeatedFloat\":null}");
+    EXPECT_TRUE(test.testRepeatedFloat().isEmpty());
+
+    test.deserialize(serializer.get(), "{\"testRepeatedFloat\":[0.4,1.2,0.5,1.4,0.6,\"NaN\"]}");
+    EXPECT_TRUE(test.testRepeatedFloat() == QList<float>({0.4f, 1.2f, 0.5f, 1.4f, 0.6f, 0.0f}));
+
+    test.deserialize(serializer.get(), "{\"testRepeatedFloat\":[\"Infinity\",1.4,\"-Infinity\",\"NaN\"]}");
+    EXPECT_TRUE(test.testRepeatedFloat() == QList<float>({0.0f, 1.4f, 0.0f, 0.0f}));
 }
 
 TEST_F(JsonDeserializationTest, BoolMessageSerializeTest)
@@ -386,6 +521,30 @@ TEST_F(JsonDeserializationTest, BoolMessageSerializeTest)
 
     test.deserialize(serializer.get(), "{\"testFieldBool\":false}");
     EXPECT_FALSE(test.testFieldBool());
+
+    test.setTestFieldBool(false);
+    test.deserialize(serializer.get(), "{\"testFieldBool\":1}");
+    EXPECT_FALSE(test.testFieldBool());
+
+    test.setTestFieldBool(true);
+    test.deserialize(serializer.get(), "{\"testFieldBool\":0}");
+    EXPECT_TRUE(test.testFieldBool());
+
+    test.setTestFieldBool(false);
+    test.deserialize(serializer.get(), "{\"testFieldBool\":\"true\"}");
+    EXPECT_FALSE(test.testFieldBool());
+
+    test.setTestFieldBool(true);
+    test.deserialize(serializer.get(), "{\"testFieldBool\":\"false\"}");
+    EXPECT_TRUE(test.testFieldBool());
+
+    test.setTestFieldBool(false);
+    test.deserialize(serializer.get(), "{\"testFieldBool\":1.0}");
+    EXPECT_FALSE(test.testFieldBool());
+
+    test.setTestFieldBool(true);
+    test.deserialize(serializer.get(), "{\"testFieldBool\":0.0}");
+    EXPECT_TRUE(test.testFieldBool());
 }
 
 TEST_F(JsonDeserializationTest, SimpleEnumMessageSerializeTest)
@@ -407,6 +566,16 @@ TEST_F(JsonDeserializationTest, SimpleEnumListMessageTest)
                                        SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
                                        SimpleEnumListMessage::LOCAL_ENUM_VALUE3}));
     test.deserialize(serializer.get(), "{\"localEnumList\":[]}");
+    EXPECT_TRUE(test.localEnumList().isEmpty());
+
+    test.deserialize(serializer.get(), "{\"localEnumList\":[\"LOCAL_ENUM_VALUE0\",\"LOCAL_ENUM_VALUE1\",null,\"LOCAL_ENUM_VALUE1\",\"LOCAL_ENUM_VALUE2\",\"LOCAL_ENUM_VALUE3\"]}");
+    EXPECT_TRUE(test.localEnumList() == SimpleEnumListMessage::LocalEnumRepeated({SimpleEnumListMessage::LOCAL_ENUM_VALUE0,
+                                       SimpleEnumListMessage::LOCAL_ENUM_VALUE1,
+                                       SimpleEnumListMessage::LOCAL_ENUM_VALUE0,
+                                       SimpleEnumListMessage::LOCAL_ENUM_VALUE1,
+                                       SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
+                                       SimpleEnumListMessage::LOCAL_ENUM_VALUE3}));
+    test.deserialize(serializer.get(), "{\"localEnumList\":null}");
     EXPECT_TRUE(test.localEnumList().isEmpty());
 }
 

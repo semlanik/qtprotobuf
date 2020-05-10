@@ -42,7 +42,7 @@ class QProtobufJsonSerializerPrivate final
     Q_DISABLE_COPY_MOVE(QProtobufJsonSerializerPrivate)
 public:
     using Serializer = std::function<QByteArray(const QVariant&)>;
-    using Deserializer = std::function<QVariant(QByteArray)>;
+    using Deserializer = std::function<QVariant(QByteArray, microjson::JsonType, bool &)>;
 
     struct SerializationHandlers {
         Serializer serializer; /*!< serializer assigned to class */
@@ -194,44 +194,88 @@ public:
         return result;
     }
 
-    static QVariant deserializeInt32(const QByteArray &data) {
-        return QVariant::fromValue(data.toInt());
+    static QVariant deserializeInt32(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        auto val = data.toInt(&ok);
+        ok |= type == microjson::JsonNumberType;
+        return QVariant::fromValue(val);
     }
 
-    static QVariant deserializeUInt32(const QByteArray &data) {
-        return QVariant::fromValue(data.toUInt());
+    static QVariant deserializeUInt32(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        auto val = data.toUInt(&ok);
+        ok |= type == microjson::JsonNumberType;
+        return QVariant::fromValue(val);
     }
 
-    static QVariant deserializeInt64(const QByteArray &data) {
-        return QVariant::fromValue(data.toLongLong());
+    static QVariant deserializeInt64(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        auto val = data.toLongLong(&ok);
+        ok |= type == microjson::JsonNumberType;
+        return QVariant::fromValue(val);
     }
 
-    static QVariant deserializeUInt64(const QByteArray &data) {
-        return QVariant::fromValue(data.toULongLong());
+    static QVariant deserializeUInt64(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        auto val = data.toULongLong(&ok);
+        ok |= type == microjson::JsonNumberType;
+        return QVariant::fromValue(val);
     }
 
-    static QVariant deserializeFloat(const QByteArray &data) {
-        return QVariant::fromValue(data.toFloat());
+    static QVariant deserializeFloat(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        if (data == "NaN" || data == "Infinity" || data == "-Infinity") {
+            ok = true;
+            return QVariant();
+        }
+        auto val = data.toFloat(&ok);
+        ok |= type == microjson::JsonNumberType;
+        return QVariant::fromValue(val);
     }
 
-    static QVariant deserializeDouble(const QByteArray &data) {
-        return QVariant::fromValue(data.toDouble());
+    static QVariant deserializeDouble(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        if (data == "NaN" || data == "Infinity" || data == "-Infinity") {
+            ok = true;
+            return QVariant();
+        }
+        auto val = data.toDouble(&ok);
+        ok |= type == microjson::JsonNumberType;
+        return QVariant::fromValue(val);
     }
 
-    static QVariant deserializeBool(const QByteArray &data) {
-        return QVariant::fromValue(QString::fromUtf8(data));
+    static QVariant deserializeBool(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        if (type == microjson::JsonBoolType) {
+            ok = true;
+            return QVariant::fromValue(data == "true");
+        }
+
+        ok = false;
+        return QVariant();
     }
 
-    static QVariant deserializeString(const QByteArray &data) {
-        return QVariant::fromValue(QString::fromUtf8(data).replace("\\\"", "\""));
+    static QVariant deserializeString(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        if (type == microjson::JsonStringType) {
+            ok = true;
+            return QVariant::fromValue(QString::fromUtf8(data).replace("\\\"", "\""));
+        }
+
+        ok = false;
+        return QVariant();
     }
 
-    static QVariant deserializeByteArray(const QByteArray &data) {
-        return QVariant::fromValue(QByteArray::fromBase64(data));
+    static QVariant deserializeByteArray(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        if (type == microjson::JsonStringType) {
+            ok = true;
+            return QVariant::fromValue(QByteArray::fromBase64(data));
+        }
+
+        ok = false;
+        return QVariant();
     }
 
     template<typename T>
-    static QVariant deserializeList(const QByteArray &data) {
+    static QVariant deserializeList(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        if (type != microjson::JsonArrayType) {
+            ok = false;
+            return QVariant();
+        }
+
+        ok = true;
         QList<T> list;
         auto arrayValues = microjson::parseJsonArray(data.data(), static_cast<size_t>(data.size()));
         auto handler = handlers.find(qMetaTypeId<T>());
@@ -241,23 +285,31 @@ public:
         }
 
         for (auto &arrayValue : arrayValues) {
-            QVariant newValue = handler->second.deserializer(QByteArray::fromStdString(arrayValue.value));
+            bool valueOk = false;
+            QVariant newValue = handler->second.deserializer(QByteArray::fromStdString(arrayValue.value), arrayValue.type, valueOk);
             list.append(newValue.value<T>());
         }
         return QVariant::fromValue(list);
     }
 
-    static QVariant deserializeStringList(const QByteArray &data) {
+    static QVariant deserializeStringList(const QByteArray &data, microjson::JsonType type, bool &ok) {
+        if (type != microjson::JsonArrayType) {
+            ok = false;
+            return QVariant();
+        }
+
+        ok = true;
         QStringList list;
         auto arrayValues = microjson::parseJsonArray(data.data(), static_cast<size_t>(data.size()));
         for (auto &arrayValue : arrayValues) {
-            QVariant newValue = deserializeString(QByteArray::fromStdString(arrayValue.value));
+            bool valueOk = false;
+            QVariant newValue = deserializeString(QByteArray::fromStdString(arrayValue.value), arrayValue.type, valueOk);
             list.append(newValue.value<QString>());
         }
         return QVariant::fromValue(list);
     }
 
-    QVariant deserializeValue(int type, const QByteArray &data, microjson::JsonType jsonType) {
+    QVariant deserializeValue(int type, const QByteArray &data, microjson::JsonType jsonType, bool &ok) {
         QVariant newValue;
         auto &handler = QtProtobufPrivate::findHandler(type);
         if (handler.deserializer) {
@@ -265,13 +317,14 @@ public:
             QtProtobuf::QProtobufSelfcheckIterator last = it;
             last += it.size();
             while(it != last) {
+                ok = true;
                 handler.deserializer(qPtr, it, newValue);
                 qDebug() << "newValue" << newValue;
             }
         } else {
             auto handler = handlers.find(type);
             if (handler != handlers.end() && handler->second.deserializer) {
-                newValue = handler->second.deserializer(data);
+                newValue = handler->second.deserializer(data, jsonType, ok);
             }
         }
         return newValue;
@@ -286,8 +339,16 @@ public:
             if (propertyIndex >= 0) {
                 QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
                 auto userType = metaProperty.userType();
-                QByteArray value = QByteArray::fromStdString(property.second.value);
-                object->setProperty(name.c_str(), deserializeValue(userType, value, property.second.type));
+                QByteArray rawValue = QByteArray::fromStdString(property.second.value);
+                if (rawValue == "null" && property.second.type == microjson::JsonObjectType) {
+                    object->setProperty(name.c_str(), QVariant());//Initialize with default value
+                    return;
+                }
+                bool ok = false;
+                QVariant value = deserializeValue(userType, rawValue, property.second.type, ok);
+                if (ok) {
+                    object->setProperty(name.c_str(), value);
+                }
             }
         }
     }
@@ -392,8 +453,15 @@ bool QProtobufJsonSerializer::deserializeMapPair(QVariant &key, QVariant &value,
     size_t i = 0;
     microjson::JsonProperty property;
     if (microjson::extractProperty(it.data(), static_cast<size_t>(it.size()), i, '}', property)) {
-        key = dPtr->deserializeValue(key.userType(), QByteArray(it.data() + property.nameBegin, property.nameSize()), microjson::JsonStringType);
-        value = dPtr->deserializeValue(value.userType(), QByteArray(it.data() + property.valueBegin, property.valueSize()), property.type);
+        bool ok = false;
+        key = dPtr->deserializeValue(key.userType(), QByteArray(it.data() + property.nameBegin, property.nameSize()), microjson::JsonStringType, ok);
+        if (!ok) {
+            key = QVariant();
+        }
+        value = dPtr->deserializeValue(value.userType(), QByteArray(it.data() + property.valueBegin, property.valueSize()), property.type, ok);
+        if (!ok) {
+            value = QVariant();
+        }
     } else {
         it += it.size();
         return false;
@@ -433,7 +501,11 @@ void QProtobufJsonSerializer::deserializeEnumList(QList<int64> &value, const QMe
     auto arrayValues = microjson::parseJsonArray(it.data(), static_cast<size_t>(it.size()));
 
     for (auto &arrayValue : arrayValues) {
-        value.append(metaEnum.keyToValue(arrayValue.value.c_str()));
+        if (arrayValue.value == "null") {
+            value.append(metaEnum.value(0));
+        } else {
+             value.append(metaEnum.keyToValue(arrayValue.value.c_str()));
+        }
     }
 
     it += it.size();
