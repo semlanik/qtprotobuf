@@ -35,6 +35,9 @@ QtProtobuf provides Qt-native support of Google protocol buffers. Generated code
 
 [QtProtobuf development](#qtprotobuf-development)
 
+## Tutorials
+
+[QtProtobuf Client Tutorial](https://semlanik.github.io/qtprotobuf/clienttutorial.html)
 
 # Linux Build
 ## Prerequesties

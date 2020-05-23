@@ -43,6 +43,10 @@
  *  - \ref QtProtobuf
  *  - \ref QtGrpc
  *  - \ref QtProtobufWellKnownTypes
+ *
+ * \subsection gettingstarted Getting Started with QtProtobuf
+ *
+ * \ref clienttutorial
  */
 using namespace ::QtProtobuf::generator;
 int main(int argc, char *argv[])

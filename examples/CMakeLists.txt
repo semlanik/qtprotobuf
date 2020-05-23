@@ -7,3 +7,5 @@ configure_file(client_server_driver.sh.in addressbook_driver.sh @ONLY)
 add_subdirectory("simplechat")
 add_subdirectory("simplechatserver")
 configure_file(client_server_driver.sh.in simplechat_driver.sh @ONLY)
+
+add_subdirectory("clienttutorial")
