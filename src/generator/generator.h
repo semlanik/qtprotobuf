@@ -80,7 +80,7 @@ namespace generator {
  * For CMake based project QtProtobuf has macroses those should be used to generate code and in link it to your project:
  *
  * - \ref cmake_qtprotobuf_generate
- * - \ref cmake_qtprotobuf_link_archive
+ * - \ref cmake_qtprotobuf_link_target
  *
  *
  * \subsection cmake_qtprotobuf_generate qtprotobuf_generate
@@ -99,9 +99,9 @@ namespace generator {
  * \param COMMENTS Enables comments copying from .proto files. If provided in parameter list message and field related comments will be copied to generated header files.
  * \param FOLDER Enables folder based generation. If provided in parameter list generator will place generated artifacts to folder structure according to package of corresponding .proto file
  *
- * \subsection cmake_qtprotobuf_link_archive qtprotobuf_link_archive
+ * \subsection cmake_qtprotobuf_link_target qtprotobuf_link_target
  *
- * \brief qtprotobuf_link_archive is cmake helper function that links whole archive to your library or executable target.
+ * \brief qtprotobuf_link_target is cmake helper function that links generated protobuf target to your binary
  *
  * \details It's useful when you try to link generated target to shared library or/and to executable that doesn't utilize all protobuf generated classes directly from C++ code, but requires them from QML.
  *
