@@ -143,7 +143,7 @@ function(qtprotobuf_generate)
 
     add_custom_target(${GEN_TARGET} DEPENDS ${GENERATED_SOURCES_FULL} ${GENERATED_HEADERS_FULL} ${qtprotobuf_generate_PROTO_FILES})
 
-    add_library(${GENERATED_TARGET_NAME} ${GENERATED_SOURCES_FULL} ${MOC_SOURCES})
+    add_library(${GENERATED_TARGET_NAME} OBJECT ${GENERATED_SOURCES_FULL} ${MOC_SOURCES})
     add_dependencies(${GENERATED_TARGET_NAME} ${GEN_TARGET})
     set_target_properties(${GENERATED_TARGET_NAME} PROPERTIES PUBLIC_HEADER "${GENERATED_HEADERS_FULL}")
 
@@ -165,6 +165,7 @@ function(qtprotobuf_generate)
 
     #Automatically link whole static library to specified in parameters target
     if(DEFINED qtprotobuf_generate_TARGET)
-        qtprotobuf_link_archive(${qtprotobuf_generate_TARGET} ${GENERATED_TARGET_NAME})
+        target_sources(${qtprotobuf_generate_TARGET} PRIVATE $<TARGET_OBJECTS:${GENERATED_TARGET_NAME}>)
+        target_include_directories(${qtprotobuf_generate_TARGET} PRIVATE $<TARGET_PROPERTY:${GENERATED_TARGET_NAME},INTERFACE_INCLUDE_DIRECTORIES>)
     endif()
 endfunction()

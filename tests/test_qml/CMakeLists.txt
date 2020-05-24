@@ -15,7 +15,7 @@ if(TARGET QtProtobufProject::QtProtobufWellKnownTypes)
     target_link_libraries(${TARGET} PRIVATE QtProtobufProject::QtProtobufWellKnownTypes)
 endif()
 
-qtprotobuf_link_archive(${TARGET} qtprotobuf_test_qtprotobuf_gen)
+target_link_libraries(${TARGET} PRIVATE qtprotobuf_test_qtprotobuf_gen)
 
 add_target_qml(TARGET ${TARGET} QML_FILES ${QML_FILES})
 add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/qml)
