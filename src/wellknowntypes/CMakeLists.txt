@@ -44,7 +44,7 @@ function(add_wellknowntype TYPENAME)
     endforeach()
 endfunction()
 
-if(QT_PROTOBUF_STATIC AND NOT WIN32)
+if(QT_PROTOBUF_STATIC)
     add_library(${TARGET} STATIC ${SOURCES})
 else()
     add_library(${TARGET} SHARED ${SOURCES})
