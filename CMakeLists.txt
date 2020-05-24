@@ -79,9 +79,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory("src/protobuf")
 add_subdirectory("src/grpc")
 add_subdirectory("src/generator")
-if(NOT WIN32)#TODO: There are linking issues with windows build of well-known types...
-    add_subdirectory("src/wellknowntypes")
-endif()
+add_subdirectory("src/wellknowntypes")
+
 configure_package_config_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
     INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
