@@ -1,3 +1,10 @@
+2020-05-31 version 0.3.1 (QtProtobuf)
+
+    QtProtobuf
+    * Fix static build issues. Migrate to OBJECT library targets for generated code
+    * Fix CPack release builds. Fix paths in cmake/qmake packages.
+    * Complete "invalid" field handling in JSON serializers
+
 2020-05-01 version 0.3.0 (generator/QtProtobuf)
 
     QtProtobuf
