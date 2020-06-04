@@ -129,6 +129,10 @@ void ClassGeneratorBase::printMetaTypeDeclaration()
 bool ClassGeneratorBase::isLocalMessageEnum(const google::protobuf::Descriptor *message,
                                             const ::google::protobuf::FieldDescriptor *field)
 {
+    if (message == nullptr) {
+        return false;
+    }
+
     assert(field->enum_type() != nullptr);
     for (int i = 0; i < message->enum_type_count(); i++) {
         const auto enumDescr = message->enum_type(i);

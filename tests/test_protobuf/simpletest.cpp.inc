@@ -28,6 +28,7 @@
 #include <QSignalSpy>
 
 #include <gtest/gtest.h>
+#include "../testscommon.h"
 
 using namespace qtprotobufnamespace::tests;
 
@@ -40,17 +41,6 @@ public:
     // see simpletest.proto for property names and their field indices
     SimpleTest()
     {
-    }
-
-    template<typename MessageType, typename PropertyType>
-    static void assertMessagePropertyRegistered(int fieldIndex, const char *propertyTypeName, const char *propertyName)
-    {
-        // TODO: there should be(?) a mapping avaialble: PropertyType -> propertyTypeName
-
-        const int propertyNumber = MessageType::propertyOrdering.at(fieldIndex);
-        ASSERT_STREQ(MessageType::staticMetaObject.property(propertyNumber).typeName(), propertyTypeName);
-        ASSERT_EQ(MessageType::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<PropertyType>());
-        ASSERT_STREQ(MessageType::staticMetaObject.property(propertyNumber).name(), propertyName);
     }
 
     static void SetUpTestCase();

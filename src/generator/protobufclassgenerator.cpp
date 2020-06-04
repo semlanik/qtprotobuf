@@ -54,20 +54,20 @@ void ProtobufClassGenerator::printCopyFunctionality()
 {
     assert(mMessage != nullptr);
     mPrinter->Print({{"classname", mClassName}},
-                   Templates::CopyConstructorDeclarationTemplate);
+                    Templates::CopyConstructorDeclarationTemplate);
 
     mPrinter->Print({{"classname", mClassName}},
-                   Templates::AssignmentOperatorDeclarationTemplate);
+                    Templates::AssignmentOperatorDeclarationTemplate);
 }
 
 void ProtobufClassGenerator::printMoveSemantic()
 {
     assert(mMessage != nullptr);
     mPrinter->Print({{"classname", mClassName}},
-                   Templates::MoveConstructorDeclarationTemplate);
+                    Templates::MoveConstructorDeclarationTemplate);
 
     mPrinter->Print({{"classname", mClassName}},
-                   Templates::MoveAssignmentOperatorDeclarationTemplate);
+                    Templates::MoveAssignmentOperatorDeclarationTemplate);
 }
 
 void ProtobufClassGenerator::printComparisonOperators()
@@ -149,7 +149,7 @@ void ProtobufClassGenerator::printConstructor()
             parameters += parameterList[j] + ", ";
         }
         mPrinter->Print({{"classname", mClassName},
-                        {"parameter_list", parameters}}, Templates::ProtoConstructorTemplate);
+                         {"parameter_list", parameters}}, Templates::ProtoConstructorTemplate);
     }
     mPrinter->Print("\n");
 }
@@ -197,8 +197,26 @@ void ProtobufClassGenerator::printMapsMetaTypesDeclaration()
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         if (field->is_map()) {
-             mPrinter->Print({{"classname", field->message_type()->name()},
-                             {"namespaces", mNamespacesColonDelimited + "::" + mClassName}}, Templates::DeclareMetaTypeTemplate);
+            std::string keyType = getTypeName(field->message_type()->field(0), nullptr);
+            utils::replace(keyType, "::", "_");
+
+            std::string valueType = "";
+            if (field->message_type()->field(1)->type() == FieldDescriptor::TYPE_MESSAGE) {
+                valueType = field->message_type()->field(1)->message_type()->full_name();
+                utils::replace(valueType, ".", "_");
+            } else if (field->message_type()->field(1)->type() == FieldDescriptor::TYPE_ENUM){
+                valueType = field->message_type()->field(1)->enum_type()->full_name();
+                utils::replace(valueType, ".", "_");
+            } else {
+                valueType = getTypeName(field->message_type()->field(0), nullptr);
+                utils::replace(valueType, "::", "_");
+            }
+
+
+            mPrinter->Print({{"classname", field->message_type()->name()},
+                             {"key", keyType},
+                             {"value", valueType},
+                             {"namespaces", mNamespacesColonDelimited + "::" + mClassName}}, Templates::DeclareMetaTypeMapTemplate);
         }
     }
 }
