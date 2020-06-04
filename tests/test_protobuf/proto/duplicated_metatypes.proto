@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package qtprotobufnamespace.duplicated_metatypes;
+
+import "duplicated_metatypes_external.proto";
+
+enum TestEnum {
+    TEST_ENUM_VALUE0 = 0;
+    TEST_ENUM_VALUE1 = 1;
+}
+
+message Message0 {
+    string opts = 1;
+}
+
+message Message1 {
+    map<string, string> opts = 1;
+}
+
+message Message2 {
+    map<string, string> opts = 1;
+}
+
+message Message3 {
+    map<string, qtprotobufnamespace.duplicated_metatypes_external.Message1> opts = 1;
+}
+
+message Message4 {
+    map<string, Message0> opts = 1;
+}
+
+message Message5 {
+    map<string, Message0> opts = 1;
+}
+
+message Message6 {
+    map<string, TestEnum> opts = 1;
+}
+
+message Message7 {
+    map<string, TestEnum> opts = 1;
+}
+
+message Message8 {
+    map<string, qtprotobufnamespace.duplicated_metatypes_external.TestEnum> opts = 1;
+}

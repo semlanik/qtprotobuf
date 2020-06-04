@@ -148,6 +148,7 @@ public:
     static const char *DeclareMessageMetaTypeTemplate;
     static const char *DeclareComplexListTypeTemplate;
     static const char *DeclareComplexQmlListTypeTemplate;
+    static const char *DeclareMetaTypeMapTemplate;
     static const char *RegisterMetaTypeDefaultTemplate;
     static const char *RegisterMetaTypeTemplate;
     static const char *RegisterMetaTypeTemplateNoNamespace;

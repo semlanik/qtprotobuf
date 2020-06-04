@@ -248,6 +248,11 @@ const char *Templates::DeclareMessageMetaTypeTemplate = "Q_DECLARE_METATYPE($nam
 const char *Templates::DeclareComplexListTypeTemplate = "Q_DECLARE_METATYPE($namespaces$::$classname$Repeated)\n";
 const char *Templates::DeclareComplexQmlListTypeTemplate = "Q_DECLARE_METATYPE(QQmlListProperty<$namespaces$::$classname$>)\n";
 
+const char *Templates::DeclareMetaTypeMapTemplate = "#ifndef Q_PROTOBUF_MAP_$key$_$value$\n"
+                                                    "#define Q_PROTOBUF_MAP_$key$_$value$\n"
+                                                    "Q_DECLARE_METATYPE($namespaces$::$classname$)\n"
+                                                    "#endif\n";
+
 const char *Templates::RegisterMetaTypeDefaultTemplate = "qRegisterMetaType<$namespaces$::$type$>();\n";
 const char *Templates::RegisterMetaTypeTemplateNoNamespace = "qRegisterMetaType<$namespaces$::$type$>(\"$type$\");\n";
 const char *Templates::RegisterMetaTypeTemplate = "qRegisterMetaType<$namespaces$::$type$>(\"$namespaces$::$type$\");\n";

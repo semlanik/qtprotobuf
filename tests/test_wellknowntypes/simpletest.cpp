@@ -42,6 +42,7 @@
 #include <google/protobuf/field_mask.qpb.h>
 
 #include "wellknowntypes.qpb.h"
+#include "../testscommon.h"
 
 using namespace google::protobuf;
 
@@ -53,19 +54,6 @@ class WellknowntypesTest : public ::testing::Test
 public:
     // see simpletest.proto for property names and their field indices
     WellknowntypesTest() {
-    }
-
-    template<typename MessageType, typename PropertyType>
-    static void assertMessagePropertyRegistered(int fieldIndex, const char *propertyTypeName, const char *propertyName, bool skipMetatypeCheck = false)
-    {
-        // TODO: there should be(?) a mapping avaialble: PropertyType -> propertyTypeName
-
-        const int propertyNumber = MessageType::propertyOrdering.at(fieldIndex);
-        ASSERT_STREQ(MessageType::staticMetaObject.property(propertyNumber).typeName(), propertyTypeName);
-        if(!skipMetatypeCheck) {
-            ASSERT_EQ(MessageType::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<PropertyType>());
-        }
-        ASSERT_STREQ(MessageType::staticMetaObject.property(propertyNumber).name(), propertyName);
     }
 
     static void SetUpTestCase() {

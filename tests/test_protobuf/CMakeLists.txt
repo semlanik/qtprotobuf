@@ -9,7 +9,8 @@ file(GLOB SOURCES
     serializationcomplexmessagemap.cpp
     converterstest.cpp
     jsonserializationtest.cpp
-    jsondeserializationtest.cpp)
+    jsondeserializationtest.cpp
+    duplicatedmetatypestest.cpp)
 
 add_test_target(TARGET ${TARGET}
     SOURCES ${SOURCES}
