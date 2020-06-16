@@ -73,8 +73,7 @@ bool GeneratorBase::GenerateAll(const std::vector<const FileDescriptor *> &files
 
 std::string GeneratorBase::generateBaseName(const ::google::protobuf::FileDescriptor *file, std::string name)
 {
-    std::vector<std::string> packages;
-    utils::split(file->package(), packages, '.');
+    std::vector<std::string> packages = utils::split(file->package(), '.');
     std::string outFileBasename = "";
     if (GeneratorOptions::instance().isFolder()) {
         for (auto package : packages) {

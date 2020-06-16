@@ -19,7 +19,8 @@ file(GLOB SOURCES main.cpp
     clientsourcegenerator.cpp
     singlefilegenerator.cpp
     generatorbase.cpp
-    generatoroptions.cpp)
+    generatoroptions.cpp
+    generatorcommon.cpp)
 
 file(GLOB HEADERS classgeneratorbase.h
     classsourcegeneratorbase.h
@@ -36,7 +37,8 @@ file(GLOB HEADERS classgeneratorbase.h
     utils.h
     singlefilegenerator.h
     generatorbase.h
-    generatoroptions.h)
+    generatoroptions.h
+    generatorcommon.h)
 
 add_executable(${TARGET} ${SOURCES})
 

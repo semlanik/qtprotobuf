@@ -39,33 +39,31 @@ ProtobufSourceGenerator::ProtobufSourceGenerator(const google::protobuf::Descrip
                                                  const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out) :
     ClassSourceGeneratorBase(message->full_name(), out)
   , mMessage(message)
+  , mTypeMap(common::produceMessageTypeMap(message, nullptr))
 {
 }
 
 ProtobufSourceGenerator::ProtobufSourceGenerator(const google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
     ClassSourceGeneratorBase(message->full_name(), printer)
   , mMessage(message)
+  , mTypeMap(common::produceMessageTypeMap(message, nullptr))
 {
 }
 
 void ProtobufSourceGenerator::printRegisterBody()
 {
-    const std::map<std::string, std::string> registrationProperties = {{"classname", mClassName},
-                                                                       {"namespaces", mNamespacesColonDelimited},
-                                                                       {"package", mMessage->file()->package()}
-                                                                      };
-    mPrinter->Print(registrationProperties,
+    mPrinter->Print(mTypeMap,
                     Templates::ManualRegistrationComplexTypeDefinition);
     Indent();
     if (GeneratorOptions::instance().hasQml()) {
-        mPrinter->Print(registrationProperties, Templates::RegisterQmlListPropertyMetaTypeTemplate);
-        mPrinter->Print(registrationProperties, Templates::QmlRegisterTypeTemplate);
+        mPrinter->Print(mTypeMap, Templates::RegisterQmlListPropertyMetaTypeTemplate);
+        mPrinter->Print(mTypeMap, Templates::QmlRegisterTypeTemplate);
     }
 
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_ENUM
-                && isLocalMessageEnum(mMessage, field)) {
+                && common::isLocalEnum(field->enum_type(), mMessage)) {
             mPrinter->Print({{"type", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
                              {"namespaces", mNamespacesColonDelimited}},
                             Templates::RegisterMetaTypeTemplateNoNamespace);
@@ -395,15 +393,15 @@ void ProtobufSourceGenerator::printGetters()
 {
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
+        auto propertyMap = common::producePropertyMap(field, mMessage);
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
             printField(mMessage, field, Templates::GetterPrivateMessageDefinitionTemplate);
             printField(mMessage, field, Templates::GetterMessageDefinitionTemplate);
         }
         if (field->is_repeated()) {
-            printField(mMessage, field, Templates::GetterContainerExtraDefinitionTemplate);
             if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map()
                     && GeneratorOptions::instance().hasQml()) {
-                printField(mMessage, field, Templates::GetterQmlListDefinitionTemplate);
+                mPrinter->Print(propertyMap, Templates::GetterQmlListDefinitionTemplate);
             }
         }
     }

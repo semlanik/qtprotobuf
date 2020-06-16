@@ -66,20 +66,32 @@ public:
     static const char *ConstructorHeaderTemplate;
     static const char *ClassDefinitionTemplate;
     static const char *QObjectMacro;
+
     static const char *PropertyTemplate;
+    static const char *RepeatedPropertyTemplate;
     static const char *NonScriptablePropertyTemplate;
     static const char *NonScriptableAliasPropertyTemplate;
     static const char *MessagePropertyTemplate;
     static const char *QmlListPropertyTemplate;
+
+    static const char *ConstructorParameterTemplate;
+    static const char *ConstructorMessageParameterTemplate;
+    static const char *ConstructorRepeatedParameterTemplate;
+    static const char *ProtoConstructorBeginTemplate;
+    static const char *ProtoConstructorEndTemplate;
+
+    static const char *ConstructorParameterDefinitionTemplate;
+    static const char *ConstructorMessageParameterDefinitionTemplate;
+    static const char *ConstructorRepeatedParameterDefinitionTemplate;
+    static const char *ProtoConstructorDefinitionTemplate;
+
     static const char *MemberTemplate;
+    static const char *ListMemberTemplate;
     static const char *ComplexMemberTemplate;
-    static const char *EnumMemberTemplate;
     static const char *PublicBlockTemplate;
     static const char *PrivateBlockTemplate;
     static const char *EnumDefinitionTemplate;
     static const char *EnumFieldTemplate;
-    static const char *ProtoConstructorTemplate;
-    static const char *ProtoConstructorDefinitionTemplate;
     static const char *ConstructorTemplate;
     static const char *QObjectConstructorTemplate;
     static const char *CopyConstructorDeclarationTemplate;
@@ -117,8 +129,7 @@ public:
     static const char *GetterMessageDefinitionTemplate;
     static const char *GetterTemplate;
     static const char *NonScriptableGetterTemplate;
-    static const char *GetterContainerExtraDeclarationTemplate;
-    static const char *GetterContainerExtraDefinitionTemplate;
+    static const char *GetterContainerExtraTemplate;
     static const char *GetterQmlListDeclarationTemplate;
     static const char *GetterQmlListDefinitionTemplate;
 
@@ -186,6 +197,8 @@ public:
     static const char *EnumClassSuffix;
 
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
+
+    static const char *QtProtobufNamespace;
 };
 
 } //namespace generator

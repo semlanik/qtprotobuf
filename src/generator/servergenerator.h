@@ -56,7 +56,7 @@ public:
         printIncludes();
         printNamespaces();
         printClassName();
-        printPublic();
+        printPublicBlock();
         printMethodsDeclaration(Templates::ServerMethodDeclarationTemplate);
         encloseClass();
         encloseNamespaces();

@@ -33,6 +33,8 @@
 
 #include <set>
 
+#include "generatorcommon.h"
+
 using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
@@ -41,7 +43,7 @@ using namespace ::google::protobuf::compiler;
 ClassGeneratorBase::ClassGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
     mPrinter(printer)
 {
-    utils::split(fullClassName, mNamespaces, '.');
+    mNamespaces = utils::split(fullClassName, '.');
     assert(mNamespaces.size() > 0);
     mClassName = utils::upperCaseName(mNamespaces.back());
     mNamespaces.erase(mNamespaces.end() - 1);
@@ -104,27 +106,21 @@ void ClassGeneratorBase::encloseNamespaces()
     encloseNamespaces(mNamespaces.size());
 }
 
-void ClassGeneratorBase::printPublic()
+void ClassGeneratorBase::printPublicBlock()
 {
     mPrinter->Print(Templates::PublicBlockTemplate);
 }
 
-void ClassGeneratorBase::printPrivate()
+void ClassGeneratorBase::printPrivateBlock()
 {
     mPrinter->Print(Templates::PrivateBlockTemplate);
 }
 
-void ClassGeneratorBase::printMetaTypeDeclaration()
+void ClassGeneratorBase::printSignalsBlock()
 {
-    mPrinter->Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
-                   Templates::DeclareMetaTypeTemplate);
-    mPrinter->Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
-                   Templates::DeclareComplexListTypeTemplate);
-    if (GeneratorOptions::instance().hasQml()) {
-        mPrinter->Print({{"classname", mClassName}, {"namespaces", mNamespacesColonDelimited}},
-                       Templates::DeclareComplexQmlListTypeTemplate);
-    }
+    mPrinter->Print(Templates::SignalsBlockTemplate);
 }
+
 
 bool ClassGeneratorBase::isLocalMessageEnum(const google::protobuf::Descriptor *message,
                                             const ::google::protobuf::FieldDescriptor *field)
@@ -231,7 +227,7 @@ template<typename T>
 std::string ClassGeneratorBase::getNamespacesList(const T *message, std::vector<std::string> &container, const std::string &localNamespace)
 {
     std::string result;
-    utils::split(std::string(message->full_name()), container, '.');
+    container = utils::split(std::string(message->full_name()), '.');
 
     if (container.size() > 1) {
         //delete type name -> only namespace stays
@@ -333,9 +329,6 @@ bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *
         return false;
     }
 
-    std::string typeNameLower(typeName);
-    utils::tolower(typeNameLower);
-
     std::string typeNameNoList = typeName;
     if (field->is_repeated() && !field->is_map()) {
         if(field->type() == FieldDescriptor::TYPE_MESSAGE
@@ -370,7 +363,6 @@ bool ClassGeneratorBase::producePropertyMap(const google::protobuf::Descriptor *
 
     propertyMap = {{"type", typeName},
                    {"classname", utils::upperCaseName(message->name())},
-                   {"type_lower", typeNameLower},
                    {"property_name", fieldName},
                    {"property_name_cap", capProperty},
                    {"type_nolist", typeNameNoList},
@@ -419,8 +411,7 @@ void ClassGeneratorBase::printInclude(const google::protobuf::Descriptor *messag
             std::string outFileBasename = "";
             std::string fieldPackage = field->message_type()->file()->package();
             if (fieldPackage != message->file()->package()) {
-                std::vector<std::string> packages;
-                utils::split(fieldPackage, packages, '.');
+                std::vector<std::string> packages = utils::split(fieldPackage, '.');
                 for (auto package : packages) {
                     outFileBasename += package + "/";
                 }
@@ -447,8 +438,7 @@ void ClassGeneratorBase::printInclude(const google::protobuf::Descriptor *messag
         } else if (enumVisibily == NEIGHBOUR_ENUM) {
             includeTemplate = Templates::InternalIncludeTemplate;
             std::string fullEnumName = field->enum_type()->full_name();
-            std::vector<std::string> fullEnumNameParts;
-            utils::split(fullEnumName, fullEnumNameParts, '.');
+            std::vector<std::string> fullEnumNameParts = utils::split(fullEnumName, '.');
             std::string enumTypeOwner = fullEnumNameParts.at(fullEnumNameParts.size() - 2);
             utils::tolower(enumTypeOwner);
             newInclude = enumTypeOwner;
@@ -466,13 +456,3 @@ void ClassGeneratorBase::printInclude(const google::protobuf::Descriptor *messag
         existingIncludes.insert(newInclude);
     }
 }
-
-bool ClassGeneratorBase::hasQmlAlias(const ::google::protobuf::FieldDescriptor *field)
-{
-    return !field->is_map() && !field->is_repeated()
-            && (field->type() == FieldDescriptor::TYPE_INT32
-                || field->type() == FieldDescriptor::TYPE_SFIXED32
-                || field->type() == FieldDescriptor::TYPE_FIXED32)
-            && GeneratorOptions::instance().hasQml();
-}
-

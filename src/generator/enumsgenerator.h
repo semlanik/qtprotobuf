@@ -27,6 +27,7 @@
 
 #include "classgeneratorbase.h"
 #include "utils.h"
+#include "generatorcommon.h"
 
 namespace google {
 namespace protobuf {
@@ -56,6 +57,8 @@ public:
     void printMetatype();
     void printEnumClass();
     void printConstructor();
+private:
+    TypeMap mTypeMap;
 };
 
 } //namespace generator

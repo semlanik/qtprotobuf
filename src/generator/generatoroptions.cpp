@@ -46,8 +46,7 @@ GeneratorOptions::GeneratorOptions() : mIsMulti(false)
 
 void GeneratorOptions::parseFromEnv(const std::string &options)
 {
-    std::vector<std::string> optionsList;
-    utils::split(options, optionsList, ':');
+    std::vector<std::string> optionsList = utils::split(options, ':');
     for (auto option : optionsList) {
         QT_PROTOBUF_DEBUG("option: " << option);
         if (option.compare(MultifileBuildOption) == 0) {

@@ -26,6 +26,7 @@
 #include "protobufclassgenerator.h"
 #include "utils.h"
 #include "generatoroptions.h"
+#include "generatorcommon.h"
 
 #include <iostream>
 #include <google/protobuf/descriptor.h>
@@ -40,12 +41,14 @@ using namespace ::google::protobuf::compiler;
 ProtobufClassGenerator::ProtobufClassGenerator(const Descriptor *message, const std::shared_ptr<::google::protobuf::io::ZeroCopyOutputStream> &out)
     : ClassGeneratorBase(message->full_name(), out)
     , mMessage(message)
+    , mTypeMap(common::produceMessageTypeMap(message, nullptr))
 {
 }
 
 ProtobufClassGenerator::ProtobufClassGenerator(const ::google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer)
     : ClassGeneratorBase(message->full_name(), printer)
     , mMessage(message)
+    , mTypeMap(common::produceMessageTypeMap(message, nullptr))
 {
 
 }
@@ -73,7 +76,6 @@ void ProtobufClassGenerator::printMoveSemantic()
 void ProtobufClassGenerator::printComparisonOperators()
 {
     assert(mMessage != nullptr);
-    PropertyMap properties;
     mPrinter->Print({{"classname", mClassName}}, Templates::EqualOperatorDeclarationTemplate);
 
     mPrinter->Print({{"classname", mClassName}}, Templates::NotEqualOperatorDeclarationTemplate);
@@ -94,63 +96,33 @@ void ProtobufClassGenerator::printIncludes()
     }
 }
 
-bool ProtobufClassGenerator::isListType(const FieldDescriptor *field)
+void ProtobufClassGenerator::printConstructors()
 {
-    assert(field != nullptr);
-    return field && field->is_repeated()
-            && field->type() == FieldDescriptor::TYPE_MESSAGE;
+    for (int i = 0; i <= mMessage->field_count(); i++) {
+        printConstructor(i);
+    }
 }
 
-void ProtobufClassGenerator::printConstructor()
+void ProtobufClassGenerator::printConstructor(int fieldCount)
 {
     std::vector<std::string> parameterList;
-    for (int i = 0; i < mMessage->field_count(); i++) {
+    mPrinter->Print({{"classname", mClassName}}, Templates::ProtoConstructorBeginTemplate);
+    for (int i = 0; i < fieldCount; i++) {
         const FieldDescriptor *field = mMessage->field(i);
-        std::string fieldTypeName = getTypeName(field, mMessage);
-        std::string fieldName = utils::lowerCaseName(field->name());
-        fieldName = qualifiedName(fieldName);
-
-        if (field->is_repeated() || field->is_map()) {
-            parameterList.push_back("const " + fieldTypeName + " &" + fieldName);
-        } else {
-            switch (field->type()) {
-            case FieldDescriptor::TYPE_DOUBLE:
-            case FieldDescriptor::TYPE_FLOAT:
-                parameterList.push_back(fieldTypeName + " " + fieldName);
-                break;
-            case FieldDescriptor::TYPE_FIXED32:
-            case FieldDescriptor::TYPE_FIXED64:
-            case FieldDescriptor::TYPE_INT32:
-            case FieldDescriptor::TYPE_INT64:
-            case FieldDescriptor::TYPE_SINT32:
-            case FieldDescriptor::TYPE_SINT64:
-            case FieldDescriptor::TYPE_UINT32:
-            case FieldDescriptor::TYPE_UINT64:
-                parameterList.push_back(fieldTypeName + " " + fieldName);
-                break;
-            case FieldDescriptor::TYPE_BOOL:
-                parameterList.push_back(fieldTypeName + " " + fieldName);
-                break;
-            case FieldDescriptor::TYPE_BYTES:
-            case FieldDescriptor::TYPE_STRING:
-            case FieldDescriptor::TYPE_MESSAGE:
-                parameterList.push_back("const " + fieldTypeName + " &" + fieldName);
-                break;
-            default:
-                parameterList.push_back(fieldTypeName + " " + fieldName);
-                break;
-            }
+        const char *parameterTemplate = Templates::ConstructorParameterTemplate;
+        FieldDescriptor::Type fieldType = field->type();
+        if (field->is_repeated() && !field->is_map()) {
+            parameterTemplate = Templates::ConstructorRepeatedParameterTemplate;
+        } else if(fieldType == FieldDescriptor::TYPE_BYTES
+                  || fieldType == FieldDescriptor::TYPE_STRING
+                  || fieldType == FieldDescriptor::TYPE_MESSAGE
+                  || field->is_map()) {
+            parameterTemplate = Templates::ConstructorMessageParameterTemplate;
         }
+        mPrinter->Print(common::producePropertyMap(field, mMessage), parameterTemplate);
     }
 
-    for (size_t i = 0; i <= parameterList.size(); i++) {
-        std::string parameters = "";
-        for (size_t j = 0; j < i; j++) {
-            parameters += parameterList[j] + ", ";
-        }
-        mPrinter->Print({{"classname", mClassName},
-                         {"parameter_list", parameters}}, Templates::ProtoConstructorTemplate);
-    }
+    mPrinter->Print({{"classname", mClassName}}, Templates::ProtoConstructorEndTemplate);
     mPrinter->Print("\n");
 }
 
@@ -158,65 +130,42 @@ void ProtobufClassGenerator::printMaps()
 {
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor *field = mMessage->field(i);
-
+        const FieldDescriptor *field = mMessage->field(i);        
         if (field->is_map()) {
-            std::string keyType = getTypeName(field->message_type()->field(0), mMessage);
-            std::string valueType = getTypeName(field->message_type()->field(1), mMessage);
-            const char *mapTemplate = Templates::MapTypeUsingTemplate;
-
-            if (field->message_type()->field(1)->type() == FieldDescriptor::TYPE_MESSAGE) {
-                mapTemplate = Templates::MessageMapTypeUsingTemplate;
-            }
-
-            mPrinter->Print({{"classname", utils::upperCaseName(field->message_type()->name())},
-                             {"key", keyType},
-                             {"value", valueType}}, mapTemplate);
+            const Descriptor *type = field->message_type();
+            const char *mapTemplate = type->field(1)->type() == FieldDescriptor::TYPE_MESSAGE ? Templates::MessageMapTypeUsingTemplate : Templates::MapTypeUsingTemplate;
+            mPrinter->Print(common::producePropertyMap(field, mMessage), mapTemplate);
         }
     }
     Outdent();
 }
 
-void ProtobufClassGenerator::printLocalEnumsMetaTypesDeclaration()
+void ProtobufClassGenerator::printMetaTypesDeclaration()
 {
-    for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor *field = mMessage->field(i);
-        if (field == nullptr || field->enum_type() == nullptr)
-            continue;
+    mPrinter->Print(mTypeMap,
+                   Templates::DeclareMetaTypeTemplate);
+    mPrinter->Print(mTypeMap,
+                   Templates::DeclareComplexListTypeTemplate);
 
-        if (field->type() == FieldDescriptor::TYPE_ENUM
-                && isLocalMessageEnum(mMessage, field)) {
-            mPrinter->Print({{"classname", mClassName + "::" + field->enum_type()->name() + Templates::ListSuffix},
-                             {"namespaces", mNamespacesColonDelimited}}, Templates::DeclareMetaTypeTemplate);
-        }
+    if (GeneratorOptions::instance().hasQml()) {
+        mPrinter->Print(mTypeMap,
+                        Templates::DeclareComplexQmlListTypeTemplate);
     }
-}
 
-void ProtobufClassGenerator::printMapsMetaTypesDeclaration()
-{
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
-        if (field->is_map()) {
-            std::string keyType = getTypeName(field->message_type()->field(0), nullptr);
-            utils::replace(keyType, "::", "_");
+        auto fieldMap = common::producePropertyMap(field, nullptr);
+        if (field->type() == FieldDescriptor::TYPE_ENUM
+                && common::isLocalEnum(field->enum_type(), mMessage)) {
+            mPrinter->Print(fieldMap, Templates::DeclareMetaTypeTemplate);
+        } else if (field->is_map()) {
+            fieldMap["key_type_underscore"] = fieldMap["key_type"];
+            utils::replace(fieldMap["key_type_underscore"], "::", "_");
 
-            std::string valueType = "";
-            if (field->message_type()->field(1)->type() == FieldDescriptor::TYPE_MESSAGE) {
-                valueType = field->message_type()->field(1)->message_type()->full_name();
-                utils::replace(valueType, ".", "_");
-            } else if (field->message_type()->field(1)->type() == FieldDescriptor::TYPE_ENUM){
-                valueType = field->message_type()->field(1)->enum_type()->full_name();
-                utils::replace(valueType, ".", "_");
-            } else {
-                valueType = getTypeName(field->message_type()->field(0), nullptr);
-                utils::replace(valueType, "::", "_");
-            }
+            fieldMap["value_type_underscore"] = fieldMap["key_type"];
+            utils::replace(fieldMap["value_type_underscore"], "::", "_");
 
-
-            mPrinter->Print({{"classname", field->message_type()->name()},
-                             {"key", keyType},
-                             {"value", valueType},
-                             {"namespaces", mNamespacesColonDelimited + "::" + mClassName}}, Templates::DeclareMetaTypeMapTemplate);
+            mPrinter->Print(fieldMap, Templates::DeclareMetaTypeMapTemplate);
         }
     }
 }
@@ -226,15 +175,18 @@ void ProtobufClassGenerator::printProperties()
     assert(mMessage != nullptr);
     //private section
     Indent();
+
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         const char *propertyTemplate = Templates::PropertyTemplate;
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
             propertyTemplate = Templates::MessagePropertyTemplate;
-        } else if (hasQmlAlias(field)) {
+        } else if (common::hasQmlAlias(field)) {
             propertyTemplate = Templates::NonScriptablePropertyTemplate;
+        } else if (field->is_repeated() && !field->is_map()) {
+            propertyTemplate = Templates::RepeatedPropertyTemplate;
         }
-        printField(mMessage, field, propertyTemplate);
+        mPrinter->Print(common::producePropertyMap(field, mMessage), propertyTemplate);
     }
 
     //Generate extra QmlListProperty that is mapped to list
@@ -242,91 +194,126 @@ void ProtobufClassGenerator::printProperties()
         const FieldDescriptor *field = mMessage->field(i);
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && field->is_repeated() && !field->is_map()
                 && GeneratorOptions::instance().hasQml()) {
-            printField(mMessage, field, Templates::QmlListPropertyTemplate);
-        } else if (hasQmlAlias(field)) {
-            printField(mMessage, field, Templates::NonScriptableAliasPropertyTemplate);
+            mPrinter->Print(common::producePropertyMap(field, mMessage), Templates::QmlListPropertyTemplate);
+        } else if (common::hasQmlAlias(field)) {
+            mPrinter->Print(common::producePropertyMap(field, mMessage), Templates::NonScriptableAliasPropertyTemplate);
         }
     }
 
     Outdent();
+}
 
-    printQEnums(mMessage);
-
-    //public section
-    printPublic();
-    printMaps();
-
-    //Body
+void ProtobufClassGenerator::printGetters()
+{
     Indent();
-    printConstructor();
-    printCopyFunctionality();
-    printMoveSemantic();
-    printComparisonOperators();
-
     for (int i = 0; i < mMessage->field_count(); i++) {
         const FieldDescriptor *field = mMessage->field(i);
         printComments(field);
         mPrinter->Print("\n");
+
+        PropertyMap propertyMap = common::producePropertyMap(field, mMessage);
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
-            printField(mMessage, field, Templates::GetterPrivateMessageDeclarationTemplate);
-            printField(mMessage, field, Templates::GetterMessageDeclarationTemplate);
+            mPrinter->Print(propertyMap, Templates::GetterPrivateMessageDeclarationTemplate);
+            mPrinter->Print(propertyMap, Templates::GetterMessageDeclarationTemplate);
         } else {
-            printField(mMessage, field, Templates::GetterTemplate);
+            mPrinter->Print(propertyMap, Templates::GetterTemplate);
         }
+
         if (field->is_repeated()) {
-            printField(mMessage, field, Templates::GetterContainerExtraDeclarationTemplate);
+            mPrinter->Print(propertyMap, Templates::GetterContainerExtraTemplate);
             if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map()
                     && GeneratorOptions::instance().hasQml()) {
-                printField(mMessage, field, Templates::GetterQmlListDeclarationTemplate);
+                mPrinter->Print(propertyMap, Templates::GetterQmlListDeclarationTemplate);
             }
         }
     }
+    Outdent();
+}
 
+void ProtobufClassGenerator::printSetters()
+{
+    Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         auto field = mMessage->field(i);
+        PropertyMap propertyMap = common::producePropertyMap(field, mMessage);
         switch (field->type()) {
         case FieldDescriptor::TYPE_MESSAGE:
             if (!field->is_map() && !field->is_repeated()) {
-                printField(mMessage, field, Templates::SetterPrivateTemplateDeclarationMessageType);
-                printField(mMessage, field, Templates::SetterTemplateDeclarationMessageType);
+                mPrinter->Print(propertyMap, Templates::SetterPrivateTemplateDeclarationMessageType);
+                mPrinter->Print(propertyMap, Templates::SetterTemplateDeclarationMessageType);
             } else {
-                printField(mMessage, field, Templates::SetterTemplateDeclarationComplexType);
+                mPrinter->Print(propertyMap, Templates::SetterTemplateDeclarationComplexType);
             }
             break;
         case FieldDescriptor::FieldDescriptor::TYPE_STRING:
         case FieldDescriptor::FieldDescriptor::TYPE_BYTES:
-            printField(mMessage, field, Templates::SetterTemplateDeclarationComplexType);
+            mPrinter->Print(propertyMap, Templates::SetterTemplateDeclarationComplexType);
             break;
         default:
-            printField(mMessage, field, Templates::SetterTemplate);
+            mPrinter->Print(propertyMap, Templates::SetterTemplate);
             break;
         }
     }
-
     Outdent();
+}
+
+void ProtobufClassGenerator::printSignals()
+{
+    Indent();
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        mPrinter->Print(common::producePropertyMap(mMessage->field(i), mMessage), Templates::SignalTemplate);
+    }
+    Outdent();
+}
+
+
+void ProtobufClassGenerator::printPrivateMethods()
+{
+    Indent();
+    for (int i = 0; i < mMessage->field_count(); i++) {
+        auto field = mMessage->field(i);
+        auto propertyMap = common::producePropertyMap(field, mMessage);
+        if (common::hasQmlAlias(field)) {
+            mPrinter->Print(propertyMap, Templates::NonScriptableGetterTemplate);
+            mPrinter->Print(propertyMap, Templates::NonScriptableSetterTemplate);
+        }
+    }
+    Outdent();
+}
+
+void ProtobufClassGenerator::printClassBody()
+{
+    printProperties();
+    printQEnums(mMessage);
+
+    printPublicBlock();
+    printMaps();
+
+    Indent();
+    printConstructors();
+    printDestructor();
+
+    printCopyFunctionality();
+    printMoveSemantic();
+
+    printComparisonOperators();
+    Outdent();
+
+    printGetters();
+    printSetters();
 
     Indent();
     mPrinter->Print({{"classname", mClassName}}, Templates::ManualRegistrationDeclaration);
     Outdent();
 
-    mPrinter->Print(Templates::SignalsBlockTemplate);
+    printSignalsBlock();
+    printSignals();
 
-    Indent();
-    for (int i = 0; i < mMessage->field_count(); i++) {
-        printField(mMessage, mMessage->field(i), Templates::SignalTemplate);
-    }
-    Outdent();
+    printPrivateBlock();
+    printPrivateMethods();
 
-    printPrivate();
-    Indent();
-    for (int i = 0; i < mMessage->field_count(); i++) {
-        auto field = mMessage->field(i);
-        if (hasQmlAlias(field)) {
-            printField(mMessage, field, Templates::NonScriptableGetterTemplate);
-            printField(mMessage, field, Templates::NonScriptableSetterTemplate);
-        }
-    }
-    Outdent();
+    printPrivateBlock();
+    printClassMembers();
 }
 
 void ProtobufClassGenerator::printListType()
@@ -339,27 +326,16 @@ void ProtobufClassGenerator::printClassMembers()
     Indent();
     for (int i = 0; i < mMessage->field_count(); i++) {
         auto field = mMessage->field(i);
+        auto propertyMap = common::producePropertyMap(field, mMessage);
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
-            printField(mMessage, field, Templates::ComplexMemberTemplate);
+            mPrinter->Print(propertyMap, Templates::ComplexMemberTemplate);
+        } else if(field->is_repeated() && !field->is_map()){
+             mPrinter->Print(propertyMap, Templates::ListMemberTemplate);
         } else {
-            printField(mMessage, field, Templates::MemberTemplate);
+            mPrinter->Print(propertyMap, Templates::MemberTemplate);
         }
     }
     Outdent();
-}
-
-std::set<std::string> ProtobufClassGenerator::extractModels() const
-{
-    std::set<std::string> extractedModels;
-    for (int i = 0; i < mMessage->field_count(); i++) {
-        const FieldDescriptor *field = mMessage->field(i);
-        if (field->is_repeated()
-                && field->type() == FieldDescriptor::TYPE_MESSAGE) {
-            std::string typeName = field->message_type()->name();
-            extractedModels.insert(typeName);
-        }
-    }
-    return extractedModels;
 }
 
 void ProtobufClassGenerator::run()
@@ -371,17 +347,11 @@ void ProtobufClassGenerator::run()
     printFieldClassDeclaration();
     printComments(mMessage);
     printClassDeclaration();
-    printProperties();
-    printPrivate();
-    printClassMembers();
-    printPublic();
-    printDestructor();
+    printClassBody();
     encloseClass();
     printListType();
     encloseNamespaces();
-    printMetaTypeDeclaration();
-    printMapsMetaTypesDeclaration();
-    printLocalEnumsMetaTypesDeclaration();
+    printMetaTypesDeclaration();
 }
 
 void ProtobufClassGenerator::printDestructor()

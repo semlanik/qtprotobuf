@@ -35,29 +35,31 @@ using namespace ::google::protobuf::compiler;
 EnumsGenerator::EnumsGenerator(const EnumDescriptor *enumDesctiptor, const std::shared_ptr<io::ZeroCopyOutputStream> &out) :
     ClassGeneratorBase(enumDesctiptor->full_name() + Templates::EnumClassSuffix, out)
   , mEnumDescriptor(enumDesctiptor)
+  , mTypeMap(common::produceEnumTypeMap(enumDesctiptor, nullptr))
 {}
 
 
 EnumsGenerator::EnumsGenerator(const EnumDescriptor *enumDesctiptor, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
     ClassGeneratorBase(enumDesctiptor->full_name() + Templates::EnumClassSuffix, printer)
   , mEnumDescriptor(enumDesctiptor)
+  , mTypeMap(common::produceEnumTypeMap(enumDesctiptor, nullptr))
 {}
 
 void EnumsGenerator::startEnum()
 {
     printNamespaces(mNamespaces);
     printEnumClass();
-    printPublic();
+    printPublicBlock();
     Indent();
     mPrinter->Print({{"classname", mClassName}}, Templates::ManualRegistrationDeclaration);
     Outdent();
-    printPrivate();
+    printPrivateBlock();
     printConstructor();
 }
 
 void EnumsGenerator::printEnum()
 {
-    printPublic();
+    printPublicBlock();
 
     Indent();
     mPrinter->Print({{"enum", mEnumDescriptor->name()}}, Templates::EnumDefinitionTemplate);
@@ -94,7 +96,7 @@ void EnumsGenerator::run()
 
 void EnumsGenerator::printMetatype()
 {
-    mPrinter->Print({{"classname", mEnumDescriptor->name()}, {"namespaces", mNamespacesColonDelimited + "::" + mClassName}},
+    mPrinter->Print(mTypeMap,
                    Templates::DeclareMetaTypeListTemplate);
 }
 

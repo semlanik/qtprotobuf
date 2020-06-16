@@ -27,6 +27,8 @@
 
 #include "classsourcegeneratorbase.h"
 
+#include "generatorcommon.h"
+
 namespace QtProtobuf {
 namespace generator {
 
@@ -38,6 +40,7 @@ namespace generator {
 class ProtobufSourceGenerator : public ClassSourceGeneratorBase
 {
     const google::protobuf::Descriptor *mMessage;
+    TypeMap mTypeMap;
 public:
     ProtobufSourceGenerator(const google::protobuf::Descriptor *message, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
     ProtobufSourceGenerator(const google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer);

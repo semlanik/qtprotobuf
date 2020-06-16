@@ -52,14 +52,14 @@ void DuplicatedMetatypesTest::SetUp()
 
 
 TEST_F(DuplicatedMetatypesTest, SimpleTest) {
-    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message1, qtprotobufnamespace::duplicated_metatypes::Message1::OptsEntry>(1, "Message1::OptsEntry", "opts");
-    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message2, qtprotobufnamespace::duplicated_metatypes::Message2::OptsEntry>(1, "Message2::OptsEntry", "opts");
-    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message3, qtprotobufnamespace::duplicated_metatypes::Message3::OptsEntry>(1, "Message3::OptsEntry", "opts");
-    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message4, qtprotobufnamespace::duplicated_metatypes::Message4::OptsEntry>(1, "Message4::OptsEntry", "opts");
-    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message5, qtprotobufnamespace::duplicated_metatypes::Message5::OptsEntry>(1, "Message5::OptsEntry", "opts");
-    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message6, qtprotobufnamespace::duplicated_metatypes::Message6::OptsEntry>(1, "Message6::OptsEntry", "opts");
-    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message7, qtprotobufnamespace::duplicated_metatypes::Message7::OptsEntry>(1, "Message7::OptsEntry", "opts");
-    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message8, qtprotobufnamespace::duplicated_metatypes::Message8::OptsEntry>(1, "Message8::OptsEntry", "opts");
+    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message1, qtprotobufnamespace::duplicated_metatypes::Message1::OptsEntry>(1, "qtprotobufnamespace::duplicated_metatypes::Message1::OptsEntry", "opts");
+    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message2, qtprotobufnamespace::duplicated_metatypes::Message2::OptsEntry>(1, "qtprotobufnamespace::duplicated_metatypes::Message2::OptsEntry", "opts");
+    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message3, qtprotobufnamespace::duplicated_metatypes::Message3::OptsEntry>(1, "qtprotobufnamespace::duplicated_metatypes::Message3::OptsEntry", "opts");
+    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message4, qtprotobufnamespace::duplicated_metatypes::Message4::OptsEntry>(1, "qtprotobufnamespace::duplicated_metatypes::Message4::OptsEntry", "opts");
+    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message5, qtprotobufnamespace::duplicated_metatypes::Message5::OptsEntry>(1, "qtprotobufnamespace::duplicated_metatypes::Message5::OptsEntry", "opts");
+    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message6, qtprotobufnamespace::duplicated_metatypes::Message6::OptsEntry>(1, "qtprotobufnamespace::duplicated_metatypes::Message6::OptsEntry", "opts");
+    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message7, qtprotobufnamespace::duplicated_metatypes::Message7::OptsEntry>(1, "qtprotobufnamespace::duplicated_metatypes::Message7::OptsEntry", "opts");
+    assertMessagePropertyRegistered<qtprotobufnamespace::duplicated_metatypes::Message8, qtprotobufnamespace::duplicated_metatypes::Message8::OptsEntry>(1, "qtprotobufnamespace::duplicated_metatypes::Message8::OptsEntry", "opts");
 }
 
 }

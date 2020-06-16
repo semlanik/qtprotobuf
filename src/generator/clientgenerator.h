@@ -59,7 +59,7 @@ public:
         printClientIncludes();
         printNamespaces();
         printClientClass();
-        printPublic();
+        printPublicBlock();
         printConstructor();
         printClientMethodsDeclaration();
         encloseClass();

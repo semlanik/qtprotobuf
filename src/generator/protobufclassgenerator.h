@@ -30,6 +30,7 @@
 #include <memory>
 
 #include "templates.h"
+#include "generatorcommon.h"
 
 namespace google { namespace protobuf {
 class FieldDescriptor;
@@ -40,8 +41,6 @@ class ZeroCopyOutputStream;
 
 namespace QtProtobuf {
 namespace generator {
-
-using PropertyMap = std::map<std::string, std::string>;
 
 /*!
  * \ingroup generator
@@ -56,26 +55,29 @@ public:
     ProtobufClassGenerator(const ::google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
     virtual ~ProtobufClassGenerator() = default;
 
-    void run() override;
+    void run();
 
     void printIncludes();
     void printCopyFunctionality();
     void printMoveSemantic();
     void printComparisonOperators();
+    void printClassBody();
     void printProperties();
+    void printGetters();
+    void printSetters();
+    void printSignals();
+    void printPrivateMethods();
     void printClassMembers();
-    void printConstructor();
+    void printConstructor(int fieldCount);
+    void printConstructors();
     void printDestructor();
     void printListType();
     void printMaps();
-    void printMapsMetaTypesDeclaration();
-    void printLocalEnumsMetaTypesDeclaration();
+
+    void printMetaTypesDeclaration();
     void printFieldClassDeclaration();
-
-    std::set<std::string> extractModels() const;
-
 private:
-    static bool isListType(const ::google::protobuf::FieldDescriptor *field);
+    TypeMap mTypeMap;
 };
 
 }

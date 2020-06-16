@@ -240,7 +240,7 @@ TEST_F(SimpleTest, SimpleLocalEnumListTest)
     ASSERT_GT(SimpleEnumListMessage::staticMetaObject.enumeratorCount(), 0);
 
     const char *propertyName = "localEnumList";
-    assertMessagePropertyRegistered<SimpleEnumListMessage, SimpleEnumListMessage::LocalEnumRepeated>(1,  "SimpleEnumListMessage::LocalEnumRepeated", propertyName);
+    assertMessagePropertyRegistered<SimpleEnumListMessage, SimpleEnumListMessage::LocalEnumRepeated>(1,  "qtprotobufnamespace::tests::SimpleEnumListMessage::LocalEnumRepeated", propertyName);
 
     SimpleEnumListMessage::LocalEnumRepeated value({SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
                                                 SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
@@ -642,7 +642,7 @@ TEST_F(SimpleTest, StepChildEnumListMessageTest)
 TEST_F(SimpleTest, SimpleSInt32StringMapMessageTest)
 {
     const char *propertyName = "mapField";
-    assertMessagePropertyRegistered<SimpleSInt32StringMapMessage, SimpleSInt32StringMapMessage::MapFieldEntry>(1, "SimpleSInt32StringMapMessage::MapFieldEntry", propertyName);
+    assertMessagePropertyRegistered<SimpleSInt32StringMapMessage, SimpleSInt32StringMapMessage::MapFieldEntry>(1, "qtprotobufnamespace::tests::SimpleSInt32StringMapMessage::MapFieldEntry", propertyName);
 
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleSInt32StringMapMessage::MapFieldEntry>()));
 
@@ -665,7 +665,7 @@ TEST_F(SimpleTest, SimpleSInt32StringMapMessageTest)
 TEST_F(SimpleTest, SimpleStringStringMapMessageTest)
 {
     const char *propertyName = "mapField";
-    assertMessagePropertyRegistered<SimpleStringStringMapMessage, SimpleStringStringMapMessage::MapFieldEntry>(13, "SimpleStringStringMapMessage::MapFieldEntry", propertyName);
+    assertMessagePropertyRegistered<SimpleStringStringMapMessage, SimpleStringStringMapMessage::MapFieldEntry>(13, "qtprotobufnamespace::tests::SimpleStringStringMapMessage::MapFieldEntry", propertyName);
 
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleStringStringMapMessage::MapFieldEntry>()));
 
@@ -775,14 +775,14 @@ TEST_F(SimpleTest, UnderscoresTest)
 
 TEST_F(SimpleTest, SequenceTest)
 {
-    assertMessagePropertyRegistered<sequence::TestMessageSequence, sequence::TestMessageSequence2*>(1, "TestMessageSequence2*", "testField");
+    assertMessagePropertyRegistered<sequence::TestMessageSequence, sequence::TestMessageSequence2*>(1, "qtprotobufnamespace::tests::sequence::TestMessageSequence2*", "testField");
     assertMessagePropertyRegistered<sequence::TestMessageSequence2, bool>(1, "bool", "testField");
 }
 
 TEST_F(SimpleTest, CyclingTest)
 {
-    assertMessagePropertyRegistered<sequence::CyclingFirstDependency, sequence::CyclingSecondDependency*>(1, "CyclingSecondDependency*", "testField");
-    assertMessagePropertyRegistered<sequence::CyclingSecondDependency, sequence::CyclingFirstDependency*>(1, "CyclingFirstDependency*", "testField");
+    assertMessagePropertyRegistered<sequence::CyclingFirstDependency, sequence::CyclingSecondDependency*>(1, "qtprotobufnamespace::tests::sequence::CyclingSecondDependency*", "testField");
+    assertMessagePropertyRegistered<sequence::CyclingSecondDependency, sequence::CyclingFirstDependency*>(1, "qtprotobufnamespace::tests::sequence::CyclingFirstDependency*", "testField");
 }
 
 TEST_F(SimpleTest, UpperCaseTest)
@@ -844,8 +844,8 @@ TEST_F(SimpleTest, LowerCaseEnumTest)
 
 TEST_F(SimpleTest, MapRepeatedFieldSequenceTest)
 {
-    assertMessagePropertyRegistered<sequence::RepeatedFieldSequence, sequence::RepeatedFieldSequence2Repeated>(1, "RepeatedFieldSequence2Repeated", "testField");
-    assertMessagePropertyRegistered<sequence::MapFieldSequence, sequence::MapFieldSequence::TestFieldEntry>(1, "MapFieldSequence::TestFieldEntry", "testField");
+    assertMessagePropertyRegistered<sequence::RepeatedFieldSequence, sequence::RepeatedFieldSequence2Repeated>(1, "qtprotobufnamespace::tests::sequence::RepeatedFieldSequence2Repeated", "testField");
+    assertMessagePropertyRegistered<sequence::MapFieldSequence, sequence::MapFieldSequence::TestFieldEntry>(1, "qtprotobufnamespace::tests::sequence::MapFieldSequence::TestFieldEntry", "testField");
 }
 
 } // tests

@@ -129,10 +129,9 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         enumSourceGen2.run();
     }
 
-    std::vector<std::string> namespaces;
+    std::vector<std::string> namespaces = utils::split(file->package(), '.');
     std::string namespacesColonDelimited;
 
-    utils::split(file->package(), namespaces, '.');
     assert(namespaces.size() > 0);
     for (size_t i = 0; i < namespaces.size(); i++) {
         if (i > 0) {
@@ -159,16 +158,10 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         classGen.printNamespaces();
         classGen.printComments(message);
         classGen.printClassDeclaration();
-        classGen.printProperties();
-        classGen.printPrivate();
-        classGen.printClassMembers();
-        classGen.printPublic();
-        classGen.printDestructor();
+        classGen.printClassBody();
         classGen.encloseClass();
         classGen.encloseNamespaces();
-        classGen.printMetaTypeDeclaration();
-        classGen.printMapsMetaTypesDeclaration();
-        classGen.printLocalEnumsMetaTypesDeclaration();
+        classGen.printMetaTypesDeclaration();
 
         ProtobufSourceGenerator srcGen(message,
                                        outSourcePrinter);
@@ -263,7 +256,7 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
                                   outHeaderPrinter);
         clientGen.printNamespaces();
         clientGen.printClientClass();
-        clientGen.printPublic();
+        clientGen.printPublicBlock();
         clientGen.printConstructor();
         clientGen.printClientMethodsDeclaration();
         clientGen.encloseClass();
