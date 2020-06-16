@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -25,19 +25,15 @@
 
 #pragma once
 
-#include "classgeneratorbase.h"
-#include <google/protobuf/io/printer.h>
+#include "servicedeclarationprinterbase.h"
+#include <string>
 #include <memory>
-
-#include "templates.h"
-#include "generatorcommon.h"
+#include <google/protobuf/io/printer.h>
 
 namespace google { namespace protobuf {
-class FieldDescriptor;
-class Descriptor;
-namespace io {
-class ZeroCopyOutputStream;
-}}}
+class ServiceDescriptor;
+class Message;
+}}
 
 namespace QtProtobuf {
 namespace generator {
@@ -45,40 +41,33 @@ namespace generator {
 /*!
  * \ingroup generator
  * \private
- * \brief The ProtobufClassGenerator class
+ * \brief The ClientDeclarationprinter class
  */
-class ProtobufClassGenerator : public ClassGeneratorBase
+class ClientDeclarationPrinter : public ServiceDeclarationPrinterBase
 {
-    const ::google::protobuf::Descriptor *mMessage;
 public:
-    ProtobufClassGenerator(const ::google::protobuf::Descriptor *message, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    ProtobufClassGenerator(const ::google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
-    virtual ~ProtobufClassGenerator() = default;
+    ClientDeclarationPrinter(const ::google::protobuf::ServiceDescriptor *service,
+                    const std::shared_ptr<::google::protobuf::io::Printer> &printer);
+    ~ClientDeclarationPrinter() = default;
 
-    void run();
+    void run() {
+        printNamespaces();
+        printClientClass();
+        printPublicBlock();
+        printConstructor();
+        printClientMethodsDeclaration();
+        encloseClass();
+        encloseNamespaces();
+    }
 
-    void printIncludes();
-    void printCopyFunctionality();
-    void printMoveSemantic();
-    void printComparisonOperators();
-    void printClassBody();
-    void printProperties();
-    void printGetters();
-    void printSetters();
-    void printSignals();
-    void printPrivateMethods();
-    void printClassMembers();
-    void printConstructor(int fieldCount);
-    void printConstructors();
-    void printDestructor();
-    void printListType();
-    void printMaps();
+    void printClientIncludes();
 
-    void printMetaTypesDeclaration();
-    void printFieldClassDeclaration();
 private:
-    TypeMap mTypeMap;
+    void printClientClass();
+    void printConstructor();
+    void printClientMethodsDeclaration();
 };
 
-}
-}
+
+} //namespace generator
+} //namespace QtProtobuf

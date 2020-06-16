@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2020 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,26 +23,40 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "servergenerator.h"
+#pragma once
 
-#include <google/protobuf/stubs/logging.h>
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/io/printer.h>
-#include <google/protobuf/io/zero_copy_stream.h>
-#include <google/protobuf/descriptor.h>
+#include "descriptorprinterbase.h"
 
-#include <unordered_set>
+namespace QtProtobuf {
+namespace generator {
 
-#include "utils.h"
-#include "templates.h"
-
-using namespace ::QtProtobuf::generator;
-using namespace ::google::protobuf;
-using namespace ::google::protobuf::compiler;
-
-ServerGenerator::ServerGenerator(const ServiceDescriptor *service, const std::shared_ptr<io::ZeroCopyOutputStream> &out) :
-    ServiceGeneratorBase(service, out)
-  , mService(nullptr)
+/*!
+ * \ingroup generator
+ * \private
+ * \brief The EnumDeclarationPrinter class
+ */
+class EnumDeclarationPrinter : public DescriptorPrinterBase<google::protobuf::EnumDescriptor>
 {
-    mClassName += "Server";
-}
+public:
+    EnumDeclarationPrinter(const google::protobuf::EnumDescriptor *descriptor, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
+    virtual ~EnumDeclarationPrinter() = default;
+
+    void run() {
+        startEnum();
+        printEnum();
+        encloseEnum();
+        printMetatype();
+    }
+
+private:
+    void startEnum();
+    void printEnum();
+    void encloseEnum();
+    void printMetatype();
+    void printEnumClass();
+    void printConstructor();
+};
+
+} //namespace generator
+} //namespace QtProtobuf
+

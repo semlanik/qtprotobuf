@@ -25,42 +25,65 @@
 
 #pragma once
 
-#include "classgeneratorbase.h"
+#include "baseprinter.h"
+
 #include "utils.h"
+#include "templates.h"
+#include "generatoroptions.h"
 #include "generatorcommon.h"
 
-namespace google {
-namespace protobuf {
-class EnumDescriptor;
-}}
 namespace QtProtobuf {
 namespace generator {
+
+using PropertyMap = std::map<std::string, std::string>;
 
 /*!
  * \ingroup generator
  * \private
- * \brief The EnumsGenerator class
+ * \brief The DescriptorPrinterBase class is base of source code generation
  */
-class EnumsGenerator : public ClassGeneratorBase
+
+template<typename T>
+class DescriptorPrinterBase : public BasePrinter
 {
-    const google::protobuf::EnumDescriptor *mEnumDescriptor;
 public:
-    EnumsGenerator(const google::protobuf::EnumDescriptor *enumDesctiptor, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    EnumsGenerator(const google::protobuf::EnumDescriptor *enumDesctiptor, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
-    virtual ~EnumsGenerator() = default;
+    DescriptorPrinterBase(const T* descriptor, const std::shared_ptr<::google::protobuf::io::Printer> &printer) : BasePrinter(printer)
+      , mDescriptor(descriptor)
+      , mName(utils::upperCaseName(descriptor->name()))
+    {}
+    virtual ~DescriptorPrinterBase() = default;
+public:
+    void printClassDeclaration() {
+        mPrinter->Print({{"classname", mName}}, Templates::ProtoClassDefinitionTemplate);
+    }
 
-    void run();
+    void encloseClass() {
+        mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);
+        mPrinter->Print("\n");
+    }
 
-    void startEnum();
-    void printEnum();
-    void encloseEnum();
-    void printMetatype();
-    void printEnumClass();
-    void printConstructor();
-private:
+    void printNamespaces() {
+        auto namespaces = common::getNamespaces(mDescriptor);
+        mPrinter->Print("\n");
+        for (auto ns : namespaces) {
+            mPrinter->Print({{"namespace", ns}}, Templates::NamespaceTemplate);
+        }
+    }
+
+    void encloseNamespaces() {
+        auto namespaces = common::getNamespaces(mDescriptor);
+        mPrinter->Print("\n");
+        for (size_t i = 0; i < namespaces.size(); ++i) {
+            mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
+        }
+        mPrinter->Print("\n");
+    }
+
+protected:
+    const T* mDescriptor;
+    std::string mName;
     TypeMap mTypeMap;
 };
 
 } //namespace generator
 } //namespace QtProtobuf
-

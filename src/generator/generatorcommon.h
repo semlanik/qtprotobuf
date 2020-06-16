@@ -28,6 +28,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <functional>
 
 #include "utils.h"
 
@@ -38,6 +39,8 @@ namespace generator {
 
 using TypeMap = std::map<std::string, std::string>;
 using PropertyMap = std::map<std::string, std::string>;
+using MethodMap = std::map<std::string, std::string>;
+
 struct common {
     enum EnumVisibility {
         GLOBAL_ENUM,
@@ -69,6 +72,17 @@ struct common {
     static bool isLocalEnum(const ::google::protobuf::EnumDescriptor *type, const google::protobuf::Descriptor *scope);
     static EnumVisibility enumVisibility(const ::google::protobuf::EnumDescriptor *type, const ::google::protobuf::Descriptor *scope);
     static bool hasQmlAlias(const ::google::protobuf::FieldDescriptor *field);
+
+    using InterateMessageLogic = std::function<void(const ::google::protobuf::FieldDescriptor *, PropertyMap &)>;
+    static void iterateMessageFields(const ::google::protobuf::Descriptor *message, InterateMessageLogic callback) {
+        for (int i = 0; i < message->field_count(); i++) {
+            const ::google::protobuf::FieldDescriptor *field = message->field(i);
+            auto propertyMap = common::producePropertyMap(field, message);
+            callback(field, propertyMap);
+        }
+    }
+
+    static MethodMap produceMethodMap(const ::google::protobuf::MethodDescriptor *method, const std::string &scope); //TODO: scope should be ServiceDescriptor
 };
 
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -25,30 +25,40 @@
 
 #pragma once
 
-#include "classgeneratorbase.h"
-#include "utils.h"
+#include <google/protobuf/compiler/code_generator.h>
+#include <google/protobuf/io/zero_copy_stream.h>
+#include <string>
+#include <memory>
+
+#include "generatorbase.h"
+
+namespace google { namespace protobuf {
+class FileDescriptor;
+namespace compiler {
+class GeneratorContext;
+}}}
 
 namespace QtProtobuf {
 namespace generator {
 /*!
  * \ingroup generator
  * \private
- * \brief The GlobalEnumsSourceGenerator class
+ * \brief The MultiFileGenerator class
  */
-class GlobalEnumsSourceGenerator : public ClassGeneratorBase
+class MultiFileGenerator : public GeneratorBase
 {
-    PackagesList mPackageList;
 public:
-    GlobalEnumsSourceGenerator(const PackagesList &packageList, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    GlobalEnumsSourceGenerator(const PackagesList &packageList, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
-    virtual ~GlobalEnumsSourceGenerator() = default;
+    MultiFileGenerator();
+    bool Generate(const ::google::protobuf::FileDescriptor *file,
+                          const std::string &parameter,
+                          ::google::protobuf::compiler::GeneratorContext *generatorContext,
+                          std::string *error) const override;
 
-    void run() override;
-    void printHeaders();
-    void printRegisterBody(const std::list<const ::google::protobuf::FileDescriptor *> &list,
-                           const std::vector<std::string> &namespaces);
+    bool GenerateAll(const std::vector<const ::google::protobuf::FileDescriptor *> &files,
+                             const std::string &parameter,
+                             ::google::protobuf::compiler::GeneratorContext *generatorContext,
+                             std::string *error) const override;
 };
 
 } //namespace generator
-} //namespace QtProtobuf
-
+} // namespace QtProtobuf

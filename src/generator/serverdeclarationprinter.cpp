@@ -23,45 +23,17 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include "serverdeclarationprinter.h"
 
-#include "servicegeneratorbase.h"
-#include <string>
-#include <memory>
 #include <google/protobuf/io/printer.h>
+#include <google/protobuf/descriptor.h>
 
-namespace google { namespace protobuf {
-class ServiceDescriptor;
-class Message;
-}}
+using namespace ::QtProtobuf::generator;
+using namespace ::google::protobuf;
 
-namespace QtProtobuf {
-namespace generator {
-
-/*!
- * \ingroup generator
- * \private
- * \brief The ServerGenerator class
- */
-class ServerGenerator : public ServiceGeneratorBase
+ServerDeclarationPrinter::ServerDeclarationPrinter(const ::google::protobuf::ServiceDescriptor *service,
+                                 const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    ServiceDeclarationPrinterBase(service, printer)
 {
-    const google::protobuf::ServiceDescriptor *mService;
-public:
-    ServerGenerator(const google::protobuf::ServiceDescriptor *service, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    virtual ~ServerGenerator() = default;
-
-    void run() {
-        printDisclaimer();
-        printPreamble();
-        printIncludes();
-        printNamespaces();
-        printClassName();
-        printPublicBlock();
-        printMethodsDeclaration(Templates::ServerMethodDeclarationTemplate);
-        encloseClass();
-        encloseNamespaces();
-    }
-};
-
-} //namespace generator
-} //namespace QtProtobuf
+    mName += "Server";
+}

@@ -375,7 +375,7 @@ public:
         qProtoDebug() << __func__ << "currentByte:" << QString::number((*it), 16);
 
         unsigned int length = deserializeVarintCommon<uint32>(it);
-        QByteArray result((QByteArray::const_iterator&)it, length); //TODO: it's possible to void buffeer copying by setupimg new "end of QByteArray";
+        QByteArray result((QByteArray::const_iterator&)it, length); //TODO: it's possible to avoid buffer copying by setuping new "end of QByteArray";
         it += length;
         return result;
     }

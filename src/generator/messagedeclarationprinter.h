@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -25,8 +25,7 @@
 
 #pragma once
 
-#include "classgeneratorbase.h"
-#include "utils.h"
+#include "descriptorprinterbase.h"
 
 namespace QtProtobuf {
 namespace generator {
@@ -34,20 +33,47 @@ namespace generator {
 /*!
  * \ingroup generator
  * \private
- * \brief The EnumsSourceGenerator class
+ * \brief The MessageDeclarationPrinter class
  */
-class EnumsSourceGenerator : public ClassGeneratorBase
-{
-    const google::protobuf::EnumDescriptor *mEnumDescriptor;
-public:
-    EnumsSourceGenerator(const google::protobuf::EnumDescriptor *enumDesctiptor, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    EnumsSourceGenerator(const google::protobuf::EnumDescriptor *enumDesctiptor, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
-    virtual ~EnumsSourceGenerator() = default;
 
-    void run() override;
-    void printRegisterBody();
+class MessageDeclarationPrinter : public DescriptorPrinterBase<google::protobuf::Descriptor>
+{
+public:
+    MessageDeclarationPrinter(const ::google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
+    virtual ~MessageDeclarationPrinter() = default;
+
+    void run() {
+        printNamespaces();
+        printComments(mDescriptor);
+        printClassDeclaration();
+        printClassBody();
+        encloseClass();
+        printListType();
+        encloseNamespaces();
+        printMetaTypesDeclaration();
+    }
+
+private:
+    void printCopyFunctionality();
+    void printMoveSemantic();
+    void printComparisonOperators();
+    void printClassBody();
+    void printProperties();
+    void printGetters();
+    void printSetters();
+    void printSignals();
+    void printPrivateMethods();
+    void printClassMembers();
+    void printConstructor(int fieldCount);
+    void printConstructors();
+    void printDestructor();
+    void printListType();
+    void printMaps();
+
+    void printMetaTypesDeclaration();
+
+    void printQEnums();
 };
 
-} //namespace generator
-} //namespace QtProtobuf
-
+}
+}

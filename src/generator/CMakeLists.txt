@@ -5,40 +5,39 @@ set(TARGET_EXPORT ${TARGET}Targets)
 set(TARGET_BINDIR ${CMAKE_INSTALL_BINDIR})
 
 file(GLOB SOURCES main.cpp
-    generator.cpp
-    classgeneratorbase.cpp
-    servergenerator.cpp
-    protobufclassgenerator.cpp
-    enumsgenerator.cpp
-    enumssourcegenerator.cpp
-    servicegeneratorbase.cpp
-    templates.cpp
-    clientgenerator.cpp
-    classsourcegeneratorbase.cpp
-    protobufsourcegenerator.cpp
-    clientsourcegenerator.cpp
-    singlefilegenerator.cpp
-    generatorbase.cpp
+    generatorcommon.cpp
     generatoroptions.cpp
-    generatorcommon.cpp)
+    templates.cpp
+    generatorbase.cpp
+    singlefilegenerator.cpp
+    multifilegenerator.cpp
+    baseprinter.cpp
+    messagedeclarationprinter.cpp
+    messagedefinitionprinter.cpp
+    enumdeclarationprinter.cpp
+    enumdefinitionprinter.cpp
+    servicedeclarationprinterbase.cpp
+    clientdeclarationprinter.cpp
+    clientdefinitionprinter.cpp
+    serverdeclarationprinter.cpp)
 
-file(GLOB HEADERS classgeneratorbase.h
-    classsourcegeneratorbase.h
-    clientgenerator.h
-    clientsourcegenerator.h
-    generator.h
-    enumsgenerator.h
-    enumssourcegenerator.h
-    protobufclassgenerator.h
-    protobufsourcegenerator.h
-    servergenerator.h
-    servicegeneratorbase.h
-    templates.h
-    utils.h
-    singlefilegenerator.h
-    generatorbase.h
+file(GLOB HEADERS utils.h
+    generatorcommon.h
     generatoroptions.h
-    generatorcommon.h)
+    templates.h
+    generatorbase.h
+    singlefilegenerator.h
+    multifilegenerator.h
+    baseprinter.h
+    descriptorprinterbase.h
+    messagedeclarationprinter.h
+    messagedefinitionprinter.h
+    enumdeclarationprinter.h
+    enumdefinitionprinter.h
+    servicedeclarationprinterbase.h
+    clientdeclarationprinter.h
+    clientdefinitionprinter.h
+    serverdeclarationprinter.h)
 
 add_executable(${TARGET} ${SOURCES})
 

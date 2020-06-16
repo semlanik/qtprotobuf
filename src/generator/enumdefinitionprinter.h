@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2020 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -25,15 +25,7 @@
 
 #pragma once
 
-#include "servicegeneratorbase.h"
-#include <string>
-#include <memory>
-#include <google/protobuf/io/printer.h>
-
-namespace google { namespace protobuf {
-class ServiceDescriptor;
-class Message;
-}}
+#include "descriptorprinterbase.h"
 
 namespace QtProtobuf {
 namespace generator {
@@ -41,36 +33,18 @@ namespace generator {
 /*!
  * \ingroup generator
  * \private
- * \brief The ClientGenerator class
+ * \brief The EnumDefinitionPrinter class
  */
-class ClientGenerator : public ServiceGeneratorBase
+class EnumDefinitionPrinter : public DescriptorPrinterBase<google::protobuf::EnumDescriptor>
 {
 public:
-    ClientGenerator(const ::google::protobuf::ServiceDescriptor *service,
-                    const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    ClientGenerator(const ::google::protobuf::ServiceDescriptor *service,
-                    const std::shared_ptr<::google::protobuf::io::Printer> &printer);
-    ~ClientGenerator() = default;
+    EnumDefinitionPrinter(const google::protobuf::EnumDescriptor *descriptor, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
+    virtual ~EnumDefinitionPrinter() = default;
 
-    void run() {
-        printDisclaimer();
-        printPreamble();
-        printIncludes();
-        printClientIncludes();
-        printNamespaces();
-        printClientClass();
-        printPublicBlock();
-        printConstructor();
-        printClientMethodsDeclaration();
-        encloseClass();
-        encloseNamespaces();
-    }
-    void printClientClass();
-    void printConstructor();
-    void printClientIncludes();
-    void printClientMethodsDeclaration();
+    void run();
+    void printRegisterBody();
 };
-
 
 } //namespace generator
 } //namespace QtProtobuf
+

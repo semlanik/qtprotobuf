@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
+ * Copyright (c) 2020 Alexey Edelev <semlanik@gmail.com>, Tatyana Borisova <tanusshhka@mail.ru>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,45 +23,42 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "classsourcegeneratorbase.h"
+#include "enumdefinitionprinter.h"
 
-#include <google/protobuf/io/zero_copy_stream.h>
-
-#include "templates.h"
-#include "utils.h"
 #include "generatoroptions.h"
 
-using namespace QtProtobuf::generator;
+using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::io;
 using namespace ::google::protobuf::compiler;
 
-ClassSourceGeneratorBase::ClassSourceGeneratorBase(const std::string &fullClassName,
-                                                   const std::shared_ptr<::google::protobuf::io::ZeroCopyOutputStream> &out) :
-    ClassGeneratorBase(fullClassName, out)
+EnumDefinitionPrinter::EnumDefinitionPrinter(const google::protobuf::EnumDescriptor *descriptor, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    DescriptorPrinterBase<google::protobuf::EnumDescriptor>(descriptor, printer)
 {
-
+    mTypeMap = common::produceEnumTypeMap(descriptor, nullptr);
+    mName += Templates::EnumClassSuffix;
 }
 
-ClassSourceGeneratorBase::ClassSourceGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
-    ClassGeneratorBase(fullClassName, printer)
-{
-
+void EnumDefinitionPrinter::run() {
+    printNamespaces();
+    printRegisterBody();
+    encloseNamespaces();
 }
 
-void ClassSourceGeneratorBase::printClassHeaderInclude()
+void EnumDefinitionPrinter::printRegisterBody()
 {
-    std::string includeFileName = mClassName;
-    utils::tolower(includeFileName);
-    mPrinter->Print({{"include", includeFileName}}, Templates::InternalIncludeTemplate);
+    auto typeMap = mTypeMap;
+    typeMap["classname"] = mName;
+    mPrinter->Print(typeMap, Templates::EnumRegistrarTemplate);
+    mPrinter->Print(typeMap, Templates::ManualRegistrationGlobalEnumDefinition);
+    Indent();
     if (GeneratorOptions::instance().hasQml()) {
-        mPrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+        mPrinter->Print(typeMap, Templates::QmlRegisterEnumTypeTemplate);
     }
-}
 
-void ClassSourceGeneratorBase::printUsingNamespaces(const std::unordered_set<std::string> &namespaces)
-{
-    for (auto ns : namespaces) {
-        mPrinter->Print({{"namespace", ns}}, Templates::UsingNamespaceTemplate);
-    }
+    mPrinter->Print(typeMap, Templates::ComplexGlobalEnumFieldRegistrationTemplate);
+    mPrinter->Print(typeMap, Templates::RegisterGlobalEnumMetaTypeTemplate);
+    mPrinter->Print(typeMap, Templates::RegisterEnumSerializersTemplate);
+    Outdent();
+    mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 }

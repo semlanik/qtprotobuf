@@ -34,6 +34,7 @@
 #include "utils.h"
 #include "templates.h"
 #include "generatoroptions.h"
+#include "generatorcommon.h"
 
 using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
@@ -86,3 +87,91 @@ std::string GeneratorBase::generateBaseName(const ::google::protobuf::FileDescri
 
     return outFileBasename;
 }
+
+
+void GeneratorBase::printDisclaimer(const std::shared_ptr<::google::protobuf::io::Printer> printer)
+{
+    printer->Print(Templates::DisclaimerTemplate);
+}
+
+void GeneratorBase::printPreamble(const std::shared_ptr<::google::protobuf::io::Printer> printer)
+{
+    printer->Print(Templates::PreambleTemplate);
+}
+
+void GeneratorBase::printInclude(const std::shared_ptr<::google::protobuf::io::Printer> printer, const google::protobuf::Descriptor *message, const FieldDescriptor *field, std::set<std::string> &existingIncludes)
+{
+    assert(field != nullptr);
+    std::string newInclude;
+    const char *includeTemplate;
+    switch (field->type()) {
+    case FieldDescriptor::TYPE_MESSAGE:
+        if (field->is_map()) {
+            newInclude = "QMap";
+            assert(field->message_type() != nullptr);
+            assert(field->message_type()->field_count() == 2);
+            printInclude(printer, message, field->message_type()->field(0), existingIncludes);
+            printInclude(printer, message, field->message_type()->field(1), existingIncludes);
+            includeTemplate = Templates::ExternalIncludeTemplate;
+        } else {
+            std::string outFileBasename = "";
+            std::string fieldPackage = field->message_type()->file()->package();
+            if (fieldPackage != message->file()->package()) {
+                std::vector<std::string> packages = utils::split(fieldPackage, '.');
+                for (auto package : packages) {
+                    outFileBasename += package + "/";
+                }
+            }
+
+            std::string typeName = field->message_type()->name();
+            utils::tolower(typeName);
+            newInclude = outFileBasename + typeName;
+            includeTemplate = Templates::InternalIncludeTemplate;
+        }
+        break;
+    case FieldDescriptor::TYPE_BYTES:
+        newInclude = "QByteArray";
+        includeTemplate = Templates::ExternalIncludeTemplate;
+        break;
+    case FieldDescriptor::TYPE_STRING:
+        newInclude = "QString";
+        includeTemplate = Templates::ExternalIncludeTemplate;
+        break;
+    case FieldDescriptor::TYPE_ENUM: {
+        common::EnumVisibility enumVisibily = common::enumVisibility(field->enum_type(), message);
+        if (enumVisibily == common::GLOBAL_ENUM) {
+            includeTemplate = Templates::GlobalEnumIncludeTemplate;
+        } else if (enumVisibily == common::NEIGHBOR_ENUM) {
+            includeTemplate = Templates::InternalIncludeTemplate;
+            std::string fullEnumName = field->enum_type()->full_name();
+            std::vector<std::string> fullEnumNameParts = utils::split(fullEnumName, '.');
+            std::string enumTypeOwner = fullEnumNameParts.at(fullEnumNameParts.size() - 2);
+            utils::tolower(enumTypeOwner);
+            newInclude = enumTypeOwner;
+        } else {
+            return;
+        }
+    }
+        break;
+    default:
+        return;
+    }
+
+    if (existingIncludes.find(newInclude) == std::end(existingIncludes)) {
+        printer->Print({{"include", newInclude}}, includeTemplate);
+        existingIncludes.insert(newInclude);
+    }
+}
+
+void GeneratorBase::printQtProtobufUsingNamespace(const std::shared_ptr<::google::protobuf::io::Printer> printer)
+{
+    printer->Print({{"namespace", "QtProtobuf"}}, Templates::UsingNamespaceTemplate);
+}
+
+void GeneratorBase::printNamespaces(const std::shared_ptr<::google::protobuf::io::Printer> printer, const std::vector<std::string> namespaces) {
+    printer->Print("\n");
+    for (auto ns : namespaces) {
+        printer->Print({{"namespace", ns}}, Templates::NamespaceTemplate);
+    }
+}
+

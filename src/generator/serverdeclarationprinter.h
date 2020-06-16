@@ -25,35 +25,40 @@
 
 #pragma once
 
-#include "classsourcegeneratorbase.h"
+#include "servicedeclarationprinterbase.h"
+#include <string>
+#include <google/protobuf/io/printer.h>
+
+namespace google { namespace protobuf {
+class ServiceDescriptor;
+class Message;
+}}
 
 namespace QtProtobuf {
 namespace generator {
+
 /*!
  * \ingroup generator
  * \private
- * \brief The ClientSourceGenerator class
+ * \brief The ServerDeclarationPrinter class
  */
-class ClientSourceGenerator : public ClassSourceGeneratorBase
+class ServerDeclarationPrinter : public ServiceDeclarationPrinterBase
 {
+    const google::protobuf::ServiceDescriptor *mService;
 public:
-    ClientSourceGenerator(const google::protobuf::ServiceDescriptor *service,
-                          const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    ClientSourceGenerator(const google::protobuf::ServiceDescriptor *service,
-                          const std::shared_ptr<::google::protobuf::io::Printer> &printer);
-    void run() override {
-        printDisclaimer();
-        printClassHeaderInclude();
-        printUsingNamespaces({"QtProtobuf", mNamespacesColonDelimited});
-        printConstructor();
-        printMethods();
-    }
+    ServerDeclarationPrinter(const google::protobuf::ServiceDescriptor *service, const std::shared_ptr<google::protobuf::io::Printer> &printer);
+    virtual ~ServerDeclarationPrinter() = default;
 
-    void printMethods();
-    void printConstructor();
-protected:
-    const ::google::protobuf::ServiceDescriptor *mService;
+    void run() {
+        printIncludes();
+        printNamespaces();
+        printClassName();
+        printPublicBlock();
+        printMethodsDeclaration(Templates::ServerMethodDeclarationTemplate);
+        encloseClass();
+        encloseNamespaces();
+    }
 };
 
-} //namespace QtProtobuf
 } //namespace generator
+} //namespace QtProtobuf

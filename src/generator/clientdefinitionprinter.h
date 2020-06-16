@@ -25,51 +25,29 @@
 
 #pragma once
 
-#include "classsourcegeneratorbase.h"
-
-#include "generatorcommon.h"
+#include "descriptorprinterbase.h"
 
 namespace QtProtobuf {
 namespace generator {
-
 /*!
  * \ingroup generator
  * \private
- * \brief The ProtobufSourceGenerator class
+ * \brief The ClientDefinitionPrinter class
  */
-class ProtobufSourceGenerator : public ClassSourceGeneratorBase
+class ClientDefinitionPrinter : public DescriptorPrinterBase<google::protobuf::ServiceDescriptor>
 {
-    const google::protobuf::Descriptor *mMessage;
-    TypeMap mTypeMap;
 public:
-    ProtobufSourceGenerator(const google::protobuf::Descriptor *message, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    ProtobufSourceGenerator(const google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
-
-    void printRegisterBody();
-    void printFieldsOrdering();
-    void printConstructor();
-    void printCopyFunctionality();
-    void printMoveSemantic();
-    void printComparisonOperators();
-    void printGetters();
-    void printDestructor();
-    void printIncludes();
-
-    void run() override {
-        printDisclaimer();
-        printClassHeaderInclude();
-        printIncludes();
+    ClientDefinitionPrinter(const google::protobuf::ServiceDescriptor *service,
+                          const std::shared_ptr<::google::protobuf::io::Printer> &printer);
+    void run() {
         printNamespaces();
-        printDestructor();
-        printFieldsOrdering();
-        printRegisterBody();
         printConstructor();
-        printCopyFunctionality();
-        printMoveSemantic();
-        printComparisonOperators();
-        printGetters();
+        printMethods();
         encloseNamespaces();
     }
+
+    void printMethods();
+    void printConstructor();
 };
 
 } //namespace QtProtobuf

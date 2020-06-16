@@ -23,34 +23,31 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include "baseprinter.h"
 
-#include <google/protobuf/io/printer.h>
-#include <memory>
-#include <unordered_set>
-#include "classgeneratorbase.h"
+#include "templates.h"
+#include "generatorcommon.h"
 
-namespace QtProtobuf {
-namespace generator {
+using namespace ::QtProtobuf::generator;
+using namespace ::google::protobuf;
+using namespace ::google::protobuf::compiler;
 
-/*!
- * \ingroup generator
- * \private
- * \brief The ClassSourceGeneratorBase class implements source generation
- */
-class ClassSourceGeneratorBase : public ClassGeneratorBase
+BasePrinter::BasePrinter(const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    mPrinter(printer)
 {
-public:
-    ClassSourceGeneratorBase(const std::string &className, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    ClassSourceGeneratorBase(const std::string &fullClassName, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
-    ~ClassSourceGeneratorBase() = default;
-    virtual void run() = 0;
+}
 
-protected:
-    void printClassHeaderInclude();
-    void printUsingNamespaces(const std::unordered_set<std::string> &namespaces);
+void BasePrinter::printPublicBlock()
+{
+    mPrinter->Print(Templates::PublicBlockTemplate);
+}
 
-};
+void BasePrinter::printPrivateBlock()
+{
+    mPrinter->Print(Templates::PrivateBlockTemplate);
+}
 
-} //namespace QtProtobuf
-} //namespace generator
+void BasePrinter::printSignalsBlock()
+{
+    mPrinter->Print(Templates::SignalsBlockTemplate);
+}

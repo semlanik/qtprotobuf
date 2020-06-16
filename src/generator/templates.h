@@ -60,7 +60,7 @@ public:
     static const char *EnumTypeRepeatedTemplate;
     static const char *NamespaceTemplate;
     static const char *UsingNamespaceTemplate;
-    static const char *NonProtoClassDefinitionTemplate;
+    static const char *ClassDeclarationTemplate;
     static const char *ProtoClassDeclarationTemplate;
     static const char *ProtoClassDefinitionTemplate;
     static const char *ConstructorHeaderTemplate;
@@ -83,7 +83,9 @@ public:
     static const char *ConstructorParameterDefinitionTemplate;
     static const char *ConstructorMessageParameterDefinitionTemplate;
     static const char *ConstructorRepeatedParameterDefinitionTemplate;
-    static const char *ProtoConstructorDefinitionTemplate;
+
+    static const char *ProtoConstructorDefinitionBeginTemplate;
+    static const char *ProtoConstructorDefinitionEndTemplate;
 
     static const char *MemberTemplate;
     static const char *ListMemberTemplate;
@@ -150,9 +152,9 @@ public:
     static const char *SemicolonBlockEnclosureTemplate;
     static const char *EmptyBlockTemplate;
     static const char *PropertyInitializerTemplate;
-    static const char *PropertyEmptyInitializerTemplate;
+    static const char *PropertyDefaultInitializerTemplate;
     static const char *MessagePropertyInitializerTemplate;
-    static const char *MessagePropertyEmptyInitializerTemplate;
+    static const char *MessagePropertyDefaultInitializerTemplate;
     static const char *ConstructorContentTemplate;
     static const char *DeclareMetaTypeTemplate;
     static const char *DeclareMetaTypeListTemplate;
@@ -160,18 +162,20 @@ public:
     static const char *DeclareComplexListTypeTemplate;
     static const char *DeclareComplexQmlListTypeTemplate;
     static const char *DeclareMetaTypeMapTemplate;
-    static const char *RegisterMetaTypeDefaultTemplate;
+    static const char *RegisterLocalEnumTemplate;
+    static const char *RegisterMapTemplate;
     static const char *RegisterMetaTypeTemplate;
+    static const char *RegisterGlobalEnumMetaTypeTemplate;
     static const char *RegisterMetaTypeTemplateNoNamespace;
     static const char *RegisterQmlListPropertyMetaTypeTemplate;
     static const char *QEnumTemplate;
-    static const char *MapSerializationRegisterTemplate;
     static const char *RegisterSerializersTemplate;
     static const char *RegisterEnumSerializersTemplate;
     static const char *RegistrarTemplate;
     static const char *EnumRegistrarTemplate;
     static const char *QmlRegisterTypeTemplate;
     static const char *QmlRegisterTypeUncreatableTemplate;
+    static const char *QmlRegisterEnumTypeTemplate;
     //Service templates
     static const char *ClientConstructorDefinitionTemplate;
 

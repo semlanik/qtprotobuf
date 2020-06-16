@@ -25,15 +25,7 @@
 
 #pragma once
 
-#include "classgeneratorbase.h"
-#include <string>
-#include <memory>
-#include <google/protobuf/io/printer.h>
-
-namespace google { namespace protobuf {
-class ServiceDescriptor;
-class Message;
-}}
+#include "descriptorprinterbase.h"
 
 namespace QtProtobuf {
 namespace generator {
@@ -41,24 +33,38 @@ namespace generator {
 /*!
  * \ingroup generator
  * \private
- * \brief The ServiceGeneratorBase class
+ * \brief The MessageDefinitionPrinter class
  */
-class ServiceGeneratorBase : public ClassGeneratorBase
+
+class MessageDefinitionPrinter : public DescriptorPrinterBase<google::protobuf::Descriptor>
 {
-protected:
-    const ::google::protobuf::ServiceDescriptor *mService;
-
 public:
-    ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor *service,
-                         const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor *service,
-                    const std::shared_ptr<::google::protobuf::io::Printer> &printer);
-    void run() = 0;
+    MessageDefinitionPrinter(const google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
 
-    void printIncludes();
-    void printClassName();
-    void printMethodsDeclaration(const char *methodTemplate, const char *methodAsyncTemplate = "", const char *methodAsync2Template = "");
+    void run() {
+        printNamespaces();
+        printDestructor();
+        printFieldsOrdering();
+        printRegisterBody();
+        printConstructors();
+        printCopyFunctionality();
+        printMoveSemantic();
+        printComparisonOperators();
+        printGetters();
+        encloseNamespaces();
+    }
+
+private:
+    void printRegisterBody();
+    void printFieldsOrdering();
+    void printConstructors();
+    void printConstructor(int fieldCount);
+    void printInitializationList(int fieldCount);
+    void printCopyFunctionality();
+    void printMoveSemantic();
+    void printComparisonOperators();
+    void printGetters();
+    void printDestructor();
 };
 
-} //namespace generator
-} //namespace QtProtobuf
+}}

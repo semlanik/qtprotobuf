@@ -25,8 +25,15 @@
 
 #pragma once
 
-#include "classgeneratorbase.h"
-#include "utils.h"
+#include "descriptorprinterbase.h"
+#include <string>
+#include <memory>
+#include <google/protobuf/io/printer.h>
+
+namespace google { namespace protobuf {
+class ServiceDescriptor;
+class Message;
+}}
 
 namespace QtProtobuf {
 namespace generator {
@@ -34,27 +41,17 @@ namespace generator {
 /*!
  * \ingroup generator
  * \private
- * \brief The GlobalEnumsGenerator class
+ * \brief The ServiceDeclarationPrinterBase class
  */
-class GlobalEnumsGenerator : public ClassGeneratorBase
+class ServiceDeclarationPrinterBase : public DescriptorPrinterBase<::google::protobuf::ServiceDescriptor>
 {
-    PackagesList mPackageList;
 public:
-    GlobalEnumsGenerator(const PackagesList &packageList, const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out);
-    GlobalEnumsGenerator(const PackagesList &packageList, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
-    virtual ~GlobalEnumsGenerator() = default;
-
-    void run();
-
-    void startEnum(const std::vector<std::string>& namespaces);
-    void run(const ::google::protobuf::FileDescriptor *file);
-    void encloseEnum(const std::vector<std::string>& namespaces);
-    void printMetatype(const google::protobuf::FileDescriptor *file,
-                       const std::vector<std::string>& namespaces);
-    void printEnumClass();
-    void printConstructor();
+    ServiceDeclarationPrinterBase(const ::google::protobuf::ServiceDescriptor *service,
+                    const std::shared_ptr<::google::protobuf::io::Printer> &printer);
+    void printIncludes();//TODO: refactoring
+    void printClassName();
+    void printMethodsDeclaration(const char *methodTemplate, const char *methodAsyncTemplate = "", const char *methodAsync2Template = "");
 };
 
 } //namespace generator
 } //namespace QtProtobuf
-

@@ -60,18 +60,18 @@ const char *Templates::ManualRegistrationComplexTypeDefinition = "void $type$::r
                                                                  "    qRegisterMetaType<$type$>(\"$full_type$\");\n"
                                                                  "    qRegisterMetaType<$list_type$>(\"$full_list_type$\");\n"
                                                                  "";
-const char *Templates::ManualRegistrationGlobalEnumDefinition = "void $classname$::registerTypes()\n{\n"
+const char *Templates::ManualRegistrationGlobalEnumDefinition = "void $enum_gadget$::registerTypes()\n{\n"
                                                                  "";
-const char *Templates::ComplexGlobalEnumFieldRegistrationTemplate = "qRegisterMetaType<$classname$::$enum$>(\"$namespaces$::$classname$::$enum$\");\n";
+const char *Templates::ComplexGlobalEnumFieldRegistrationTemplate = "qRegisterMetaType<$type$>(\"$full_type$\");\n";
 const char *Templates::ComplexListTypeUsingTemplate = "using $classname$Repeated = QList<QSharedPointer<$classname$>>;\n";
 const char *Templates::MapTypeUsingTemplate = "using $type$ = QMap<$key_type$, $value_type$>;\n";
 const char *Templates::MessageMapTypeUsingTemplate = "using $type$ = QMap<$key_type$, QSharedPointer<$value_type$>>;\n";
 
-const char *Templates::EnumTypeRepeatedTemplate = "using $enum$Repeated = QList<$enum$>;\n";
+const char *Templates::EnumTypeRepeatedTemplate = "using $list_type$ = QList<$type$>;\n";
 
-const char *Templates::NamespaceTemplate = "\nnamespace $namespace$ {\n";
+const char *Templates::NamespaceTemplate = "namespace $namespace$ {\n";
 const char *Templates::UsingNamespaceTemplate = "using namespace $namespace$;\n";
-const char *Templates::NonProtoClassDefinitionTemplate = "\nclass $classname$ : public QObject\n"
+const char *Templates::ClassDeclarationTemplate = "\nclass $classname$ : public QObject\n"
                                                          "{\n"
                                                          "    Q_OBJECT\n";
 const char *Templates::ProtoClassDeclarationTemplate = "class $classname$;\n";
@@ -99,11 +99,13 @@ const char *Templates::ListMemberTemplate = "$scope_list_type$ m_$property_name$
 const char *Templates::ComplexMemberTemplate = "std::unique_ptr<$scope_type$> m_$property_name$;\n";
 const char *Templates::PublicBlockTemplate = "\npublic:\n";
 const char *Templates::PrivateBlockTemplate = "\nprivate:\n";
-const char *Templates::EnumDefinitionTemplate = "enum $enum$ {\n";
+const char *Templates::EnumDefinitionTemplate = "enum $type$ {\n";
 const char *Templates::EnumFieldTemplate = "$enumvalue$ = $value$,\n";
 
 
-const char *Templates::ProtoConstructorDefinitionTemplate = "$classname$::$classname$($parameter_list$QObject *parent) : QObject(parent)";
+const char *Templates::ProtoConstructorDefinitionBeginTemplate = "$type$::$type$(";
+const char *Templates::ProtoConstructorDefinitionEndTemplate = "QObject *parent) : QObject(parent)";
+
 const char *Templates::ConstructorTemplate = "$classname$();\n";
 const char *Templates::QObjectConstructorTemplate = "explicit $classname$(QObject *parent = nullptr);\n";
 const char *Templates::ConstructorHeaderTemplate = "$classname$() {}\n";
@@ -158,12 +160,12 @@ const char *Templates::NotEqualOperatorDefinitionTemplate = "bool $classname$::o
                                                   "}\n\n";
 
 const char *Templates::GetterPrivateMessageDeclarationTemplate = "$getter_type$ *$property_name$_p() const;\n";
-const char *Templates::GetterPrivateMessageDefinitionTemplate = "$type$ *$classname$::$property_name$_p() const\n{\n"
+const char *Templates::GetterPrivateMessageDefinitionTemplate = "$getter_type$ *$classname$::$property_name$_p() const\n{\n"
                                         "    return m_$property_name$.get();\n"
                                         "}\n\n";
 
 const char *Templates::GetterMessageDeclarationTemplate = "const $getter_type$ &$property_name$() const;\n";
-const char *Templates::GetterMessageDefinitionTemplate = "const $type$ &$classname$::$property_name$() const\n{\n"
+const char *Templates::GetterMessageDefinitionTemplate = "const $getter_type$ &$classname$::$property_name$() const\n{\n"
                                         "    return *m_$property_name$;\n"
                                         "}\n\n";
 
@@ -185,7 +187,7 @@ const char *Templates::GetterQmlListDefinitionTemplate = "QQmlListProperty<$full
                                                "}\n\n";
 
 const char *Templates::SetterPrivateTemplateDeclarationMessageType = "void set$property_name_cap$_p($setter_type$ *$property_name$);\n";
-const char *Templates::SetterPrivateTemplateDefinitionMessageType = "void $classname$::set$property_name_cap$_p($type$ *$property_name$)\n{\n"
+const char *Templates::SetterPrivateTemplateDefinitionMessageType = "void $classname$::set$property_name_cap$_p($setter_type$ *$property_name$)\n{\n"
                                                    "    if ($property_name$ == nullptr) {\n"
                                                    "        *m_$property_name$ = {};\n"
                                                    "        return;\n"
@@ -199,7 +201,7 @@ const char *Templates::SetterPrivateTemplateDefinitionMessageType = "void $class
                                                    "}\n\n";
 
 const char *Templates::SetterTemplateDeclarationMessageType = "void set$property_name_cap$(const $setter_type$ &$property_name$);\n";
-const char *Templates::SetterTemplateDefinitionMessageType = "void $classname$::set$property_name_cap$(const $type$ &$property_name$)\n{\n"
+const char *Templates::SetterTemplateDefinitionMessageType = "void $classname$::set$property_name_cap$(const $setter_type$ &$property_name$)\n{\n"
                                                    "    if (*m_$property_name$ != $property_name$) {\n"
                                                    "        *m_$property_name$ = $property_name$;\n"
                                                    "        $property_name$Changed();\n"
@@ -207,7 +209,7 @@ const char *Templates::SetterTemplateDefinitionMessageType = "void $classname$::
                                                    "}\n\n";
 
 const char *Templates::SetterTemplateDeclarationComplexType = "void set$property_name_cap$(const $setter_type$ &$property_name$);\n";
-const char *Templates::SetterTemplateDefinitionComplexType = "void $classname$::set$property_name_cap$(const $type$ &$property_name$)\n{\n"
+const char *Templates::SetterTemplateDefinitionComplexType = "void $classname$::set$property_name_cap$(const $setter_type$ &$property_name$)\n{\n"
                                                    "    if (m_$property_name$ != $property_name$) {\n"
                                                    "        m_$property_name$ = $property_name$;\n"
                                                    "        $property_name$Changed();\n"
@@ -236,13 +238,13 @@ const char *Templates::FieldOrderTemplate = "{$field_number$, $property_number$}
 
 const char *Templates::EnumTemplate = "$type$";
 
-const char *Templates::SimpleBlockEnclosureTemplate = "}\n\n";
+const char *Templates::SimpleBlockEnclosureTemplate = "}\n";
 const char *Templates::SemicolonBlockEnclosureTemplate = "};\n";
 const char *Templates::EmptyBlockTemplate = "{}\n\n";
 const char *Templates::PropertyInitializerTemplate = "\n    , m_$property_name$($property_name$)";
-const char *Templates::PropertyEmptyInitializerTemplate = "\n    , m_$property_name$($initializer$)";
-const char *Templates::MessagePropertyInitializerTemplate = "\n    , m_$property_name$(new $type$($property_name$))";
-const char *Templates::MessagePropertyEmptyInitializerTemplate = "\n    , m_$property_name$(new $type$)";
+const char *Templates::PropertyDefaultInitializerTemplate = "\n    , m_$property_name$($initializer$)";
+const char *Templates::MessagePropertyInitializerTemplate = "\n    , m_$property_name$(new $scope_type$($property_name$))";
+const char *Templates::MessagePropertyDefaultInitializerTemplate = "\n    , m_$property_name$(new $scope_type$)";
 const char *Templates::ConstructorContentTemplate = "\n{\n}\n";
 
 const char *Templates::DeclareMetaTypeTemplate = "Q_DECLARE_METATYPE($full_type$)\n";
@@ -258,15 +260,22 @@ const char *Templates::DeclareMetaTypeMapTemplate = "#ifndef Q_PROTOBUF_MAP_$key
                                                     "Q_DECLARE_METATYPE($full_type$)\n"
                                                     "#endif\n";
 
-const char *Templates::RegisterMetaTypeDefaultTemplate = "qRegisterMetaType<$namespaces$::$type$>();\n";
+
+const char *Templates::RegisterLocalEnumTemplate = "qRegisterProtobufEnumType<$scope_type$>();\n"
+                                                   "qRegisterMetaType<$scope_type$>(\"$type$\");\n"
+                                                   "qRegisterMetaType<$scope_list_type$>(\"$full_type$\");\n"
+                                                   "qRegisterMetaType<$scope_list_type$>(\"$full_list_type$\");\n";
+const char *Templates::RegisterMapTemplate = "qRegisterMetaType<$scope_type$>(\"$full_type$\");\n"
+                                             "qRegisterMetaType<$scope_type$>(\"$full_list_type$\");\n"
+                                             "qRegisterProtobufMapType<$key_type$, $value_type$>();\n";
+
 const char *Templates::RegisterMetaTypeTemplateNoNamespace = "qRegisterMetaType<$namespaces$::$type$>(\"$type$\");\n";
 const char *Templates::RegisterMetaTypeTemplate = "qRegisterMetaType<$namespaces$::$type$>(\"$namespaces$::$type$\");\n";
+const char *Templates::RegisterGlobalEnumMetaTypeTemplate = "qRegisterMetaType<$full_type$>(\"$full_type$\");\n";
 const char *Templates::RegisterQmlListPropertyMetaTypeTemplate = "qRegisterMetaType<QQmlListProperty<$full_type$>>(\"QQmlListProperty<$full_type$>\");\n";
 
 
 const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
-
-const char *Templates::MapSerializationRegisterTemplate = "qRegisterProtobufMapType<$key_type$, $value_type$>();\n";
 
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
@@ -297,11 +306,12 @@ const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname
                                                               "}\n";
 
 const char *Templates::RegisterSerializersTemplate = "qRegisterProtobufType<$classname$>();\n";
-const char *Templates::RegisterEnumSerializersTemplate = "qRegisterProtobufEnumType<$type$>();\n";
+const char *Templates::RegisterEnumSerializersTemplate = "qRegisterProtobufEnumType<$full_type$>();\n";
 const char *Templates::RegistrarTemplate = "static QtProtobuf::ProtoTypeRegistrar<$classname$> ProtoTypeRegistrar$classname$(qRegisterProtobufType<$classname$>);\n";
-const char *Templates::EnumRegistrarTemplate = "static QtProtobuf::ProtoTypeRegistrar<$classname$> ProtoTypeRegistrar$classname$($classname$::registerTypes);\n";
+const char *Templates::EnumRegistrarTemplate = "static QtProtobuf::ProtoTypeRegistrar<$enum_gadget$> ProtoTypeRegistrar$enum_gadget$($enum_gadget$::registerTypes);\n";
 const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$full_type$>(\"$qml_package$\", 1, 0, \"$type$\");\n";
-const char *Templates::QmlRegisterTypeUncreatableTemplate = "qmlRegisterUncreatableType<$namespaces$::$classname$>(\"$package$\", 1, 0, \"$classname$\", \"$namespaces$::$classname$ Could not be created from qml context\");\n";
+const char *Templates::QmlRegisterTypeUncreatableTemplate = "qmlRegisterUncreatableType<$full_name$>(\"$qml_package$\", 1, 0, \"$type$\", \"$full_type$ Could not be created from qml context\");\n";
+const char *Templates::QmlRegisterEnumTypeTemplate = "qmlRegisterUncreatableType<$enum_gadget$>(\"$qml_package$\", 1, 0, \"$type$\", \"$full_type$ Could not be created from qml context\");\n";
 
 
 const char *Templates::ClientMethodSignalDeclarationTemplate = "Q_SIGNAL void $method_name$Updated(const $return_type$ &);\n";

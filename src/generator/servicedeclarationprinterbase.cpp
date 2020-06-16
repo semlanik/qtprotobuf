@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "servicegeneratorbase.h"
+#include "servicedeclarationprinterbase.h"
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
@@ -41,25 +41,17 @@ using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 using namespace QtProtobuf::generator;
 
-ServiceGeneratorBase::ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor *service,
-                                           const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out) :
-    ClassGeneratorBase(service->full_name(), out)
-  , mService(service)
-{
-}
-
-ServiceGeneratorBase::ServiceGeneratorBase(const ::google::protobuf::ServiceDescriptor *service,
+ServiceDeclarationPrinterBase::ServiceDeclarationPrinterBase(const ::google::protobuf::ServiceDescriptor *service,
                 const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
-    ClassGeneratorBase(service->full_name(), printer)
-  , mService(service)
+    DescriptorPrinterBase<::google::protobuf::ServiceDescriptor>(service, printer)
 {}
 
-void ServiceGeneratorBase::printIncludes()
+void ServiceDeclarationPrinterBase::printIncludes()
 {
     std::unordered_set<std::string> includeSet;
 
-    for (int i = 0; i < mService->method_count(); i++) {
-        const MethodDescriptor *method = mService->method(i);
+    for (int i = 0; i < mDescriptor->method_count(); i++) {
+        const MethodDescriptor *method = mDescriptor->method(i);
         std::string inputTypeName = method->input_type()->name();
         std::string outputTypeName = method->output_type()->name();
         utils::tolower(inputTypeName);
@@ -73,18 +65,17 @@ void ServiceGeneratorBase::printIncludes()
     }
 }
 
-void ServiceGeneratorBase::printClassName()
+void ServiceDeclarationPrinterBase::printClassName()
 {
-    mPrinter->Print({{"classname", mClassName}}, Templates::NonProtoClassDefinitionTemplate);
+    mPrinter->Print({{"classname", mName}}, Templates::ClassDeclarationTemplate);
 }
 
-void ServiceGeneratorBase::printMethodsDeclaration(const char *methodTemplate, const char *methodAsyncTemplate, const char *methodAsync2Template)
+void ServiceDeclarationPrinterBase::printMethodsDeclaration(const char *methodTemplate, const char *methodAsyncTemplate, const char *methodAsync2Template)
 {
     Indent();
-    for (int i = 0; i < mService->method_count(); i++) {
-        const MethodDescriptor *method = mService->method(i);
-        std::map<std::string, std::string> parameters;
-        getMethodParameters(method, parameters);
+    for (int i = 0; i < mDescriptor->method_count(); i++) {
+        const MethodDescriptor *method = mDescriptor->method(i);
+        std::map<std::string, std::string> parameters = common::produceMethodMap(method, mName);
         mPrinter->Print(parameters, methodTemplate);
         mPrinter->Print(parameters, methodAsyncTemplate);
         mPrinter->Print(parameters, methodAsync2Template);

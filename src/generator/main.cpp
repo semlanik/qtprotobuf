@@ -25,7 +25,7 @@
 
 #include <google/protobuf/compiler/plugin.h>
 
-#include "generator.h"
+#include "multifilegenerator.h"
 #include "singlefilegenerator.h"
 #include "generatoroptions.h"
 #include "utils.h"
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         GeneratorOptions::instance().parseFromEnv(optionsPtr);
     }
     if (GeneratorOptions::instance().isMulti()) {
-        QtProtobuf::generator::QtGenerator generator;
+        QtProtobuf::generator::MultiFileGenerator generator;
         return ::google::protobuf::compiler::PluginMain(argc, argv, &generator);
     }
     QtProtobuf::generator::SingleFileGenerator generator;

@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "clientgenerator.h"
+#include "clientdeclarationprinter.h"
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
@@ -39,33 +39,26 @@
 using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
-
-ClientGenerator::ClientGenerator(const ServiceDescriptor *service, const std::shared_ptr<io::ZeroCopyOutputStream> &out) :
-    ServiceGeneratorBase(service, out)
+ClientDeclarationPrinter::ClientDeclarationPrinter(const ::google::protobuf::ServiceDescriptor *service, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
+    ServiceDeclarationPrinterBase(service, printer)
 {
-    mClassName += "Client";
+    mName += "Client";
 }
 
-ClientGenerator::ClientGenerator(const ::google::protobuf::ServiceDescriptor *service, const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
-    ServiceGeneratorBase(service, printer)
+void ClientDeclarationPrinter::printClientClass()
 {
-    mClassName += "Client";
-}
-
-void ClientGenerator::printClientClass()
-{
-    mPrinter->Print({{"classname", mClassName}, {"parent_class", "QtProtobuf::QAbstractGrpcClient"}}, Templates::ClassDefinitionTemplate);
+    mPrinter->Print({{"classname", mName}, {"parent_class", "QtProtobuf::QAbstractGrpcClient"}}, Templates::ClassDefinitionTemplate);
     mPrinter->Print(Templates::QObjectMacro);
 }
 
-void ClientGenerator::printConstructor()
+void ClientDeclarationPrinter::printConstructor()
 {
     Indent();
-    mPrinter->Print({{"classname", mClassName}}, Templates::QObjectConstructorTemplate);
+    mPrinter->Print({{"classname", mName}}, Templates::QObjectConstructorTemplate);
     Outdent();
 }
 
-void ClientGenerator::printClientIncludes()
+void ClientDeclarationPrinter::printClientIncludes()
 {
     std::unordered_set<std::string> includeSet;
     includeSet.insert("QAbstractGrpcClient");
@@ -76,13 +69,12 @@ void ClientGenerator::printClientIncludes()
     }
 }
 
-void ClientGenerator::printClientMethodsDeclaration()
+void ClientDeclarationPrinter::printClientMethodsDeclaration()
 {
     Indent();
-    for (int i = 0; i < mService->method_count(); i++) {
-        const MethodDescriptor *method = mService->method(i);
-        std::map<std::string, std::string> parameters;
-        getMethodParameters(method, parameters);
+    for (int i = 0; i < mDescriptor->method_count(); i++) {
+        const MethodDescriptor *method = mDescriptor->method(i);
+        std::map<std::string, std::string> parameters = common::produceMethodMap(method, mName);
 
         if (method->server_streaming()) {
             mPrinter->Print(parameters, Templates::ClientMethodServerStreamDeclarationTemplate);

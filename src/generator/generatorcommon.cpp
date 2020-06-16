@@ -35,7 +35,7 @@ using namespace ::google::protobuf;
 std::string common::getNamespacesString(const std::vector<std::string> &namespacesList, const std::string &separator)
 {
     std::string namespaces;
-    for(auto namespacePart : namespacesList) {
+    for (auto namespacePart : namespacesList) {
         namespaces += namespacePart + separator;
     }
 
@@ -96,15 +96,19 @@ TypeMap common::produceEnumTypeMap(const EnumDescriptor *type, const Descriptor 
 {
     EnumVisibility visibility = enumVisibility(type, scope);
     std::vector<std::string> namespaceList = getNamespaces(type);
+
+    std::string name = utils::upperCaseName(type->name());
+    std::string qmlPackage = getNamespacesString(namespaceList, ".");//qml package should consist only from proto spackage
+    std::string enumGadget = scope != nullptr ? utils::upperCaseName(scope->name()) : "";//Not used
     if(visibility == GLOBAL_ENUM) {
-        namespaceList.push_back(type->name() + Templates::EnumClassSuffix);//Global enums are stored in helper Gadget
+        enumGadget = name + Templates::EnumClassSuffix;
+        namespaceList.push_back(enumGadget);//Global enums are stored in helper Gadget
     }
 
     std::string namespaces = getNamespacesString(namespaceList, "::");
     std::string scopeNamespaces = getScopeNamespacesString(namespaces, getNamespacesString(getNamespaces(scope), "::"));
-    std::string qmlPackage = getNamespacesString(namespaceList, ".");
 
-    std::string name = type->name();
+
     std::string fullName = namespaces.empty() ? name : (namespaces + "::" + name);
     std::string scopeName = scopeNamespaces.empty() ? name : (scopeNamespaces + "::" + name);
 
@@ -131,7 +135,8 @@ TypeMap common::produceEnumTypeMap(const EnumDescriptor *type, const Descriptor 
         {"property_type", propertyType},
         {"property_list_type", fullListName},
         {"getter_type", scopeName},
-        {"setter_type", scopeName}
+        {"setter_type", scopeName},
+        {"enum_gadget", enumGadget}
     };
 }
 
@@ -222,7 +227,7 @@ TypeMap common::produceTypeMap(const FieldDescriptor *field, const Descriptor *s
     std::string namespaceTypeName;
     std::vector<std::string> typeNamespace;
 
-    switch(field->type()) {
+    switch (field->type()) {
     case FieldDescriptor::TYPE_MESSAGE:
         typeMap = produceMessageTypeMap(field->message_type(), scope);
         break;
@@ -334,4 +339,23 @@ bool common::hasQmlAlias(const ::google::protobuf::FieldDescriptor *field)
                 || field->type() == FieldDescriptor::TYPE_SFIXED32
                 || field->type() == FieldDescriptor::TYPE_FIXED32)
             && GeneratorOptions::instance().hasQml();
+}
+
+MethodMap common::produceMethodMap(const MethodDescriptor *method, const std::string& scope)
+{
+    std::string inputTypeName = method->input_type()->full_name();
+    std::string outputTypeName = method->output_type()->full_name();
+    std::string methodName = method->name();
+    std::string methodNameUpper = method->name();
+    methodNameUpper[0] =  static_cast<char>(::toupper(methodNameUpper[0]));
+    utils::replace(inputTypeName, ".", "::");
+    utils::replace(outputTypeName, ".", "::");
+    return {{"classname", scope},
+                  {"return_type", outputTypeName},
+                  {"method_name", methodName},
+                  {"method_name_upper", methodNameUpper},
+                  {"param_type", inputTypeName},
+                  {"param_name", "arg"},
+                  {"return_name", "ret"}
+                 };
 }

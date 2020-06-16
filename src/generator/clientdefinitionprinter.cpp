@@ -23,40 +23,30 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "clientsourcegenerator.h"
+#include "clientdefinitionprinter.h"
 
 #include <google/protobuf/io/zero_copy_stream.h>
 
 #include "utils.h"
 #include "templates.h"
+#include "generatorcommon.h"
 
 using namespace QtProtobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
 
-ClientSourceGenerator::ClientSourceGenerator(const google::protobuf::ServiceDescriptor *service,
-                                             const std::shared_ptr<google::protobuf::io::ZeroCopyOutputStream> &out) :
-    ClassSourceGeneratorBase(service->full_name(), out)
-  , mService(service)
-{
-    mClassName += "Client";
-}
-
-
-ClientSourceGenerator::ClientSourceGenerator(const google::protobuf::ServiceDescriptor *service,
+ClientDefinitionPrinter::ClientDefinitionPrinter(const google::protobuf::ServiceDescriptor *service,
                       const std::shared_ptr<::google::protobuf::io::Printer> &printer) :
-    ClassSourceGeneratorBase(service->full_name(), printer)
-  , mService(service)
+    DescriptorPrinterBase<google::protobuf::ServiceDescriptor>(service, printer)
 {
-    mClassName += "Client";
+    mName += "Client";
 }
 
-void ClientSourceGenerator::printMethods()
+void ClientDefinitionPrinter::printMethods()
 {
-    for (int i = 0; i < mService->method_count(); i++) {
-        const MethodDescriptor *method = mService->method(i);
-        std::map<std::string, std::string> parameters;
-        getMethodParameters(method, parameters);
+    for (int i = 0; i < mDescriptor->method_count(); i++) {
+        const MethodDescriptor *method = mDescriptor->method(i);
+        MethodMap parameters = common::produceMethodMap(method, mName);
         if (method->server_streaming()) {
             mPrinter->Print(parameters, Templates::ClientMethodServerStreamDefinitionTemplate);
             mPrinter->Print(parameters, Templates::ClientMethodServerStream2DefinitionTemplate);
@@ -68,9 +58,9 @@ void ClientSourceGenerator::printMethods()
     }
 }
 
-void ClientSourceGenerator::printConstructor()
+void ClientDefinitionPrinter::printConstructor()
 {
-    mPrinter->Print({ {"classname", mClassName},
+    mPrinter->Print({ {"classname", mName},
                      {"parent_class", "QAbstractGrpcClient"},
-                     {"service_name", mService->full_name()} }, Templates::ClientConstructorDefinitionTemplate);
+                     {"service_name", mDescriptor->full_name()} }, Templates::ClientConstructorDefinitionTemplate);
 }
