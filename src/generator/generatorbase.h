@@ -146,8 +146,8 @@ public:
     static void printQtProtobufUsingNamespace(const std::shared_ptr<::google::protobuf::io::Printer> printer);
     static void printNamespaces(const std::shared_ptr<::google::protobuf::io::Printer> printer, const std::vector<std::string> namespaces);
 protected:
-    void iterateNonNestedFileds(const ::google::protobuf::FileDescriptor *file, std::function<void(const ::google::protobuf::Descriptor *)> callback) const;
     static std::string generateBaseName(const ::google::protobuf::FileDescriptor *file, std::string name);
+
 private:
     Mode m_mode;
 };

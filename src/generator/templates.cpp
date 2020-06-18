@@ -58,6 +58,7 @@ const char *Templates::UsingQtProtobufNamespaceTemplate = "\nusing namespace QtP
 const char *Templates::ManualRegistrationDeclaration = "static void registerTypes();\n";
 const char *Templates::ManualRegistrationComplexTypeDefinition = "void $type$::registerTypes()\n{\n"
                                                                  "    qRegisterMetaType<$type$>(\"$full_type$\");\n"
+                                                                 "    qRegisterMetaType<$type$*>(\"$full_type$*\");\n" //Somehow for aliastypes qRegisterMetaType logic doesn't work for pointer type registration
                                                                  "    qRegisterMetaType<$list_type$>(\"$full_list_type$\");\n"
                                                                  "";
 const char *Templates::ManualRegistrationGlobalEnumDefinition = "void $enum_gadget$::registerTypes()\n{\n"
@@ -66,6 +67,8 @@ const char *Templates::ComplexGlobalEnumFieldRegistrationTemplate = "qRegisterMe
 const char *Templates::ComplexListTypeUsingTemplate = "using $classname$Repeated = QList<QSharedPointer<$classname$>>;\n";
 const char *Templates::MapTypeUsingTemplate = "using $type$ = QMap<$key_type$, $value_type$>;\n";
 const char *Templates::MessageMapTypeUsingTemplate = "using $type$ = QMap<$key_type$, QSharedPointer<$value_type$>>;\n";
+const char *Templates::NestedMessageUsingTemplate = "using $type$ = $scope_namespaces$_QtProtobufNested::$type$;\n"
+                                                    "using $list_type$ = $scope_namespaces$_QtProtobufNested::$list_type$;\n";
 
 const char *Templates::EnumTypeRepeatedTemplate = "using $list_type$ = QList<$type$>;\n";
 
@@ -74,8 +77,8 @@ const char *Templates::UsingNamespaceTemplate = "using namespace $namespace$;\n"
 const char *Templates::ClassDeclarationTemplate = "\nclass $classname$ : public QObject\n"
                                                          "{\n"
                                                          "    Q_OBJECT\n";
-const char *Templates::ProtoClassDeclarationTemplate = "class $classname$;\n";
-const char *Templates::ProtoClassDefinitionTemplate = "\nclass $classname$ : public QObject\n"
+const char *Templates::ProtoClassForwardDeclarationTemplate = "class $classname$;\n";
+const char *Templates::ProtoClassDeclarationBeginTemplate = "\nclass $classname$ : public QObject\n"
                                                       "{\n"
                                                       "    Q_OBJECT\n"
                                                       "    Q_PROTOBUF_OBJECT\n"
@@ -263,7 +266,7 @@ const char *Templates::DeclareMetaTypeMapTemplate = "#ifndef Q_PROTOBUF_MAP_$key
 
 const char *Templates::RegisterLocalEnumTemplate = "qRegisterProtobufEnumType<$scope_type$>();\n"
                                                    "qRegisterMetaType<$scope_type$>(\"$type$\");\n"
-                                                   "qRegisterMetaType<$scope_list_type$>(\"$full_type$\");\n"
+                                                   "qRegisterMetaType<$scope_type$>(\"$full_type$\");\n"
                                                    "qRegisterMetaType<$scope_list_type$>(\"$full_list_type$\");\n";
 const char *Templates::RegisterMapTemplate = "qRegisterMetaType<$scope_type$>(\"$full_type$\");\n"
                                              "qRegisterMetaType<$scope_type$>(\"$full_list_type$\");\n"
@@ -353,3 +356,4 @@ const char *Templates::GrpcFileSuffix = "_grpc";
 const char *Templates::EnumClassSuffix = "Gadget";
 
 const char *Templates::QtProtobufNamespace = "QtProtobuf";
+const char *Templates::QtProtobufNestedNamespace = "_QtProtobufNested";

@@ -53,10 +53,6 @@ public:
     {}
     virtual ~DescriptorPrinterBase() = default;
 public:
-    void printClassDeclaration() {
-        mPrinter->Print({{"classname", mName}}, Templates::ProtoClassDefinitionTemplate);
-    }
-
     void encloseClass() {
         mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);
         mPrinter->Print("\n");

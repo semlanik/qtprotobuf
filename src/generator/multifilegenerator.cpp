@@ -62,24 +62,7 @@ bool MultiFileGenerator::Generate(const FileDescriptor *file,
         return false;
     }
 
-    for (int i = 0; i < file->message_type_count(); i++) {
-        const Descriptor *message = file->message_type(i);
-
-        //Detect nested fields and filter maps fields
-        int mapsFieldsCount = 0;
-        for (int j = 0; j < message->nested_type_count(); j++) {
-            for (int k = 0; k < message->field_count(); k++) {
-                if (message->field(k)->is_map() && message->field(k)->message_type() == message->nested_type(j)) {
-                    ++mapsFieldsCount;
-                }
-            }
-        }
-
-        if (message->nested_type_count() > 0 && message->nested_type_count() > mapsFieldsCount) {
-            std::cerr << file->name() << ":" << (message->index() + 1) << ": " << " Error: Meta object features not supported for nested classes in " << message->full_name() << std::endl;
-            continue;
-        }
-
+    common::iterateMessages(file, [&] (const ::google::protobuf::Descriptor *message) {
         std::string baseFilename(message->name());
         utils::tolower(baseFilename);
         baseFilename = generateBaseName(file, baseFilename);
@@ -105,23 +88,26 @@ bool MultiFileGenerator::Generate(const FileDescriptor *file,
             printInclude(headerPrinter, message, message->field(i), existingIncludes);
         }
 
+        //Print dependency classes forward declaration
         for (int i = 0; i < message->field_count(); i++) {
             auto field = message->field(i);
             if (field->type() == FieldDescriptor::TYPE_MESSAGE
                     && !field->is_map() && !field->is_repeated()) {
                 auto dependency = field->message_type();
-                auto namespaces = common::getNamespaces(dependency);
-                printNamespaces(headerPrinter, namespaces);
-                headerPrinter->Print({{"classname", utils::upperCaseName(dependency->name())}}, Templates::ProtoClassDeclarationTemplate);
-                headerPrinter->Print("\n");
-                for (size_t i = 0; i < namespaces.size(); ++i) {
-                    headerPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
+                if (!common::isNested(dependency)) {//TODO: need to check class relations and apply namespaces accordingly.
+                    auto namespaces = common::getNamespaces(dependency);
+                    printNamespaces(headerPrinter, namespaces);
+                    headerPrinter->Print({{"classname", utils::upperCaseName(dependency->name())}}, Templates::ProtoClassForwardDeclarationTemplate);
+                    headerPrinter->Print("\n");
+                    for (size_t i = 0; i < namespaces.size(); ++i) {
+                        headerPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
+                    }
+                    headerPrinter->Print("\n");
                 }
-                headerPrinter->Print("\n");
             }
         }
 
-        messageDecl.run();
+        messageDecl.printClassDeclaration();
 
         printDisclaimer(sourcePrinter);
         std::string includeFileName = message->name();
@@ -132,8 +118,8 @@ bool MultiFileGenerator::Generate(const FileDescriptor *file,
         }
 
         MessageDefinitionPrinter messageDef(message, sourcePrinter);
-        messageDef.run();
-    }
+        messageDef.printClassDefinition();
+    });
 
     for (int i = 0; i < file->service_count(); i++) {
         const ServiceDescriptor *service = file->service(i);

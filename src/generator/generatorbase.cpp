@@ -44,28 +44,6 @@ GeneratorBase::GeneratorBase(Mode mode) : m_mode(mode)
 {
 
 }
-void GeneratorBase::iterateNonNestedFileds(const ::google::protobuf::FileDescriptor *file, std::function<void(const ::google::protobuf::Descriptor *)> callback) const
-{
-    for (int i = 0; i < file->message_type_count(); i++) {
-        const Descriptor *message = file->message_type(i);
-
-        //Detect nested fields and filter maps fields
-        int mapsFieldsCount = 0;
-        for (int j = 0; j < message->nested_type_count(); j++) {
-            for (int k = 0; k < message->field_count(); k++) {
-                if (message->field(k)->is_map() && message->field(k)->message_type() == message->nested_type(j)) {
-                    ++mapsFieldsCount;
-                }
-            }
-        }
-
-        if (message->nested_type_count() > 0 && message->nested_type_count() > mapsFieldsCount) {
-            std::cerr << file->name() << ":" << (message->index() + 1) << ": " << " Error: Meta object features not supported for nested classes in " << message->full_name() << std::endl;
-            continue;
-        }
-        callback(message);
-    }
-}
 
 bool GeneratorBase::GenerateAll(const std::vector<const FileDescriptor *> &files, const string &parameter, GeneratorContext *generatorContext, string *error) const
 {
@@ -103,7 +81,7 @@ void GeneratorBase::printInclude(const std::shared_ptr<::google::protobuf::io::P
 {
     assert(field != nullptr);
     std::string newInclude;
-    const char *includeTemplate;
+    const char *includeTemplate = "";
     switch (field->type()) {
     case FieldDescriptor::TYPE_MESSAGE:
         if (field->is_map()) {
@@ -114,19 +92,38 @@ void GeneratorBase::printInclude(const std::shared_ptr<::google::protobuf::io::P
             printInclude(printer, message, field->message_type()->field(1), existingIncludes);
             includeTemplate = Templates::ExternalIncludeTemplate;
         } else {
-            std::string outFileBasename = "";
-            std::string fieldPackage = field->message_type()->file()->package();
-            if (fieldPackage != message->file()->package()) {
-                std::vector<std::string> packages = utils::split(fieldPackage, '.');
-                for (auto package : packages) {
-                    outFileBasename += package + "/";
+            if (!common::isNested(field->message_type())) {
+                std::string outFileBasename = "";
+                std::string fieldPackage = field->message_type()->file()->package();
+                if (fieldPackage != message->file()->package()) {
+                    std::vector<std::string> packages = utils::split(fieldPackage, '.');
+                    for (auto package : packages) {
+                        outFileBasename += package + "/";
+                    }
+                }
+
+                std::string typeName = field->message_type()->name();
+                utils::tolower(typeName);
+                newInclude = outFileBasename + typeName;
+                includeTemplate = Templates::InternalIncludeTemplate;
+            } else if (!common::isNestedOf(field->message_type(), message)) {
+                auto containingMessage = common::findHighestMessage(field->message_type());
+                if (containingMessage != message) {
+                    std::string outFileBasename = "";
+                    std::string fieldPackage = containingMessage->file()->package();
+                    if (fieldPackage != message->file()->package()) {
+                        std::vector<std::string> packages = utils::split(fieldPackage, '.');
+                        for (auto package : packages) {
+                            outFileBasename += package + "/";
+                        }
+                    }
+
+                    std::string typeName = containingMessage->name();
+                    utils::tolower(typeName);
+                    newInclude = outFileBasename + typeName;
+                    includeTemplate = Templates::InternalIncludeTemplate;
                 }
             }
-
-            std::string typeName = field->message_type()->name();
-            utils::tolower(typeName);
-            newInclude = outFileBasename + typeName;
-            includeTemplate = Templates::InternalIncludeTemplate;
         }
         break;
     case FieldDescriptor::TYPE_BYTES:

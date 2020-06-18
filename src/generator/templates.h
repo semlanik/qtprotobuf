@@ -57,12 +57,13 @@ public:
     static const char *ComplexListTypeUsingTemplate;
     static const char *MapTypeUsingTemplate;
     static const char *MessageMapTypeUsingTemplate;
+    static const char *NestedMessageUsingTemplate;
     static const char *EnumTypeRepeatedTemplate;
     static const char *NamespaceTemplate;
     static const char *UsingNamespaceTemplate;
     static const char *ClassDeclarationTemplate;
-    static const char *ProtoClassDeclarationTemplate;
-    static const char *ProtoClassDefinitionTemplate;
+    static const char *ProtoClassForwardDeclarationTemplate;
+    static const char *ProtoClassDeclarationBeginTemplate;
     static const char *ConstructorHeaderTemplate;
     static const char *ClassDefinitionTemplate;
     static const char *QObjectMacro;
@@ -203,6 +204,7 @@ public:
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
 
     static const char *QtProtobufNamespace;
+    static const char *QtProtobufNestedNamespace;
 };
 
 } //namespace generator

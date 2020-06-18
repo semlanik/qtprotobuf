@@ -84,6 +84,7 @@ TypeMap common::produceMessageTypeMap(const ::Descriptor *type, const Descriptor
         {"full_list_type", fullListName},
         {"scope_list_type", scopeListName},
         {"namespaces", namespaces},
+        {"scope_namespaces", scopeNamespaces},
         {"qml_package", qmlPackage},
         {"property_type", fullName},
         {"property_list_type", fullListName},
@@ -100,7 +101,7 @@ TypeMap common::produceEnumTypeMap(const EnumDescriptor *type, const Descriptor 
     std::string name = utils::upperCaseName(type->name());
     std::string qmlPackage = getNamespacesString(namespaceList, ".");//qml package should consist only from proto spackage
     std::string enumGadget = scope != nullptr ? utils::upperCaseName(scope->name()) : "";//Not used
-    if(visibility == GLOBAL_ENUM) {
+    if (visibility == GLOBAL_ENUM) {
         enumGadget = name + Templates::EnumClassSuffix;
         namespaceList.push_back(enumGadget);//Global enums are stored in helper Gadget
     }
@@ -131,6 +132,7 @@ TypeMap common::produceEnumTypeMap(const EnumDescriptor *type, const Descriptor 
         {"full_list_type", fullListName},
         {"scope_list_type", scopeListName},
         {"namespaces", namespaces},
+        {"scope_namespaces", scopeNamespaces},
         {"qml_package", qmlPackage},
         {"property_type", propertyType},
         {"property_list_type", fullListName},
@@ -210,6 +212,7 @@ TypeMap common::produceSimpleTypeMap(FieldDescriptor::Type type)
         {"full_list_type", fullListName},
         {"scope_list_type", scopeListName},
         {"namespaces", namespaces},
+        {"scope_namespaces", namespaces},
         {"qml_package", qmlPackage},
         {"property_type", fullName},
         {"qml_alias_type", qmlAliasType},
@@ -358,4 +361,53 @@ MethodMap common::produceMethodMap(const MethodDescriptor *method, const std::st
                   {"param_name", "arg"},
                   {"return_name", "ret"}
                  };
+}
+
+void common::iterateMessages(const ::google::protobuf::FileDescriptor *file, std::function<void(const ::google::protobuf::Descriptor *)> callback)
+{
+    for (int i = 0; i < file->message_type_count(); i++) {
+        callback(file->message_type(i));
+    }
+}
+
+void common::iterateNestedMessages(const ::google::protobuf::Descriptor *message, std::function<void(const ::google::protobuf::Descriptor *)> callback)
+{
+    for (int i = 0; i < message->nested_type_count(); i++) {
+        auto nestedMessage = message->nested_type(i);
+        for (int j = 0; j < message->field_count(); j++) {
+            auto field = message->field(j);
+            if (!field->is_map() && field->message_type() == nestedMessage) { //Probably there is more correct way to detect map in nested messages.                                                                              //TODO: Have idea to make maps nested classes instead of typedefs.
+                callback(nestedMessage);
+            }
+        }
+    }
+}
+
+bool common::hasNestedMessages(const ::google::protobuf::Descriptor *message)
+{
+    for (int i = 0; i < message->nested_type_count(); i++) {
+        auto nestedMessage = message->nested_type(i);
+        for (int j = 0; j < message->field_count(); j++) {
+            auto field = message->field(j);
+            if (!field->is_map() && field->message_type() == nestedMessage) { //Probably there is more correct way to detect map in nested messages.                                                                              //TODO: Have idea to make maps nested classes instead of typedefs.
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool common::isNested(const ::google::protobuf::Descriptor *message)
+{
+    return message->containing_type() != nullptr;
+}
+
+const ::google::protobuf::Descriptor *common::findHighestMessage(const ::google::protobuf::Descriptor *message)
+{
+    const ::google::protobuf::Descriptor *highestMessage = message;
+    while (highestMessage->containing_type() != nullptr) {
+        highestMessage = highestMessage->containing_type();
+    }
+    return highestMessage;
 }

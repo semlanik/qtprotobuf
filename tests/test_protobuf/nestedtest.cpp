@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Alexey Edelev <semlanik@gmail.com>, Viktor Kopp <vifactor@gmail.com>
+ * Copyright (c) 2020 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,28 +23,6 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include "nestedmessages.qpb.h"
 
-#include <gtest/gtest.h>
-#include <QMetaType>
-
-namespace QtProtobuf {
-
-namespace tests {
-
-template<typename MessageType, typename PropertyType>
-static void assertMessagePropertyRegistered(int fieldIndex, const char *propertyTypeName, const char *propertyName, bool skipMetatypeCheck = false)
-{
-    // TODO: there should be(?) a mapping avaialble: PropertyType -> propertyTypeName
-
-    const int propertyNumber = MessageType::propertyOrdering.at(fieldIndex);
-    ASSERT_STREQ(MessageType::staticMetaObject.property(propertyNumber).typeName(), propertyTypeName);
-    if (!skipMetatypeCheck) {
-        ASSERT_EQ(MessageType::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<PropertyType>());
-    }
-    ASSERT_STREQ(MessageType::staticMetaObject.property(propertyNumber).name(), propertyName);
-}
-
-}
-
-}
+#include "./nestedtest.cpp.inc"

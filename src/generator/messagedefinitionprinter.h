@@ -41,18 +41,7 @@ class MessageDefinitionPrinter : public DescriptorPrinterBase<google::protobuf::
 public:
     MessageDefinitionPrinter(const google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
 
-    void run() {
-        printNamespaces();
-        printDestructor();
-        printFieldsOrdering();
-        printRegisterBody();
-        printConstructors();
-        printCopyFunctionality();
-        printMoveSemantic();
-        printComparisonOperators();
-        printGetters();
-        encloseNamespaces();
-    }
+    void printClassDefinition();
 
 private:
     void printRegisterBody();
@@ -65,6 +54,8 @@ private:
     void printComparisonOperators();
     void printGetters();
     void printDestructor();
+
+    void printClassDefinitionPrivate();
 };
 
 }}

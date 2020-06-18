@@ -43,6 +43,52 @@ MessageDeclarationPrinter::MessageDeclarationPrinter(const Descriptor *message, 
     mTypeMap = common::produceMessageTypeMap(message, nullptr);
 }
 
+void MessageDeclarationPrinter::printClassForwardDeclarationPrivate()
+{
+    if (common::hasNestedMessages(mDescriptor)) {
+        mPrinter->Print({{"namespace", mName + Templates::QtProtobufNestedNamespace}}, Templates::NamespaceTemplate);
+        common::iterateNestedMessages(mDescriptor, [this](const ::google::protobuf::Descriptor *nestedMessage) {
+            MessageDeclarationPrinter nesterPrinter(nestedMessage, mPrinter);
+            nesterPrinter.printClassForwardDeclarationPrivate();
+        });
+        mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
+    }
+
+    mPrinter->Print({{"classname", mName}}, Templates::ProtoClassForwardDeclarationTemplate);
+    mPrinter->Print({{"classname", mName}}, Templates::ComplexListTypeUsingTemplate);
+}
+
+void MessageDeclarationPrinter::printClassForwardDeclaration()
+{
+    printNamespaces();
+    printClassForwardDeclarationPrivate();
+    encloseNamespaces();
+}
+
+void MessageDeclarationPrinter::printClassDeclaration()
+{
+    printNamespaces();
+    printClassDeclarationPrivate();
+    encloseNamespaces();
+    printMetaTypesDeclaration();//Meta types declaration should be outside of namespaces block
+}
+
+void MessageDeclarationPrinter::printClassDeclarationPrivate()
+{
+    mPrinter->Print({{"namespace", mName + Templates::QtProtobufNestedNamespace}}, Templates::NamespaceTemplate);
+    common::iterateNestedMessages(mDescriptor, [this](const ::google::protobuf::Descriptor *nestedMessage) {
+        MessageDeclarationPrinter nesterPrinter(nestedMessage, mPrinter);
+        nesterPrinter.printClassDeclarationPrivate();
+    });
+    mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
+
+    printComments(mDescriptor);
+    printClassDeclarationBegin();
+    printClassBody();
+    encloseClass();
+    printListType();
+}
+
 void MessageDeclarationPrinter::printCopyFunctionality()
 {
     assert(mDescriptor != nullptr);
@@ -88,7 +134,7 @@ void MessageDeclarationPrinter::printConstructor(int fieldCount)
         FieldDescriptor::Type fieldType = field->type();
         if (field->is_repeated() && !field->is_map()) {
             parameterTemplate = Templates::ConstructorRepeatedParameterTemplate;
-        } else if(fieldType == FieldDescriptor::TYPE_BYTES
+        } else if (fieldType == FieldDescriptor::TYPE_BYTES
                   || fieldType == FieldDescriptor::TYPE_STRING
                   || fieldType == FieldDescriptor::TYPE_MESSAGE
                   || field->is_map()) {
@@ -101,7 +147,7 @@ void MessageDeclarationPrinter::printConstructor(int fieldCount)
 }
 
 void MessageDeclarationPrinter::printMaps()
-{
+{    
     Indent();
     for (int i = 0; i < mDescriptor->field_count(); i++) {
         const FieldDescriptor *field = mDescriptor->field(i);
@@ -112,6 +158,20 @@ void MessageDeclarationPrinter::printMaps()
         }
     }
     Outdent();
+}
+
+void MessageDeclarationPrinter::printNested()
+{
+    Indent();
+    common::iterateNestedMessages(mDescriptor, [&](const ::google::protobuf::Descriptor *nestedMessage) {
+        mPrinter->Print(common::produceMessageTypeMap(nestedMessage, mDescriptor), Templates::NestedMessageUsingTemplate);
+    });
+    Outdent();
+}
+
+void MessageDeclarationPrinter::printClassDeclarationBegin()
+{
+    mPrinter->Print({{"classname", mName}}, Templates::ProtoClassDeclarationBeginTemplate);
 }
 
 void MessageDeclarationPrinter::printMetaTypesDeclaration()
@@ -139,6 +199,11 @@ void MessageDeclarationPrinter::printMetaTypesDeclaration()
 
             mPrinter->Print(propertyMap, Templates::DeclareMetaTypeMapTemplate);
         }
+    });
+
+    common::iterateNestedMessages(mDescriptor, [this](const Descriptor *nestedMessage) {
+        MessageDeclarationPrinter nesterPrinter(nestedMessage, mPrinter);
+        nesterPrinter.printMetaTypesDeclaration();
     });
 }
 
@@ -285,6 +350,7 @@ void MessageDeclarationPrinter::printClassBody()
     printQEnums();
 
     printPublicBlock();
+    printNested();
     printMaps();
 
     Indent();
@@ -325,7 +391,7 @@ void MessageDeclarationPrinter::printClassMembers()
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
         if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
             mPrinter->Print(propertyMap, Templates::ComplexMemberTemplate);
-        } else if(field->is_repeated() && !field->is_map()){
+        } else if (field->is_repeated() && !field->is_map()) {
              mPrinter->Print(propertyMap, Templates::ListMemberTemplate);
         } else {
             mPrinter->Print(propertyMap, Templates::MemberTemplate);
