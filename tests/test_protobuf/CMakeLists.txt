@@ -10,7 +10,8 @@ file(GLOB SOURCES
     converterstest.cpp
     jsonserializationtest.cpp
     jsondeserializationtest.cpp
-    duplicatedmetatypestest.cpp)
+    duplicatedmetatypestest.cpp
+    nestedtest.cpp)
 
 add_test_target(TARGET ${TARGET}
     SOURCES ${SOURCES}

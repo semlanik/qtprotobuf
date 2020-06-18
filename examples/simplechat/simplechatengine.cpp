@@ -100,7 +100,7 @@ qtprotobuf::examples::ChatMessage::ContentType SimpleChatEngine::clipBoardConten
         if (mime != nullptr) {
             if (mime->hasImage() || mime->hasUrls()) {
                 return qtprotobuf::examples::ChatMessage::ContentType::Image;
-            } else if(mime->hasText()) {
+            } else if (mime->hasText()) {
                 return qtprotobuf::examples::ChatMessage::ContentType::Text;
             }
         }

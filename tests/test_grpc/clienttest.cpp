@@ -258,17 +258,17 @@ TEST_F(ClientTest, StringEchoStreamAbortByTimerTest)
 
     int i = 0;
     QtProtobuf::QGrpcSubscription *subscription = testClient.subscribeTestMethodServerStreamUpdates(request);
-    QTimer::singleShot(3500, subscription, [subscription](){
+    QTimer::singleShot(3500, subscription, [subscription]() {
         subscription->cancel();
     });
 
     bool isFinished = false;
-    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::finished, [&isFinished](){
+    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
         isFinished = true;
     });
 
     bool isError = false;
-    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::error, [&isError](){
+    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::error, [&isError]() {
         isError = true;
     });
 
@@ -568,12 +568,12 @@ TEST_F(ClientTest, MultipleSubscriptionsCancelTest)
     ASSERT_EQ(subscription, subscriptionNext);
 
     bool isFinished = false;
-    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::finished, [&isFinished](){
+    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
         isFinished = true;
     });
 
     bool isFinishedNext = false;
-    QObject::connect(subscriptionNext, &QtProtobuf::QGrpcSubscription::finished, [&isFinishedNext](){
+    QObject::connect(subscriptionNext, &QtProtobuf::QGrpcSubscription::finished, [&isFinishedNext]() {
         isFinishedNext = true;
     });
 
@@ -590,12 +590,12 @@ TEST_F(ClientTest, MultipleSubscriptionsCancelTest)
     ASSERT_EQ(subscription, subscriptionNext);
 
     isFinished = false;
-    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::finished, [&isFinished](){
+    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
         isFinished = true;
     });
 
     isFinishedNext = false;
-    QObject::connect(subscriptionNext, &QtProtobuf::QGrpcSubscription::finished, [&isFinishedNext](){
+    QObject::connect(subscriptionNext, &QtProtobuf::QGrpcSubscription::finished, [&isFinishedNext]() {
         isFinishedNext = true;
     });
 

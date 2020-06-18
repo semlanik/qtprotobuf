@@ -42,16 +42,8 @@ public:
     MessageDeclarationPrinter(const ::google::protobuf::Descriptor *message, const std::shared_ptr<::google::protobuf::io::Printer> &printer);
     virtual ~MessageDeclarationPrinter() = default;
 
-    void run() {
-        printNamespaces();
-        printComments(mDescriptor);
-        printClassDeclaration();
-        printClassBody();
-        encloseClass();
-        printListType();
-        encloseNamespaces();
-        printMetaTypesDeclaration();
-    }
+    void printClassDeclaration();
+    void printClassForwardDeclaration();
 
 private:
     void printCopyFunctionality();
@@ -69,10 +61,15 @@ private:
     void printDestructor();
     void printListType();
     void printMaps();
-
+    void printNested();
     void printMetaTypesDeclaration();
+    void printClassDeclarationBegin();
 
     void printQEnums();
+
+    //Recursive functionality
+    void printClassDeclarationPrivate();
+    void printClassForwardDeclarationPrivate();
 };
 
 }

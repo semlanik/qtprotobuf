@@ -316,7 +316,7 @@ public:
             QtProtobuf::QProtobufSelfcheckIterator it(data);
             QtProtobuf::QProtobufSelfcheckIterator last = it;
             last += it.size();
-            while(it != last) {
+            while (it != last) {
                 ok = true;
                 handler.deserializer(qPtr, it, newValue);
                 qDebug() << "newValue" << newValue;

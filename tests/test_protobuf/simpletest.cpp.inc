@@ -326,7 +326,14 @@ TEST_F(SimpleTest, SimpleFileEnumsTest)
 
 TEST_F(SimpleTest, ComplexMessageTest)
 {
-    ComplexMessage msg;
+    const char *propertyName = "testComplexField";
+    assertMessagePropertyRegistered<qtprotobufnamespace::tests::ComplexMessage, qtprotobufnamespace::tests::SimpleStringMessage*>(
+                2, "qtprotobufnamespace::tests::SimpleStringMessage*", propertyName);
+
+    ComplexMessage test;
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobufnamespace::tests::SimpleStringMessage*>(new qtprotobufnamespace::tests::SimpleStringMessage{"test qwerty"})));
+    ASSERT_TRUE(*(test.property(propertyName).value<qtprotobufnamespace::tests::SimpleStringMessage*>()) == qtprotobufnamespace::tests::SimpleStringMessage{"test qwerty"});
+    ASSERT_TRUE(test.testComplexField() == qtprotobufnamespace::tests::SimpleStringMessage{"test qwerty"});
 }
 
 TEST_F(SimpleTest, SimpleBytesMessageTest)

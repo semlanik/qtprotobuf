@@ -125,35 +125,18 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         enumSourceDef.run();
     }
 
-    std::vector<std::string> namespaces = utils::split(file->package(), '.');
-    std::string namespacesColonDelimited;
-
-    assert(namespaces.size() > 0);
-    for (size_t i = 0; i < namespaces.size(); i++) {
-        if (i > 0) {
-            namespacesColonDelimited = namespacesColonDelimited.append("::");
-        }
-        namespacesColonDelimited = namespacesColonDelimited.append(namespaces[i]);
-        headerPrinter->Print({{"namespace", namespaces[i]}}, Templates::NamespaceTemplate);
-    }
-
-    iterateNonNestedFileds(file, [&headerPrinter](const ::google::protobuf::Descriptor *message){
-        std::string qualifiedClassName = utils::upperCaseName(message->name());
-        headerPrinter->Print({{"classname", qualifiedClassName}}, Templates::ProtoClassDeclarationTemplate);
-        headerPrinter->Print({{"classname", qualifiedClassName}}, Templates::ComplexListTypeUsingTemplate);
+    common::iterateMessages(file, [&headerPrinter](const ::google::protobuf::Descriptor *message) {
+        MessageDeclarationPrinter messageDecl(message, headerPrinter);
+        messageDecl.printClassForwardDeclaration();
     });
 
-    for (size_t i = 0; i < namespaces.size(); i++) {
-        headerPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
-    }
-
-    iterateNonNestedFileds(file, [&headerPrinter, &sourcePrinter](const ::google::protobuf::Descriptor *message){
+    common::iterateMessages(file, [&headerPrinter, &sourcePrinter](const ::google::protobuf::Descriptor *message) {
         MessageDeclarationPrinter messageDecl(message, headerPrinter);
+        messageDecl.printClassDeclaration();
 
-        messageDecl.run();
 
         MessageDefinitionPrinter messageDef(message, sourcePrinter);
-        messageDef.run();
+        messageDef.printClassDefinition();
     });
 
     return true;

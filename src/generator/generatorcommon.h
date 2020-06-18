@@ -83,6 +83,17 @@ struct common {
     }
 
     static MethodMap produceMethodMap(const ::google::protobuf::MethodDescriptor *method, const std::string &scope); //TODO: scope should be ServiceDescriptor
+
+    static void iterateMessages(const ::google::protobuf::FileDescriptor *file, std::function<void(const ::google::protobuf::Descriptor *)> callback);
+    static void iterateNestedMessages(const ::google::protobuf::Descriptor *message, std::function<void(const ::google::protobuf::Descriptor *)> callback);
+
+    static bool hasNestedMessages(const ::google::protobuf::Descriptor *message);
+
+    static bool isNested(const ::google::protobuf::Descriptor *message);
+    static bool isNestedOf(const ::google::protobuf::Descriptor *message, const ::google::protobuf::Descriptor *containing) {
+        return containing == message->containing_type();
+    }
+    static const ::google::protobuf::Descriptor *findHighestMessage(const ::google::protobuf::Descriptor *message);
 };
 
 }

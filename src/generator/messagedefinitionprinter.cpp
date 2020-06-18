@@ -37,6 +37,34 @@ MessageDefinitionPrinter::MessageDefinitionPrinter(const Descriptor *message, co
     mTypeMap = common::produceMessageTypeMap(message, nullptr);
 }
 
+void MessageDefinitionPrinter::printClassDefinitionPrivate()
+{
+    if (common::hasNestedMessages(mDescriptor)) {
+        mPrinter->Print({{"namespace", mName + Templates::QtProtobufNestedNamespace}}, Templates::NamespaceTemplate);
+        common::iterateNestedMessages(mDescriptor, [this](const Descriptor *nestedMessage) {
+            MessageDefinitionPrinter nestedPrinter(nestedMessage, mPrinter);
+            nestedPrinter.printClassDefinitionPrivate();
+        });
+        mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
+    }
+
+    printDestructor();
+    printFieldsOrdering();
+    printRegisterBody();
+    printConstructors();
+    printCopyFunctionality();
+    printMoveSemantic();
+    printComparisonOperators();
+    printGetters();
+}
+
+void MessageDefinitionPrinter::printClassDefinition()
+{
+    printNamespaces();
+    printClassDefinitionPrivate();
+    encloseNamespaces();
+}
+
 void MessageDefinitionPrinter::printRegisterBody()
 {
     mPrinter->Print(mTypeMap,
@@ -96,7 +124,7 @@ void MessageDefinitionPrinter::printConstructor(int fieldCount)
         FieldDescriptor::Type fieldType = field->type();
         if (field->is_repeated() && !field->is_map()) {
             parameterTemplate = Templates::ConstructorRepeatedParameterTemplate;
-        } else if(fieldType == FieldDescriptor::TYPE_BYTES
+        } else if (fieldType == FieldDescriptor::TYPE_BYTES
                   || fieldType == FieldDescriptor::TYPE_STRING
                   || fieldType == FieldDescriptor::TYPE_MESSAGE
                   || field->is_map()) {
