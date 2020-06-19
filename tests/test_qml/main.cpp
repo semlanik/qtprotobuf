@@ -26,6 +26,7 @@
 #include <QtQuickTest>
 #include <QQmlEngine>
 #include <QQmlContext>
+#include <QQmlExtensionPlugin>
 
 #include "simpletest.qpb.h"
 
@@ -36,6 +37,7 @@ class TestSetup : public QObject {
 public:
     TestSetup() {
         QtProtobuf::qRegisterProtobufTypes();
+        Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
     }
     ~TestSetup() = default;
 public slots:

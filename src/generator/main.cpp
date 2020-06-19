@@ -38,11 +38,11 @@
  * QtProtobuf distributed in terms of MIT license and is free for modification and use under MIT
  * license <a href="https://github.com/semlanik/qtprotobuf/blob/master/LICENSE">terms</a>.
  *
- * QtProtobuf has 4 modules:
  *  - \ref generator
  *  - \ref QtProtobuf
  *  - \ref QtGrpc
  *  - \ref QtProtobufWellKnownTypes
+ *  - \ref QtProtobufQuick
  *
  * \subsection gettingstarted Getting Started with QtProtobuf
  *

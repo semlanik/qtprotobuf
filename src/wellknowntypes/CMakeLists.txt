@@ -1,5 +1,4 @@
 set(TARGET QtProtobufWellKnownTypes)
-set(TARGET_STATIC ${TARGET}Static)
 set(TARGET_EXPORT ${TARGET}Targets)
 set(TARGET_CONFIG ${TARGET}Config)
 
