@@ -15,6 +15,10 @@ if(TARGET QtProtobufProject::QtProtobufWellKnownTypes)
     target_link_libraries(${TARGET} PRIVATE QtProtobufProject::QtProtobufWellKnownTypes)
 endif()
 
+if(QT_PROTOBUF_STATIC)
+    target_link_libraries(${TARGET} PRIVATE protobufquickplugin)
+endif()
+
 qtprotobuf_link_target(${TARGET} qtprotobuf_test_qtprotobuf_gen)
 
 add_target_qml(TARGET ${TARGET} QML_FILES ${QML_FILES})
