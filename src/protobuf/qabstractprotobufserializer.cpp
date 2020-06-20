@@ -27,6 +27,7 @@
 #include <QVariant>
 #include <QMetaObject>
 #include <QMutex>
+#include <QSemaphore>
 
 #include "qabstractprotobufserializer.h"
 
@@ -34,24 +35,35 @@ using namespace QtProtobuf;
 
 namespace  {
 
+const int MaximumSimultaniousThreads = 64;
 /*!
  * \private
  * \brief The HandlersRegistry is container to store mapping between metatype identifier and serialization handlers.
  */
 struct HandlersRegistry {
 
+    HandlersRegistry() : m_readLock(MaximumSimultaniousThreads) {
+
+    }
+
     void registerHandler(int userType, const QtProtobufPrivate::SerializationHandler &handlers) {
-        QMutexLocker locker(&m_lock);
+        QMutexLocker locker(&m_writeLock);
+        QSemaphoreReleaser releaser(m_readLock, MaximumSimultaniousThreads);
+        m_readLock.acquire(MaximumSimultaniousThreads);
         m_registry[userType] = handlers;
     }
 
-    QtProtobufPrivate::SerializationHandler &findHandler(int userType) {
-        QMutexLocker locker(&m_lock);
+    QtProtobufPrivate::SerializationHandler findHandler(int userType) {
+        auto handler = empty;
+        QMutexLocker locker(&m_writeLock);
+        QSemaphoreReleaser releaser(m_readLock, 1);
+        m_readLock.acquire();
+        locker.unlock();
         auto it = m_registry.find(userType);
         if (it != m_registry.end()) {
-            return it->second;
+            handler = it->second;
         }
-        return empty;
+        return handler;
     }
 
     static HandlersRegistry &instance() {
@@ -59,7 +71,8 @@ struct HandlersRegistry {
         return _instance;
     }
 private:
-    QMutex m_lock;
+    QSemaphore m_readLock;
+    QMutex m_writeLock;
     std::unordered_map<int/*metatypeid*/, QtProtobufPrivate::SerializationHandler> m_registry;
     static QtProtobufPrivate::SerializationHandler empty;
 };
@@ -72,7 +85,7 @@ void QtProtobufPrivate::registerHandler(int userType, const QtProtobufPrivate::S
     HandlersRegistry::instance().registerHandler(userType, handlers);
 }
 
-QtProtobufPrivate::SerializationHandler &QtProtobufPrivate::findHandler(int userType)
+QtProtobufPrivate::SerializationHandler QtProtobufPrivate::findHandler(int userType)
 {
     return HandlersRegistry::instance().findHandler(userType);
 }
