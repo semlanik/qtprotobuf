@@ -159,7 +159,7 @@ public:
     QByteArray serializeValue(const QVariant &propertyValue, const QProtobufMetaProperty &metaProperty) {
         QByteArray buffer;
         auto userType = propertyValue.userType();
-        auto &value = QtProtobufPrivate::findHandler(userType);
+        auto value = QtProtobufPrivate::findHandler(userType);
         if (value.serializer) {
             value.serializer(qPtr, propertyValue, metaProperty, buffer);
         } else {
@@ -311,7 +311,7 @@ public:
 
     QVariant deserializeValue(int type, const QByteArray &data, microjson::JsonType jsonType, bool &ok) {
         QVariant newValue;
-        auto &handler = QtProtobufPrivate::findHandler(type);
+        auto handler = QtProtobufPrivate::findHandler(type);
         if (handler.deserializer) {
             QtProtobuf::QProtobufSelfcheckIterator it(data);
             QtProtobuf::QProtobufSelfcheckIterator last = it;
