@@ -1,8 +1,8 @@
-project(qtprotobufgen VERSION ${QT_PROTOBUF_VERSION} LANGUAGES CXX)
-
-set(TARGET ${PROJECT_NAME})
+set(TARGET ${GENERATOR_TARGET})
 set(TARGET_EXPORT ${TARGET}Targets)
+
 set(TARGET_BINDIR ${CMAKE_INSTALL_BINDIR})
+set(TARGET_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 file(GLOB SOURCES main.cpp
     generatorcommon.cpp
@@ -41,6 +41,8 @@ file(GLOB HEADERS utils.h
 
 add_executable(${TARGET} ${SOURCES})
 
+add_executable(${QT_PROTOBUF_PROJECT}::${TARGET} ALIAS ${TARGET})
+
 if(DEFINED Protobuf_INCLUDE_DIRS)
     target_include_directories(${TARGET} PUBLIC ${Protobuf_INCLUDE_DIRS})
 endif()
@@ -48,4 +50,9 @@ endif()
 target_link_libraries(${TARGET} protobuf::libprotobuf protobuf::libprotoc)
 
 install(TARGETS ${TARGET}
+    EXPORT ${TARGET_EXPORT} COMPONENT dev
     RUNTIME DESTINATION ${TARGET_BINDIR} COMPONENT lib)
+
+install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
+
+export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake)
