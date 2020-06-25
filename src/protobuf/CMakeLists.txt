@@ -138,6 +138,8 @@ install(FILES "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TA
 if(QT_PROTOBUF_STATIC) #extra config for .pri file in case if static build enabled
     set(QT_PROTOBUF_EXTRA_CONFIG "staticlib")
 endif()
+
+set(QT_PROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${GENERATOR_TARGET})
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_protobuf.pri.in" "${QT_PROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" @ONLY)
 install(FILES "${QT_PROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" DESTINATION "${QT_HOST_DATA}/mkspecs/modules" COMPONENT dev)
 

@@ -20,9 +20,7 @@ function(qtprotobuf_generate)
 
     set(GEN_TARGET ${GENERATED_TARGET_NAME}_generate)
 
-    if(NOT DEFINED QT_PROTOBUF_EXECUTABLE)
-        set(QT_PROTOBUF_EXECUTABLE "${QT_PROTOBUF_EXECUTABLE_INSTALL}")
-    endif()
+    set(QT_PROTOBUF_EXECUTABLE $<TARGET_FILE:${QT_PROTOBUF_PROJECT}::${GENERATOR_TARGET}>)
 
     #Options handling
     set(GENERATION_TYPE "SIGNLE")
