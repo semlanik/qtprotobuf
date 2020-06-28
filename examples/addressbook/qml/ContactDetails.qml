@@ -27,6 +27,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.4
 
 import qtprotobuf.examples 1.0
+import examples.addressbook 1.0
 
 StackItem {
     id: root
@@ -147,7 +148,7 @@ StackItem {
     FloatingRoundButton {
         id: call
         enabled: _homePhoneField.text.length > 0
-                 && abEngine.callStatus.status !== CallStatus.Active && abEngine.callStatus.status !== CallStatus.Ended
+                 && AddressBookEngine.callStatus.status !== CallStatus.Active && AddressBookEngine.callStatus.status !== CallStatus.Ended
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 10
@@ -155,7 +156,7 @@ StackItem {
         primaryColor: "#4CAF50"
         secondaryColor: "#58cb5c"
         onClicked: {
-            abEngine.makeCall(contact.phonesData[0])
+            AddressBookEngine.makeCall(contact.phonesData[0])
             stack.pop();
         }
     }

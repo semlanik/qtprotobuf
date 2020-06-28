@@ -30,7 +30,7 @@ Window {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 400
                 onAccepted: {
-                    echoEngine.request(request);
+                    EchoClientEngine.request(request);
                     text = ""
                 }
             }
@@ -44,7 +44,7 @@ Window {
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
-                text: echoEngine.response.message
+                text: EchoClientEngine.response.message
             }
         }
     }

@@ -35,7 +35,7 @@
 class EchoClientEngine : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(qtprotobuf::tutorial::EchoResponse *response READ response)
+    Q_PROPERTY(qtprotobuf::tutorial::EchoResponse *response READ response CONSTANT)
 public:
     explicit EchoClientEngine(QObject *parent = nullptr);
 

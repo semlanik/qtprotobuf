@@ -45,10 +45,15 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<ContactsListModel>("examples.addressbook", 1, 0, "ContactsListModel");
     QGuiApplication app(argc, argv);
-    AddressBookEngine abEngine;
+
+    qmlRegisterSingletonType<AddressBookEngine>("examples.addressbook", 1, 0, "AddressBookEngine", [](QQmlEngine *engine, QJSEngine *) -> QObject *{
+        static AddressBookEngine abEngine;
+        engine->setObjectOwnership(&abEngine, QQmlEngine::CppOwnership);
+        return &abEngine;
+    });
+
     QQmlApplicationEngine engine;
 
-    engine.rootContext()->setContextProperty("abEngine", &abEngine);
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

@@ -51,7 +51,7 @@ ApplicationWindow {
             width: 200
             placeholderText: qsTr("Login")
             onAccepted:             {
-                scEngine.login(_loginField.text, _passwordField.text)
+                SimpleChatEngine.login(_loginField.text, _passwordField.text)
             }
             onVisibleChanged: {
                 if (visible) {
@@ -69,7 +69,7 @@ ApplicationWindow {
             echoMode: TextInput.Password
             placeholderText: qsTr("Password")
             onAccepted:             {
-                scEngine.login(_loginField.text, _passwordField.text)
+                SimpleChatEngine.login(_loginField.text, _passwordField.text)
             }
         }
         Button {
@@ -102,7 +102,7 @@ ApplicationWindow {
             }
 
             onClicked: {
-                scEngine.login(_loginField.text, _passwordField.text)
+                SimpleChatEngine.login(_loginField.text, _passwordField.text)
             }
         }
     }
@@ -111,7 +111,7 @@ ApplicationWindow {
         id: _chatView
         visible: false
         Connections {
-            target: scEngine
+            target: SimpleChatEngine
             onLoggedIn: {
                 _chatView.visible = true
                 _loginControl.visible = false

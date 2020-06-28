@@ -27,6 +27,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.4
 
 import qtprotobuf.examples 1.0
+import examples.addressbook 1.0
 
 StackItem {
     id: root
@@ -187,7 +188,7 @@ StackItem {
             }
             newContact.phonesData = phones;
 
-            abEngine.addContact(newContact)
+            AddressBookEngine.addContact(newContact)
             stack.pop()
         }
     }
