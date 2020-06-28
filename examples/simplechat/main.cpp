@@ -48,11 +48,13 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     qmlRegisterUncreatableType<ChatMessageModel>("examples.simplechat",  1, 0, "ChatMessageModel", "");
+    qmlRegisterSingletonType<SimpleChatEngine>("examples.simplechat", 1, 0, "SimpleChatEngine", [](QQmlEngine *engine, QJSEngine *) -> QObject *{
+        static SimpleChatEngine scEngine;
+        engine->setObjectOwnership(&scEngine, QQmlEngine::CppOwnership);
+        return &scEngine;
+    });
 
     QQmlApplicationEngine engine;
-
-    SimpleChatEngine scEngine;
-    engine.rootContext()->setContextProperty("scEngine", &scEngine);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

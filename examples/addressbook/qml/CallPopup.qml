@@ -27,6 +27,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.4
 
 import qtprotobuf.examples 1.0
+import examples.addressbook 1.0
 
 Rectangle {
     id: root
@@ -44,6 +45,13 @@ Rectangle {
         anchors.bottomMargin: 20
     }
     radius: 10
+
+    Connections {
+        target: root.callStatus
+        onStatusChanged: {
+            console.log("root.callStatus call status: " + root.callStatus.status);
+        }
+    }
 
     transform: Rotation {
         id: _rotation
@@ -63,70 +71,50 @@ Rectangle {
     states: [
         State {
             name: "opened"
-            when: callStatus.status === CallStatus.Active || callStatus.status === CallStatus.Ended
+            when: root.callStatus.status === CallStatus.Active || root.callStatus.status === CallStatus.Ended
+            PropertyChanges {
+                target: root
+                opacity: 1.0
+                anchors.verticalCenterOffset: 0
+            }
+            PropertyChanges {
+                target: _rotation
+                angle: 0
+            }
         },
         State {
             name: "closed"
-            when: callStatus.status !== CallStatus.Active && callStatus.status !== CallStatus.Ended
+            when: root.callStatus.status !== CallStatus.Active && root.callStatus.status !== CallStatus.Ended
+            PropertyChanges {
+                target: root
+                opacity: 0.0
+                anchors.verticalCenterOffset: 50
+            }
+            PropertyChanges {
+                target: _rotation
+                angle: -45
+            }
         }
     ]
 
     transitions: [
         Transition {
-            from: "opened"
-            to: "closed"
+            from: "*"
+            to: "*"
 
-            NumberAnimation {
-                target: root
-                property: "opacity"
-                duration: 300
-                from: 1.0
-                to: 0.0
-            }
+            ParallelAnimation {
+                alwaysRunToEnd: true
+                NumberAnimation {
+                    target: root
+                    properties: "opacity,anchors.verticalCenterOffset"
+                    duration: 300
+                }
 
-
-            NumberAnimation {
-                target: root
-                property: "anchors.verticalCenterOffset"
-                duration: 300
-                from: 0
-                to: 50
-            }
-
-            NumberAnimation {
-                target: _rotation
-                property: "angle"
-                duration: 300
-                from: 0
-                to: -45
-            }
-        },
-        Transition {
-            from: "closed"
-            to: "opened"
-
-            NumberAnimation {
-                target: root
-                property: "anchors.verticalCenterOffset"
-                duration: 300
-                from: 50
-                to: 0
-            }
-
-            NumberAnimation {
-                target: root
-                property: "opacity"
-                duration: 300
-                from: 0.0
-                to: 1.0
-            }
-
-            NumberAnimation {
-                target: _rotation
-                property: "angle"
-                duration: 300
-                from: -45
-                to: 0
+                NumberAnimation {
+                    target: _rotation
+                    properties: "angle"
+                    duration: 300
+                }
             }
         }
     ]
@@ -144,7 +132,7 @@ Rectangle {
         anchors.bottomMargin: 10
         icon: "qrc:/images/drop.png"
         onClicked: {
-            abEngine.endCall()
+            AddressBookEngine.endCall()
         }
     }
 

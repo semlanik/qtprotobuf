@@ -168,8 +168,11 @@
  * {
  * ... //Before load QML
  *     QtProtobuf::qRegisterProtobufTypes();
- *     EchoClientEngine echoEngine;
- *     engine.rootContext()->setContextProperty("echoEngine", &echoEngine);
+ *     qmlRegisterSingletonType<EchoClientEngine>("qtprotobuf.tutorial", 1, 0, "EchoClientEngine", [](QQmlEngine *engine, QJSEngine *){
+ *         static EchoClientEngine echoEngine;
+ *         engine->setObjectOwnership(&echoEngine, QQmlEngine::CppOwnership);
+ *         return &echoEngine;
+ *     });
  * ...
  * }
  * \endcode
@@ -252,8 +255,11 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
 
     QtProtobuf::qRegisterProtobufTypes();
-    EchoClientEngine echoEngine;
-    engine.rootContext()->setContextProperty("echoEngine", &echoEngine);
+    qmlRegisterSingletonType<EchoClientEngine>("qtprotobuf.tutorial", 1, 0, "EchoClientEngine", [](QQmlEngine *engine, QJSEngine *) -> QObject *{
+        static EchoClientEngine echoEngine;
+        engine->setObjectOwnership(&echoEngine, QQmlEngine::CppOwnership);
+        return &echoEngine;
+    });
 
     engine.load(url);
 

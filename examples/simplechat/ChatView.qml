@@ -20,7 +20,7 @@ Rectangle {
         anchors.bottom: _inputField.top
         anchors.left: parent.left
         anchors.right: parent.right
-        model: scEngine.messages
+        model: SimpleChatEngine.messages
         delegate: Item {
             height: _imageWrapper.height + 10
             width: root.width
@@ -28,7 +28,7 @@ Rectangle {
                 id: _imageWrapper
                 height: _messageColumn.height + 20
                 width: parent.width/2 - 20
-                property bool ownMessage: scEngine.userName === model.modelData.from
+                property bool ownMessage: SimpleChatEngine.userName === model.modelData.from
                 anchors{
                     right: _imageWrapper.ownMessage ? parent.right : undefined
                     left: _imageWrapper.ownMessage ? undefined : parent.left
@@ -97,7 +97,7 @@ Rectangle {
                 font.pointSize: 12
                 color: "#ffffff"
                 wrapMode: Text.Wrap
-                text: scEngine.getText(modelData.content)
+                text: SimpleChatEngine.getText(modelData.content)
             }
         }
     }
@@ -109,7 +109,7 @@ Rectangle {
             Image {
                 width: implicitWidth
                 height: implicitHeight
-                source: scEngine.getImageThumbnail(modelData.content)
+                source: SimpleChatEngine.getImageThumbnail(modelData.content)
             }
         }
     }
@@ -126,19 +126,19 @@ Rectangle {
 
         placeholderText: qsTr("Start type here or paste image")
         onAccepted: {
-            scEngine.sendMessage(_inputField.text)
+            SimpleChatEngine.sendMessage(_inputField.text)
             _inputField.text = ""
         }
 
         Keys.onPressed: {
             if (event.key === Qt.Key_V && event.modifiers & Qt.ControlModifier) {
                 console.log("Ctrl + V")
-                switch (scEngine.clipBoardContentType) {
+                switch (SimpleChatEngine.clipBoardContentType) {
                 case ChatMessage.Text:
                     paste()
                     break
                 case ChatMessage.Image:
-                    scEngine.sendImageFromClipboard()
+                    SimpleChatEngine.sendImageFromClipboard()
                     break
                 }
 
