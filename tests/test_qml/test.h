@@ -23,6 +23,26 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "test.h"
+#include <QtQuickTest>
+#include <QQmlEngine>
+#include <QQmlContext>
+#include <QQmlExtensionPlugin>
 
-QUICK_TEST_MAIN_WITH_SETUP(qtprotobuf_qml_test, TestSetup)
+#include "simpletest.qpb.h"
+
+using namespace qtprotobufnamespace::tests;
+
+class TestSetup : public QObject {
+    Q_OBJECT
+public:
+    TestSetup() {
+        QtProtobuf::qRegisterProtobufTypes();
+        Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
+    }
+    ~TestSetup() = default;
+public slots:
+    void qmlEngineAvailable(QQmlEngine *engine)
+    {
+        engine->rootContext()->setContextProperty("qVersion", QT_VERSION);
+    }
+};

@@ -145,6 +145,8 @@ bool MultiFileGenerator::Generate(const FileDescriptor *file,
         sourcePrinter->Print({{"include", includeFileName}}, Templates::InternalIncludeTemplate);
         if (GeneratorOptions::instance().hasQml()) {
             sourcePrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+            sourcePrinter->Print({{"include", "QJSEngine"}}, Templates::ExternalIncludeTemplate);
+            sourcePrinter->Print({{"include", "QJSValue"}}, Templates::ExternalIncludeTemplate);
         }
 
         printQtProtobufUsingNamespace(sourcePrinter);

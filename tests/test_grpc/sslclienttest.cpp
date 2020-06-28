@@ -70,5 +70,5 @@ TEST_F(ClientTest, IncorrectSecureCredentialsTest)
     testClient.attachChannel(std::make_shared<QtProtobuf::QGrpcHttp2Channel>(QUrl("https://localhost:60051", QUrl::StrictMode), QtProtobuf::QGrpcInsecureCallCredentials()|QtProtobuf::QGrpcSslCredentials(conf)));
 
     std::unique_ptr<SimpleStringMessage> result = std::make_unique<SimpleStringMessage>();
-    EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, result.get()) == QGrpcStatus::Ok);
+    EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, QPointer<SimpleStringMessage>(result.get())) == QGrpcStatus::Ok);
 }

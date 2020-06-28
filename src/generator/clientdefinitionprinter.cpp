@@ -54,6 +54,9 @@ void ClientDefinitionPrinter::printMethods()
             mPrinter->Print(parameters, Templates::ClientMethodDefinitionSyncTemplate);
             mPrinter->Print(parameters, Templates::ClientMethodDefinitionAsyncTemplate);
             mPrinter->Print(parameters, Templates::ClientMethodDefinitionAsync2Template);
+            if (GeneratorOptions::instance().hasQml()) {
+                mPrinter->Print(parameters, Templates::ClientMethodDefinitionQmlTemplate);
+            }
         }
     }
 }
