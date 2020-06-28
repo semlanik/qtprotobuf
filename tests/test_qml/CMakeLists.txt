@@ -5,10 +5,14 @@ find_package(QtProtobufProject COMPONENTS QtProtobuf REQUIRED)
 
 include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
 
+set(CMAKE_AUTOMOC OFF)
+
 file(GLOB SOURCES main.cpp)
 file(GLOB QML_FILES qml/tst_simple.qml)
 
-add_executable(${TARGET} ${SOURCES} ${QML_FILES})
+qt5_wrap_cpp(MOC_SOURCES test.h)
+
+add_executable(${TARGET} ${MOC_SOURCES} ${SOURCES} ${QML_FILES})
 target_link_libraries(${TARGET} PRIVATE Qt5::Core Qt5::Qml Qt5::Network Qt5::Quick Qt5::Test Qt5::QuickTest QtProtobufProject::QtProtobuf)
 
 if(TARGET QtProtobufProject::QtProtobufWellKnownTypes)

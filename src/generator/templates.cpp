@@ -283,9 +283,11 @@ const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
 const char *Templates::QObjectMacro = "Q_OBJECT";
-const char *Templates::ClientMethodDeclarationSyncTemplate = "Q_INVOKABLE QtProtobuf::QGrpcStatus $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
-const char *Templates::ClientMethodDeclarationAsyncTemplate = "Q_INVOKABLE QtProtobuf::QGrpcAsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodDeclarationSyncTemplate = "QtProtobuf::QGrpcStatus $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
+const char *Templates::ClientMethodDeclarationAsyncTemplate = "QtProtobuf::QGrpcAsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
 const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcAsyncReply *)> &callback);\n";
+const char *Templates::ClientMethodDeclarationQmlTemplate = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, const QJSValue &callback);";
+
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
 
@@ -308,6 +310,28 @@ const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname
                                                               "    });\n"
                                                               "}\n";
 
+const char *Templates::ClientMethodDefinitionQmlTemplate = "\nvoid $classname$::$method_name$($param_type$ *$param_name$, const QJSValue &callback)\n"
+                                                           "{\n"
+                                                           "    if (!callback.isCallable()) {\n"
+                                                           "        qProtoWarning() << \"Unable to call $classname$::$method_name$, callback is not callable\";\n"
+                                                           "        return;\n"
+                                                           "    }\n\n"
+                                                           "    if (arg == nullptr) {\n"
+                                                           "        qProtoWarning() << \"Invalid argument provided for method $classname$::$method_name$, argument of type 'qtprotobufnamespace::tests::SimpleStringMessage *' expected\";\n"
+                                                           "        return;\n"
+                                                           "    }\n\n"
+                                                           "    QJSEngine *jsEngine = qjsEngine(this);\n"
+                                                           "    if (jsEngine == nullptr) {\n"
+                                                           "        qProtoWarning() << \"Unable to call $classname$::$method_name$, it's only callable from JS engine context\";\n"
+                                                           "        return;\n"
+                                                           "    }\n\n"
+                                                           "    QtProtobuf::QGrpcAsyncReply *reply = call(\"$method_name$\", *$param_name$);\n"
+                                                           "    QObject::connect(reply, &QtProtobuf::QGrpcAsyncReply::finished, jsEngine, [this, reply, callback, jsEngine]() {\n"
+                                                           "        auto result = new $param_type$(reply->read<$param_type$>());\n"
+                                                           "        qmlEngine(this)->setObjectOwnership(result,  QQmlEngine::JavaScriptOwnership);\n"
+                                                           "        QJSValue(callback).call(QJSValueList{jsEngine->toScriptValue(result)});\n"
+                                                           "    });\n"
+                                                           "}\n";
 const char *Templates::RegisterSerializersTemplate = "qRegisterProtobufType<$classname$>();\n";
 const char *Templates::RegisterEnumSerializersTemplate = "qRegisterProtobufEnumType<$full_type$>();\n";
 const char *Templates::RegistrarTemplate = "static QtProtobuf::ProtoTypeRegistrar<$classname$> ProtoTypeRegistrar$classname$(qRegisterProtobufType<$classname$>);\n";

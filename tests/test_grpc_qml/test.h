@@ -23,6 +23,38 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "test.h"
+#include <QtQuickTest>
+#include <QUrl>
+#include <QQmlEngine>
+#include <QQmlContext>
+#include <QQmlExtensionPlugin>
+#include <QGrpcHttp2Channel>
+#include <QGrpcInsecureCredentials>
+#include <QMetaObject>
 
-QUICK_TEST_MAIN_WITH_SETUP(qtprotobuf_qml_test, TestSetup)
+#include "testservice_grpc.qpb.h"
+
+using namespace qtprotobufnamespace::tests;
+using namespace QtProtobuf;
+
+class TestSetup : public QObject {
+    Q_OBJECT
+public:
+    static QUrl m_echoServerAddress;
+    TestSetup() {
+        QtProtobuf::qRegisterProtobufTypes();
+        Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
+        qmlRegisterSingletonType<TestServiceClient>("qtprotobufnamespace.tests", 1, 0, "TestServiceClient", [](QQmlEngine *engine, QJSEngine *) -> QObject *{
+            static TestServiceClient clientInstance;
+            clientInstance.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, QGrpcInsecureChannelCredentials() | QGrpcInsecureCallCredentials()));
+            engine->setObjectOwnership(&clientInstance, QQmlEngine::CppOwnership);
+            return &clientInstance;
+        });
+    }
+    ~TestSetup() = default;
+public slots:
+    void qmlEngineAvailable(QQmlEngine *engine)
+    {
+        engine->rootContext()->setContextProperty("qVersion", QT_VERSION);
+    }
+};

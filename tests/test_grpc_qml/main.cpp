@@ -25,4 +25,6 @@
 
 #include "test.h"
 
-QUICK_TEST_MAIN_WITH_SETUP(qtprotobuf_qml_test, TestSetup)
+QUrl TestSetup::m_echoServerAddress("http://localhost:50051", QUrl::StrictMode);
+
+QUICK_TEST_MAIN_WITH_SETUP(qtgrpc_qml_test, TestSetup)

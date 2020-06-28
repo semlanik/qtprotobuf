@@ -200,6 +200,13 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
         headerPrinter->Print({{"include", include}}, Templates::InternalIncludeTemplate);
     }
 
+    if (GeneratorOptions::instance().hasQml()) {
+        sourcePrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+        sourcePrinter->Print({{"include", "QJSEngine"}}, Templates::ExternalIncludeTemplate);
+        sourcePrinter->Print({{"include", "QJSValue"}}, Templates::ExternalIncludeTemplate);
+    }
+
+
     printQtProtobufUsingNamespace(sourcePrinter);
 
     for (int i = 0; i < file->service_count(); i++) {

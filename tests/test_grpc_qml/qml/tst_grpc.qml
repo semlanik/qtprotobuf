@@ -23,6 +23,25 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "test.h"
+import QtQuick 2.12
+import QtTest 1.0
 
-QUICK_TEST_MAIN_WITH_SETUP(qtprotobuf_qml_test, TestSetup)
+import QtProtobuf 0.3
+import qtprotobufnamespace.tests 1.0
+
+TestCase {
+    name: "gRPC client qml test"
+    SimpleStringMessage {
+        id: stringMsg
+        testFieldString: "Test string"
+    }
+
+    function test_stringEchoTest() {
+        var called = false;
+        TestServiceClient.testMethod(stringMsg, function(result) {
+            called = result.testFieldString === stringMsg.testFieldString;
+        })
+        wait(500)
+        compare(called, true, "testMethod was not called proper way")
+    }
+}

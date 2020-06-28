@@ -48,7 +48,10 @@ ClientDeclarationPrinter::ClientDeclarationPrinter(const ::google::protobuf::Ser
 void ClientDeclarationPrinter::printClientClass()
 {
     mPrinter->Print({{"classname", mName}, {"parent_class", "QtProtobuf::QAbstractGrpcClient"}}, Templates::ClassDefinitionTemplate);
+    Indent();
     mPrinter->Print(Templates::QObjectMacro);
+    mPrinter->Print("\n");
+    Outdent();
 }
 
 void ClientDeclarationPrinter::printConstructor()
@@ -83,6 +86,9 @@ void ClientDeclarationPrinter::printClientMethodsDeclaration()
             mPrinter->Print(parameters, Templates::ClientMethodDeclarationSyncTemplate);
             mPrinter->Print(parameters, Templates::ClientMethodDeclarationAsyncTemplate);
             mPrinter->Print(parameters, Templates::ClientMethodDeclarationAsync2Template);
+            if (GeneratorOptions::instance().hasQml()) {
+                mPrinter->Print(parameters, Templates::ClientMethodDeclarationQmlTemplate);
+            }
         }
         mPrinter->Print("\n");
     }
