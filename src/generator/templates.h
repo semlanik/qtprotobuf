@@ -196,8 +196,10 @@ public:
     static const char *ClientMethodSignalDeclarationTemplate;
     static const char *ClientMethodServerStreamDeclarationTemplate;
     static const char *ClientMethodServerStream2DeclarationTemplate;
+    static const char *ClientMethodServerStreamQmlDeclarationTemplate;
     static const char *ClientMethodServerStreamDefinitionTemplate;
     static const char *ClientMethodServerStream2DefinitionTemplate;
+    static const char *ClientMethodServerStreamQmlDefinitionTemplate;
 
     static const char *ListSuffix;
     static const char *ProtoFileSuffix;

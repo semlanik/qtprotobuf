@@ -26,6 +26,8 @@
 #pragma once //QGrpcStatus
 
 #include <QString>
+#include <QMetaType>
+#include <qobjectdefs.h>
 
 #include "qtgrpcglobal.h"
 #include <memory>
@@ -41,6 +43,9 @@ class QGrpcStatusPrivate;
  *        This class combines QGrpcStatus::StatusCode and message returned from channel or QGrpc framework.
  */
 class Q_GRPC_EXPORT QGrpcStatus final {
+    Q_GADGET
+    Q_PROPERTY(StatusCode code READ code CONSTANT)
+    Q_PROPERTY(QString message READ message CONSTANT)
 public:
     /*!
      * \enum StatusCode
@@ -67,6 +72,8 @@ public:
         Unavailable = 14,       //!< The service is currently unavailable
         DataLoss = 15,          //!< Unrecoverable data loss or corruption
     };
+
+    Q_ENUM(StatusCode)
 
     QGrpcStatus(StatusCode code = StatusCode::Ok, const QString &message = QString());
     ~QGrpcStatus();
@@ -98,3 +105,5 @@ private:
 
 bool operator ==(QtProtobuf::QGrpcStatus::StatusCode code, const QtProtobuf::QGrpcStatus &status);
 bool operator !=(QtProtobuf::QGrpcStatus::StatusCode code, const QtProtobuf::QGrpcStatus &status);
+
+Q_DECLARE_METATYPE(QtProtobuf::QGrpcStatus)

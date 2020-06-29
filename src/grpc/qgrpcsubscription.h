@@ -73,10 +73,10 @@ public:
      */
     void handler(const QByteArray& data) {
         setData(data);
-        updated();
         for (auto handler : m_handlers) {
             handler(data);
         }
+        updated();
     }
 
     bool operator ==(const QGrpcSubscription &other) const {
@@ -86,7 +86,7 @@ public:
 
 signals:
     /*!
-     * \brief The signal is emitted when subscription is finished by user
+     * \brief The signal is emitted when subscription received updated value from server
      */
     void updated();
 

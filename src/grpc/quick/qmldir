@@ -1,0 +1,4 @@
+module QtGrpc
+plugin grpcquickplugin
+classname QtGrpcQuickPlugin
+

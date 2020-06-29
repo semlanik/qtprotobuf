@@ -47,6 +47,7 @@ endif()
 set(gtest_force_shared_crt OFF)
 set(GENERATOR_TARGET qtprotobufgen)
 set(PROTOBUF_QUICK_PLUGIN_NAME protobufquickplugin)
+set(GRPC_QUICK_PLUGIN_NAME grpcquickplugin)
 
 if(UNIX)
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
