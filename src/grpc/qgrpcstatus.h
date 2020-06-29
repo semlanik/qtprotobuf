@@ -37,6 +37,19 @@ namespace QtProtobuf {
 class QGrpcStatusPrivate;
 
 /*!
+ * \ingroup QtGrpcQML
+ * \class GrpcStatus
+ * \brief GrpcStatus is QML representation of QtProtobuf::QGrpcStatus.
+ *
+ * \subsection Properties
+ * \subsubsection code QtProtobuf::QGrpcStatus::StatusCode code
+ * \details QtProtobuf::QGrpcStatus::StatusCode received for prior gRPC call.
+ *
+ * \subsubsection message QString message
+ * \details Status message received for prior gRPC call.
+ */
+
+/*!
  * \ingroup QtGrpc
  * \brief The QGrpcStatus class contains information about last gRPC operation. In case of error in call/subscription
  *        processing QGrpcStatus will contain code any of non-Ok QGrpcStatus::StatusCode.
@@ -79,12 +92,12 @@ public:
     ~QGrpcStatus();
 
     /*!
-     * \brief code getter for QGrpcStatus::StatusCode stored in QGrpcStatus
+     * \brief code getter for QGrpcStatus::StatusCode received for prior gRPC call.
      */
     StatusCode code() const;
 
     /*!
-     * \brief message getter for status message stored in QGrpcStatus
+     * \brief message getter for status message received for prior gRPC call.
      */
     QString message() const;
 

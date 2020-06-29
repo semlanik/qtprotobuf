@@ -29,12 +29,67 @@
 #include <QAbstractGrpcClient>
 #include <QGrpcStatus>
 
+/*!
+ * \ingroup QtGrpcQML
+ * \class GrpcSubscription
+ * \brief GrpcSubscription provides access to gRPC subscriptions from QML.
+ *
+ * \details GrpcSubscription might be used from QML code to receive updates for gRPC server or bidirectional streaming methods.
+ * Follwing properties should be provided and can not be empty, to subscribe streaming method:
+ * - client
+ * - method
+ * - argument
+ * Changing any of this properties cause subscription cancelation and re-initialization.
+ *
+ * \subsection Properties
+ * \subsubsection client QtProtobuf::QAbstractGrpcClient *client
+ * \details Client used for subscription.
+ *
+ * \subsubsection enabled bool enabled
+ * \details Controls subscription status. If subscription is active, switch this flag to 'false'
+ * to cancel subscription. Switching to 'false' keeps all fields ready to restore subscription.
+ *
+ * \subsubsection method QString method
+ * \details The name of streaming method that will be used for subscription.
+ *
+ * \subsubsection argument QObject *argument
+ * \details Pointer to argument that will be used for subscription.
+ *
+ * \subsection Signals
+ * \subsubsection updated updated(ReturnType value)
+ * \details The signal notifies about received update for subscription. It provides "return" value ready for use in QML.
+ * \code
+ * GrpcSubscription {
+ *     ...
+ *     onUpdated: {
+ *         //Use value passed as argument to binding
+ *         ...
+ *     }
+ * }
+ * \endcode
+ *
+ * \subsubsection error error(QtProtobuf::QGrpcStatus status)
+ * \details The signal notifies about error occured for subscription. Provides GrpcStatus as argument to assigned handler.
+ * \note Some errors at subscription initialization phase disable GrpcSubscription
+ *
+ * \code
+ * GrpcSubscription {
+ *     id: mySubscription
+ *     ...
+ *     onError: {
+ *         console.log("Subscription error: " + status.code + " " + status.message)
+ *     }
+ * }
+ * \endcode
+ */
+
 class QJSValue;
 
 namespace QtProtobuf {
 
 class QGrpcSubscription;
 
+//! \private
 class QQuickGrpcSubscription : public QObject
 {
     Q_OBJECT
@@ -45,7 +100,7 @@ class QQuickGrpcSubscription : public QObject
 
 public:
     QQuickGrpcSubscription(QObject *parent = nullptr);
-    ~QQuickGrpcSubscription() = default;
+    ~QQuickGrpcSubscription();
 
     QAbstractGrpcClient *client() const {
         return m_client;
@@ -119,7 +174,7 @@ private:
     bool m_enabled;
     QString m_method;
     QPointer<QObject> m_argument;
-    QGrpcSubscription *m_subscription;
+    QPointer<QGrpcSubscription> m_subscription;
     QObject *m_returnValue;
 };
 
