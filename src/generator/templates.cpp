@@ -286,7 +286,7 @@ const char *Templates::QObjectMacro = "Q_OBJECT";
 const char *Templates::ClientMethodDeclarationSyncTemplate = "QtProtobuf::QGrpcStatus $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
 const char *Templates::ClientMethodDeclarationAsyncTemplate = "QtProtobuf::QGrpcAsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
 const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcAsyncReply *)> &callback);\n";
-const char *Templates::ClientMethodDeclarationQmlTemplate = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, const QJSValue &callback);";
+const char *Templates::ClientMethodDeclarationQmlTemplate = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, const QJSValue &callback, const QJSValue &errorCallback);\n";
 
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
@@ -310,7 +310,7 @@ const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname
                                                               "    });\n"
                                                               "}\n";
 
-const char *Templates::ClientMethodDefinitionQmlTemplate = "\nvoid $classname$::$method_name$($param_type$ *$param_name$, const QJSValue &callback)\n"
+const char *Templates::ClientMethodDefinitionQmlTemplate = "\nvoid $classname$::$method_name$($param_type$ *$param_name$, const QJSValue &callback, const QJSValue &errorCallback)\n"
                                                            "{\n"
                                                            "    if (!callback.isCallable()) {\n"
                                                            "        qProtoWarning() << \"Unable to call $classname$::$method_name$, callback is not callable\";\n"
@@ -326,10 +326,12 @@ const char *Templates::ClientMethodDefinitionQmlTemplate = "\nvoid $classname$::
                                                            "        return;\n"
                                                            "    }\n\n"
                                                            "    QtProtobuf::QGrpcAsyncReply *reply = call(\"$method_name$\", *$param_name$);\n"
-                                                           "    QObject::connect(reply, &QtProtobuf::QGrpcAsyncReply::finished, jsEngine, [this, reply, callback, jsEngine]() {\n"
+                                                           "    reply->subscribe(jsEngine, [this, reply, callback, jsEngine]() {\n"
                                                            "        auto result = new $param_type$(reply->read<$param_type$>());\n"
-                                                           "        qmlEngine(this)->setObjectOwnership(result,  QQmlEngine::JavaScriptOwnership);\n"
+                                                           "        qmlEngine(this)->setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);\n"
                                                            "        QJSValue(callback).call(QJSValueList{jsEngine->toScriptValue(result)});\n"
+                                                           "    }, [errorCallback, jsEngine](const QGrpcStatus &status) {\n"
+                                                           "        QJSValue(errorCallback).call(QJSValueList{jsEngine->toScriptValue(status)});\n"
                                                            "    });\n"
                                                            "}\n";
 const char *Templates::RegisterSerializersTemplate = "qRegisterProtobufType<$classname$>();\n";
@@ -344,6 +346,8 @@ const char *Templates::QmlRegisterEnumTypeTemplate = "qmlRegisterUncreatableType
 const char *Templates::ClientMethodSignalDeclarationTemplate = "Q_SIGNAL void $method_name$Updated(const $return_type$ &);\n";
 const char *Templates::ClientMethodServerStreamDeclarationTemplate = "QtProtobuf::QGrpcSubscription *subscribe$method_name_upper$Updates(const $param_type$ &$param_name$);\n";
 const char *Templates::ClientMethodServerStream2DeclarationTemplate = "QtProtobuf::QGrpcSubscription *subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
+const char *Templates::ClientMethodServerStreamQmlDeclarationTemplate = "Q_INVOKABLE QtProtobuf::QGrpcSubscription *qmlSubscribe$method_name_upper$Updates_p($param_type$ *$param_name$, $return_type$ *$return_name$);\n";
+
 const char *Templates::ClientMethodServerStreamDefinitionTemplate = "QtProtobuf::QGrpcSubscription *$classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$)\n"
                                                                     "{\n"
                                                                     "    return subscribe(\"$method_name$\", $param_name$);\n"
@@ -352,6 +356,10 @@ const char *Templates::ClientMethodServerStream2DefinitionTemplate = "QtProtobuf
                                                                      "{\n"
                                                                      "    return subscribe(\"$method_name$\", $param_name$, $return_name$);\n"
                                                                      "}\n";
+const char *Templates::ClientMethodServerStreamQmlDefinitionTemplate = "QtProtobuf::QGrpcSubscription *$classname$::qmlSubscribe$method_name_upper$Updates_p($param_type$ *$param_name$, $return_type$ *$return_name$)\n"
+                                                                       "{\n"
+                                                                       "    return subscribe(\"$method_name$\", *$param_name$, QPointer<$return_type$>($return_name$));\n"
+                                                                       "}\n";
 
 const char *Templates::ListSuffix = "Repeated";
 

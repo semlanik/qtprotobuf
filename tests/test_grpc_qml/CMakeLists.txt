@@ -16,7 +16,7 @@ add_executable(${TARGET} ${MOC_SOURCES} ${SOURCES} ${QML_FILES})
 target_link_libraries(${TARGET} PRIVATE Qt5::Qml Qt5::Quick Qt5::Test Qt5::QuickTest QtProtobufProject::QtGrpc)
 
 if(QT_PROTOBUF_STATIC)
-    target_link_libraries(${TARGET} PRIVATE protobufquickplugin)
+    target_link_libraries(${TARGET} PRIVATE ${PROTOBUF_QUICK_PLUGIN_NAME} ${GRPC_QUICK_PLUGIN_NAME})
 endif()
 
 qtprotobuf_link_target(${TARGET} qtgrpc_test_qtprotobuf_gen)
@@ -35,5 +35,10 @@ add_test(NAME ${TARGET}
 add_target_qml(TARGET ${TARGET} QML_FILES ${QML_FILES})
 add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/qml)
 
-set_tests_properties(${TARGET} PROPERTIES
-    ENVIRONMENT QML2_IMPORT_PATH=$<TARGET_FILE_DIR:protobufquickplugin>/..)
+if(WIN32)
+    set_tests_properties(${TARGET} PROPERTIES
+        ENVIRONMENT QML2_IMPORT_PATH=$<TARGET_FILE_DIR:${PROTOBUF_QUICK_PLUGIN_NAME}>/..\;$<TARGET_FILE_DIR:${GRPC_QUICK_PLUGIN_NAME}>/..)
+else()
+    set_tests_properties(${TARGET} PROPERTIES
+        ENVIRONMENT QML2_IMPORT_PATH=$<TARGET_FILE_DIR:${PROTOBUF_QUICK_PLUGIN_NAME}>/..:$<TARGET_FILE_DIR:${GRPC_QUICK_PLUGIN_NAME}>/..)
+endif()

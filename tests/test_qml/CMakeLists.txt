@@ -20,7 +20,7 @@ if(TARGET QtProtobufProject::QtProtobufWellKnownTypes)
 endif()
 
 if(QT_PROTOBUF_STATIC)
-    target_link_libraries(${TARGET} PRIVATE protobufquickplugin)
+    target_link_libraries(${TARGET} PRIVATE ${PROTOBUF_QUICK_PLUGIN_NAME})
 endif()
 
 qtprotobuf_link_target(${TARGET} qtprotobuf_test_qtprotobuf_gen)
@@ -31,4 +31,4 @@ add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/qml)
 add_test(NAME ${TARGET} COMMAND ${TARGET})
 
 set_tests_properties(${TARGET} PROPERTIES
-    ENVIRONMENT QML2_IMPORT_PATH=$<TARGET_FILE_DIR:protobufquickplugin>/..)
+    ENVIRONMENT QML2_IMPORT_PATH=$<TARGET_FILE_DIR:${PROTOBUF_QUICK_PLUGIN_NAME}>/..)

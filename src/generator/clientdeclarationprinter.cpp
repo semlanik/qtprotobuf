@@ -93,4 +93,18 @@ void ClientDeclarationPrinter::printClientMethodsDeclaration()
         mPrinter->Print("\n");
     }
     Outdent();
+
+    printPrivateBlock();
+    Indent();
+    for (int i = 0; i < mDescriptor->method_count(); i++) {
+        const MethodDescriptor *method = mDescriptor->method(i);
+        std::map<std::string, std::string> parameters = common::produceMethodMap(method, mName);
+        if (method->server_streaming()) {
+            if (GeneratorOptions::instance().hasQml()) {
+                mPrinter->Print(parameters, Templates::ClientMethodServerStreamQmlDeclarationTemplate);
+            }
+        }
+    }
+    Outdent();
+    mPrinter->Print("\n");
 }

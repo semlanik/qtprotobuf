@@ -27,6 +27,7 @@ import QtQuick 2.12
 import QtTest 1.0
 
 import QtProtobuf 0.3
+import QtGrpc 0.3
 import qtprotobufnamespace.tests 1.0
 
 TestCase {
@@ -36,12 +37,120 @@ TestCase {
         testFieldString: "Test string"
     }
 
+    GrpcSubscription {
+        id: serverStreamSubscription
+        property bool ok: true
+        property int updateCount: 0
+
+        enabled: false
+        client: TestServiceClient
+        method: "testMethodServerStream"
+        argument: stringMsg
+        onUpdated: {
+            ++updateCount;
+            ok = ok && value.testFieldString === "Test string" + updateCount
+        }
+        onError: {
+            console.log("Subscription error: " + status.code + " " + status.message)
+            ok = false;
+        }
+    }
+
+    GrpcSubscription {
+        id: serverStreamCancelSubscription
+        property bool ok: true
+        property int updateCount: 0
+
+        enabled: false
+        client: TestServiceClient
+        method: "testMethodServerStream"
+        argument: stringMsg
+        onUpdated: {
+            ++updateCount;
+            ok = ok && value.testFieldString === "Test string" + updateCount
+            if (updateCount === 3) {
+                serverStreamCancelSubscription.enabled = false;
+            }
+        }
+        onError: {
+            console.log("Subscription error: " + status.code + " " + status.message)
+            ok = false;
+        }
+    }
+
+    GrpcSubscription {
+        id: serverStreamInvalidSubscription
+        property bool ok: false
+        enabled: false
+        client: TestServiceClient
+        method: "testMethodServerStreamNotExist"
+        argument: stringMsg
+        onUpdated: {
+            ok = false;
+        }
+        onError: {
+            ok = status.code === GrpcStatus.Unimplemented;
+        }
+    }
+
     function test_stringEchoTest() {
         var called = false;
+        var errorCalled = false;
         TestServiceClient.testMethod(stringMsg, function(result) {
             called = result.testFieldString === stringMsg.testFieldString;
+        }, function(status) {
+            errorCalled = true
         })
-        wait(500)
-        compare(called, true, "testMethod was not called proper way")
+        wait(300)
+        compare(called && !errorCalled, true, "testMethod was not called proper way")
+    }
+
+    function test_statusTest() {
+        var called = false;
+        var errorCalled = false;
+        TestServiceClient.testMethodStatusMessage(stringMsg, function(result) {
+            called = true;
+        }, function(status) {
+            errorCalled = status.code === GrpcStatus.Unimplemented && status.message === stringMsg.testFieldString;
+        })
+        wait(300)
+        compare(!called && errorCalled, true, "testMethodStatusMessage was not called proper way")
+    }
+
+    function test_stringEchoAsyncTest() {
+        var called = false;
+        var errorCalled = false;
+        stringMsg.testFieldString = "sleep";
+        TestServiceClient.testMethod(stringMsg, function(result) {
+            called = result.testFieldString === stringMsg.testFieldString;
+        }, function(status) {
+            errorCalled = true
+        })
+        wait(300)
+        compare(!called && !errorCalled, true, "testMethod was not called proper way")
+        wait(1000)
+        compare(called && !errorCalled, true, "testMethod was not called proper way")
+        stringMsg.testFieldString = "Test string";
+    }
+
+    function test_serverStreamSubscription() {
+        serverStreamSubscription.enabled = true;
+        wait(20000);
+        compare(serverStreamSubscription.ok, true, "Subscription data failed")
+        compare(serverStreamSubscription.updateCount, 4, "Subscription failed, update was not called right amount times")
+    }
+
+    function test_serverStreamCancelSubscription() {
+        serverStreamCancelSubscription.enabled = true;
+        wait(20000);
+        compare(serverStreamCancelSubscription.ok, true, "Subscription data failed")
+        compare(serverStreamCancelSubscription.updateCount, 3, "Subscription failed, update was not called right amount times")
+    }
+
+    function test_serverStreamInvalidSubscription() {
+        serverStreamInvalidSubscription.enabled = true;
+        wait(500);
+        compare(serverStreamInvalidSubscription.ok, true, "Subscription data failed")
+        compare(serverStreamInvalidSubscription.enabled, false, "Subscription data failed")
     }
 }

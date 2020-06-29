@@ -44,6 +44,7 @@ public:
     TestSetup() {
         QtProtobuf::qRegisterProtobufTypes();
         Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
+        Q_GRPC_IMPORT_QUICK_PLUGIN()
         qmlRegisterSingletonType<TestServiceClient>("qtprotobufnamespace.tests", 1, 0, "TestServiceClient", [](QQmlEngine *engine, QJSEngine *) -> QObject *{
             static TestServiceClient clientInstance;
             clientInstance.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, QGrpcInsecureChannelCredentials() | QGrpcInsecureCallCredentials()));

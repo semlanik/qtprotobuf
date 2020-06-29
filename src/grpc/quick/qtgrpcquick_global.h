@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2020 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -27,38 +27,8 @@
 
 #include <QtCore/QtGlobal>
 
-#ifndef QT_PROTOBUF_STATIC
-    #ifdef QT_BUILD_GRPC_LIB
-        #define Q_GRPC_EXPORT Q_DECL_EXPORT
-    #else
-        #define Q_GRPC_EXPORT Q_DECL_IMPORT
-    #endif
+#ifdef QT_GRPC_QUICK_LIB
+    #define QT_GRPC_QUICK_SHARED_EXPORT Q_DECL_EXPORT
 #else
-    #define Q_GRPC_EXPORT
+    #define QT_GRPC_QUICK_SHARED_EXPORT Q_DECL_IMPORT
 #endif
-
-//Support macro for Qt versions < 5.13
-//TODO: remove once migration to 5.14 as minimum required version is completed
-#ifndef Q_DISABLE_MOVE
-    #define Q_DISABLE_MOVE(Class) \
-        Class(Class &&) = delete; \
-        Class &operator=(Class &&) = delete;
-#endif
-
-#ifndef Q_DISABLE_COPY_MOVE
-    #define Q_DISABLE_COPY_MOVE(Class) \
-        Q_DISABLE_COPY(Class) \
-        Q_DISABLE_MOVE(Class)
-#endif
-
-#ifndef Q_GRPC_IMPORT_QUICK_PLUGIN
-    #ifdef QT_PROTOBUF_STATIC
-        #include <QtPlugin>
-        #include <QQmlExtensionPlugin>
-        #define Q_GRPC_IMPORT_QUICK_PLUGIN() \
-            Q_IMPORT_PLUGIN(QtGrpcQuickPlugin) \
-            qobject_cast<QQmlExtensionPlugin*>(qt_static_plugin_QtGrpcQuickPlugin().instance())->registerTypes("QtGrpc");
-    #else
-        #define Q_GRPC_IMPORT_QUICK_PLUGIN()
-    #endif //QT_PROTOBUF_STATIC
-#endif //Q_PROTOBUF_IMPORT_QUICK_PLUGIN

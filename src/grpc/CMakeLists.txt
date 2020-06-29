@@ -101,4 +101,6 @@ endif()
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_grpc.pri.in" "${QT_PROTOBUF_BINARY_DIR}/qt_lib_grpc.pri" @ONLY)
 install(FILES "${QT_PROTOBUF_BINARY_DIR}/qt_lib_grpc.pri" DESTINATION "${QT_HOST_DATA}/mkspecs/modules" COMPONENT dev)
 
+add_subdirectory("quick")
+
 add_coverage_target(TARGET ${TARGET})
