@@ -29,6 +29,11 @@
 #include "qtgrpcquick_global.h"
 
 /*!
+ * \defgroup QtGrpcQML QML QtGrpc
+ * \brief QML bindings for QtGrpc
+ */
+
+/*!
  * \private
  * \brief The QtGrpcQuickPlugin class
  */

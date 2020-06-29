@@ -29,7 +29,8 @@
 #include "qtprotobufquick_global.h"
 
 /*!
- * \defgroup QtProtobufQuick
+ * \defgroup QtProtobufQML QML QtProtobuf
+ * \brief QML bindings for QtGrpc
  * \details
  * QtProtobuf allows to use generated classes in QML. All types are registred automatically when QtProtobuf::qRegisterProtobufTypes() called.
  * To make generated classes and QtProtobuf types visible in QML you need to import QtProtobuf QML plugin and your protobuf package

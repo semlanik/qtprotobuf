@@ -28,23 +28,30 @@
 
 #include <QGrpcSubscription>
 #include <QJSEngine>
+#include <QQmlEngine>
 
 using namespace QtProtobuf;
 
 QQuickGrpcSubscription::QQuickGrpcSubscription(QObject *parent) : QObject(parent)
   , m_enabled(false)
-  , m_subscription(nullptr)
   , m_returnValue(nullptr)
 {
-
 }
+
+QQuickGrpcSubscription::~QQuickGrpcSubscription()
+{
+    delete m_returnValue;
+}
+
 
 void QQuickGrpcSubscription::updateSubscription()
 {
-    if (m_subscription != nullptr) {
+    if (!m_subscription.isNull()) {
         m_subscription->cancel();
         m_subscription = nullptr;
+    }
 
+    if (m_returnValue != nullptr) {
         m_returnValue->deleteLater(); //TODO: probably need to take care about return value cleanup other way. It's just reminder about weak memory management.
         m_returnValue = nullptr;
     }
@@ -128,6 +135,7 @@ bool QQuickGrpcSubscription::subscribe()
     }
 
     m_returnValue = reinterpret_cast<QObject*>(returnMetaType.create());
+    qmlEngine(this)->setObjectOwnership(m_returnValue, QQmlEngine::CppOwnership);
 
     if (m_returnValue == nullptr) {
         errorString = "Unable to allocate return value. Unknown metatype system error";
@@ -136,22 +144,27 @@ bool QQuickGrpcSubscription::subscribe()
         return false;
     }
 
+    QGrpcSubscription *subscription = nullptr;
     bool ok = method.invoke(m_client, Qt::DirectConnection,
-                                      QGenericReturnArgument("QtProtobuf::QGrpcSubscription*", static_cast<void *>(&m_subscription)),
+                                      QGenericReturnArgument("QtProtobuf::QGrpcSubscription*", static_cast<void *>(&subscription)),
                                       QGenericArgument(method.parameterTypes().at(0).data(), static_cast<const void *>(&argument)),
                                       QGenericArgument(method.parameterTypes().at(1).data(), static_cast<const void *>(&m_returnValue)));
-    if (!ok) {
+    if (!ok || subscription == nullptr) {
         errorString = QString("Unable to call ") + m_method + "invalidate subscription.";
         qProtoWarning() << errorString;
         error({QGrpcStatus::Unknown, errorString});
         return false;
     }
 
+    m_subscription = subscription;
+
     connect(m_subscription, &QGrpcSubscription::updated, this, [this](){
         updated(qjsEngine(this)->toScriptValue(m_returnValue));
     });
 
-    connect(m_subscription, &QGrpcSubscription::error, this, &QQuickGrpcSubscription::error);
+    connect(m_subscription, &QGrpcSubscription::error, this, &QQuickGrpcSubscription::error);//TODO: Probably it's good idea to disable subscription here
+
+    connect(m_subscription, &QGrpcSubscription::finished, this, [this](){ setEnabled(false); });
 
     return true;
 }

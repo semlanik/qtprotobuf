@@ -42,7 +42,8 @@
  *  - \ref QtProtobuf
  *  - \ref QtGrpc
  *  - \ref QtProtobufWellKnownTypes
- *  - \ref QtProtobufQuick
+ *  - \ref QtProtobufQML
+ *  - \ref QtGrpcQML
  *
  * \subsection gettingstarted Getting Started with QtProtobuf
  *
