@@ -1,3 +1,19 @@
+2020-06-30 version 0.4.0 (generator/QtProtobuf/QtGrpc)
+
+    QtProtobuf
+    * Improve serializer reentrancy
+    * Add static linking for quick plugins
+    * Add basic tutorial
+    * Replace qtprotobuf_link_archive with qtprotobuf_link_target
+    * Fix static build for well-known types
+    * Fix CPack packaging paths
+    * Implement "invalid" fields handling in json serializer
+    QtGrpc
+    * Add QML gRPC API
+    generator
+    * Refactor generator
+    * Implement nested types support
+
 2020-05-01 version 0.3.0 (generator/QtProtobuf)
 
     QtProtobuf
