@@ -11,7 +11,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
-find_package(microjson CONFIG REQUIRED)
+if(NOT TARGET microjson)
+    find_package(microjson CONFIG REQUIRED)
+endif()
 
 include(${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)

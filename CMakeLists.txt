@@ -5,6 +5,12 @@ set(QT_PROTOBUF_PROJECT QtProtobufProject)
 
 project(${QT_PROTOBUF_PROJECT} VERSION ${QT_PROTOBUF_VERSION} LANGUAGES CXX)
 
+# Conan support, optional
+if(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup()
+endif()
+
 include(GNUInstallDirs)
 
 set(QT_PROTOBUF_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
