@@ -253,6 +253,7 @@ struct ProtoTypeRegistrar {
         registerFunctions().push_back(initializer);
     }
 };
+
 }
 
 Q_DECLARE_METATYPE(QtProtobuf::int32)

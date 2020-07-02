@@ -216,7 +216,7 @@ void MessageDeclarationPrinter::printProperties()
     for (int i = 0; i < mDescriptor->field_count(); i++) {
         const FieldDescriptor *field = mDescriptor->field(i);
         const char *propertyTemplate = Templates::PropertyTemplate;
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+        if (common::isPureMessage(field)) {
             propertyTemplate = Templates::MessagePropertyTemplate;
         } else if (common::hasQmlAlias(field)) {
             propertyTemplate = Templates::NonScriptablePropertyTemplate;
@@ -247,7 +247,7 @@ void MessageDeclarationPrinter::printGetters()
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
         printComments(field);
         mPrinter->Print("\n");
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+        if (common::isPureMessage(field)) {
             mPrinter->Print(propertyMap, Templates::GetterPrivateMessageDeclarationTemplate);
             mPrinter->Print(propertyMap, Templates::GetterMessageDeclarationTemplate);
         } else {
@@ -271,7 +271,7 @@ void MessageDeclarationPrinter::printSetters()
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
         switch (field->type()) {
         case FieldDescriptor::TYPE_MESSAGE:
-            if (!field->is_map() && !field->is_repeated()) {
+            if (!field->is_map() && !field->is_repeated() && !common::isQtType(field)) {
                 mPrinter->Print(propertyMap, Templates::SetterPrivateTemplateDeclarationMessageType);
                 mPrinter->Print(propertyMap, Templates::SetterTemplateDeclarationMessageType);
             } else {
@@ -389,7 +389,7 @@ void MessageDeclarationPrinter::printClassMembers()
 {
     Indent();
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+        if (common::isPureMessage(field)) {
             mPrinter->Print(propertyMap, Templates::ComplexMemberTemplate);
         } else if (field->is_repeated() && !field->is_map()) {
              mPrinter->Print(propertyMap, Templates::ListMemberTemplate);

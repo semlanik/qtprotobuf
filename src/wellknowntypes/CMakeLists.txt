@@ -32,7 +32,7 @@ function(add_wellknowntype TYPENAME)
             qtprotobuf_generate(TARGET ${TARGET} GENERATED_TARGET ${TYPENAME}
                 OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
                 PROTO_FILES ${PROTO_FILE}
-                PROTO_INCLUDES -I${INCLUDE_DIR}
+                PROTO_INCLUDES "-I\"${INCLUDE_DIR}\""
                 QML FOLDER)
             target_include_directories(${TYPENAME} PRIVATE
                 $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
@@ -64,7 +64,7 @@ target_compile_definitions(${TARGET} PRIVATE QT_BUILD_PROTOBUF_WELLKNOWNTYPES_LI
     QT_PROTOBUF_VERSION_MINOR=${PROJECT_VERSION_MINOR})
 
 set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${GENERATED_PUBLIC_HEADER}" OUTPUT_NAME ${TARGET}
-    PROTO_INCLUDES -I${QT_PROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src)
+    PROTO_INCLUDES "-I\"${QT_PROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src\"")
 
 target_compile_features(${TARGET} PUBLIC cxx_std_14
     cxx_auto_type

@@ -87,7 +87,7 @@ QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QP
         Q_ASSERT_X(fieldIndex < 536870912 && fieldIndex > 0, "", "fieldIndex is out of range");
         QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
-        const QVariant &propertyValue = object->property(propertyName);
+        QVariant propertyValue = object->property(propertyName);
         result.append(dPtr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
     }
 
