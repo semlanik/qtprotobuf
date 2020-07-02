@@ -66,7 +66,7 @@ function(qtprotobuf_generate)
 
         foreach(PROTO_FILE IN LISTS qtprotobuf_generate_PROTO_FILES)
             get_filename_component(BASE_DIR ${PROTO_FILE} DIRECTORY)
-            set(PROTO_INCLUDES -I"${BASE_DIR}" ${PROTO_INCLUDES})
+            set(PROTO_INCLUDES "-I\"${BASE_DIR}\"" ${PROTO_INCLUDES})
             execute_process(COMMAND ${GO_EXECUTABLE} run ${PROTO_PARSER} ${PROTO_FILE} ${GENERATION_TYPE} ${FOLDER_ENABLED} OUTPUT_VARIABLE GENERATED_HEADERS_PART ERROR_VARIABLE PARSER_ERROR)
             set(GENERATED_HEADERS ${GENERATED_HEADERS} ${GENERATED_HEADERS_PART})
         endforeach()
@@ -127,6 +127,7 @@ function(qtprotobuf_generate)
             WORKING_DIRECTORY ${OUT_DIR}
             DEPENDS ${qtprotobuf_generate_PROTO_FILES} ${QT_PROTOBUF_EXECUTABLE}
             COMMENT "Generating QtProtobuf ${GENERATED_TARGET_NAME} sources..."
+            COMMAND_EXPAND_LISTS
     )
 
     add_custom_target(${GEN_TARGET} DEPENDS ${GENERATED_SOURCES_FULL} ${GENERATED_HEADERS_FULL} ${qtprotobuf_generate_PROTO_FILES})
@@ -148,6 +149,11 @@ function(qtprotobuf_generate)
         if(TARGET ${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes)
             target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
                 $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
+        endif()
+
+        if(TARGET ${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes)
+            target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
+                $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes,INTERFACE_INCLUDE_DIRECTORIES>)
         endif()
     endif()
 

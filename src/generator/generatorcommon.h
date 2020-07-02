@@ -63,6 +63,7 @@ struct common {
 
     static std::string getNamespacesString(const std::vector<std::string> &namespacesList, const std::string &separator);
     static std::string getScopeNamespacesString(std::string original, const std::string &scope);
+    static TypeMap produceQtTypeMap(const ::google::protobuf::Descriptor *type, const ::google::protobuf::Descriptor *scope);
     static TypeMap produceMessageTypeMap(const ::google::protobuf::Descriptor *type, const ::google::protobuf::Descriptor *scope);
     static TypeMap produceEnumTypeMap(const ::google::protobuf::EnumDescriptor *type, const ::google::protobuf::Descriptor *scope);
     static TypeMap produceSimpleTypeMap(::google::protobuf::FieldDescriptor::Type type);
@@ -72,6 +73,8 @@ struct common {
     static bool isLocalEnum(const ::google::protobuf::EnumDescriptor *type, const google::protobuf::Descriptor *scope);
     static EnumVisibility enumVisibility(const ::google::protobuf::EnumDescriptor *type, const ::google::protobuf::Descriptor *scope);
     static bool hasQmlAlias(const ::google::protobuf::FieldDescriptor *field);
+    static bool isQtType(const ::google::protobuf::FieldDescriptor *field);
+    static bool isPureMessage(const ::google::protobuf::FieldDescriptor *field);
 
     using InterateMessageLogic = std::function<void(const ::google::protobuf::FieldDescriptor *, PropertyMap &)>;
     static void iterateMessageFields(const ::google::protobuf::Descriptor *message, InterateMessageLogic callback) {

@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package QtProtobuf;
+
+message QUrl {
+    string url = 1;
+} 
+
+message QChar {
+    bytes character = 1;
+}
+
+message QUuid {
+    string uuid = 1;
+}
+
+message QTime {
+    sint32 hour = 1;
+    sint32 minute = 2;
+    sint32 second = 3;
+    sint32 msec = 4;
+}
+
+message QDate {
+    sint32 year = 1;
+    sint32 month = 2;
+    sint32 day = 3;
+}
+
+message QDateTime {
+    QDate date = 1;
+    QTime time = 2;
+    //TODO: add timezone support
+}
+
+message QSize {
+    sint32 width = 1;
+    sint32 height = 2;
+}
+
+message QSizeF {
+    double width = 1;
+    double height = 2;
+}
+
+message QPoint {
+    sint32 x = 1;
+    sint32 y = 2;
+}
+
+message QPointF {
+    double x = 1;
+    double y = 2;
+}
+
+message QRect {
+    QPoint topLeft = 1;
+    QPoint bottomRight = 2;
+}
+
+message QRectF {
+    QPointF topLeft = 1;
+    QPointF bottomRight = 2;
+}
+
+message QPolygon {
+    repeated QPoint points = 1;
+}
+
+message QPolygonF {
+    repeated QPointF points = 1;
+}

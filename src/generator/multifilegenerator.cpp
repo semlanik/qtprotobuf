@@ -91,8 +91,7 @@ bool MultiFileGenerator::Generate(const FileDescriptor *file,
         //Print dependency classes forward declaration
         for (int i = 0; i < message->field_count(); i++) {
             auto field = message->field(i);
-            if (field->type() == FieldDescriptor::TYPE_MESSAGE
-                    && !field->is_map() && !field->is_repeated()) {
+            if (common::isPureMessage(field)) {
                 auto dependency = field->message_type();
                 if (!common::isNested(dependency)) {//TODO: need to check class relations and apply namespaces accordingly.
                     auto namespaces = common::getNamespaces(dependency);

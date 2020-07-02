@@ -61,6 +61,38 @@ std::string common::getScopeNamespacesString(std::string original, const std::st
     return original;
 }
 
+TypeMap common::produceQtTypeMap(const ::Descriptor *type, const Descriptor *scope)
+{
+    std::vector<std::string> namespaceList = getNamespaces(type);
+    std::string namespaces = getNamespacesString(namespaceList, "::");
+    std::string scopeNamespaces = getScopeNamespacesString(namespaces, getNamespacesString(getNamespaces(scope), "::"));
+    std::string qmlPackage = getNamespacesString(namespaceList, ".");
+
+    std::string name = type->name();
+    std::string fullName = name;
+    std::string scopeName = name;
+
+    std::string listName = std::string("QList<") + Templates::ListSuffix + ">";
+    std::string fullListName = listName;
+    std::string scopeListName = listName;
+
+    return {
+        {"type", name},
+        {"full_type", fullName},
+        {"scope_type", scopeName},
+        {"list_type", listName},
+        {"full_list_type", fullListName},
+        {"scope_list_type", scopeListName},
+        {"namespaces", namespaces},
+        {"scope_namespaces", scopeNamespaces},
+        {"qml_package", qmlPackage},
+        {"property_type", fullName},
+        {"property_list_type", fullListName},
+        {"getter_type", scopeName},
+        {"setter_type", scopeName}
+    };
+}
+
 TypeMap common::produceMessageTypeMap(const ::Descriptor *type, const Descriptor *scope)
 {
     std::vector<std::string> namespaceList = getNamespaces(type);
@@ -222,6 +254,18 @@ TypeMap common::produceSimpleTypeMap(FieldDescriptor::Type type)
     };
 }
 
+bool common::isQtType(const FieldDescriptor *field)
+{
+    auto namespaces = getNamespaces(field->message_type());
+    return namespaces.size() == 1 && namespaces[0] == "QtProtobuf"
+            && field->file()->package() != "QtProtobuf"; //Used for qttypes library to avoid types conversion inside library
+}
+
+bool common::isPureMessage(const ::google::protobuf::FieldDescriptor *field)
+{
+    return field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated() && !common::isQtType(field);
+}
+
 TypeMap common::produceTypeMap(const FieldDescriptor *field, const Descriptor *scope)
 {
     TypeMap typeMap;
@@ -231,8 +275,13 @@ TypeMap common::produceTypeMap(const FieldDescriptor *field, const Descriptor *s
     std::vector<std::string> typeNamespace;
 
     switch (field->type()) {
-    case FieldDescriptor::TYPE_MESSAGE:
-        typeMap = produceMessageTypeMap(field->message_type(), scope);
+    case FieldDescriptor::TYPE_MESSAGE: {
+        if (isQtType(field)) {
+            typeMap = produceQtTypeMap(field->message_type(), nullptr);
+        } else {
+            typeMap = produceMessageTypeMap(field->message_type(), scope);
+        }
+    }
         break;
     case FieldDescriptor::TYPE_ENUM:
         typeMap = produceEnumTypeMap(field->enum_type(), scope);

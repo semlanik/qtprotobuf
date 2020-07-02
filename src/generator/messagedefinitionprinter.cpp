@@ -167,8 +167,7 @@ void MessageDefinitionPrinter::printInitializationList(int fieldCount)
             }
         }
 
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE
-                && !field->is_map() && !field->is_repeated()) {
+        if (common::isPureMessage(field)) {
             if (i < fieldCount) {
                 mPrinter->Print(propertyMap, Templates::MessagePropertyInitializerTemplate);
             } else {
@@ -200,8 +199,7 @@ void MessageDefinitionPrinter::printCopyFunctionality()
     mPrinter->Print({{"classname", mName}},
                     constructorTemplate);
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE
-                && !field->is_map() && !field->is_repeated()) {
+        if (common::isPureMessage(field)) {
             mPrinter->Print(propertyMap, Templates::MessagePropertyDefaultInitializerTemplate);
         }
     });
@@ -209,7 +207,7 @@ void MessageDefinitionPrinter::printCopyFunctionality()
 
     Indent();
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+        if (common::isPureMessage(field)) {
             mPrinter->Print(propertyMap, Templates::CopyComplexFieldTemplate);
         } else {
             mPrinter->Print(propertyMap, Templates::CopyFieldTemplate);
@@ -221,7 +219,7 @@ void MessageDefinitionPrinter::printCopyFunctionality()
     mPrinter->Print({{"classname", mName}}, assignmentOperatorTemplate);
     Indent();
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+        if (common::isPureMessage(field)) {
             mPrinter->Print(propertyMap, Templates::CopyComplexFieldTemplate);
         } else {
             mPrinter->Print(propertyMap, Templates::CopyFieldTemplate);
@@ -246,8 +244,7 @@ void MessageDefinitionPrinter::printMoveSemantic()
     mPrinter->Print({{"classname", mName}},
                     constructorTemplate);
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE
-                && !field->is_map() && !field->is_repeated()) {
+        if (common::isPureMessage(field)) {
             mPrinter->Print(propertyMap, Templates::MessagePropertyDefaultInitializerTemplate);
         }
     });
@@ -259,7 +256,7 @@ void MessageDefinitionPrinter::printMoveSemantic()
                 || field->type() == FieldDescriptor::TYPE_STRING
                 || field->type() == FieldDescriptor::TYPE_BYTES
                 || field->is_repeated()) {
-            if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+            if (common::isPureMessage(field)) {
                 mPrinter->Print(propertyMap, Templates::MoveMessageFieldTemplate);
             } else {
                 mPrinter->Print(propertyMap, Templates::MoveComplexFieldConstructorTemplate);
@@ -283,7 +280,7 @@ void MessageDefinitionPrinter::printMoveSemantic()
                 || field->type() == FieldDescriptor::TYPE_STRING
                 || field->type() == FieldDescriptor::TYPE_BYTES
                 || field->is_repeated()) {
-            if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+            if (common::isPureMessage(field)) {
                 mPrinter->Print(propertyMap, Templates::MoveMessageFieldTemplate);
             } else {
                 mPrinter->Print(propertyMap, Templates::MoveComplexFieldTemplate);
@@ -322,8 +319,7 @@ void MessageDefinitionPrinter::printComparisonOperators()
             Indent();
             isFirst = false;
         }
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE
-                && !field->is_map() && !field->is_repeated()) {
+        if (common::isPureMessage(field)) {
             mPrinter->Print(propertyMap, Templates::EqualOperatorMessagePropertyTemplate);
         } else {
             mPrinter->Print(propertyMap, Templates::EqualOperatorPropertyTemplate);
@@ -345,12 +341,12 @@ void MessageDefinitionPrinter::printComparisonOperators()
 void MessageDefinitionPrinter::printGetters()
 {
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, PropertyMap &propertyMap) {
-        if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !field->is_repeated()) {
+        if (common::isPureMessage(field)) {
             mPrinter->Print(propertyMap, Templates::GetterPrivateMessageDefinitionTemplate);
             mPrinter->Print(propertyMap, Templates::GetterMessageDefinitionTemplate);
         }
         if (field->is_repeated()) {
-            if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map()
+            if (field->type() == FieldDescriptor::TYPE_MESSAGE && !field->is_map() && !common::isQtType(field)
                     && GeneratorOptions::instance().hasQml()) {
                 mPrinter->Print(propertyMap, Templates::GetterQmlListDefinitionTemplate);
             }
@@ -360,7 +356,7 @@ void MessageDefinitionPrinter::printGetters()
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, PropertyMap &propertyMap) {
         switch (field->type()) {
         case FieldDescriptor::TYPE_MESSAGE:
-            if (!field->is_map() && !field->is_repeated()) {
+            if (!field->is_map() && !field->is_repeated() && !common::isQtType(field)) {
                 mPrinter->Print(propertyMap, Templates::SetterPrivateTemplateDefinitionMessageType);
                 mPrinter->Print(propertyMap, Templates::SetterTemplateDefinitionMessageType);
             } else {

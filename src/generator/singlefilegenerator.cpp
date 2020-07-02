@@ -97,7 +97,28 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     externalIncludes.insert("QByteArray");
     externalIncludes.insert("QString");
 
+    bool hasQtTypes = false;
+    common::iterateMessages(file, [&externalIncludes, &hasQtTypes](const ::google::protobuf::Descriptor *message){
+        for (int i = 0; i < message->field_count(); i++) {
+            auto field = message->field(i);
+            if (field->type() == ::google::protobuf::FieldDescriptor::TYPE_MESSAGE
+                    && !field->is_map() && !field->is_repeated()
+                    && common::isQtType(field)) {                
+                externalIncludes.insert(field->message_type()->name());
+                hasQtTypes = true;
+            }
+        }
+    });
+
+    if (hasQtTypes) {
+        externalIncludes.insert("QtProtobufQtTypes");
+    }
+
     for (int i = 0; i < file->dependency_count(); i++) {
+        if (file->dependency(i)->name() == "QtProtobuf/QtCore.proto"
+                || file->dependency(i)->name() == "QtProtobuf/QtGui.proto") {
+            continue;
+        }
         internalIncludes.insert(utils::removeFileSuffix(file->dependency(i)->name()) + Templates::ProtoFileSuffix);
     }
 

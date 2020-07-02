@@ -91,6 +91,9 @@ void GeneratorBase::printInclude(const std::shared_ptr<::google::protobuf::io::P
             printInclude(printer, message, field->message_type()->field(0), existingIncludes);
             printInclude(printer, message, field->message_type()->field(1), existingIncludes);
             includeTemplate = Templates::ExternalIncludeTemplate;
+        } else if (common::isQtType(field)) {
+            newInclude = field->message_type()->name();
+            includeTemplate = Templates::ExternalIncludeTemplate;
         } else {
             if (!common::isNested(field->message_type())) {
                 std::string outFileBasename = "";

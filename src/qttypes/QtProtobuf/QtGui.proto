@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package QtProtobuf;
+
+message QColor {
+    sint32 red = 1;
+    sint32 green = 2;
+    sint32 blue = 3;
+    sint32 alpha = 4;
+}
+ 
+// message QImage {
+// }
+
+// message QPixmap {
+// }
+
+// message QIcon {
+// }
+
+// message QBitmap {
+// }
+
+// message QQuaternion {
+// }
+
+// message QTransform {
+// }
+
+// message QMatrix {
+// }
+
+// message QMatrix4x4 {
+// }
+
+// message QVector2D {
+// }
+
+// message QVector3D {
+// }
+
+// message QVector4D {
+// }
+
+// message QEasingCurve {
+// }
