@@ -27,8 +27,12 @@
 
 #include <QtCore/QtGlobal>
 
-#ifdef QT_GRPC_QUICK_LIB
-    #define QT_GRPC_QUICK_SHARED_EXPORT Q_DECL_EXPORT
+#ifndef QT_PROTOBUF_STATIC
+    #ifdef QT_GRPC_QUICK_LIB
+        #define QT_GRPC_QUICK_SHARED_EXPORT Q_DECL_EXPORT
+    #else
+        #define QT_GRPC_QUICK_SHARED_EXPORT Q_DECL_IMPORT
+    #endif
 #else
-    #define QT_GRPC_QUICK_SHARED_EXPORT Q_DECL_IMPORT
+    #define QT_GRPC_QUICK_SHARED_EXPORT
 #endif

@@ -3,7 +3,7 @@ ADD . /sources
 RUN mkdir -p /build
 WORKDIR /build
 ENV PATH=/qt/5.13.2/gcc_64/bin:$PATH
-RUN cmake ../sources -DCMAKE_PREFIX_PATH="/qt/5.13.2/gcc_64/lib/cmake" -DQT_PROTOBUF_STATIC=ON
+RUN cmake ../sources -DCMAKE_PREFIX_PATH="/qt/5.13.2/gcc_64/lib/cmake" -DBUILD_SHARED_LIBS=OFF
 RUN cmake --build . --config RELEASE
 ENV QT_PLUGIN_PATH=/qt/5.13.2/gcc_64/plugins
 ENV QT_QPA_PLATFORM=minimal

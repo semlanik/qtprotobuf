@@ -21,6 +21,6 @@ script:
   - setx path "%path%;C:\Qt\5.13.2\msvc2017\bin;C:\Go\bin;C:\ProgramData\chocolatey\lib\yasm\tools"
   - set GOROOT="c:\Go"
   - set PATH="%PATH%;C:\Qt\5.13.2\msvc2017\bin;C:\Go\bin;C:\ProgramData\chocolatey\lib\yasm\tools"
-  - cmake -DCMAKE_PREFIX_PATH="C:\Qt\5.13.2\msvc2017;C:\Go\bin;C:\ProgramData\chocolatey\lib\yasm\tools" ..
+  - cmake -DCMAKE_PREFIX_PATH="C:\Qt\5.13.2\msvc2017;C:\Go\bin;C:\ProgramData\chocolatey\lib\yasm\tools" -DBUILD_SHARED_LIBS=OFF ..
   - cmake --build .
   - ctest -C DEBUG -E qtgrpc_* --output-on-failure

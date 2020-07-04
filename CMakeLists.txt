@@ -16,15 +16,13 @@ include(GNUInstallDirs)
 set(QT_PROTOBUF_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(QT_PROTOBUF_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(QT_PROTOBUF_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
 
-set(MICROJSON_MAKE_TESTS OFF)
-if(NOT EXISTS "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson/CMakeLists.txt")
-    message(FATAL_ERROR "microjson is not found. Please initialize microjson module: git submodule update --init 3rdparty/microjson")
-else()
+if(EXISTS "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson/CMakeLists.txt")
+    set(MICROJSON_MAKE_TESTS OFF)
     add_subdirectory("${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson" EXCLUDE_FROM_ALL)
+    message(STATUS "Using microjson from 3rdparty")
 endif()
 
 if(Qt5Core_VERSION VERSION_LESS "5.12.4")
@@ -118,8 +116,8 @@ endif()
 
 set(QT_PROTOBUF_MAKE_TESTS ON CACHE BOOL "Enable QtProtobuf tests build")
 set(QT_PROTOBUF_MAKE_EXAMPLES ON CACHE BOOL "Enable QtProtobuf examples build")
-set(QT_PROTOBUF_STATIC OFF CACHE BOOL "Enable QtProtobuf static library build (disables shared library build)")
 set(QT_PROTOBUF_MAKE_COVERAGE OFF CACHE BOOL "Enable QtProtobuf build for profiler (gcov)")
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Enable QtProtobuf static library build (disables shared library build)")
 
 if(NOT gRPC_FOUND)
     message(WARNING "gRPC not found: some tests and examples cannot be built.")

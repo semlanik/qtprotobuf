@@ -2,5 +2,5 @@ FROM qtprotobuf/opensuse-latest-builtin-qt:latest
 ADD . /sources
 RUN mkdir -p /build && mkdir -p /artifacts
 WORKDIR /build
-RUN PATH=$PATH:/usr/lib64/qt5/bin cmake ../sources -DQT_PROTOBUF_MAKE_TESTS=FALSE -DQT_PROTOBUF_MAKE_EXAMPLES=FALSE -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+RUN PATH=$PATH:/usr/lib64/qt5/bin cmake ../sources -DQT_PROTOBUF_MAKE_TESTS=FALSE -DQT_PROTOBUF_MAKE_EXAMPLES=FALSE -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=ON
 RUN cpack -G RPM

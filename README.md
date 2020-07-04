@@ -258,12 +258,10 @@ qtprotobuf_link_target is cmake helper function that links generated protobuf ta
 
 *QT_PROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON** for QtProtobuf project build, built-in examples will be built. **TRUE** by default
 
-*QT_PROTOBUF_STATIC* - if **TRUE/ON** for QtProtobuf project build, static libraries will be produced for all QtProtobuf targets except qml plugin. **FALSE** by default
-
->**Note:** In case if you use static QtProtobuf not with cmake/qmake build system, you additionaly **need manually** add QT_PROTOBUF_STATIC compiler definition
+*QT_PROTOBUF_EXECUTABLE* - contains full path to QtProtobuf generator add_executable
 
 </br>
-*QT_PROTOBUF_EXECUTABLE* - contains full path to QtProtobuf generator add_executable
+>**Note:** In case if you use static QtProtobuf not with cmake/qmake build system, you additionaly **need manually** add QT_PROTOBUF_STATIC compiler definition
 
 ## Integration with qmake project
 

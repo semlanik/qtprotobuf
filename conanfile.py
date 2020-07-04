@@ -21,8 +21,7 @@ class QtProtobufConan(ConanFile):
         "protobuf/3.9.1",
         "protoc_installer/3.9.1@bincrafters/stable",
         "qt/5.14.2@bincrafters/stable",
-        "grpc/1.25.0@inexorgame/stable",
-        "openssl/1.1.1d",
+        "microjson/0.1.0@semlanik/stable",
     ]
     scm = {
         "type": "git",

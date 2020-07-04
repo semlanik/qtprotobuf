@@ -42,14 +42,14 @@ file(GLOB HEADERS qgrpcasyncoperationbase_p.h
 
 protobuf_generate_qt_headers(PUBLIC_HEADER ${HEADERS} COMPONENT ${TARGET})
 
-if(QT_PROTOBUF_STATIC)
+add_library(${TARGET} ${SOURCES})
+
+if(NOT BUILD_SHARED_LIBS)
     if(WIN32)
-        message(WARNING "Static version of QtProtobuf is not fully tested on Win32 platforms")
+        message(WARNING "Static version of QtGrpc is not fully tested on Win32 platforms")
     endif()
-    add_library(${TARGET} STATIC ${SOURCES})
     target_compile_definitions(${TARGET} PRIVATE QT_PROTOBUF_STATIC)
-else()
-    add_library(${TARGET} SHARED ${SOURCES})
+    set(QT_PROTOBUF_EXTRA_CONFIG "staticlib") #extra config for .pri file in case if static build enabled
 endif()
 
 extract_qt_variable(QT_HOST_DATA)
@@ -95,9 +95,6 @@ export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT
 configure_file("${QT_PROTOBUF_CMAKE_DIR}/gRPCLookup.cmake" "${QT_PROTOBUF_BINARY_DIR}/gRPCLookup.cmake" COPYONLY)
 install(FILES "${QT_PROTOBUF_BINARY_DIR}/gRPCLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
 
-if(QT_PROTOBUF_STATIC) #extra config for .pri file in case if static build enabled
-    set(QT_PROTOBUF_EXTRA_CONFIG "staticlib")
-endif()
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_grpc.pri.in" "${QT_PROTOBUF_BINARY_DIR}/qt_lib_grpc.pri" @ONLY)
 install(FILES "${QT_PROTOBUF_BINARY_DIR}/qt_lib_grpc.pri" DESTINATION "${QT_HOST_DATA}/mkspecs/modules" COMPONENT dev)
 

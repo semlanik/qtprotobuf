@@ -23,15 +23,13 @@ file(GLOB HEADERS
     qtprotobufquickplugin.h
     qtprotobufquick_global.h)
 
-if(QT_PROTOBUF_STATIC)
+add_library(${TARGET} ${SOURCES})
+
+if(NOT BUILD_SHARED_LIBS)
     if(WIN32)
         message(WARNING "Static version of QtProtobuf is not fully tested on Win32 platforms")
     endif()
-    add_library(${TARGET} STATIC ${SOURCES})
     target_compile_definitions(${TARGET} PRIVATE QT_PROTOBUF_STATIC QT_STATICPLUGIN PUBLIC QT_PROTOBUF_QUICK_PLUGIN_NAME="QtProtobufQuickPlugin")
-    set(QT_PROTOBUF_EXTRA_COMPILE_DIFINITIONS QT_PROTOBUF_STATIC)
-else()
-    add_library(${TARGET} SHARED ${SOURCES})
 endif()
 
 target_link_libraries(${TARGET} PRIVATE Qt5::Core Qt5::Qml ${QT_PROTOBUF_PROJECT}::QtProtobuf)
@@ -56,7 +54,7 @@ endforeach()
 
 target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../ ${Qt5Qml_PRIVATE_INCLUDE_DIRS})
 
-if(QT_PROTOBUF_STATIC)
+if(NOT BUILD_SHARED_LIBS)
     add_library(${QT_PROTOBUF_PROJECT}::${TARGET} ALIAS ${TARGET})
     install(TARGETS ${TARGET} COMPONENT lib
         EXPORT ${TARGET_EXPORT} COMPONENT dev
@@ -64,6 +62,7 @@ if(QT_PROTOBUF_STATIC)
         RUNTIME DESTINATION "${TARGET_IMPORTS_DIR}" COMPONENT lib
         LIBRARY DESTINATION "${TARGET_IMPORTS_DIR}" COMPONENT lib)
     install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
+    export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake)
 else()
     install(TARGETS ${TARGET} COMPONENT lib
         ARCHIVE DESTINATION "${TARGET_IMPORTS_DIR}" COMPONENT lib
@@ -76,7 +75,3 @@ add_custom_command(TARGET ${TARGET}
     COMMENT "Copying qmldir to binary directory")
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/qmldir DESTINATION "${TARGET_IMPORTS_DIR}" COMPONENT lib)
-
-if(QT_PROTOBUF_STATIC)
-    export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake)
-endif()

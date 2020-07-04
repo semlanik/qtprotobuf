@@ -43,11 +43,7 @@ function(add_wellknowntype TYPENAME)
     endforeach()
 endfunction()
 
-if(QT_PROTOBUF_STATIC)
-    add_library(${TARGET} STATIC ${SOURCES})
-else()
-    add_library(${TARGET} SHARED ${SOURCES})
-endif()
+add_library(${TARGET} ${SOURCES})
 
 add_wellknowntype(any)
 add_wellknowntype(duration)

@@ -63,15 +63,17 @@ file(GLOB PUBLIC_HEADER
 
 protobuf_generate_qt_headers(PUBLIC_HEADER ${PUBLIC_HEADER} COMPONENT ${TARGET})
 
-if(QT_PROTOBUF_STATIC)
+add_library(${TARGET} ${SOURCES})
+
+set(QT_PROTOBUF_STATIC OFF)
+if(NOT BUILD_SHARED_LIBS)
+    set(QT_PROTOBUF_STATIC ON)
     if(WIN32)
         message(WARNING "Static version of QtProtobuf is not fully tested on Win32 platforms")
     endif()
-    add_library(${TARGET} STATIC ${SOURCES})
     target_compile_definitions(${TARGET} PRIVATE QT_PROTOBUF_STATIC)
     set(QT_PROTOBUF_EXTRA_COMPILE_DIFINITIONS QT_PROTOBUF_STATIC)
-else()
-    add_library(${TARGET} SHARED ${SOURCES})
+    set(QT_PROTOBUF_EXTRA_CONFIG "staticlib") #extra config for .pri file in case if static build enabled
 endif()
 
 if(NOT DEFINED QT_QMAKE_EXECUTABLE)
@@ -106,7 +108,7 @@ target_compile_features(${TARGET} PUBLIC cxx_std_14
                                          cxx_lambdas
                                          cxx_func_identifier)
 
-target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml PRIVATE microjson)
+target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml microjson)
 
 add_library(${QT_PROTOBUF_PROJECT}::${TARGET} ALIAS ${TARGET})
 
@@ -136,10 +138,6 @@ install(FILES "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go" DESTINATION "${TARGET
 
 configure_file("${QT_PROTOBUF_CMAKE_DIR}/ProtobufLookup.cmake" "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
 install(FILES "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
-
-if(QT_PROTOBUF_STATIC) #extra config for .pri file in case if static build enabled
-    set(QT_PROTOBUF_EXTRA_CONFIG "staticlib")
-endif()
 
 set(QT_PROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${GENERATOR_TARGET})
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_protobuf.pri.in" "${QT_PROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" @ONLY)
