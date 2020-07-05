@@ -8,39 +8,62 @@ message QColor {
     sint32 blue = 3;
     sint32 alpha = 4;
 }
- 
-// message QImage {
-// }
 
-// message QPixmap {
-// }
+message QMatrix4x4 {
+    float m11 = 1;
+    float m12 = 2;
+    float m13 = 3;
+    float m14 = 4;
+    float m21 = 5;
+    float m22 = 6;
+    float m23 = 7;
+    float m24 = 8;
+    float m31 = 9;
+    float m32 = 10;
+    float m33 = 11;
+    float m34 = 12;
+    float m41 = 13;
+    float m42 = 14;
+    float m43 = 15;
+    float m44 = 16;
+}
 
-// message QIcon {
-// }
+message QVector2D {
+    float xpos = 1;
+    float ypos = 2;
+}
 
-// message QBitmap {
-// }
+message QVector3D {
+    float xpos = 1;
+    float ypos = 2;
+    float zpos = 3;
+}
 
-// message QQuaternion {
-// }
+message QVector4D {
+    float xpos = 1;
+    float ypos = 2;
+    float zpos = 3;
+    float wpos = 4;
+}
 
-// message QTransform {
-// }
+message QTransform {
+    double m11 = 1;
+    double m12 = 2;
+    double m13 = 3;
+    double m21 = 4;
+    double m22 = 5;
+    double m23 = 6;
+    double m31 = 7;
+    double m32 = 8;
+    double m33 = 9;
+}
 
-// message QMatrix {
-// }
+message QQuaternion {
+    float scalar = 1;
+    QtProtobuf.QVector3D vector = 2;
+}
 
-// message QMatrix4x4 {
-// }
-
-// message QVector2D {
-// }
-
-// message QVector3D {
-// }
-
-// message QVector4D {
-// }
-
-// message QEasingCurve {
-// }
+message QImage {
+    bytes data = 1;
+    string format = 2; //see https://doc.qt.io/qt-5/qimagewriter.html#supportedImageFormats
+}

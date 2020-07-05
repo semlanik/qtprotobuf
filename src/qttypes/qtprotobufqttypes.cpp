@@ -40,6 +40,14 @@
 #include <QRectF>
 #include <QPolygon>
 #include <QPolygonF>
+#include <QMatrix4x4>
+#include <QVector2D>
+#include <QVector3D>
+#include <QVector4D>
+#include <QTransform>
+#include <QQuaternion>
+#include <QImage>
+#include <QBuffer>
 
 #include <qtprotobuftypes.h>
 #include <qtprotobufqttypes.h>
@@ -194,6 +202,79 @@ namespace QtProtobuf {
     return polygon;
 }
 
+
+::QMatrix4x4 convert(const ::QtProtobuf::QMatrix4x4 &from) {
+    return ::QMatrix4x4(from.m11(), from.m12(), from.m13(), from.m14(),
+                        from.m21(), from.m22(), from.m23(), from.m24(),
+                        from.m31(), from.m32(), from.m33(), from.m34(),
+                        from.m41(), from.m42(), from.m43(), from.m44());
+}
+
+::QtProtobuf::QMatrix4x4 convert(const ::QMatrix4x4 &from) {
+    //QMatrix4x4::data returned in column-major format
+    return ::QtProtobuf::QMatrix4x4(from.data()[0], from.data()[4], from.data()[8],  from.data()[12],
+                                    from.data()[1], from.data()[5], from.data()[9],  from.data()[13],
+                                    from.data()[2], from.data()[6], from.data()[10], from.data()[14],
+                                    from.data()[3], from.data()[7], from.data()[11], from.data()[15]);
+}
+
+::QVector2D convert(const ::QtProtobuf::QVector2D &from) {
+    return ::QVector2D(from.xpos(), from.ypos());
+}
+
+::QtProtobuf::QVector2D convert(const ::QVector2D &from) {
+    return ::QtProtobuf::QVector2D(from.x(), from.y());
+}
+
+::QVector3D convert(const ::QtProtobuf::QVector3D &from) {
+    return ::QVector3D(from.xpos(), from.ypos(), from.zpos());
+}
+
+::QtProtobuf::QVector3D convert(const ::QVector3D &from) {
+    return ::QtProtobuf::QVector3D(from.x(), from.y(), from.z());
+}
+
+::QVector4D convert(const ::QtProtobuf::QVector4D &from) {
+    return ::QVector4D(from.xpos(), from.ypos(), from.zpos(), from.wpos());
+}
+
+::QtProtobuf::QVector4D convert(const ::QVector4D &from) {
+    return ::QtProtobuf::QVector4D(from.x(), from.y(), from.z(), from.w());
+}
+
+::QTransform convert(const ::QtProtobuf::QTransform &from) {
+    return ::QTransform(from.m11(), from.m12(), from.m13(),
+                        from.m21(), from.m22(), from.m23(),
+                        from.m31(), from.m32(), from.m33());
+}
+
+::QtProtobuf::QTransform convert(const ::QTransform &from) {
+    return ::QtProtobuf::QTransform(from.m11(), from.m12(), from.m13(),
+                                    from.m21(), from.m22(), from.m23(),
+                                    from.m31(), from.m32(), from.m33());
+}
+
+::QQuaternion convert(const ::QtProtobuf::QQuaternion &from) {
+    return ::QQuaternion(from.scalar(), convert(from.vector()));
+}
+
+::QtProtobuf::QQuaternion convert(const ::QQuaternion &from) {
+    return ::QtProtobuf::QQuaternion(from.scalar(), convert(from.vector()));
+}
+
+::QImage convert(const ::QtProtobuf::QImage &from) {
+    return ::QImage::fromData(from.data(), from.format().toLatin1().data());
+}
+
+::QtProtobuf::QImage convert(const ::QImage &from) {
+    QByteArray data;
+    QBuffer buffer(&data);
+    buffer.open(QIODevice::WriteOnly);
+    from.save(&buffer, "PNG");
+    qProtoWarning() << "QImage always is sent in PNG format";
+    return ::QtProtobuf::QImage(data, "PNG");
+}
+
 template <typename QType, typename PType>
 void registerQtTypeHandler() {
     QtProtobufPrivate::registerHandler(qMetaTypeId<QType>(), {
@@ -226,6 +307,13 @@ void qRegisterProtobufQtTypes() {
     registerQtTypeHandler<::QPolygonF, ::QtProtobuf::QPolygonF>();
 
     registerQtTypeHandler<::QColor, ::QtProtobuf::QColor>();
+    registerQtTypeHandler<::QMatrix4x4, ::QtProtobuf::QMatrix4x4>();
+    registerQtTypeHandler<::QVector2D, ::QtProtobuf::QVector2D>();
+    registerQtTypeHandler<::QVector3D, ::QtProtobuf::QVector3D>();
+    registerQtTypeHandler<::QVector4D, ::QtProtobuf::QVector4D>();
+    registerQtTypeHandler<::QTransform, ::QtProtobuf::QTransform>();
+    registerQtTypeHandler<::QQuaternion, ::QtProtobuf::QQuaternion>();
+    registerQtTypeHandler<::QImage, ::QtProtobuf::QImage>();
 }
 
 }
