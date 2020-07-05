@@ -41,11 +41,11 @@
 namespace QtProtobuf {
 namespace tests {
 
-class QtTypesTest : public ::testing::Test
+class QtTypesQtCoreTest : public ::testing::Test
 {
 public:
     // see simpletest.proto for property names and their field indices
-    QtTypesTest() {
+    QtTypesQtCoreTest() {
     }
 
     static void SetUpTestCase() {
@@ -57,9 +57,9 @@ public:
     static std::unique_ptr<QProtobufSerializer> serializer;
 };
 
-std::unique_ptr<QProtobufSerializer> QtTypesTest::serializer;
+std::unique_ptr<QProtobufSerializer> QtTypesQtCoreTest::serializer;
 
-TEST_F(QtTypesTest, QUrlTest)
+TEST_F(QtTypesQtCoreTest, QUrlTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QUrlMessage, QUrl>(1, "QUrl", "testField");
 
@@ -74,7 +74,7 @@ TEST_F(QtTypesTest, QUrlTest)
     EXPECT_STREQ("https://github.com/semlanik", msg.testField().url().toStdString().c_str());
 }
 
-TEST_F(QtTypesTest, QCharTest)
+TEST_F(QtTypesQtCoreTest, QCharTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QCharMessage, QChar>(1, "QChar", "testField");
 
@@ -90,7 +90,7 @@ TEST_F(QtTypesTest, QCharTest)
 }
 
 
-TEST_F(QtTypesTest, QUuidTest)
+TEST_F(QtTypesQtCoreTest, QUuidTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QUuidMessage, QUuid>(1, "QUuid", "testField");
 
@@ -106,7 +106,7 @@ TEST_F(QtTypesTest, QUuidTest)
     EXPECT_TRUE(QUuid("{4bcbcdc3-c5b3-4d34-97fe-af78c825cc7d}") == msg.testField());
 }
 
-TEST_F(QtTypesTest, QTimeTest)
+TEST_F(QtTypesQtCoreTest, QTimeTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QTimeMessage, QTime>(1, "QTime", "testField");
 
@@ -124,7 +124,7 @@ TEST_F(QtTypesTest, QTimeTest)
     EXPECT_EQ(msg.testField().msec(), 321);
 }
 
-TEST_F(QtTypesTest, QDateTest)
+TEST_F(QtTypesQtCoreTest, QDateTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QDateMessage, QDate>(1, "QDate", "testField");
     qtprotobufnamespace::qttypes::tests::QDateMessage msg;
@@ -140,7 +140,7 @@ TEST_F(QtTypesTest, QDateTest)
     EXPECT_EQ(msg.testField().day(), 14);
 }
 
-TEST_F(QtTypesTest, QDateTimeTest)
+TEST_F(QtTypesQtCoreTest, QDateTimeTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QDateTimeMessage, QDateTime>(1, "QDateTime", "testField");
     qtprotobufnamespace::qttypes::tests::QDateTimeMessage msg;
@@ -158,7 +158,7 @@ TEST_F(QtTypesTest, QDateTimeTest)
     EXPECT_TRUE(msg.testField() == QDateTime(QDate(1856, 6, 10), QTime(5, 30, 48, 123)));
 }
 
-TEST_F(QtTypesTest, QSizeTest)
+TEST_F(QtTypesQtCoreTest, QSizeTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QSizeMessage, QSize>(1, "QSize", "testField");
     qtprotobufnamespace::qttypes::tests::QSizeMessage msg;
@@ -179,7 +179,7 @@ TEST_F(QtTypesTest, QSizeTest)
     EXPECT_EQ(msg.testField().height(), 1024);
 }
 
-TEST_F(QtTypesTest, QSizeFTest)
+TEST_F(QtTypesQtCoreTest, QSizeFTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QSizeFMessage, QSizeF>(1, "QSizeF", "testField");
     qtprotobufnamespace::qttypes::tests::QSizeFMessage msg;
@@ -200,7 +200,7 @@ TEST_F(QtTypesTest, QSizeFTest)
     EXPECT_EQ(msg.testField().height(), 1024.0);
 }
 
-TEST_F(QtTypesTest, QPointTest)
+TEST_F(QtTypesQtCoreTest, QPointTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QPointMessage, QPoint>(1, "QPoint", "testField");
     qtprotobufnamespace::qttypes::tests::QPointMessage msg;
@@ -221,7 +221,7 @@ TEST_F(QtTypesTest, QPointTest)
     EXPECT_EQ(msg.testField().y(), 1024);
 }
 
-TEST_F(QtTypesTest, QPointFTest)
+TEST_F(QtTypesQtCoreTest, QPointFTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QPointFMessage, QPointF>(1, "QPointF", "testField");
     qtprotobufnamespace::qttypes::tests::QPointFMessage msg;
@@ -242,7 +242,7 @@ TEST_F(QtTypesTest, QPointFTest)
     EXPECT_EQ(msg.testField().y(), 1024.0);
 }
 
-TEST_F(QtTypesTest, QRectTest)
+TEST_F(QtTypesQtCoreTest, QRectTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QRectMessage, QRect>(1, "QRect", "testField");
     qtprotobufnamespace::qttypes::tests::QRectMessage msg;
@@ -268,7 +268,7 @@ TEST_F(QtTypesTest, QRectTest)
     EXPECT_EQ(msg.testField().height(), 769); //WTF Qt, siriously why?
 }
 
-TEST_F(QtTypesTest, QRectFTest)
+TEST_F(QtTypesQtCoreTest, QRectFTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QRectFMessage, QRectF>(1, "QRectF", "testField");
     qtprotobufnamespace::qttypes::tests::QRectFMessage msg;
@@ -294,7 +294,7 @@ TEST_F(QtTypesTest, QRectFTest)
     EXPECT_EQ(msg.testField().height(), 768.0);
 }
 
-TEST_F(QtTypesTest, QPolygonTest)
+TEST_F(QtTypesQtCoreTest, QPolygonTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QPolygonMessage, QPolygon>(1, "QPolygon", "testField");
     qtprotobufnamespace::qttypes::tests::QPolygonMessage msg;
@@ -312,7 +312,7 @@ TEST_F(QtTypesTest, QPolygonTest)
     EXPECT_EQ(msg.testField()[2], QPoint(0, 20));
 }
 
-TEST_F(QtTypesTest, QPolygonFTest)
+TEST_F(QtTypesQtCoreTest, QPolygonFTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QPolygonFMessage, QPolygonF>(1, "QPolygonF", "testField");
     qtprotobufnamespace::qttypes::tests::QPolygonFMessage msg;
