@@ -3,10 +3,7 @@ syntax = "proto3";
 package QtProtobuf;
 
 message QColor {
-    sint32 red = 1;
-    sint32 green = 2;
-    sint32 blue = 3;
-    sint32 alpha = 4;
+    uint32 rgba = 1;
 }
 
 message QMatrix4x4 {
