@@ -150,11 +150,11 @@ function(qtprotobuf_generate)
             target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
                 $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
         endif()
+    endif()
 
-        if(TARGET ${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes)
-            target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
-                $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes,INTERFACE_INCLUDE_DIRECTORIES>)
-        endif()
+    if(TARGET ${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes)
+        target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
+            $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes,INTERFACE_INCLUDE_DIRECTORIES>)
     endif()
 
     #Automatically link whole static library to specified in parameters target

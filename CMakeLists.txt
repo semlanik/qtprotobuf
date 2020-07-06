@@ -94,8 +94,8 @@ add_subdirectory("src/grpc")
 add_subdirectory("src/generator")
 if(NOT WIN32)#TODO: There are linking issues with windows build of well-known types...
     add_subdirectory("src/wellknowntypes")
-    add_subdirectory("src/qttypes")
 endif()
+add_subdirectory("src/qttypes")
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
