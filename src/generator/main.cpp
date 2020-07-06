@@ -42,6 +42,7 @@
  *  - \ref QtProtobuf
  *  - \ref QtGrpc
  *  - \ref QtProtobufWellKnownTypes
+ *  - \ref QtProtobufQtTypes
  *  - \ref QtProtobufQML
  *  - \ref QtGrpcQML
  *

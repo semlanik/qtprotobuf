@@ -1,7 +1,7 @@
 set(TARGET qttypes_test)
 
 include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
-find_package(QtProtobufProject CONFIG COMPONENTS QtProtobuf QtGrpc QtProtobufQtTypes REQUIRED)
+find_package(QtProtobufProject CONFIG COMPONENTS QtProtobuf QtProtobufQtTypes REQUIRED)
 
 file(GLOB SOURCES
     qtcoretest.cpp
