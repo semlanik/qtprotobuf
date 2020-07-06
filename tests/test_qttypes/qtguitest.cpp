@@ -65,14 +65,14 @@ TEST_F(QtTypesQtGuiTest, QColorTest)
 
     qtprotobufnamespace::qttypes::tests::QColorMessage msg;
     msg.setTestField(QColor("red"));
+
     auto result = msg.serialize(serializer.get());
-    EXPECT_TRUE(QByteArray::fromHex("0a0620fe0308fe03") ==
-               result || QByteArray::fromHex("0a0608fe0320fe03") == result);
+    EXPECT_TRUE(QByteArray::fromHex("0a06088080fcff0f") == result);
 
     msg.setTestField({});
-    msg.deserialize(serializer.get(), QByteArray::fromHex("0a0608fe0320fe03"));
+    msg.deserialize(serializer.get(), QByteArray::fromHex("0a0608808082f80f"));
 
-    EXPECT_EQ(QColor("red"), msg.testField());
+    EXPECT_EQ(QColor("green"), msg.testField());
 }
 
 TEST_F(QtTypesQtGuiTest, QMatrix4x4Test)
@@ -168,6 +168,7 @@ TEST_F(QtTypesQtGuiTest, QQuaternionTest)
 
     qtprotobufnamespace::qttypes::tests::QQuaternionMessage msg;
     msg.setTestField(QQuaternion(14, 10, 24, 22));
+
     auto result = msg.serialize(serializer.get());
     EXPECT_TRUE(QByteArray::fromHex("0a16120f1d0000b041150000c0410d000020410d00006041") ==
                result || QByteArray::fromHex("0a160d00006041120f0d00002041150000c0411d0000b041") == result);

@@ -91,19 +91,19 @@ namespace QtProtobuf {
 }
 
 ::QColor convert(const ::QtProtobuf::QColor &from) {
-    return ::QColor(from.red(), from.green(), from.blue(), from.alpha());
+    return ::QColor::fromRgba(from.rgba());
 }
 
 ::QtProtobuf::QColor convert(const ::QColor &from) {
-    return ::QtProtobuf::QColor(from.red(), from.green(), from.blue(), from.alpha());
+    return ::QtProtobuf::QColor(from.rgba());
 }
 
 ::QTime convert(const ::QtProtobuf::QTime &from) {
-    return ::QTime(from.hour(), from.minute(), from.second(), from.msec());
+    return ::QTime::fromMSecsSinceStartOfDay(from.msec());
 }
 
 ::QtProtobuf::QTime convert(const ::QTime &from) {
-    return ::QtProtobuf::QTime(from.hour(), from.minute(), from.second(), from.msec());
+    return ::QtProtobuf::QTime(from.msecsSinceStartOfDay());
 }
 
 ::QDate convert(const ::QtProtobuf::QDate &from) {
@@ -155,19 +155,19 @@ namespace QtProtobuf {
 }
 
 ::QRect convert(const ::QtProtobuf::QRect &from) {
-    return ::QRect(convert(from.topLeft()), convert(from.bottomRight()));
+    return ::QRect(convert(from.position()), convert(from.size()));
 }
 
 ::QtProtobuf::QRect convert(const ::QRect &from) {
-    return ::QtProtobuf::QRect(convert(from.topLeft()), convert(from.bottomRight()));
+    return ::QtProtobuf::QRect(convert(from.topLeft()), convert(from.size()));
 }
 
 ::QRectF convert(const ::QtProtobuf::QRectF &from) {
-    return ::QRectF(convert(from.topLeft()), convert(from.bottomRight()));
+    return ::QRectF(convert(from.position()), convert(from.size()));
 }
 
 ::QtProtobuf::QRectF convert(const ::QRectF &from) {
-    return ::QtProtobuf::QRectF(convert(from.topLeft()), convert(from.bottomRight()));
+    return ::QtProtobuf::QRectF(convert(from.topLeft()), convert(from.size()));
 }
 
 ::QPolygon convert(const ::QtProtobuf::QPolygon &from) {

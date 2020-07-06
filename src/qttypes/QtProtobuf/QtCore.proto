@@ -15,10 +15,7 @@ message QUuid {
 }
 
 message QTime {
-    sint32 hour = 1;
-    sint32 minute = 2;
-    sint32 second = 3;
-    sint32 msec = 4;
+    sint32 msec = 1;
 }
 
 message QDate {
@@ -54,13 +51,13 @@ message QPointF {
 }
 
 message QRect {
-    QPoint topLeft = 1;
-    QPoint bottomRight = 2;
+    QPoint position = 1;
+    QSize size = 2;
 }
 
 message QRectF {
-    QPointF topLeft = 1;
-    QPointF bottomRight = 2;
+    QPointF position = 1;
+    QSizeF size = 2;
 }
 
 message QPolygon {

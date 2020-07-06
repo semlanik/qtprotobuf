@@ -112,12 +112,13 @@ TEST_F(QtTypesQtCoreTest, QTimeTest)
 
     qtprotobufnamespace::qttypes::tests::QTimeMessage msg;
     msg.setTestField(QTime(5, 30, 48, 123));
+
     QByteArray result = msg.serialize(serializer.get());
-    EXPECT_TRUE(QByteArray::fromHex("0a09080a103c186020f601") ==
-                result || QByteArray::fromHex("0a0920f6011860103c080a") == result);
+    msg.setTestField(QTime(7, 30, 18, 321));
+    EXPECT_TRUE(QByteArray::fromHex("0a0508f6eef612") == result);
 
     msg.setTestField({});
-    msg.deserialize(serializer.get(), QByteArray::fromHex("0a09080e103c1824208205"));
+    msg.deserialize(serializer.get(), QByteArray::fromHex("0a0508a291e219"));
     EXPECT_EQ(msg.testField().hour(), 7);
     EXPECT_EQ(msg.testField().minute(), 30);
     EXPECT_EQ(msg.testField().second(), 18);
@@ -129,6 +130,7 @@ TEST_F(QtTypesQtCoreTest, QDateTest)
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QDateMessage, QDate>(1, "QDate", "testField");
     qtprotobufnamespace::qttypes::tests::QDateMessage msg;
     msg.setTestField(QDate(1856, 6, 10));
+
     QByteArray result = msg.serialize(serializer.get());
     EXPECT_TRUE(QByteArray::fromHex("0a0708801d100c1814") ==
                 result || QByteArray::fromHex("0a071814100c08801d") == result);
@@ -144,18 +146,19 @@ TEST_F(QtTypesQtCoreTest, QDateTimeTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QDateTimeMessage, QDateTime>(1, "QDateTime", "testField");
     qtprotobufnamespace::qttypes::tests::QDateTimeMessage msg;
-    msg.setTestField({QDate(1897, 3, 14), QTime(7, 30, 12, 321)});
-    QByteArray result = msg.serialize(serializer.get());
+    msg.setTestField({QDate(1897, 3, 14), QTime(7, 30, 18, 321)});
 
-    EXPECT_TRUE(QByteArray::fromHex("0a1412092082051818103c080e0a07181c100608d21d") ==
-                result || QByteArray::fromHex("0a140a0708d21d1006181c1209080e103c1818208205") == result);
+    QByteArray result = msg.serialize(serializer.get());
+    EXPECT_TRUE(QByteArray::fromHex("0a10120508a291e2190a07181c100608d21d") == result
+                || QByteArray::fromHex("0a100a0708d21d1006181c120508a291e219") == result);
 
     msg.setTestField({});
-    msg.deserialize(serializer.get(), QByteArray::fromHex("0a140a0708d21d1006181c1209080e103c1818208205"));
-    EXPECT_TRUE(msg.testField() == QDateTime(QDate(1897, 3, 14), QTime(7, 30, 12, 321)));
+    msg.deserialize(serializer.get(), QByteArray::fromHex("0a100a0708d21d1006181c120508a291e219"));
+    EXPECT_TRUE(msg.testField() == QDateTime(QDate(1897, 3, 14), QTime(7, 30, 18, 321)));
 
-    msg.deserialize(serializer.get(), QByteArray::fromHex("0a140a0708801d100c18141209080a103c186020f601"));
-    EXPECT_TRUE(msg.testField() == QDateTime(QDate(1856, 6, 10), QTime(5, 30, 48, 123)));
+    msg.setTestField({});
+    msg.deserialize(serializer.get(), QByteArray::fromHex("0a100a0708801d100c1814120508a291e219"));
+    EXPECT_TRUE(msg.testField() == QDateTime(QDate(1856, 6, 10), QTime(7, 30, 18, 321)));
 }
 
 TEST_F(QtTypesQtCoreTest, QSizeTest)
@@ -163,10 +166,10 @@ TEST_F(QtTypesQtCoreTest, QSizeTest)
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QSizeMessage, QSize>(1, "QSize", "testField");
     qtprotobufnamespace::qttypes::tests::QSizeMessage msg;
     msg.setTestField({1024, 768});
-    QByteArray result = msg.serialize(serializer.get());
 
-    EXPECT_TRUE(QByteArray::fromHex("0a0610800c088010") ==
-                result || QByteArray::fromHex("0a0608801010800c") == result);
+    QByteArray result = msg.serialize(serializer.get());
+    EXPECT_TRUE(QByteArray::fromHex("0a0610800c088010") == result
+                || QByteArray::fromHex("0a0608801010800c") == result);
 
     msg.setTestField({});
 
@@ -184,10 +187,10 @@ TEST_F(QtTypesQtCoreTest, QSizeFTest)
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QSizeFMessage, QSizeF>(1, "QSizeF", "testField");
     qtprotobufnamespace::qttypes::tests::QSizeFMessage msg;
     msg.setTestField({1024.0, 768.0});
-    QByteArray result = msg.serialize(serializer.get());
 
-    EXPECT_TRUE(QByteArray::fromHex("0a12110000000000008840090000000000009040") ==
-                result || QByteArray::fromHex("0a12090000000000009040110000000000008840") == result);
+    QByteArray result = msg.serialize(serializer.get());
+    EXPECT_TRUE(QByteArray::fromHex("0a12110000000000008840090000000000009040") == result
+                || QByteArray::fromHex("0a12090000000000009040110000000000008840") == result);
 
     msg.setTestField({});
 
@@ -205,10 +208,10 @@ TEST_F(QtTypesQtCoreTest, QPointTest)
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QPointMessage, QPoint>(1, "QPoint", "testField");
     qtprotobufnamespace::qttypes::tests::QPointMessage msg;
     msg.setTestField({1024, 768});
-    QByteArray result = msg.serialize(serializer.get());
 
-    EXPECT_TRUE(QByteArray::fromHex("0a0610800c088010") ==
-                result || QByteArray::fromHex("0a0608801010800c") == result);
+    QByteArray result = msg.serialize(serializer.get());
+    EXPECT_TRUE(QByteArray::fromHex("0a0610800c088010") == result
+                || QByteArray::fromHex("0a0608801010800c") == result);
 
     msg.setTestField({});
 
@@ -226,10 +229,10 @@ TEST_F(QtTypesQtCoreTest, QPointFTest)
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QPointFMessage, QPointF>(1, "QPointF", "testField");
     qtprotobufnamespace::qttypes::tests::QPointFMessage msg;
     msg.setTestField({1024.0, 768.0});
-    QByteArray result = msg.serialize(serializer.get());
 
-    EXPECT_TRUE(QByteArray::fromHex("0a12110000000000008840090000000000009040") ==
-                result || QByteArray::fromHex("0a12090000000000009040110000000000008840") == result);
+    QByteArray result = msg.serialize(serializer.get());
+    EXPECT_TRUE(QByteArray::fromHex("0a12110000000000008840090000000000009040") == result
+                || QByteArray::fromHex("0a12090000000000009040110000000000008840") == result);
 
     msg.setTestField({});
 
@@ -246,26 +249,27 @@ TEST_F(QtTypesQtCoreTest, QRectTest)
 {
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QRectMessage, QRect>(1, "QRect", "testField");
     qtprotobufnamespace::qttypes::tests::QRectMessage msg;
-    msg.setTestField({QPoint(768, 768), QPoint(1024, 1024)});
-    QByteArray result = msg.serialize(serializer.get());
+    msg.setTestField({QPoint(768, 768), QSize(500, 1212)});
 
-    EXPECT_TRUE(QByteArray::fromHex("0a1012061080100880100a0610800c08800c") ==
-                result || QByteArray::fromHex("0a100a0608800c10800c1206088010108010") == result);
+    QByteArray result = msg.serialize(serializer.get());
+    EXPECT_TRUE(QByteArray::fromHex("0a10120610f81208e8070a0610800c08800c") == result
+                || QByteArray::fromHex("0a100a0608800c10800c120608e80710f812") == result);
+
     msg.setTestField({});
 
-    msg.deserialize(serializer.get(), QByteArray::fromHex("0a100a0608800c10800c1206088010108010"));
+    msg.deserialize(serializer.get(), QByteArray::fromHex("0a100a0608800c10800c120608e80710f812"));
     EXPECT_EQ(msg.testField().x(), 768);
     EXPECT_EQ(msg.testField().y(), 768);
-    EXPECT_EQ(msg.testField().width(), 257); //WTF Qt, siriously why?
-    EXPECT_EQ(msg.testField().height(), 257); //WTF Qt, siriously why?
+    EXPECT_EQ(msg.testField().width(), 500);
+    EXPECT_EQ(msg.testField().height(), 1212);
 
-    msg.setTestField({QPoint(0, 0), QPoint(1024, 768)});
+    msg.setTestField({});
 
     msg.deserialize(serializer.get(), QByteArray::fromHex("0a0a0a00120608801010800c"));
     EXPECT_EQ(msg.testField().x(), 0);
     EXPECT_EQ(msg.testField().y(), 0);
-    EXPECT_EQ(msg.testField().width(), 1025); //WTF Qt, siriously why?
-    EXPECT_EQ(msg.testField().height(), 769); //WTF Qt, siriously why?
+    EXPECT_EQ(msg.testField().width(), 1024);
+    EXPECT_EQ(msg.testField().height(), 768);
 }
 
 TEST_F(QtTypesQtCoreTest, QRectFTest)
@@ -273,19 +277,21 @@ TEST_F(QtTypesQtCoreTest, QRectFTest)
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QRectFMessage, QRectF>(1, "QRectF", "testField");
     qtprotobufnamespace::qttypes::tests::QRectFMessage msg;
     msg.setTestField({QPointF(768.0, 768.0), QPointF(1024.0, 1024.0)});
-    QByteArray result = msg.serialize(serializer.get());
 
-    EXPECT_TRUE(QByteArray::fromHex("0a2812121100000000000090400900000000000090400a12110000000000008840090000000000008840") ==
-                result || QByteArray::fromHex("0a280a120900000000000088401100000000000088401212090000000000009040110000000000009040") == result);
+    QByteArray result = msg.serialize(serializer.get());
+    std::cerr << result.toHex().toStdString() << std::endl;
+    EXPECT_TRUE(QByteArray::fromHex("0a2812121100000000000070400900000000000070400a12110000000000008840090000000000008840") == result
+                || QByteArray::fromHex("0a280a120900000000000088401100000000000088401212090000000000007040110000000000007040") == result);
+
     msg.setTestField({});
 
-    msg.deserialize(serializer.get(), QByteArray::fromHex("0a280a120900000000000088401100000000000088401212090000000000009040110000000000009040"));
+    msg.deserialize(serializer.get(), QByteArray::fromHex("0a280a120900000000000088401100000000000088401212090000000000007040110000000000007040"));
     EXPECT_EQ(msg.testField().x(), 768.0);
     EXPECT_EQ(msg.testField().y(), 768.0);
     EXPECT_EQ(msg.testField().width(), 256.0);
     EXPECT_EQ(msg.testField().height(), 256.0);
 
-    msg.setTestField({QPointF(0, 0), QPointF(1024.0, 768.0)});
+    msg.setTestField({});
 
     msg.deserialize(serializer.get(), QByteArray::fromHex("0a160a001212090000000000009040110000000000008840"));
     EXPECT_EQ(msg.testField().x(), 0.0);
@@ -299,6 +305,7 @@ TEST_F(QtTypesQtCoreTest, QPolygonTest)
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QPolygonMessage, QPolygon>(1, "QPolygon", "testField");
     qtprotobufnamespace::qttypes::tests::QPolygonMessage msg;
     msg.setTestField(QPolygon({QPoint(10, 0), QPoint(20, 20), QPoint(0, 20)}));
+
     QByteArray result = msg.serialize(serializer.get());
     EXPECT_TRUE(QByteArray::fromHex("0a0e0a0208140a04102808280a021028") ==
                 result || QByteArray::fromHex("0a0e0a0208140a04082810280a021028") == result);
@@ -317,8 +324,8 @@ TEST_F(QtTypesQtCoreTest, QPolygonFTest)
     assertMessagePropertyRegistered<qtprotobufnamespace::qttypes::tests::QPolygonFMessage, QPolygonF>(1, "QPolygonF", "testField");
     qtprotobufnamespace::qttypes::tests::QPolygonFMessage msg;
     msg.setTestField(QPolygonF({QPointF(10, 0), QPointF(20, 20), QPointF(0, 20)}));
+
     QByteArray result = msg.serialize(serializer.get());
-    std::cerr << result.toHex().toStdString() << std::endl;
     EXPECT_TRUE(QByteArray::fromHex("0a3c0a121100000000000000000900000000000024400a121100000000000034400900000000000034400a12110000000000003440090000000000000000") == result
                 || QByteArray::fromHex("0a2a0a090900000000000024400a120900000000000034401100000000000034400a09110000000000003440") == result
                 || QByteArray::fromHex("0a3c0a120900000000000024401100000000000000000a120900000000000034401100000000000034400a12090000000000000000110000000000003440") == result);
