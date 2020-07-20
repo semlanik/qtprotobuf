@@ -54,6 +54,7 @@ void QQuickGrpcSubscription::updateSubscription()
     if (m_returnValue != nullptr) {
         m_returnValue->deleteLater(); //TODO: probably need to take care about return value cleanup other way. It's just reminder about weak memory management.
         m_returnValue = nullptr;
+        returnValueChanged();
     }
 
     if (m_client.isNull() || m_method.isEmpty() || !m_enabled || m_argument.isNull()) {
@@ -143,6 +144,8 @@ bool QQuickGrpcSubscription::subscribe()
         error({QGrpcStatus::Unknown, errorString});
         return false;
     }
+
+    returnValueChanged();
 
     QGrpcSubscription *subscription = nullptr;
     bool ok = method.invoke(m_client, Qt::DirectConnection,
