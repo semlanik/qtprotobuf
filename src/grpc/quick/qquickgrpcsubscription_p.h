@@ -55,6 +55,9 @@
  * \subsubsection argument QObject *argument
  * \details Pointer to argument that will be used for subscription.
  *
+ * \subsubsection returnValue QObject *returnValue
+ * \details Value returned by the subscription (Note that it is the same "return" object passed by the "updated" signal)
+ *
  * \subsection Signals
  * \subsubsection updated updated(ReturnType value)
  * \details The signal notifies about received update for subscription. It provides "return" value ready for use in QML.
@@ -97,6 +100,7 @@ class QQuickGrpcSubscription : public QObject
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(QString method READ method WRITE setMethod NOTIFY methodChanged)
     Q_PROPERTY(QObject *argument READ argument WRITE setArgument NOTIFY argumentChanged)
+    Q_PROPERTY(QObject *returnValue READ returnValue NOTIFY returnValueChanged)
 
 public:
     QQuickGrpcSubscription(QObject *parent = nullptr);
@@ -116,6 +120,10 @@ public:
 
     QObject *argument() const {
         return m_argument;
+    }
+
+    QObject *returnValue() const {
+        return m_returnValue;
     }
 
     void setClient(QAbstractGrpcClient *client) {
@@ -166,6 +174,7 @@ signals:
     void methodChanged();
     void enabledChanged();
     void argumentChanged();
+    void returnValueChanged();
 
 private:
     void updateSubscription();
