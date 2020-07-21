@@ -37,6 +37,11 @@ TestCase {
         testFieldString: "Test string"
     }
 
+    QtObject {
+        id: returnMsg
+        property string ret: serverStreamSubscription.returnValue.testFieldString
+    }
+
     GrpcSubscription {
         id: serverStreamSubscription
         property bool ok: true
@@ -48,7 +53,7 @@ TestCase {
         argument: stringMsg
         onUpdated: {
             ++updateCount;
-            ok = ok && value.testFieldString === "Test string" + updateCount
+            ok = ok && value.testFieldString === ("Test string" + updateCount) && returnMsg.ret == ("Test string" + updateCount)
         }
         onError: {
             console.log("Subscription error: " + status.code + " " + status.message)
