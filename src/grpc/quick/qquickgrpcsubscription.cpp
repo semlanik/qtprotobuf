@@ -138,14 +138,14 @@ bool QQuickGrpcSubscription::subscribe()
     m_returnValue = reinterpret_cast<QObject*>(returnMetaType.create());
     qmlEngine(this)->setObjectOwnership(m_returnValue, QQmlEngine::CppOwnership);
 
+    returnValueChanged();
+
     if (m_returnValue == nullptr) {
         errorString = "Unable to allocate return value. Unknown metatype system error";
         qProtoWarning() << errorString;
         error({QGrpcStatus::Unknown, errorString});
         return false;
     }
-
-    returnValueChanged();
 
     QGrpcSubscription *subscription = nullptr;
     bool ok = method.invoke(m_client, Qt::DirectConnection,
