@@ -63,6 +63,14 @@ public:
     {
         return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, request->testfieldstring());
     }
+
+    ::grpc::Status testMethodNonCompatibleArgRet(grpc::ServerContext *, const qtprotobufnamespace::tests::SimpleIntMessage *request, qtprotobufnamespace::tests::SimpleStringMessage *response) override
+    {
+        std::cerr << "testMethodNonCompatibleArgRet called" << std::endl << request->testfield() << std::endl;
+        response->set_testfieldstring(std::to_string(request->testfield()));
+        return ::grpc::Status();
+    }
+
 };
 
 int main(int, char *[])
