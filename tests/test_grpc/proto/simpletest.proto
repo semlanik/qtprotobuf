@@ -6,6 +6,10 @@ message SimpleStringMessage {
     string testFieldString = 6;
 }
 
+message SimpleIntMessage {
+    sint32 testField= 1;
+}
+
 message BlobMessage {
     bytes testBytes = 1;
 }

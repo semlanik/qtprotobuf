@@ -604,3 +604,14 @@ TEST_F(ClientTest, MultipleSubscriptionsCancelTest)
     ASSERT_TRUE(isFinished);
     ASSERT_TRUE(isFinishedNext);
 }
+
+TEST_F(ClientTest, NonCompatibleArgRetTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, QGrpcInsecureChannelCredentials() | QGrpcInsecureCallCredentials()));
+    SimpleIntMessage request(2048);
+    QPointer<SimpleStringMessage> result(new SimpleStringMessage);
+    ASSERT_TRUE(testClient.testMethodNonCompatibleArgRet(request, result) == QGrpcStatus::Ok);
+    ASSERT_STREQ(result->testFieldString().toStdString().c_str(), "2048");
+    delete result;
+}

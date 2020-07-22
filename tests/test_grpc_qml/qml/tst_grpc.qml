@@ -37,6 +37,11 @@ TestCase {
         testFieldString: "Test string"
     }
 
+    SimpleIntMessage {
+        id: intMsg
+        testField: 1024
+    }
+
     QtObject {
         id: returnMsg
         property string ret: serverStreamSubscription.returnValue.testFieldString
@@ -157,5 +162,17 @@ TestCase {
         wait(500);
         compare(serverStreamInvalidSubscription.ok, true, "Subscription data failed")
         compare(serverStreamInvalidSubscription.enabled, false, "Subscription data failed")
+    }
+
+    function test_nonCompatibleArgRet() {
+        var called = false;
+        var errorCalled = false;
+        TestServiceClient.testMethodNonCompatibleArgRet(intMsg, function(result) {
+            called = result.testFieldString === "1024";
+        }, function(status) {
+            errorCalled = true
+        })
+        wait(300)
+        compare(called && !errorCalled, true, "testMethodNonCompatibleArgRet was not called proper way")
     }
 }
