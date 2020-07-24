@@ -272,9 +272,8 @@ TEST_F(DeserializationTest, IntMessageDeserializeTest)
     test.deserialize(serializer.get(), QByteArray::fromHex("08898004"));
     ASSERT_EQ(65545, test.testFieldInt());
 
-    //FIXME: bug#68
-    //test.deserialize(serializer.get(), QByteArray::fromHex(""));
-    //ASSERT_EQ(0, test.testFieldInt());
+    test.deserialize(serializer.get(), QByteArray::fromHex(""));
+    ASSERT_EQ(0, test.testFieldInt());
 
     test.deserialize(serializer.get(), QByteArray::fromHex("088001"));
     ASSERT_EQ(INT8_MAX + 1, test.testFieldInt());
@@ -488,8 +487,6 @@ TEST_F(DeserializationTest, RepeatedComplexMessageTest)
     ASSERT_EQ(25, test.testRepeatedComplex().at(2)->testFieldInt());
     ASSERT_TRUE(test.testRepeatedComplex().at(2)->testComplexField().testFieldString() == QString("qwerty"));
 
-    //FIXME: This setter should not be called in this test. See bug#69
-    test.setTestRepeatedComplex({});
     test.deserialize(serializer.get(), QByteArray::fromHex("0a1508d3feffffffffffffff0112083206717765727479"));
     ASSERT_LT(0, test.testRepeatedComplex().count());
     ASSERT_EQ(-173, test.testRepeatedComplex().at(0)->testFieldInt());
@@ -508,9 +505,8 @@ TEST_F(DeserializationTest, SIntMessageDeserializeTest)
     test.deserialize(serializer.get(), QByteArray::fromHex("08928008"));
     ASSERT_EQ(65545, test.testFieldInt());
 
-    //FIXME: bug#68
-    //test.deserialize(serializer.get(), QByteArray::fromHex(""));
-    //ASSERT_EQ(0, test.testFieldInt());
+    test.deserialize(serializer.get(), QByteArray::fromHex(""));
+    ASSERT_EQ(0, test.testFieldInt());
 
     test.deserialize(serializer.get(), QByteArray::fromHex("088002"));
     ASSERT_EQ(INT8_MAX + 1, test.testFieldInt());
@@ -564,9 +560,8 @@ TEST_F(DeserializationTest, UIntMessageDeserializeTest)
     test.deserialize(serializer.get(), QByteArray::fromHex("08898004"));
     ASSERT_EQ(65545, test.testFieldInt());
 
-    //FIXME: bug#68
-    //test.deserialize(serializer.get(), QByteArray::fromHex(""));
-    //ASSERT_EQ(0, test.testFieldInt());
+    test.deserialize(serializer.get(), QByteArray::fromHex(""));
+    ASSERT_EQ(0, test.testFieldInt());
 
     test.deserialize(serializer.get(), QByteArray::fromHex("088002"));
     ASSERT_EQ(UINT8_MAX + 1, test.testFieldInt());
@@ -590,8 +585,7 @@ TEST_F(DeserializationTest, BoolDeserializeTest)
     test.deserialize(serializer.get(), QByteArray::fromHex("0801"));
     ASSERT_EQ(test.testFieldBool(), true);
 
-    //FIXME: bug#68
-    //test.deserialize(serializer.get(), QByteArray::fromHex(""));
+    test.deserialize(serializer.get(), QByteArray::fromHex(""));
     test.deserialize(serializer.get(), QByteArray::fromHex("0800"));
     ASSERT_EQ(test.testFieldBool(), false);
 }

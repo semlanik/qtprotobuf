@@ -92,13 +92,22 @@ public:
      *          Bytes corresponding to unexpected properties are skipped without any exception
      *
      * \param[out] object Pointer to memory where result of deserialization should be injected
-     * \param[in] array Bytes with serialized message
+     * \param[in] data Bytes with serialized message
      */
     template<typename T>
-    void deserialize(QObject *object, const QByteArray &array) {
+    void deserialize(T *object, const QByteArray &data) {
         Q_ASSERT(object != nullptr);
         qProtoDebug() << T::staticMetaObject.className() << "deserialize";
-        deserializeMessage(object, T::protobufMetaObject, array);
+        //Initialize default object first and make copy aferwards, it's necessary to set default
+        //values of properties that was not stored in data.
+        T newValue;
+        try {
+            deserializeMessage(&newValue, T::protobufMetaObject, data);
+        } catch(...) {
+            *object = newValue;
+            throw;
+        }
+        *object = newValue;
     }
 
     virtual ~QAbstractProtobufSerializer() = default;
