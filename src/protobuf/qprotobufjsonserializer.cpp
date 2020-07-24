@@ -342,7 +342,7 @@ public:
                 QByteArray rawValue = QByteArray::fromStdString(property.second.value);
                 if (rawValue == "null" && property.second.type == microjson::JsonObjectType) {
                     object->setProperty(name.c_str(), QVariant());//Initialize with default value
-                    return;
+                    continue;
                 }
                 bool ok = false;
                 QVariant value = deserializeValue(userType, rawValue, property.second.type, ok);

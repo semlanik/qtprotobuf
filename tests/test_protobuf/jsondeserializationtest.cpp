@@ -310,8 +310,8 @@ TEST_F(JsonDeserializationTest, ComplexTypeSerializeTest)
     EXPECT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");
     EXPECT_EQ(test.testFieldInt(), -45);
 
-    test.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":-45,\"testComplexField\":null"));
-    EXPECT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "qwerty");
+    test.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":-45,\"testComplexField\":null}"));
+    EXPECT_STREQ(test.testComplexField().testFieldString().toStdString().c_str(), "");
     EXPECT_EQ(test.testFieldInt(), -45);
 
 }
@@ -528,7 +528,7 @@ TEST_F(JsonDeserializationTest, BoolMessageSerializeTest)
 
     test.setTestFieldBool(true);
     test.deserialize(serializer.get(), "{\"testFieldBool\":0}");
-    EXPECT_TRUE(test.testFieldBool());
+    EXPECT_FALSE(test.testFieldBool());
 
     test.setTestFieldBool(false);
     test.deserialize(serializer.get(), "{\"testFieldBool\":\"true\"}");
@@ -536,7 +536,7 @@ TEST_F(JsonDeserializationTest, BoolMessageSerializeTest)
 
     test.setTestFieldBool(true);
     test.deserialize(serializer.get(), "{\"testFieldBool\":\"false\"}");
-    EXPECT_TRUE(test.testFieldBool());
+    EXPECT_FALSE(test.testFieldBool());
 
     test.setTestFieldBool(false);
     test.deserialize(serializer.get(), "{\"testFieldBool\":1.0}");
@@ -544,7 +544,7 @@ TEST_F(JsonDeserializationTest, BoolMessageSerializeTest)
 
     test.setTestFieldBool(true);
     test.deserialize(serializer.get(), "{\"testFieldBool\":0.0}");
-    EXPECT_TRUE(test.testFieldBool());
+    EXPECT_FALSE(test.testFieldBool());
 }
 
 TEST_F(JsonDeserializationTest, SimpleEnumMessageSerializeTest)
