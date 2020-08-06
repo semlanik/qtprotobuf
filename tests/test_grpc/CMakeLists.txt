@@ -11,6 +11,11 @@ add_test_target(TARGET qtgrpc_secure_test
 add_target_windeployqt(TARGET qtgrpc_secure_test
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
+if (QT_PROTOBUF_NATIVE_GRPC_CHANNEL)
+    target_compile_definitions(qtgrpc_test PRIVATE QT_PROTOBUF_NATIVE_GRPC_CHANNEL)
+    target_compile_definitions(qtgrpc_secure_test PRIVATE QT_PROTOBUF_NATIVE_GRPC_CHANNEL)
+endif()
+
 # servers
 add_subdirectory(echoserver)
 add_subdirectory(secureechoserver)

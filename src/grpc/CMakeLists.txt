@@ -24,7 +24,8 @@ file(GLOB SOURCES qgrpcasyncoperationbase.cpp
     qgrpccredentials.cpp
     qgrpcsslcredentials.cpp
     qgrpcinsecurecredentials.cpp
-    qgrpcuserpasswordcredentials.cpp)
+    qgrpcuserpasswordcredentials.cpp
+)
 
 file(GLOB HEADERS qgrpcasyncoperationbase_p.h
     qgrpcasyncreply.h
@@ -39,6 +40,11 @@ file(GLOB HEADERS qgrpcasyncoperationbase_p.h
     qgrpcinsecurecredentials.h
     qgrpcuserpasswordcredentials.h
     qtgrpcglobal.h)
+
+if (QT_PROTOBUF_NATIVE_GRPC_CHANNEL)
+    list(APPEND SOURCES qgrpcchannel.cpp)
+    list(APPEND HEADERS qgrpcchannel.h qgrpcchannel_p.h)
+endif()
 
 protobuf_generate_qt_headers(PUBLIC_HEADER ${HEADERS} COMPONENT ${TARGET})
 
@@ -57,12 +63,17 @@ extract_qt_variable(QT_HOST_DATA)
 target_compile_definitions(${TARGET} PRIVATE QT_BUILD_GRPC_LIB)
 
 set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${HEADERS};${GENERATED_PUBLIC_HEADER}" OUTPUT_NAME ${TARGET})
-target_include_directories(${TARGET} PUBLIC 
+target_include_directories(${TARGET} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${QT_PROTOBUF_BINARY_DIR}/include/${TARGET}>
     $<INSTALL_INTERFACE:${TARGET_INCLUDE_DIR}>
 )
 target_link_libraries(${TARGET} PUBLIC ${QT_PROTOBUF_PROJECT}::QtProtobuf Qt5::Core Qt5::Network)
+
+if (QT_PROTOBUF_NATIVE_GRPC_CHANNEL)
+    target_link_libraries(${TARGET} PUBLIC gRPC::grpc++)
+endif()
+
 target_compile_features(${TARGET} PUBLIC cxx_std_14
                                          cxx_auto_type
                                          cxx_decltype

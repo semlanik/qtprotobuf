@@ -23,40 +23,16 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <QtQuickTest>
-#include <QUrl>
-#include <QQmlEngine>
-#include <QQmlContext>
-#include <QQmlExtensionPlugin>
-#include <QGrpcHttp2Channel>
-#include <QGrpcInsecureCredentials>
-#include <QMetaObject>
-#include <memory>
+#include "test.h"
 
-#include "qabstractgrpcchannel.h"
-#include "testservice_grpc.qpb.h"
+#include <QGrpcChannel>
 
-using namespace qtprotobufnamespace::tests;
-using namespace QtProtobuf;
+const QString echoServerAddressNative("localhost:50051");
 
-class TestSetup : public QObject {
-    Q_OBJECT
-public:
-    TestSetup(std::shared_ptr<QAbstractGrpcChannel> channel) {
-        QtProtobuf::qRegisterProtobufTypes();
-        Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
-        Q_GRPC_IMPORT_QUICK_PLUGIN()
-        qmlRegisterSingletonType<TestServiceClient>("qtprotobufnamespace.tests", 1, 0, "TestServiceClient", [channel](QQmlEngine *engine, QJSEngine *) -> QObject *{
-            static TestServiceClient clientInstance;
-            clientInstance.attachChannel(channel);
-            engine->setObjectOwnership(&clientInstance, QQmlEngine::CppOwnership);
-            return &clientInstance;
-        });
-    }
-    ~TestSetup() = default;
-public slots:
-    void qmlEngineAvailable(QQmlEngine *engine)
-    {
-        engine->rootContext()->setContextProperty("qVersion", QT_VERSION);
-    }
-};
+int main(int argc, char **argv)
+{
+	QTEST_SET_MAIN_SOURCE_PATH
+
+	TestSetup setup(std::make_shared<QGrpcChannel>(echoServerAddressNative, grpc::InsecureChannelCredentials()));
+	return quick_test_main_with_setup(argc, argv, "qtgrpc_qml_test_native_socket", nullptr, &setup);
+}
