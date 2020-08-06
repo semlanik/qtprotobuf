@@ -183,7 +183,7 @@ file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.pr
  ...
  ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofileN.proto)
 # Function below generates source files for specified PROTO_FILES,
-# and link them to the MyTarget as static library 
+# and link them to the MyTarget as static library
 add_executable(MyTarget main.cpp) # Add your target here
 qtprotobuf_generate(TARGET MyTarget
 OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
@@ -268,8 +268,9 @@ qtprotobuf_link_target is cmake helper function that links generated protobuf ta
 
 *QT_PROTOBUF_EXECUTABLE* - contains full path to QtProtobuf generator add_executable
 
-</br>
->**Note:** In case if you use static QtProtobuf not with cmake/qmake build system, you additionaly **need manually** add QT_PROTOBUF_STATIC compiler definition
+*QT_PROTOBUF_NATIVE_GRPC_CHANNEL* - build an additional channel wrapping native gGRPC C++ library (**Note:** Additional linking to gRPC is required)
+
+> **Note:** In case if you use static QtProtobuf not with cmake/qmake build system, you additionaly **need manually** add QT_PROTOBUF_STATIC compiler definition
 
 ## Integration with qmake project
 

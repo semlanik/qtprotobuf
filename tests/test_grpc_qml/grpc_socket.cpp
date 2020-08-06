@@ -25,6 +25,14 @@
 
 #include "test.h"
 
-QUrl TestSetup::m_echoServerAddress("http://localhost:50051", QUrl::StrictMode);
+#include <QGrpcChannel>
 
-QUICK_TEST_MAIN_WITH_SETUP(qtgrpc_qml_test, TestSetup)
+const QString echoServerSocket("unix:///tmp/test.sock");
+
+int main(int argc, char **argv)
+{
+	QTEST_SET_MAIN_SOURCE_PATH
+
+	TestSetup setup(std::make_shared<QGrpcChannel>(echoServerSocket, grpc::InsecureChannelCredentials()));
+	return quick_test_main_with_setup(argc, argv, "qtgrpc_qml_test_native_socket", nullptr, &setup);
+}
