@@ -40,6 +40,9 @@ QQuickGrpcSubscription::QQuickGrpcSubscription(QObject *parent) : QObject(parent
 
 QQuickGrpcSubscription::~QQuickGrpcSubscription()
 {
+    if (!m_subscription.isNull()) {
+        m_subscription->cancel();
+    }
     delete m_returnValue;
 }
 

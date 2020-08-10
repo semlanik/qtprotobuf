@@ -98,6 +98,29 @@ TestCase {
         }
     }
 
+    Loader {
+        id: subscriptionLoader
+        active: false
+        sourceComponent: Component {
+            GrpcSubscription {
+                property bool ok: true
+                property int updateCount: 0
+                enabled: true
+                client: TestServiceClient
+                method: "testMethodServerStream"
+                argument: stringMsg
+                onUpdated: {
+                    ++updateCount;
+                    ok = ok && value.testFieldString === ("Test string" + updateCount)
+                }
+                onError: {
+                    console.log("Subscription error: " + status.code + " " + status.message)
+                    ok = false;
+                }
+            }
+        }
+    }
+
     function test_stringEchoTest() {
         var called = false;
         var errorCalled = false;
@@ -169,5 +192,13 @@ TestCase {
         })
         wait(300)
         compare(called && !errorCalled, true, "testMethodNonCompatibleArgRet was not called proper way")
+    }
+
+    function test_1loader() {//This test has to be called first to fail other tests in case if it fails
+        subscriptionLoader.active = true;
+        wait(1500);
+        compare(subscriptionLoader.item.ok, true, "Subscription data failed")
+        compare(subscriptionLoader.item.updateCount, 1, "Subscription failed, update was not called right amount times")
+        subscriptionLoader.active = false;
     }
 }
