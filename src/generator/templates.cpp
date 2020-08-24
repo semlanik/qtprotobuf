@@ -284,8 +284,8 @@ const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $
                                                  "{\n";
 const char *Templates::QObjectMacro = "Q_OBJECT";
 const char *Templates::ClientMethodDeclarationSyncTemplate = "QtProtobuf::QGrpcStatus $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
-const char *Templates::ClientMethodDeclarationAsyncTemplate = "QtProtobuf::QGrpcAsyncReply *$method_name$(const $param_type$ &$param_name$);\n";
-const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcAsyncReply *)> &callback);\n";
+const char *Templates::ClientMethodDeclarationAsyncTemplate = "QtProtobuf::QGrpcAsyncReplyShared $method_name$(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcAsyncReplyShared)> &callback);\n";
 const char *Templates::ClientMethodDeclarationQmlTemplate = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, const QJSValue &callback, const QJSValue &errorCallback);\n";
 
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
@@ -298,14 +298,14 @@ const char *Templates::ClientMethodDefinitionSyncTemplate = "\nQtProtobuf::QGrpc
                                                             "{\n"
                                                             "    return call(\"$method_name$\", $param_name$, $return_name$);\n"
                                                             "}\n";
-const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nQtProtobuf::QGrpcAsyncReply *$classname$::$method_name$(const $param_type$ &$param_name$)\n"
+const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nQtProtobuf::QGrpcAsyncReplyShared $classname$::$method_name$(const $param_type$ &$param_name$)\n"
                                                              "{\n"
                                                              "    return call(\"$method_name$\", $param_name$);\n"
                                                              "}\n";
-const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QGrpcAsyncReply *)> &callback)\n"
+const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QGrpcAsyncReplyShared)> &callback)\n"
                                                               "{\n"
-                                                              "    QtProtobuf::QGrpcAsyncReply *reply = call(\"$method_name$\", $param_name$);\n"
-                                                              "    QObject::connect(reply, &QtProtobuf::QGrpcAsyncReply::finished, context, [reply, callback]() {\n"
+                                                              "    QtProtobuf::QGrpcAsyncReplyShared reply = call(\"$method_name$\", $param_name$);\n"
+                                                              "    QObject::connect(reply.get(), &QtProtobuf::QGrpcAsyncReply::finished, context, [reply, callback]() {\n"
                                                               "        callback(reply);\n"
                                                               "    });\n"
                                                               "}\n";
@@ -325,7 +325,7 @@ const char *Templates::ClientMethodDefinitionQmlTemplate = "\nvoid $classname$::
                                                            "        qProtoWarning() << \"Unable to call $classname$::$method_name$, it's only callable from JS engine context\";\n"
                                                            "        return;\n"
                                                            "    }\n\n"
-                                                           "    QtProtobuf::QGrpcAsyncReply *reply = call(\"$method_name$\", *$param_name$);\n"
+                                                           "    QtProtobuf::QGrpcAsyncReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
                                                            "    reply->subscribe(jsEngine, [this, reply, callback, jsEngine]() {\n"
                                                            "        auto result = new $return_type$(reply->read<$return_type$>());\n"
                                                            "        qmlEngine(this)->setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);\n"
@@ -344,19 +344,19 @@ const char *Templates::QmlRegisterEnumTypeTemplate = "qmlRegisterUncreatableType
 
 
 const char *Templates::ClientMethodSignalDeclarationTemplate = "Q_SIGNAL void $method_name$Updated(const $return_type$ &);\n";
-const char *Templates::ClientMethodServerStreamDeclarationTemplate = "QtProtobuf::QGrpcSubscription *subscribe$method_name_upper$Updates(const $param_type$ &$param_name$);\n";
-const char *Templates::ClientMethodServerStream2DeclarationTemplate = "QtProtobuf::QGrpcSubscription *subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
-const char *Templates::ClientMethodServerStreamQmlDeclarationTemplate = "Q_INVOKABLE QtProtobuf::QGrpcSubscription *qmlSubscribe$method_name_upper$Updates_p($param_type$ *$param_name$, $return_type$ *$return_name$);\n";
+const char *Templates::ClientMethodServerStreamDeclarationTemplate = "QtProtobuf::QGrpcSubscriptionShared subscribe$method_name_upper$Updates(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodServerStream2DeclarationTemplate = "QtProtobuf::QGrpcSubscriptionShared subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
+const char *Templates::ClientMethodServerStreamQmlDeclarationTemplate = "Q_INVOKABLE QtProtobuf::QGrpcSubscriptionShared qmlSubscribe$method_name_upper$Updates_p($param_type$ *$param_name$, $return_type$ *$return_name$);\n";
 
-const char *Templates::ClientMethodServerStreamDefinitionTemplate = "QtProtobuf::QGrpcSubscription *$classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$)\n"
+const char *Templates::ClientMethodServerStreamDefinitionTemplate = "QtProtobuf::QGrpcSubscriptionShared $classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$)\n"
                                                                     "{\n"
                                                                     "    return subscribe(\"$method_name$\", $param_name$);\n"
                                                                     "}\n";
-const char *Templates::ClientMethodServerStream2DefinitionTemplate = "QtProtobuf::QGrpcSubscription *$classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
+const char *Templates::ClientMethodServerStream2DefinitionTemplate = "QtProtobuf::QGrpcSubscriptionShared $classname$::subscribe$method_name_upper$Updates(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
                                                                      "{\n"
                                                                      "    return subscribe(\"$method_name$\", $param_name$, $return_name$);\n"
                                                                      "}\n";
-const char *Templates::ClientMethodServerStreamQmlDefinitionTemplate = "QtProtobuf::QGrpcSubscription *$classname$::qmlSubscribe$method_name_upper$Updates_p($param_type$ *$param_name$, $return_type$ *$return_name$)\n"
+const char *Templates::ClientMethodServerStreamQmlDefinitionTemplate = "QtProtobuf::QGrpcSubscriptionShared $classname$::qmlSubscribe$method_name_upper$Updates_p($param_type$ *$param_name$, $return_type$ *$return_name$)\n"
                                                                        "{\n"
                                                                        "    return subscribe(\"$method_name$\", *$param_name$, QPointer<$return_type$>($return_name$));\n"
                                                                        "}\n";

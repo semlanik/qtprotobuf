@@ -34,12 +34,15 @@
 #include "qgrpccredentials.h"
 #include "qtgrpcglobal.h"
 
+class QThread;
+
 namespace QtProtobuf {
 
 class QGrpcAsyncReply;
 class QGrpcSubscription;
 class QAbstractGrpcClient;
 class QAbstractProtobufSerializer;
+struct QAbstractGrpcChannelPrivate;
 /*!
  * \ingroup QtGrpc
  * \brief The QAbstractGrpcChannel class is interface that represents common gRPC channel functionality.
@@ -85,11 +88,14 @@ public:
     virtual void subscribe(QGrpcSubscription *subscription, const QString &service, QAbstractGrpcClient *client) = 0;
 
     virtual std::shared_ptr<QAbstractProtobufSerializer> serializer() const = 0;
+
+    const QThread *thread() const;
+
 protected:
     //! \private
-    QAbstractGrpcChannel() = default;
+    QAbstractGrpcChannel();
     //! \private
-    virtual ~QAbstractGrpcChannel() = default;
+    virtual ~QAbstractGrpcChannel();
 
     /*!
      * \private
@@ -109,5 +115,6 @@ protected:
     friend class QGrpcSubscription;
 private:
     Q_DISABLE_COPY(QAbstractGrpcChannel)
+    std::unique_ptr<QAbstractGrpcChannelPrivate> dPtr;
 };
 }

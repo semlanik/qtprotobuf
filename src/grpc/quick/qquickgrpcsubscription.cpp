@@ -40,7 +40,7 @@ QQuickGrpcSubscription::QQuickGrpcSubscription(QObject *parent) : QObject(parent
 
 QQuickGrpcSubscription::~QQuickGrpcSubscription()
 {
-    if (!m_subscription.isNull()) {
+    if (m_subscription) {
         m_subscription->cancel();
     }
     delete m_returnValue;
@@ -49,9 +49,9 @@ QQuickGrpcSubscription::~QQuickGrpcSubscription()
 
 void QQuickGrpcSubscription::updateSubscription()
 {
-    if (!m_subscription.isNull()) {
+    if (m_subscription) {
         m_subscription->cancel();
-        m_subscription = nullptr;
+        m_subscription.reset();
     }
 
     if (m_returnValue != nullptr) {
@@ -150,13 +150,13 @@ bool QQuickGrpcSubscription::subscribe()
         return false;
     }
 
-    QGrpcSubscription *subscription = nullptr;
+    QGrpcSubscriptionShared subscription = nullptr;
     bool ok = method.invoke(m_client, Qt::DirectConnection,
-                                      QGenericReturnArgument("QtProtobuf::QGrpcSubscription*", static_cast<void *>(&subscription)),
+                                      QGenericReturnArgument("QtProtobuf::QGrpcSubscriptionShared", static_cast<void *>(&subscription)),
                                       QGenericArgument(method.parameterTypes().at(0).data(), static_cast<const void *>(&argument)),
                                       QGenericArgument(method.parameterTypes().at(1).data(), static_cast<const void *>(&m_returnValue)));
     if (!ok || subscription == nullptr) {
-        errorString = QString("Unable to call ") + m_method + "invalidate subscription.";
+        errorString = QString("Unable to call ") + m_method + " invalidate subscription.";
         qProtoWarning() << errorString;
         error({QGrpcStatus::Unknown, errorString});
         return false;
@@ -164,13 +164,13 @@ bool QQuickGrpcSubscription::subscribe()
 
     m_subscription = subscription;
 
-    connect(m_subscription, &QGrpcSubscription::updated, this, [this](){
+    connect(m_subscription.get(), &QGrpcSubscription::updated, this, [this](){
         updated(qjsEngine(this)->toScriptValue(m_returnValue));
     });
 
-    connect(m_subscription, &QGrpcSubscription::error, this, &QQuickGrpcSubscription::error);//TODO: Probably it's good idea to disable subscription here
+    connect(m_subscription.get(), &QGrpcSubscription::error, this, &QQuickGrpcSubscription::error);//TODO: Probably it's good idea to disable subscription here
 
-    connect(m_subscription, &QGrpcSubscription::finished, this, [this](){ setEnabled(false); });
+    connect(m_subscription.get(), &QGrpcSubscription::finished, this, [this](){ m_subscription.reset(); setEnabled(false); });
 
     return true;
 }

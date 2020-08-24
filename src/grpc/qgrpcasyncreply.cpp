@@ -25,4 +25,15 @@
 
 #include "qgrpcasyncreply.h"
 
+#include <QThread>
+
 using namespace QtProtobuf;
+
+void QGrpcAsyncReply::abort()
+{
+    if (thread() != QThread::currentThread()) {
+        QMetaObject::invokeMethod(this, [this](){m_channel->abort(this);}, Qt::BlockingQueuedConnection);
+    } else {
+        m_channel->abort(this);
+    }
+}

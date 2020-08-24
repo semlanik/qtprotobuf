@@ -57,7 +57,7 @@ AddressBookEngine::AddressBookEngine() : QObject()
                                                                                       QtProtobuf::QGrpcUserPasswordCredentials<>("authorizedUser", QCryptographicHash::hash("test", QCryptographicHash::Md5).toHex())));
     m_client->attachChannel(channel);
     auto subscription = m_client->subscribeContactsUpdates(ListFrame());
-    connect(subscription, &QtProtobuf::QGrpcSubscription::updated, this, [this, subscription]() {
+    connect(subscription.get(), &QtProtobuf::QGrpcSubscription::updated, this, [this, subscription]() {
         m_contacts->reset(subscription->read<Contacts>().list());
     });
     m_client->subscribeCallStatusUpdates(qtprotobuf::examples::None(), QPointer<CallStatus>(&m_callStatus));
