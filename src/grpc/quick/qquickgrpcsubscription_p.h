@@ -183,7 +183,7 @@ private:
     bool m_enabled;
     QString m_method;
     QPointer<QObject> m_argument;
-    QPointer<QGrpcSubscription> m_subscription;
+    std::shared_ptr<QGrpcSubscription> m_subscription;
     QObject *m_returnValue;
 };
 

@@ -73,12 +73,12 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
                                                                                       QtProtobuf::QGrpcUserPasswordCredentials<>(name, QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())));
 
     m_client->attachChannel(channel);
-    QtProtobuf::QGrpcSubscription *subscription = m_client->subscribeMessageListUpdates(None());
-    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::error, this, [subscription] {
+    QtProtobuf::QGrpcSubscriptionShared subscription = m_client->subscribeMessageListUpdates(None());
+    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::error, this, [subscription] {
         qCritical() << "Subscription error, cancel";
         subscription->cancel();
     });
-    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::updated, this, [this, name, subscription]() {
+    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::updated, this, [this, name, subscription]() {
         if (m_userName != name) {
             m_userName = name;
             userNameChanged();

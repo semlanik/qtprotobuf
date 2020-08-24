@@ -31,6 +31,7 @@
 #include <QTimer>
 #include <QFile>
 #include <QCryptographicHash>
+#include <QThread>
 
 #include <QCoreApplication>
 #include <gtest/gtest.h>
@@ -64,7 +65,7 @@ TEST_F(ClientTest, CheckMethodsGeneration)
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
     testClient.testMethod(request, result);
     testClient.testMethod(request);
-    testClient.testMethod(request, &testClient, [](QGrpcAsyncReply *) {});
+    testClient.testMethod(request, &testClient, [](QGrpcAsyncReplyShared) {});
     delete result;
 }
 
@@ -89,9 +90,10 @@ TEST_F(ClientTest, StringEchoAsyncTest)
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
 
-    QGrpcAsyncReply *reply = testClient.testMethod(request);
-    QObject::connect(reply, &QGrpcAsyncReply::finished, &m_app, [reply, &result, &waiter]() {
+    QGrpcAsyncReplyShared reply = testClient.testMethod(request);
+    QObject::connect(reply.get(), &QGrpcAsyncReply::finished, &m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
+        reply->deleteLater();
         waiter.quit();
     });
 
@@ -107,7 +109,7 @@ TEST_F(ClientTest, StringEchoAsync2Test)
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
-    testClient.testMethod(request, &m_app, [&result, &waiter](QGrpcAsyncReply *reply) {
+    testClient.testMethod(request, &m_app, [&result, &waiter](QGrpcAsyncReplyShared reply) {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
@@ -124,21 +126,22 @@ TEST_F(ClientTest, StringEchoImmediateAsyncAbortTest)
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
     QEventLoop waiter;
-    QGrpcAsyncReply *reply = testClient.testMethod(request);
+    QGrpcAsyncReplyShared reply = testClient.testMethod(request);
 
     result.setTestFieldString("Result not changed by echo");
-    QObject::connect(reply, &QGrpcAsyncReply::finished, &m_app, [&waiter, &result, reply]() {
+    QObject::connect(reply.get(), &QGrpcAsyncReply::finished, &m_app, [&waiter, &result, reply]() {
         result = reply->read<SimpleStringMessage>();
+        reply->deleteLater();
         waiter.quit();
     });
 
     QGrpcStatus::StatusCode asyncStatus = QGrpcStatus::StatusCode::Ok;
-    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&asyncStatus](const QGrpcStatus &status) {
+    QObject::connect(reply.get(), &QGrpcAsyncReply::error, [&asyncStatus](const QGrpcStatus &status) {
         asyncStatus = status.code();
     });
 
     QGrpcStatus::StatusCode clientStatus = QGrpcStatus::StatusCode::Ok;
-    QObject::connect(&testClient, &TestServiceClient::error, reply, [&clientStatus](const QGrpcStatus &status) {
+    QObject::connect(&testClient, &TestServiceClient::error, [&clientStatus](const QGrpcStatus &status) {
         clientStatus = status.code();
         std::cerr << status.code() << ":" << status.message().toStdString();
     });
@@ -160,20 +163,20 @@ TEST_F(ClientTest, StringEchoDeferredAsyncAbortTest)
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
     QEventLoop waiter;
-    QGrpcAsyncReply *reply = testClient.testMethod(request);
+    QGrpcAsyncReplyShared reply = testClient.testMethod(request);
 
     result.setTestFieldString("Result not changed by echo");
     bool errorCalled = false;
     reply = testClient.testMethod(request);
-    QObject::connect(reply, &QGrpcAsyncReply::finished, &m_app, [reply, &result, &waiter]() {
+    QObject::connect(reply.get(), &QGrpcAsyncReply::finished, &m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
-    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&errorCalled]() {
+    QObject::connect(reply.get(), &QGrpcAsyncReply::error, [&errorCalled]() {
         errorCalled = true;
     });
 
-    QTimer::singleShot(500, reply, &QGrpcAsyncReply::abort);
+    QTimer::singleShot(500, reply.get(), &QGrpcAsyncReply::abort);
     QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
 
     waiter.exec();
@@ -194,7 +197,7 @@ TEST_F(ClientTest, StringEchoStreamTest)
 
     int i = 0;
     auto subscription = testClient.subscribeTestMethodServerStreamUpdates(request);
-    QObject::connect(subscription, &QGrpcSubscription::updated, &m_app, [&result, &i, &waiter, subscription]() {
+    QObject::connect(subscription.get(), &QGrpcSubscription::updated, &m_app, [&result, &i, &waiter, subscription]() {
         SimpleStringMessage ret = subscription->read<SimpleStringMessage>();
 
         ++i;
@@ -225,8 +228,8 @@ TEST_F(ClientTest, StringEchoStreamAbortTest)
     QEventLoop waiter;
 
     int i = 0;
-    QtProtobuf::QGrpcSubscription *subscription = testClient.subscribeTestMethodServerStreamUpdates(request);
-    QObject::connect(subscription, &QGrpcSubscription::updated, &m_app, [&result, &i, &waiter, subscription]() {
+    auto subscription = testClient.subscribeTestMethodServerStreamUpdates(request);
+    QObject::connect(subscription.get(), &QGrpcSubscription::updated, &m_app, [&result, &i, &waiter, subscription]() {
         SimpleStringMessage ret = subscription->read<SimpleStringMessage>();
         ++i;
 
@@ -257,22 +260,22 @@ TEST_F(ClientTest, StringEchoStreamAbortByTimerTest)
 
 
     int i = 0;
-    QtProtobuf::QGrpcSubscription *subscription = testClient.subscribeTestMethodServerStreamUpdates(request);
-    QTimer::singleShot(3500, subscription, [subscription]() {
+    auto subscription = testClient.subscribeTestMethodServerStreamUpdates(request);
+    QTimer::singleShot(3500, subscription.get(), [subscription]() {
         subscription->cancel();
     });
 
     bool isFinished = false;
-    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
+    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
         isFinished = true;
     });
 
     bool isError = false;
-    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::error, [&isError]() {
+    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::error, [&isError]() {
         isError = true;
     });
 
-    QObject::connect(subscription, &QGrpcSubscription::updated, &m_app, [&result, &i, subscription]() {
+    QObject::connect(subscription.get(), &QGrpcSubscription::updated, &m_app, [&result, &i, subscription]() {
         SimpleStringMessage ret = subscription->read<SimpleStringMessage>();
         ++i;
 
@@ -330,7 +333,7 @@ TEST_F(ClientTest, HugeBlobEchoStreamTest)
 
     auto subscription = testClient.subscribeTestMethodBlobServerStreamUpdates(request);
 
-    QObject::connect(subscription, &QGrpcSubscription::updated, &m_app, [&result, &waiter, subscription]() {
+    QObject::connect(subscription.get(), &QGrpcSubscription::updated, &m_app, [&result, &waiter, subscription]() {
         BlobMessage ret = subscription->read<BlobMessage>();
         result.setTestBytes(ret.testBytes());
         waiter.quit();
@@ -353,8 +356,8 @@ TEST_F(ClientTest, StatusMessageAsyncTest)
     QEventLoop waiter;
     QString statusMessage;
 
-    QGrpcAsyncReply* reply = testClient.testMethodStatusMessage(request);
-    QObject::connect(reply, &QGrpcAsyncReply::error, reply, [&asyncStatus, &waiter, &statusMessage](const QGrpcStatus &status) {
+    QGrpcAsyncReplyShared reply = testClient.testMethodStatusMessage(request);
+    QObject::connect(reply.get(), &QGrpcAsyncReply::error, [&asyncStatus, &waiter, &statusMessage](const QGrpcStatus &status) {
         asyncStatus = status.code();
         statusMessage = status.message();
         waiter.quit();
@@ -540,7 +543,7 @@ TEST_F(ClientTest, MultipleSubscriptionsTest)
     ASSERT_EQ(subscription, subscriptionNext);
 
     int i = 0;
-    QObject::connect(subscription, &QGrpcSubscription::updated, &m_app, [&result, &i, subscription]() {
+    QObject::connect(subscription.get(), &QGrpcSubscription::updated, &m_app, [&result, &i, subscription]() {
         SimpleStringMessage ret = subscription->read<SimpleStringMessage>();
         ++i;
 
@@ -568,12 +571,12 @@ TEST_F(ClientTest, MultipleSubscriptionsCancelTest)
     ASSERT_EQ(subscription, subscriptionNext);
 
     bool isFinished = false;
-    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
+    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
         isFinished = true;
     });
 
     bool isFinishedNext = false;
-    QObject::connect(subscriptionNext, &QtProtobuf::QGrpcSubscription::finished, [&isFinishedNext]() {
+    QObject::connect(subscriptionNext.get(), &QtProtobuf::QGrpcSubscription::finished, [&isFinishedNext]() {
         isFinishedNext = true;
     });
 
@@ -590,12 +593,12 @@ TEST_F(ClientTest, MultipleSubscriptionsCancelTest)
     ASSERT_EQ(subscription, subscriptionNext);
 
     isFinished = false;
-    QObject::connect(subscription, &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
+    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
         isFinished = true;
     });
 
     isFinishedNext = false;
-    QObject::connect(subscriptionNext, &QtProtobuf::QGrpcSubscription::finished, [&isFinishedNext]() {
+    QObject::connect(subscriptionNext.get(), &QtProtobuf::QGrpcSubscription::finished, [&isFinishedNext]() {
         isFinishedNext = true;
     });
 
@@ -615,3 +618,130 @@ TEST_F(ClientTest, NonCompatibleArgRetTest)
     ASSERT_STREQ(result->testFieldString().toStdString().c_str(), "2048");
     delete result;
 }
+
+TEST_F(ClientTest, StringEchoThreadTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, QGrpcInsecureChannelCredentials() | QGrpcInsecureCallCredentials()));
+    SimpleStringMessage request;
+    QPointer<SimpleStringMessage> result(new SimpleStringMessage);
+    request.setTestFieldString("Hello beach from thread!");
+    bool ok = false;
+    std::shared_ptr<QThread> thread(QThread::create([&](){
+        ok = testClient.testMethod(request, result) == QGrpcStatus::Ok;
+    }));
+
+    thread->start();
+    QEventLoop wait;
+    QTimer::singleShot(2000, &wait, &QEventLoop::quit);
+    wait.exec();
+
+    ASSERT_TRUE(ok);
+    ASSERT_STREQ(result->testFieldString().toStdString().c_str(), "Hello beach from thread!");
+    delete result;
+
+    //Delete result pointer in between call operations
+    result = new SimpleStringMessage();
+    ok = false;
+    thread.reset(QThread::create([&](){
+        ok = testClient.testMethod(request, result) == QGrpcStatus::Ok;
+    }));
+
+    thread->start();
+    delete result;
+    QTimer::singleShot(2000, &wait, &QEventLoop::quit);
+    wait.exec();
+
+    ASSERT_TRUE(!ok);
+}
+
+
+TEST_F(ClientTest, StringEchoAsyncThreadTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, QGrpcInsecureChannelCredentials() | QGrpcInsecureCallCredentials()));
+    SimpleStringMessage request;
+    SimpleStringMessage result;
+    request.setTestFieldString("Hello beach from thread!");
+
+    bool threadsOk = true;
+    bool replyDestroyed = true;
+    std::shared_ptr<QThread> thread(QThread::create([&](){
+        QEventLoop waiter;
+        QThread *validThread = QThread::currentThread();
+        QGrpcAsyncReplyShared reply = testClient.testMethod(request);
+        QObject::connect(reply.get(), &QObject::destroyed, [&replyDestroyed]{replyDestroyed = true;});
+        QObject::connect(reply.get(), &QGrpcAsyncReply::finished, &waiter, [reply, &result, &waiter, &threadsOk, validThread]() {
+            threadsOk &= reply->thread() != QThread::currentThread();
+            threadsOk &= validThread == QThread::currentThread();
+            result = reply->read<SimpleStringMessage>();
+            waiter.quit();
+        });
+        threadsOk &= reply->thread() != QThread::currentThread();
+        waiter.exec();
+    }));
+
+    thread->start();
+    QEventLoop wait;
+    QTimer::singleShot(2000, &wait, &QEventLoop::quit);
+    wait.exec();
+    ASSERT_TRUE(replyDestroyed);
+    ASSERT_TRUE(threadsOk);
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Hello beach from thread!");
+}
+
+TEST_F(ClientTest, StringEchoStreamThreadTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, QGrpcInsecureCallCredentials() | QGrpcInsecureChannelCredentials()));
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("Stream");
+
+    int i = 0;
+    bool threadsOk = true;
+    std::shared_ptr<QThread> thread(QThread::create([&](){
+        QEventLoop waiter;
+        QThread *validThread = QThread::currentThread();
+        auto subscription = testClient.subscribeTestMethodServerStreamUpdates(request);
+        QObject::connect(subscription.get(), &QGrpcSubscription::updated, &waiter, [&result, &i, &waiter, subscription, &threadsOk, validThread]() {
+            SimpleStringMessage ret = subscription->read<SimpleStringMessage>();
+            result.setTestFieldString(result.testFieldString() + ret.testFieldString());
+            ++i;
+            if (i == 4) {
+                waiter.quit();
+            }
+            threadsOk &= subscription->thread() != QThread::currentThread();
+            threadsOk &= validThread == QThread::currentThread();
+        });
+
+        threadsOk &= subscription->thread() != QThread::currentThread();
+        QTimer::singleShot(20000, &waiter, &QEventLoop::quit);
+        waiter.exec();
+    }));
+
+    thread->start();
+    QEventLoop wait;
+    QObject::connect(thread.get(), &QThread::finished, &wait, [&wait]{ wait.quit(); });
+    QTimer::singleShot(20000, &wait, &QEventLoop::quit);
+    wait.exec();
+
+    ASSERT_TRUE(threadsOk);
+    ASSERT_EQ(i, 4);
+    ASSERT_STREQ(result.testFieldString().toStdString().c_str(), "Stream1Stream2Stream3Stream4");
+}
+
+TEST_F(ClientTest, AttachChannelThreadTest)
+{
+    std::shared_ptr<QGrpcHttp2Channel> channel;
+    std::shared_ptr<QThread> thread(QThread::create([&](){
+        channel = std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, QGrpcInsecureCallCredentials() | QGrpcInsecureChannelCredentials());
+    }));
+    thread->start();
+    QThread::msleep(1000);
+    TestServiceClient testClient;
+    EXPECT_DEATH({
+                     testClient.attachChannel(channel);
+                 }, ".*");
+}
+

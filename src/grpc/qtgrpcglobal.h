@@ -62,3 +62,12 @@
         #define Q_GRPC_IMPORT_QUICK_PLUGIN()
     #endif //QT_PROTOBUF_STATIC
 #endif //Q_PROTOBUF_IMPORT_QUICK_PLUGIN
+
+#include <memory>
+
+namespace QtProtobuf {
+class QGrpcAsyncReply;
+class QGrpcSubscription;
+using QGrpcAsyncReplyShared = std::shared_ptr<QGrpcAsyncReply>;
+using QGrpcSubscriptionShared = std::shared_ptr<QGrpcSubscription>;
+}

@@ -27,8 +27,23 @@
 
 #include "qgrpcasyncreply.h"
 #include "qgrpcsubscription.h"
+#include <QThread>
 
-using namespace QtProtobuf;
+namespace QtProtobuf {
+
+struct QAbstractGrpcChannelPrivate {
+    QAbstractGrpcChannelPrivate() : thread(QThread::currentThread()) {
+        assert(thread != nullptr && "QAbstractGrpcChannel has to be created in QApplication context");
+    }
+    const QThread *thread;
+};
+
+QAbstractGrpcChannel::QAbstractGrpcChannel() : dPtr(new QAbstractGrpcChannelPrivate)
+{
+
+}
+
+QAbstractGrpcChannel::~QAbstractGrpcChannel() = default;
 
 void QAbstractGrpcChannel::abort(QGrpcAsyncReply *reply)
 {
@@ -41,4 +56,11 @@ void QAbstractGrpcChannel::cancel(QGrpcSubscription *subscription)
 {
     assert(subscription != nullptr);
     subscription->finished();
+}
+
+const QThread *QAbstractGrpcChannel::thread() const
+{
+    return dPtr->thread;
+}
+
 }

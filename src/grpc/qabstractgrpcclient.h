@@ -61,6 +61,7 @@ using SubscriptionHandler = std::function<void(const QByteArray&)>;
  * \ingroup QtGrpc
  * \brief The QAbstractGrpcClient class is bridge between gRPC clients and channels. QAbstractGrpcClient provides set of
  *        bridge functions for client classes generated out of protobuf services.
+ * \details QAbstractGrpcClient provides threads safety for subscribe and call methods of generated clients.
  */
 class Q_GRPC_EXPORT QAbstractGrpcClient : public QObject
 {
@@ -69,6 +70,8 @@ public:
     /*!
      * \brief Attaches \a channel to client as transport layer for gRPC. Parameters and return values will be serialized
      *        to supported by channel format.
+     * \note \b Warning: QtGrpc doesn't guarantie thread safety on channel level.
+     *       You have to be confident that channel routines are working in the same thread as QAbstractGrpcClient.
      * \see QAbstractGrcpChannel
      * \param channel Shared pointer to channel will be used as transport layer for gRPC
      */
@@ -119,7 +122,7 @@ protected:
      * \param[in] arg Protobuf message argument for \p method
      */
     template<typename A>
-    QGrpcAsyncReply *call(const QString &method, const A &arg) {
+    QGrpcAsyncReplyShared call(const QString &method, const A &arg) {
         return call(method, arg.serialize(serializer()));
     }
 
@@ -132,7 +135,7 @@ protected:
      *             update recevied from server-stream
      */
     template<typename A>
-    QGrpcSubscription *subscribe(const QString &method, const A &arg) {
+    QGrpcSubscriptionShared subscribe(const QString &method, const A &arg) {
         return subscribe(method, arg.serialize(serializer()));
     }
 
@@ -147,7 +150,7 @@ protected:
      *       updated message recevied from server-stream
      */
     template<typename A, typename R>
-    QGrpcSubscription *subscribe(const QString &method, const A &arg, const QPointer<R> &ret) {
+    QGrpcSubscriptionShared subscribe(const QString &method, const A &arg, const QPointer<R> &ret) {
         if (ret.isNull()) {
             static const QString nullPointerError("Unable to subscribe method: %1. Pointer to return data is null");
             error({QGrpcStatus::InvalidArgument, nullPointerError.arg(method)});
@@ -184,10 +187,10 @@ private:
     QGrpcStatus call(const QString &method, const QByteArray &arg, QByteArray &ret);
 
     //!\private
-    QGrpcAsyncReply *call(const QString &method, const QByteArray &arg);
+    QGrpcAsyncReplyShared call(const QString &method, const QByteArray &arg);
 
     //!\private
-    QGrpcSubscription *subscribe(const QString &method, const QByteArray &arg, const QtProtobuf::SubscriptionHandler &handler = {});
+    QGrpcSubscriptionShared subscribe(const QString &method, const QByteArray &arg, const QtProtobuf::SubscriptionHandler &handler = {});
 
     /*!
      * \private
