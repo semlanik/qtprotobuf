@@ -270,13 +270,11 @@ TEST_F(WellknowntypesTest, TimestampMessageSerializationTest) {
     qtprotobufnamespace::wellknowntypes::tests::TimestampMessage msg;
 
     QDateTime deserializedDateTime;
-    QDateTime originalDateTime;
+    QDateTime originalDateTime = QDateTime::currentDateTime();
 
-    qint64 secsSinceEpoch = QDateTime::currentSecsSinceEpoch();
-    originalDateTime.setSecsSinceEpoch(secsSinceEpoch);
-    msg.setTestField({secsSinceEpoch, 0, nullptr});
-    ASSERT_EQ(msg.testField().seconds(), secsSinceEpoch);
-    ASSERT_EQ(msg.testField().nanos(), 0);
+    msg.setTestField({originalDateTime, nullptr});
+    ASSERT_EQ(msg.testField().seconds(), originalDateTime.toMSecsSinceEpoch() / 1000);
+    ASSERT_EQ(msg.testField().nanos(), (originalDateTime.toMSecsSinceEpoch() % 1000) * 1000);
 
     QByteArray val = msg.serialize(serializer.get());
     msg.setTestField({0, 0, nullptr});
@@ -285,8 +283,9 @@ TEST_F(WellknowntypesTest, TimestampMessageSerializationTest) {
     ASSERT_EQ(msg.testField().nanos(), 0);
 
     msg.deserialize(serializer.get(), val);
-    deserializedDateTime.setSecsSinceEpoch(msg.testField().seconds());
+    deserializedDateTime = msg.testField();
 
+    ASSERT_EQ(deserializedDateTime.toMSecsSinceEpoch(), originalDateTime.toMSecsSinceEpoch());
     ASSERT_TRUE(deserializedDateTime == originalDateTime);
 }
 }

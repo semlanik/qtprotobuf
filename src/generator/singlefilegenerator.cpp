@@ -98,7 +98,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
     externalIncludes.insert("QString");
 
     bool hasQtTypes = false;
-    common::iterateMessages(file, [&externalIncludes, &hasQtTypes](const ::google::protobuf::Descriptor *message){
+    common::iterateMessages(file, [&externalIncludes, &hasQtTypes](const ::google::protobuf::Descriptor *message) {
         for (int i = 0; i < message->field_count(); i++) {
             auto field = message->field(i);
             if (field->type() == ::google::protobuf::FieldDescriptor::TYPE_MESSAGE
@@ -107,6 +107,9 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
                 externalIncludes.insert(field->message_type()->name());
                 hasQtTypes = true;
             }
+        }
+        if (message->full_name() == "google.protobuf.Timestamp") {
+            externalIncludes.insert("QDateTime");
         }
     });
 
