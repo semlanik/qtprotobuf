@@ -207,6 +207,13 @@ GENERATED_HEADERS ${GENERATED_HEADERS})
 ...
 ```
 
+In case if you somehow avoided ```qtprotobuf_generate``` usage, you need manualy link QtProtobuf libraries used by project, e.g.:
+```cmake
+...
+target_link_libraries(${TARGET} QtProtobuf::QtProtobuf QtProtobuf::QtGrpc QtProtobuf::QtProtobufWellKnownTypes)
+...
+```
+
 ### CMake functions reference
 #### qtprotobuf_generate
 
