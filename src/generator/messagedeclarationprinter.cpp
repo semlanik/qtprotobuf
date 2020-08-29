@@ -122,6 +122,11 @@ void MessageDeclarationPrinter::printConstructors()
     for (int i = 0; i <= mDescriptor->field_count(); i++) {
         printConstructor(i);
     }
+
+    if (mDescriptor->full_name() == std::string("google.protobuf.Timestamp")) {
+        mPrinter->Print("Timestamp(const QDateTime &datetime, QObject *parent = nullptr);\n"
+                        "operator QDateTime() const;\n");
+    }
 }
 
 void MessageDeclarationPrinter::printConstructor(int fieldCount)

@@ -114,6 +114,17 @@ void MessageDefinitionPrinter::printConstructors() {
         printInitializationList(i);
         mPrinter->Print(Templates::ConstructorContentTemplate);
     }
+
+    if (mDescriptor->full_name() == std::string("google.protobuf.Timestamp")) {
+        mPrinter->Print("Timestamp::Timestamp(const QDateTime &datetime, QObject *parent) : QObject(parent)\n"
+                        ", m_seconds(datetime.toMSecsSinceEpoch() / 1000)\n"
+                        ", m_nanos((datetime.toMSecsSinceEpoch() % 1000) * 1000)\n"
+                        "{}\n"
+                        "Timestamp::operator QDateTime() const\n"
+                        "{\n"
+                        "    return QDateTime::fromMSecsSinceEpoch(m_seconds * 1000 + m_nanos / 1000);\n"
+                        "}\n");
+    }
 }
 
 void MessageDefinitionPrinter::printConstructor(int fieldCount)
