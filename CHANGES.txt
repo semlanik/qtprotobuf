@@ -1,3 +1,18 @@
+2020-08-31 version 0.5.0 (generator/QtProtobuf/QtGrpc)
+    QtProtobuf
+    * Change the qmake executable lookup way
+    * Complete implementation of Qt types support
+    * Add Conan support
+    * Rework static build
+    QrGrpc
+    * Apply thread safety to grpc calls and subscription
+    * Add subscription cancellation for QQuickGrpcSubscription
+    * Reset all fields to default values before serialization
+    * Fix QML GRPC functions generator template
+    * Add "returnValue" property to qml GrpcSubscription
+    generator
+    * Add conversion of google.protobuf.Timestamp
+
 2020-06-30 version 0.4.0 (generator/QtProtobuf/QtGrpc)
 
     QtProtobuf

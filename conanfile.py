@@ -4,7 +4,7 @@ import os
 
 class QtProtobufConan(ConanFile):
     name = "qtprotobuf"
-    version = "0.4.0"
+    version = "0.5.0"
     license = "MIT"
     url = "https://github.com/semlanik/qtprotobuf"
     description = ("gRPC and Protobuf generator and bindings for Qt framework")
