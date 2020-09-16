@@ -149,14 +149,15 @@ QGrpcSubscriptionShared QAbstractGrpcClient::subscribe(const QString &method, co
             return *it; //If subscription already exists return it for handling
         }
 
-        connect(subscription.get(), &QGrpcSubscription::error, this, [this, subscription](const QGrpcStatus &status) {
+        auto errorConnection = std::make_shared<QMetaObject::Connection>();
+        *errorConnection = connect(subscription.get(), &QGrpcSubscription::error, this, [this, subscription](const QGrpcStatus &status) {
             qProtoWarning() << subscription->method() << "call" << dPtr->service << "subscription error: " << status.message();
             error(status);
             dPtr->channel->subscribe(subscription.get(), dPtr->service, this);
         });
 
         auto finishedConnection = std::make_shared<QMetaObject::Connection>();
-        *finishedConnection = connect(subscription.get(), &QGrpcSubscription::finished, this, [this, subscription, finishedConnection]() mutable {
+        *finishedConnection = connect(subscription.get(), &QGrpcSubscription::finished, this, [this, subscription, errorConnection, finishedConnection]() mutable {
             qProtoWarning() << subscription->method() << "call" << dPtr->service << "subscription finished";
             auto it = std::find_if(std::begin(dPtr->activeSubscriptions), std::end(dPtr->activeSubscriptions), [subscription](QGrpcSubscriptionShared activeSubscription) {
                return *activeSubscription == *subscription;
@@ -165,6 +166,7 @@ QGrpcSubscriptionShared QAbstractGrpcClient::subscribe(const QString &method, co
             if (it != std::end(dPtr->activeSubscriptions)) {
                 dPtr->activeSubscriptions.erase(it);
             }
+            QObject::disconnect(*errorConnection);
             QObject::disconnect(*finishedConnection);
             subscription.reset();
         });
