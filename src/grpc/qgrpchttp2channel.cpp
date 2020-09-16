@@ -110,6 +110,7 @@ struct QGrpcHttp2ChannelPrivate {
     std::unique_ptr<QAbstractGrpcCredentials> credentials;
     QSslConfiguration sslConfig;
     std::unordered_map<QNetworkReply *, ExpectedData> activeStreamReplies;
+    QObject lambdaContext;
 
     QNetworkReply *post(const QString &method, const QString &service, const QByteArray &args, bool stream = false) {
         QUrl callUrl = url;
@@ -155,6 +156,8 @@ struct QGrpcHttp2ChannelPrivate {
     static void abortNetworkReply(QNetworkReply *networkReply) {
         if (networkReply->isRunning()) {
             networkReply->abort();
+        } else {
+            networkReply->deleteLater();
         }
     }
 
@@ -192,8 +195,6 @@ struct QGrpcHttp2ChannelPrivate {
     static int getExpectedDataSize(const QByteArray &container) {
         return qFromBigEndian(*reinterpret_cast<const int *>(container.data() + 1)) + GrpcMessageSizeHeaderSize;
     }
-
-    QObject lambdaContext;
 };
 
 }
@@ -222,6 +223,7 @@ QGrpcStatus QGrpcHttp2Channel::call(const QString &method, const QString &servic
     QGrpcStatus::StatusCode grpcStatus = QGrpcStatus::StatusCode::Unknown;
     ret = dPtr->processReply(networkReply, grpcStatus);
 
+    networkReply->deleteLater();
     qProtoDebug() << __func__ << "RECV: " << ret.toHex() << "grpcStatus" << grpcStatus;
     return {grpcStatus, QString::fromUtf8(networkReply->rawHeader(GrpcStatusMessage))};
 }
@@ -251,6 +253,7 @@ void QGrpcHttp2Channel::call(const QString &method, const QString &service, cons
             reply->setData({});
             reply->error({grpcStatus, QString::fromUtf8(networkReply->rawHeader(GrpcStatusMessage))});
         }
+        networkReply->deleteLater();
     });
 
     *abortConnection = QObject::connect(reply, &QGrpcAsyncReply::error, networkReply, [networkReply, connection, abortConnection] (const QGrpcStatus &status) {
@@ -261,7 +264,7 @@ void QGrpcHttp2Channel::call(const QString &method, const QString &service, cons
             if (*abortConnection) {
                 QObject::disconnect(*abortConnection);
             }
-            QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
+            networkReply->deleteLater();
         }
     });
 }
@@ -271,7 +274,7 @@ void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString
     assert(subscription != nullptr);
     QNetworkReply *networkReply = dPtr->post(subscription->method(), service, subscription->arg(), true);
 
-    std::shared_ptr<QMetaObject::Connection> connection(new QMetaObject::Connection);
+    std::shared_ptr<QMetaObject::Connection> finishConnection(new QMetaObject::Connection);
     std::shared_ptr<QMetaObject::Connection> abortConnection(new QMetaObject::Connection);
     std::shared_ptr<QMetaObject::Connection> readConnection(new QMetaObject::Connection);
     *readConnection = QObject::connect(networkReply, &QNetworkReply::readyRead, subscription, [networkReply, subscription, this]() {
@@ -314,21 +317,22 @@ void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString
         }
     });
 
-    QObject::connect(client, &QAbstractGrpcClient::destroyed, networkReply, [networkReply, connection, abortConnection, readConnection, this]() {
+    QObject::connect(client, &QAbstractGrpcClient::destroyed, networkReply, [networkReply, finishConnection, abortConnection, readConnection, this]() {
         if (*readConnection) {
             QObject::disconnect(*readConnection);
         }
         if (*abortConnection) {
             QObject::disconnect(*abortConnection);
         }
-        if (*connection) {
-            QObject::disconnect(*connection);
+        if (*finishConnection) {
+            QObject::disconnect(*finishConnection);
         }
         dPtr->activeStreamReplies.erase(networkReply);
         QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
+        networkReply->deleteLater();
     });
 
-    *connection = QObject::connect(networkReply, &QNetworkReply::finished, subscription, [subscription, service, networkReply, abortConnection, readConnection, client, this]() {
+    *finishConnection = QObject::connect(networkReply, &QNetworkReply::finished, subscription, [subscription, service, networkReply, abortConnection, readConnection, finishConnection, client, this]() {
         QString errorString = networkReply->errorString();
         QNetworkReply::NetworkError networkError = networkReply->error();
         if (*readConnection) {
@@ -340,7 +344,7 @@ void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString
 
         dPtr->activeStreamReplies.erase(networkReply);
         QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
-
+        networkReply->deleteLater();
         qProtoWarning() << subscription->method() << "call" << service << "subscription finished: " << errorString;
         switch (networkError) {
         case QNetworkReply::RemoteHostClosedError:
@@ -356,9 +360,9 @@ void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString
         }
     });
 
-    *abortConnection = QObject::connect(subscription, &QGrpcSubscription::finished, networkReply, [networkReply, connection, abortConnection, readConnection] {
-        if (*connection) {
-            QObject::disconnect(*connection);
+    *abortConnection = QObject::connect(subscription, &QGrpcSubscription::finished, networkReply, [networkReply, finishConnection, abortConnection, readConnection] {
+        if (*finishConnection) {
+            QObject::disconnect(*finishConnection);
         }
         if (*readConnection) {
             QObject::disconnect(*readConnection);
@@ -367,6 +371,7 @@ void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString
             QObject::disconnect(*abortConnection);
         }
         QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
+        networkReply->deleteLater();
     });
 }
 
