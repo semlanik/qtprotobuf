@@ -745,3 +745,28 @@ TEST_F(ClientTest, AttachChannelThreadTest)
                  }, ".*");
 }
 
+TEST_F(ClientTest, StreamCancelWhileErrorTimeoutTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QGrpcHttp2Channel>(QUrl("http://localhost:50052", QUrl::StrictMode), QGrpcInsecureCallCredentials() | QGrpcInsecureChannelCredentials()));//Invalid port
+    SimpleStringMessage result;
+    SimpleStringMessage request;
+    request.setTestFieldString("Stream");
+
+    QEventLoop waiter;
+
+    bool ok = false;
+    auto subscription = testClient.subscribeTestMethodServerStreamUpdates(request);
+    QObject::connect(subscription.get(), &QGrpcSubscription::finished, &m_app, [&ok, &waiter]() {
+        ok = true;
+        waiter.quit();
+    });
+    subscription->cancel();
+    subscription.reset();
+
+    QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
+    waiter.exec();
+
+    ASSERT_TRUE(ok);
+}
+

@@ -153,7 +153,16 @@ QGrpcSubscriptionShared QAbstractGrpcClient::subscribe(const QString &method, co
         *errorConnection = connect(subscription.get(), &QGrpcSubscription::error, this, [this, subscription](const QGrpcStatus &status) {
             qProtoWarning() << subscription->method() << "call" << dPtr->service << "subscription error: " << status.message();
             error(status);
-            dPtr->channel->subscribe(subscription.get(), dPtr->service, this);
+            std::weak_ptr<QGrpcSubscription> weakSubscription = subscription;
+            //TODO: Make timeout configurable from channel settings
+            QTimer::singleShot(1000, this, [this, weakSubscription, method = subscription->method()] {
+                auto subscription = weakSubscription.lock();
+                if (subscription) {
+                    dPtr->channel->subscribe(subscription.get(), dPtr->service, this);
+                } else {
+                    qProtoDebug() << "Subscription for " << dPtr->service << "method" << method << " will not be restored by timeout.";
+                }
+            });
         });
 
         auto finishedConnection = std::make_shared<QMetaObject::Connection>();
