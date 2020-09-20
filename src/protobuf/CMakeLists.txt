@@ -11,9 +11,27 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
+
+if(Qt5Core_VERSION VERSION_LESS "5.12.4")
+    # grpc target requires QT version not less than 5.12.4
+    # earlier versions Http2DirectAttribute is broken: https://doc.qt.io/qt-5/whatsnew511.html
+    #                                                  https://bugreports.qt.io/browse/QTBUG-74765
+    message(FATAL_ERROR "Required Qt version is 5.12.4+")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/3rdparty/microjson/CMakeLists.txt")
+    set(MICROJSON_MAKE_TESTS OFF)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/microjson" EXCLUDE_FROM_ALL)
+    message(STATUS "Using microjson from 3rdparty")
+endif()
+
 if(NOT TARGET microjson)
     find_package(microjson CONFIG REQUIRED)
 endif()
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ${Qt5_POSITION_INDEPENDENT_CODE})
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
@@ -137,16 +155,8 @@ install(FILES "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${
 
 export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake)
 
-configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake" "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" COPYONLY)
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
-
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/parsemessages.go" "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go" COPYONLY)
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
-
-configure_file("${QT_PROTOBUF_CMAKE_DIR}/ProtobufLookup.cmake" "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
-
 set(QT_PROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${GENERATOR_TARGET})
+
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_protobuf.pri.in" "${QT_PROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" @ONLY)
 install(FILES "${QT_PROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" DESTINATION "${QT_HOST_DATA}/mkspecs/modules" COMPONENT dev)
 

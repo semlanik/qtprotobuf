@@ -137,7 +137,7 @@ function(qtprotobuf_generate)
     set_target_properties(${GENERATED_TARGET_NAME} PROPERTIES PUBLIC_HEADER "${GENERATED_HEADERS_FULL}")
 
     #Add include directories in case if projects are enabled by find_project
-    target_include_directories(${GENERATED_TARGET_NAME} PUBLIC ${OUT_DIR} PRIVATE ${Qt5Core_INCLUDE_DIRS}
+    target_include_directories(${GENERATED_TARGET_NAME} PUBLIC ${OUT_DIR} PRIVATE
         $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobuf,INTERFACE_INCLUDE_DIRECTORIES>)
 
     if(TARGET ${QT_PROTOBUF_PROJECT}::QtGrpc)

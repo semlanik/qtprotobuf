@@ -12,12 +12,14 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 find_package(Protobuf QUIET)
+find_package(QtProtobufProject COMPONENTS Generator CONFIG REQUIRED)
 
-set(PROTO_PARSER ${QT_PROTOBUF_BINARY_DIR}/parsemessages.go)
+set(CMAKE_POSITION_INDEPENDENT_CODE ${Qt5_POSITION_INDEPENDENT_CODE})
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake)
 
 file(GLOB SOURCES
     dummy.cpp)
@@ -27,7 +29,7 @@ function(add_wellknowntype TYPENAME)
     list(APPEND LOOKUP_DIRS ${Protobuf_INCLUDE_DIRS})
     foreach(INCLUDE_DIR ${LOOKUP_DIRS})
         file(GLOB PROTO_FILE ${INCLUDE_DIR}/google/protobuf/${TYPENAME}.proto)
-        if (NOT "${PROTO_FILE}" STREQUAL "")
+        if(NOT "${PROTO_FILE}" STREQUAL "")
             message(STATUS "Add well-known type ${PROTO_FILE}")
             qtprotobuf_generate(TARGET ${TARGET} GENERATED_TARGET ${TYPENAME}
                 OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
@@ -41,6 +43,9 @@ function(add_wellknowntype TYPENAME)
             break()
         endif()
     endforeach()
+    if(NOT TARGET ${TYPENAME})
+        message(FATAL_ERROR "Unable to add well-know type ${TYPENAME}")
+    endif()
 endfunction()
 
 add_library(${TARGET} ${SOURCES})

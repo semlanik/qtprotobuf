@@ -7,3 +7,6 @@
 [submodule "3rdparty/microjson"]
 	path = 3rdparty/microjson
 	url = https://github.com/semlanik/microjson.git
+[submodule "src/protobuf/microjson"]
+	path = src/protobuf/3rdparty/microjson
+	url = https://github.com/semlanik/microjson.git
