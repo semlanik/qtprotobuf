@@ -12,12 +12,14 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Gui Qml REQUIRED)
 find_package(Protobuf QUIET)
+find_package(QtProtobufProject COMPONENTS Generator CONFIG REQUIRED)
 
-set(PROTO_PARSER ${QT_PROTOBUF_BINARY_DIR}/parsemessages.go)
+set(CMAKE_POSITION_INDEPENDENT_CODE ${Qt5_POSITION_INDEPENDENT_CODE})
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake)
 
 file(GLOB SOURCES
     qtprotobufqttypes.cpp)

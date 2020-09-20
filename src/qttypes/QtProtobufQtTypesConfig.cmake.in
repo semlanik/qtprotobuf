@@ -1,5 +1,6 @@
 include(CMakeFindDependencyMacro)
 
+find_dependency(Qt5 COMPONENTS Network REQUIRED CONFIG)
 find_dependency(QtProtobufProject COMPONENTS QtProtobuf REQUIRED CONFIG)
 
 if(NOT TARGET @TARGET@ AND NOT @TARGET@_BINARY_DIR)

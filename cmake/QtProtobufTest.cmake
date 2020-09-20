@@ -1,4 +1,4 @@
-find_package(QtProtobufProject COMPONENTS QtProtobuf QtGrpc REQUIRED)
+find_package(${QT_PROTOBUF_PROJECT} COMPONENTS QtProtobuf QtGrpc REQUIRED)
 
 include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 

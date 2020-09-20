@@ -17,21 +17,6 @@ set(QT_PROTOBUF_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(QT_PROTOBUF_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(QT_PROTOBUF_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
-
-if(EXISTS "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson/CMakeLists.txt")
-    set(MICROJSON_MAKE_TESTS OFF)
-    add_subdirectory("${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson" EXCLUDE_FROM_ALL)
-    message(STATUS "Using microjson from 3rdparty")
-endif()
-
-if(Qt5Core_VERSION VERSION_LESS "5.12.4")
-    # grpc target requires QT version not less than 5.12.4
-    # earlier versions Http2DirectAttribute is broken: https://doc.qt.io/qt-5/whatsnew511.html
-    #                                                  https://bugreports.qt.io/browse/QTBUG-74765
-    message(FATAL_ERROR "Required Qt version is 5.12.4+")
-endif()
-
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/grpc/CMakeLists.txt")
     message(STATUS "Found local gRPC sources directory. Perform all-in-one build")
     set(gRPC_BUILD_TESTS FALSE)
@@ -74,24 +59,19 @@ elseif(WIN32)
     endif()
 endif()
 
-if(Qt5_POSITION_INDEPENDENT_CODE)
-    set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-endif()
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 include(CMakePackageConfigHelpers)
-configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
-    COMPONENT dev)
-
-export(PACKAGE ${PROJECT_NAME})
+if(NOT CMAKE_CROSSCOMPILING)
+    configure_package_config_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
+    install(FILES "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+        COMPONENT dev)
+    export(PACKAGE ${PROJECT_NAME})
+    add_subdirectory("src/generator")
+endif()
 
 add_subdirectory("src/protobuf")
 add_subdirectory("src/grpc")
-add_subdirectory("src/generator")
 if(NOT WIN32)#TODO: There are linking issues with windows build of well-known types...
     add_subdirectory("src/wellknowntypes")
 endif()
@@ -122,12 +102,17 @@ set(QT_PROTOBUF_MAKE_EXAMPLES ON CACHE BOOL "Enable QtProtobuf examples build")
 set(QT_PROTOBUF_MAKE_COVERAGE OFF CACHE BOOL "Enable QtProtobuf build for profiler (gcov)")
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Enable QtProtobuf static library build (disables shared library build)")
 
-if(NOT gRPC_FOUND)
-    message(WARNING "gRPC not found: some tests and examples cannot be built.")
-    message(STATUS "Force disable test")
+if(CMAKE_CROSSCOMPILING)
     set(QT_PROTOBUF_MAKE_TESTS OFF)
-    message(STATUS "Force disable examples")
     set(QT_PROTOBUF_MAKE_EXAMPLES OFF)
+else()
+    if(NOT gRPC_FOUND)
+        message(WARNING "gRPC not found: some tests and examples cannot be built.")
+        message(STATUS "Force disable test")
+        set(QT_PROTOBUF_MAKE_TESTS OFF)
+        message(STATUS "Force disable examples")
+        set(QT_PROTOBUF_MAKE_EXAMPLES OFF)
+    endif()
 endif()
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/QtProtobufCommon.cmake")

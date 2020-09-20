@@ -10,6 +10,19 @@ set(TARGET_BINDIR ${CMAKE_INSTALL_BINDIR})
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+find_package(Qt5 COMPONENTS Core Network Qml CONFIG REQUIRED)
+
+if(Qt5Core_VERSION VERSION_LESS "5.12.4")
+    # grpc target requires QT version not less than 5.12.4
+    # earlier versions Http2DirectAttribute is broken: https://doc.qt.io/qt-5/whatsnew511.html
+    #                                                  https://bugreports.qt.io/browse/QTBUG-74765
+    message(FATAL_ERROR "Required Qt version is 5.12.4+")
+endif()
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ${Qt5_POSITION_INDEPENDENT_CODE})
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 include(${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
