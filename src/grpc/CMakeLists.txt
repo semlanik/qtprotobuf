@@ -14,6 +14,8 @@ include(${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
+set(QT_PROTOBUF_NATIVE_GRPC_CHANNEL OFF CACHE BOOL "Enable native gRPC channel implementation")
+
 file(GLOB SOURCES qgrpcasyncoperationbase.cpp
     qgrpcasyncreply.cpp
     qgrpcsubscription.cpp

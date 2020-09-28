@@ -23,7 +23,7 @@ if(NOT gRPC_FOUND)
     endif()
 
     find_library(gRPC_CPP_LIBRARY grpc++)
-    if(NOT TARGET gRPC::grpc++ AND NOT gRPC_CPP_LIBRARY STREQUAL gRPC_LIBRARY-NOTFOUND)
+    if(NOT TARGET gRPC::grpc++ AND NOT gRPC_CPP_LIBRARY STREQUAL gRPC_CPP_LIBRARY-NOTFOUND)
         add_library(gRPC::grpc++ SHARED IMPORTED)
         set_target_properties(gRPC::grpc++ PROPERTIES IMPORTED_LOCATION ${gRPC_CPP_LIBRARY} INTERFACE_LINK_LIBRARIES protobuf::libprotobuf)
     endif()

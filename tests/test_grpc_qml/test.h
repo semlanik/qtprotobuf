@@ -39,18 +39,20 @@
 using namespace qtprotobufnamespace::tests;
 using namespace QtProtobuf;
 
+static std::unique_ptr<TestServiceClient> clientInstance;
+
 class TestSetup : public QObject {
     Q_OBJECT
 public:
     TestSetup(std::shared_ptr<QAbstractGrpcChannel> channel) {
+        clientInstance.reset(new TestServiceClient);
         QtProtobuf::qRegisterProtobufTypes();
         Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
         Q_GRPC_IMPORT_QUICK_PLUGIN()
-        qmlRegisterSingletonType<TestServiceClient>("qtprotobufnamespace.tests", 1, 0, "TestServiceClient", [channel](QQmlEngine *engine, QJSEngine *) -> QObject *{
-            static TestServiceClient clientInstance;
-            clientInstance.attachChannel(channel);
-            engine->setObjectOwnership(&clientInstance, QQmlEngine::CppOwnership);
-            return &clientInstance;
+        clientInstance->attachChannel(channel);
+        qmlRegisterSingletonType<TestServiceClient>("qtprotobufnamespace.tests", 1, 0, "TestServiceClient", [](QQmlEngine *engine, QJSEngine *) -> QObject *{
+            engine->setObjectOwnership(clientInstance.get(), QQmlEngine::CppOwnership);
+            return clientInstance.get();
         });
     }
     ~TestSetup() = default;
