@@ -50,25 +50,24 @@ endif()
 
 target_link_libraries(${TARGET} protobuf::libprotobuf protobuf::libprotoc)
 
-install(TARGETS ${TARGET}
-    EXPORT ${TARGET_EXPORT} COMPONENT dev
-    RUNTIME DESTINATION ${TARGET_BINDIR} COMPONENT lib)
-
-install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
-
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
     "${TARGET_CONFIG}.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake"
     INSTALL_DESTINATION "${TARGET_CMAKE_DIR}")
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
+configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake" "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/parsemessages.go" "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go" COPYONLY)
+configure_file("${QT_PROTOBUF_CMAKE_DIR}/ProtobufLookup.cmake" "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
+
+if(QT_PROTOBUF_INSTALL)
+    install(TARGETS ${TARGET}
+        EXPORT ${TARGET_EXPORT} COMPONENT dev
+        RUNTIME DESTINATION ${TARGET_BINDIR} COMPONENT lib)
+    install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
+    install(FILES "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake"
+        "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake"
+        "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go"
+        "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake"
+        DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
+endif()
 
 export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake)
-
-configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake" "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" COPYONLY)
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
-
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/parsemessages.go" "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go" COPYONLY)
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
-
-configure_file("${QT_PROTOBUF_CMAKE_DIR}/ProtobufLookup.cmake" "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
