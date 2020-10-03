@@ -1,8 +1,11 @@
-include("${CMAKE_CURRENT_LIST_DIR}/gRPCLookup.cmake")
-
 include(CMakeFindDependencyMacro)
 
 find_dependency(QtProtobufProject COMPONENTS QtProtobuf REQUIRED CONFIG)
+
+set(QT_PROTOBUF_NATIVE_GRPC_CHANNEL @QT_PROTOBUF_NATIVE_GRPC_CHANNEL@)
+if(QT_PROTOBUF_NATIVE_GRPC_CHANNEL)
+    include("${CMAKE_CURRENT_LIST_DIR}/gRPCLookup.cmake")
+endif()
 
 if(NOT TARGET @TARGET@ AND NOT @TARGET@_BINARY_DIR)
     include("${CMAKE_CURRENT_LIST_DIR}/@TARGET_EXPORT@.cmake")

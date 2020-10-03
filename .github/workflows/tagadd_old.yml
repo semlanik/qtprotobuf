@@ -2,10 +2,12 @@ name: Release build
 
 on:
   push:
-    branches:
-      - ci_check
     tags:
-      - 'v0.6*'
+      - 'v0.1*'
+      - 'v0.2*'
+      - 'v0.3*'
+      - 'v0.4*'
+      - 'v0.5*'
 jobs:
   build-packages:
     name: Build release packages
@@ -13,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Init submodules
-      run: git submodule update --init src/protobuf/3rdparty/microjson
+      run: git submodule update --init 3rdparty/microjson
     - name: Build release packages on ubuntu and opensuse latest
       id: build_release
       run: |
