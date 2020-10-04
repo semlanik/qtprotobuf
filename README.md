@@ -41,31 +41,103 @@ QtProtobuf provides Qt-native support of Google protocol buffers. Generated code
 
 [QtProtobuf Client Tutorial](https://semlanik.github.io/qtprotobuf/clienttutorial.html)
 
-# Linux Build
-## Prerequesties
+# Build
+
+## Build options
+
+*QT_PROTOBUF_MAKE_COVERAGE* - if **TRUE/ON**, enables gcov intergration, to collect code coverage reports(usefull for developers). **FALSE** by default
+
+*QT_PROTOBUF_MAKE_TESTS* - if **TRUE/ON**, enables tests for QtProtobuf. **TRUE** by default
+
+*QT_PROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON**, enables built-in examples. **TRUE** by default
+
+*QT_PROTOBUF_NATIVE_GRPC_CHANNEL* - if **TRUE/ON**, enables build of an additional channel wrapping native gGRPC C++ library (**Note:** grpc++ library is required)
+
+*BUILD_SHARED_LIBS* - if **TRUE/ON**, enables shared libraries build, **FALSE** by default, static libraries build is performed.
+
+> **Note:** In case if you use static QtProtobuf in your non-cmake/-qmake build system, you additionaly **need manually** add QT_PROTOBUF_STATIC compiler definition
+
+## Linux Build
+### Prerequesties
 
 Check installation of following packages in your system:
+
 - cmake 3.6 or higher
 - Qt 5.12.4 or higher
-- protobuf 3.6.0 or higher
-- grpc 1.15.0 or higher
-- golang 1.10 or higher (Mandatory dependency for any type of build)
+- protobuf 3.6.0 or higher (might be used from submodule)
+- golang 1.10 or higher
 
->**Note:** Older versions could be supported as well but not officially tested.
+Optional:
 
+- grpc 1.15.0 or higher (might be used from submodule)
 
-### For Ubuntu 19.10 or higher
+>**Note:** Older versions could be supported as well but not tested.
 
+#### Option 1: Use system libraries
+
+##### For Ubuntu 19.10 or higher
 Install dependencies:
 
 ```bash
-sudo apt-get install qtdeclarative5-private-dev qtbase5-private-dev protobuf-compiler libprotoc-dev protobuf-compiler-grpc libgrpc++-dev libgrpc-dev libgtest-dev
+sudo apt-get
+    build-essential \
+    cmake \
+    golang \
+    wget \
+    libdbus-1-3 \
+    libfreetype6 libfontconfig libx11-6 \
+    libgl1-mesa-dev \
+    libsm6 \
+    libice6 \
+    libxext6 \
+    libxrender1 \
+    doxygen \
+    qt5-default \
+    qtdeclarative5-private-dev \
+    qtbase5-private-dev \
+    protobuf-compiler \
+    libprotoc-dev \
+    protobuf-compiler-grpc \
+    libgrpc++-dev \
+    libgrpc-dev \
+    libgtest-dev
 ```
 
+##### For OpenSUSE 15.2 or higher
+Install dependencies:
 
-### All-in-one build
+```bash
+sudo zypper in go \
+    wget \
+    cmake \
+    libXrender1 \
+    libXext6 \
+    libSM6 \
+    Mesa-libGL1 \
+    libfreetype6 \
+    libX11-6 \
+    libdbus-1-3 \
+    fontconfig \
+    libICE6 \
+    gcc-c++ \
+    Mesa-devel \
+    libgthread-2_0-0 \
+    libqt5-qttools \
+    protobuf-devel \
+    grpc-devel \
+    libqt5-qtdeclarative-devel \
+    libqt5-qtbase-devel \
+    libqt5-qtdeclarative-private-headers-devel \
+    libqt5-qtbase-private-headers-devel \
+    rpm-build
+sudo zypper --non-interactive in --type pattern devel_C_C++
+```
+
+#### Option 2: All-in-one build
 
 If required versions of libraries are not found in your system, you may use all-in-one build procedure for prerequesties.
+
+Manually install Qt version you need [](https://www.qt.io/download)
 
 Update submodules to fetch 3rdparty dependencies:
 
@@ -73,19 +145,55 @@ Update submodules to fetch 3rdparty dependencies:
 git submodule update --init --recursive
 ```
 
+>**Note:** All installation rules are disabled for all-in-one build
 
-## Build
+#### Option 3: Use as sub-module
+
+QtProtobuf build procedure is designed to use QtProtobuf as sub-project.
+
+>**Note:** This option only supported by projects that use CMake as build tool.
+
+Add QtProtobuf as git submodule in your Project folder:
+
 ```bash
+git submodule add https://github.com/semlanik/qtprotobuf.git qtprotobuf
+git submodule init qtprotobuf
+git submodule update qtprotobuf
+
+#(Optional) You also may initialize all internal QtProtobuf sub-modules for all-in-one build using steps bellow:
+cd qtprotobuf
+git submodule update --init --recursive
+```
+
+Next add QtProtobuf subproject to your CMake tree, edit CMakeLists.txt:
+
+```cmake
+...
+add_subdirectory("qtprotobuf")
+...
+```
+
+QtProtobuf and dependencies from source tree will be built within your Project.
+
+>**Note:** All installation rules of QtProtobuf project are disabled for sub-project build.
+
+### Build
+
+```bash
+git submodule init src/protobuf/3rdparty/microjson #microjson is part of build and installation tree. Made this to simplify dependency management, but you always may use system microjson if installed.
+git submodule update src/protobuf/3rdparty/microjson
 mkdir build
 cd build
 cmake .. [-DCMAKE_PREFIX_PATH="<path/to/qt/installation>/Qt<qt_version>/<qt_version>/gcc_64/lib/cmake"]
 cmake --build . [--config <RELEASE|DEBUG>] -- -j<N>
 ```
 
-## Packaging
+### Packaging
+
 QtProtobuf has packaging support based on CPack.
 
-### .deb
+#### .deb
+
 You can create .deb package for debian-like operating systems, using commands below:
 
 ```bash
@@ -97,7 +205,8 @@ cpack -G DEB ..
 
 >**Note:** Only tested on Ubuntu 19.10
 
-### .rpm
+#### .rpm
+
 You can create .rpm package for rpm-based operating systems, using commands below:
 
 ```bash
@@ -109,8 +218,9 @@ cpack -G RPM ..
 
 >**Note:** Only tested on OpenSUSE 15.2
 
-# Windows Build
-## Prerequesties
+## Windows Build
+### Prerequesties
+
 Download and install:
 
 - Qt 5.12.3 or higher [1](https://download.qt.io/official_releases/qt/)
@@ -128,7 +238,8 @@ Update submodules to fetch 3rdparty dependencies:
 git submodule update --init --recursive
 ```
 
-## Build
+### Build
+
 Open Qt MSVC command line and follow steps:
 
 ```bash
@@ -258,19 +369,9 @@ qtprotobuf_link_target is cmake helper function that links generated protobuf ta
 
 *GENERATED_TARGET* - protobuf generated target name
 
-#### Usefull definitions
+#### Useful definitions
 
-*QT_PROTOBUF_MAKE_COVERAGE* - if **TRUE/ON** for QtProtobuf project build, QtProtobuf will be built with gcov intergration, to collect code coverage reports(usefull for developers). **FALSE** by default
-
-*QT_PROTOBUF_MAKE_TESTS* - if **TRUE/ON** for QtProtobuf project build, tests for QtProtobuf will be built. **TRUE** by default
-
-*QT_PROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON** for QtProtobuf project build, built-in examples will be built. **TRUE** by default
-
-*QT_PROTOBUF_EXECUTABLE* - contains full path to QtProtobuf generator add_executable
-
-*QT_PROTOBUF_NATIVE_GRPC_CHANNEL* - build an additional channel wrapping native gGRPC C++ library (**Note:** Additional linking to gRPC is required)
-
-> **Note:** In case if you use static QtProtobuf not with cmake/qmake build system, you additionaly **need manually** add QT_PROTOBUF_STATIC compiler definition
+*QT_PROTOBUF_EXECUTABLE* - contains full path to QtProtobuf generator
 
 ## Integration with qmake project
 
