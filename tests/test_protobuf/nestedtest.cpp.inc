@@ -171,5 +171,19 @@ TEST_F(NestedTest, NeighborTest)
     ASSERT_TRUE(test.neighborNested2() == NestedFieldMessage2::NestedMessageLevel1::NestedMessageLevel2{75});
 }
 
+TEST_F(NestedTest, ExternalTest)
+{
+    assertMessagePropertyRegistered<NestedExternal, qtprotobufnamespace1::externaltests::NestedFieldMessage::NestedMessage*>(1, "qtprotobufnamespace1::externaltests::NestedFieldMessage::NestedMessage*", "externalNested");
+
+    NestedExternal test{{15}};
+    EXPECT_EQ(test.externalNested().field(), 15);
+
+    const char *propertyName = "externalNested";
+
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobufnamespace1::externaltests::NestedFieldMessage::NestedMessage*>(new qtprotobufnamespace1::externaltests::NestedFieldMessage::NestedMessage{55})));
+    ASSERT_TRUE(*(test.property(propertyName).value<qtprotobufnamespace1::externaltests::NestedFieldMessage::NestedMessage*>()) == qtprotobufnamespace1::externaltests::NestedFieldMessage::NestedMessage{55});
+    ASSERT_TRUE(test.externalNested() == qtprotobufnamespace1::externaltests::NestedFieldMessage::NestedMessage{55});
+}
+
 }
 }

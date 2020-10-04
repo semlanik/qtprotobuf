@@ -26,5 +26,6 @@
 #include "qtprotobufnamespace/tests/nested/neighbornested.h"
 #include "qtprotobufnamespace/tests/nested/nestedfieldmessage.h"
 #include "qtprotobufnamespace/tests/nested/nestedfieldmessage2.h"
+#include "qtprotobufnamespace/tests/nested/nestedexternal.h"
 
 #include "../test_protobuf/nestedtest.cpp.inc"

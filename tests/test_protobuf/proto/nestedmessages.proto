@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package qtprotobufnamespace.tests.nested;
+import "externalpackagetest.proto";
 
 message NestedFieldMessage {
     sint32 testFieldInt = 1;
@@ -24,4 +25,8 @@ message NestedFieldMessage2 {
 message NeighborNested {
     NestedFieldMessage.NestedMessage neighborNested = 1;
     NestedFieldMessage2.NestedMessageLevel1.NestedMessageLevel2 neighborNested2 = 2;
+}
+
+message NestedExternal {
+    qtprotobufnamespace1.externaltests.NestedFieldMessage.NestedMessage externalNested = 1;
 }
