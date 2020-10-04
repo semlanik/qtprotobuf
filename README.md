@@ -251,6 +251,49 @@ cmake ..
 cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 ```
 
+## Conan build
+
+QtProtobuf supports conan builds since version 0.4.0.
+
+### Build QtProtobuf
+
+Before build make sure that all sub-modules are deinitilized:
+
+```bash
+git submodule deinit -f --all
+```
+
+Build QtProtobuf:
+
+```bash
+mkdir -p build_conan
+cd build_conan
+conan source ..
+conan install .. --build=microjson
+conan build ..
+```
+
+### Conan project integration
+
+QtProtobuf conan source packages are hosted on JFrog Bintray. Add remote to conan:
+
+```bash
+conan remote add semlanik https://api.bintray.com/conan/semlanik/libs
+```
+
+To intergrate QtProtobuf add it as a dependency to your conanfile.py:
+
+```python
+    ...
+    requires = [
+        ...
+        "qtprotobuf/0.5.0@semlanik/stable",
+        ...
+    ]
+    ...
+```
+>**Note:** You also may use QtProtobuf package is built localy or from other remote source. Look in conan documentation for details.
+
 # Usage
 ## Direct usage of generator
 

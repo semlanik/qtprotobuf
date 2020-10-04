@@ -60,15 +60,13 @@ elseif(WIN32)
 endif()
 
 include(CMakePackageConfigHelpers)
-if(NOT CMAKE_CROSSCOMPILING)
-    configure_package_config_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
-    install(FILES "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
-        COMPONENT dev)
-    export(PACKAGE ${PROJECT_NAME})
-    add_subdirectory("src/generator")
-endif()
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
+install(FILES "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+    COMPONENT dev)
+export(PACKAGE ${PROJECT_NAME})
+add_subdirectory("src/generator")
 
 add_subdirectory("src/protobuf")
 add_subdirectory("src/grpc")
