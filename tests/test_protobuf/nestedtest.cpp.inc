@@ -185,5 +185,19 @@ TEST_F(NestedTest, ExternalTest)
     ASSERT_TRUE(test.externalNested() == qtprotobufnamespace1::externaltests::NestedFieldMessage::NestedMessage{55});
 }
 
+TEST_F(NestedTest, NestedNoFieldsTest)
+{
+    assertMessagePropertyRegistered<NestedNoFields::Nested, QtProtobuf::sint32>(1, "QtProtobuf::sint32", "testFieldInt");
+
+    NestedNoFields::Nested test{15};
+    EXPECT_EQ(test.testFieldInt(), 15);
+
+    const char *propertyName = "testFieldInt";
+
+    ASSERT_TRUE(test.setProperty(propertyName, 55));
+    ASSERT_TRUE(test.property(propertyName).value<QtProtobuf::sint32>() == 55);
+    ASSERT_TRUE(test.testFieldInt() == 55);
+}
+
 }
 }

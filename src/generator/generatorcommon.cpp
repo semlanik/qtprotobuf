@@ -423,6 +423,9 @@ void common::iterateNestedMessages(const ::google::protobuf::Descriptor *message
 {
     for (int i = 0; i < message->nested_type_count(); i++) {
         auto nestedMessage = message->nested_type(i);
+        if (message->field_count() <= 0) {
+            callback(nestedMessage);
+        }
         for (int j = 0; j < message->field_count(); j++) {
             auto field = message->field(j);
             if (!field->is_map() && field->message_type() == nestedMessage) { //Probably there is more correct way to detect map in nested messages.                                                                              //TODO: Have idea to make maps nested classes instead of typedefs.
@@ -434,6 +437,10 @@ void common::iterateNestedMessages(const ::google::protobuf::Descriptor *message
 
 bool common::hasNestedMessages(const ::google::protobuf::Descriptor *message)
 {
+    if (message->nested_type_count() > 0 && message->field_count() <= 0) {
+        return true;
+    }
+
     for (int i = 0; i < message->nested_type_count(); i++) {
         auto nestedMessage = message->nested_type(i);
         for (int j = 0; j < message->field_count(); j++) {
