@@ -12,6 +12,9 @@ file(GLOB SOURCES
     jsondeserializationtest.cpp
     duplicatedmetatypestest.cpp
     nestedtest.cpp)
+if(NOT WIN32)
+    list(APPEND SOURCES internalstest.cpp)
+endif()
 
 add_test_target(TARGET ${TARGET}
     SOURCES ${SOURCES}

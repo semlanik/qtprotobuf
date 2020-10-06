@@ -698,13 +698,6 @@ TEST_F(SimpleTest, EmptyMessageTest)
     ASSERT_EQ(EmptyMessage::staticMetaObject.propertyCount(), 1);
 }
 
-TEST_F(SimpleTest, NullPointerMessageTest)
-{
-    ComplexMessage msg(0, {QString("not null")});
-    msg.setTestComplexField_p(nullptr);
-    ASSERT_TRUE(msg.testComplexField().testFieldString().isEmpty());
-}
-
 TEST_F(SimpleTest, AssignmentOperatorTest)
 {
     const char *propertyName = "testFieldInt";
@@ -790,6 +783,10 @@ TEST_F(SimpleTest, CyclingTest)
 {
     assertMessagePropertyRegistered<sequence::CyclingFirstDependency, sequence::CyclingSecondDependency*>(1, "qtprotobufnamespace::tests::sequence::CyclingSecondDependency*", "testField");
     assertMessagePropertyRegistered<sequence::CyclingSecondDependency, sequence::CyclingFirstDependency*>(1, "qtprotobufnamespace::tests::sequence::CyclingFirstDependency*", "testField");
+    sequence::CyclingFirstDependency test;
+    sequence::CyclingSecondDependency test2;
+    test.setTestField(test2);
+    test2.setTestField(test);
 }
 
 TEST_F(SimpleTest, UpperCaseTest)

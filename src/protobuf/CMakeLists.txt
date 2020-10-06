@@ -57,7 +57,8 @@ file(GLOB HEADERS
     qprotobufselfcheckiterator.h
     qprotobufmetaproperty.h
     qprotobufmetaobject.h
-    qprotobufserializationplugininterface.h)
+    qprotobufserializationplugininterface.h
+    qprotobuflazymessagepointer.h)
 
 file(GLOB PUBLIC_HEADER
     qtprotobufglobal.h
@@ -72,7 +73,8 @@ file(GLOB PUBLIC_HEADER
     qprotobufselfcheckiterator.h
     qprotobufmetaproperty.h
     qprotobufmetaobject.h
-    qprotobufserializationplugininterface.h)
+    qprotobufserializationplugininterface.h
+    qprotobuflazymessagepointer.h)
 
 protobuf_generate_qt_headers(PUBLIC_HEADER ${PUBLIC_HEADER} COMPONENT ${TARGET})
 

@@ -248,12 +248,10 @@ void MessageDeclarationPrinter::printProperties()
 void MessageDeclarationPrinter::printGetters()
 {
     Indent();
-
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
         printComments(field);
         mPrinter->Print("\n");
         if (common::isPureMessage(field)) {
-            mPrinter->Print(propertyMap, Templates::GetterPrivateMessageDeclarationTemplate);
             mPrinter->Print(propertyMap, Templates::GetterMessageDeclarationTemplate);
         } else {
             mPrinter->Print(propertyMap, Templates::GetterTemplate);
@@ -277,7 +275,6 @@ void MessageDeclarationPrinter::printSetters()
         switch (field->type()) {
         case FieldDescriptor::TYPE_MESSAGE:
             if (!field->is_map() && !field->is_repeated() && !common::isQtType(field)) {
-                mPrinter->Print(propertyMap, Templates::SetterPrivateTemplateDeclarationMessageType);
                 mPrinter->Print(propertyMap, Templates::SetterTemplateDeclarationMessageType);
             } else {
                 mPrinter->Print(propertyMap, Templates::SetterTemplateDeclarationComplexType);
@@ -290,6 +287,28 @@ void MessageDeclarationPrinter::printSetters()
         default:
             mPrinter->Print(propertyMap, Templates::SetterTemplate);
             break;
+        }
+    });
+    Outdent();
+}
+
+void MessageDeclarationPrinter::printPrivateGetters()
+{
+    Indent();
+    common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
+        if (common::isPureMessage(field)) {
+            mPrinter->Print(propertyMap, Templates::GetterPrivateMessageDeclarationTemplate);
+        }
+    });
+    Outdent();
+}
+
+void MessageDeclarationPrinter::printPrivateSetters()
+{
+    Indent();
+    common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
+        if (common::isPureMessage(field)) {
+            mPrinter->Print(propertyMap, Templates::SetterPrivateTemplateDeclarationMessageType);
         }
     });
     Outdent();
@@ -379,6 +398,8 @@ void MessageDeclarationPrinter::printClassBody()
     printSignals();
 
     printPrivateBlock();
+    printPrivateGetters();
+    printPrivateSetters();
     printPrivateMethods();
 
     printPrivateBlock();

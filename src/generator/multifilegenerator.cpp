@@ -88,21 +88,50 @@ bool MultiFileGenerator::Generate(const FileDescriptor *file,
             printInclude(headerPrinter, message, message->field(i), existingIncludes);
         }
 
-        //Print dependency classes forward declaration
+        auto deps = findNestedDependency(message);
+
         for (int i = 0; i < message->field_count(); i++) {
             auto field = message->field(i);
             if (common::isPureMessage(field)) {
                 auto dependency = field->message_type();
-                if (!common::isNested(dependency)) {//TODO: need to check class relations and apply namespaces accordingly.
-                    auto namespaces = common::getNamespaces(dependency);
-                    printNamespaces(headerPrinter, namespaces);
-                    headerPrinter->Print({{"classname", utils::upperCaseName(dependency->name())}}, Templates::ProtoClassForwardDeclarationTemplate);
-                    headerPrinter->Print("\n");
-                    for (size_t i = 0; i < namespaces.size(); ++i) {
-                        headerPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
-                    }
-                    headerPrinter->Print("\n");
+                std::cerr << "Found dependency: " << dependency->name() << std::endl;
+                deps.push_back(dependency);
+            }
+        }
+
+        for (auto dependency : deps) {
+            std::string outFileBasename = "";
+            std::string fieldPackage = dependency->file()->package();
+            if (fieldPackage != message->file()->package()) {
+                std::vector<std::string> packages = utils::split(fieldPackage, '.');
+                for (auto package : packages) {
+                    outFileBasename += package + "/";
                 }
+            }
+
+            auto parentType = common::findHighestMessage(dependency);
+            std::string typeName = parentType->name();
+            utils::tolower(typeName);
+            auto newInclude = outFileBasename + typeName;
+            if (existingIncludes.find(newInclude) == std::end(existingIncludes)) {
+                headerPrinter->Print({{"include", newInclude}}, Templates::InternalIncludeTemplate);
+                existingIncludes.insert(newInclude);
+            }
+        }
+
+        for (auto dependency : deps) {
+            if (!common::isNestedOf(dependency, message)) {
+                auto namespaces = common::getNamespaces(dependency);
+                if (common::isNested(dependency)) {
+                    namespaces = common::getNestedNamespaces(dependency);
+                }
+                printNamespaces(headerPrinter, namespaces);
+                headerPrinter->Print({{"classname", utils::upperCaseName(dependency->name())}}, Templates::ProtoClassForwardDeclarationTemplate);
+                headerPrinter->Print("\n");
+                for (size_t i = 0; i < namespaces.size(); ++i) {
+                    headerPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
+                }
+                headerPrinter->Print("\n");
             }
         }
 
@@ -154,6 +183,25 @@ bool MultiFileGenerator::Generate(const FileDescriptor *file,
     }
     return true;
 }
+
+std::list<const ::google::protobuf::Descriptor *> MultiFileGenerator::findNestedDependency(const ::google::protobuf::Descriptor *message) const
+{
+    std::list<const ::google::protobuf::Descriptor *> dependencies;
+    common::iterateNestedMessages(message, [&dependencies, this] (const ::google::protobuf::Descriptor *message) {
+        for (int i = 0; i < message->field_count(); i++) {
+            auto field = message->field(i);
+            if (common::isPureMessage(field)) {
+                auto dependency = field->message_type();
+                std::cerr << "Found dependency: " << dependency->name() << std::endl;
+                dependencies.push_back(dependency);
+            }
+        }
+        auto nextLevelDependencies = findNestedDependency(message);
+        dependencies.insert(dependencies.end(), nextLevelDependencies.begin(), nextLevelDependencies.end());
+    });
+    return dependencies;
+}
+
 
 bool MultiFileGenerator::GenerateAll(const std::vector<const FileDescriptor *> &files, const string &parameter, GeneratorContext *generatorContext, string *error) const
 {
