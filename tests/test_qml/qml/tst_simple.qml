@@ -28,6 +28,8 @@ import QtTest 1.0
 
 import QtProtobuf 0.5
 import qtprotobufnamespace.tests 1.0
+import qtprotobufnamespace.tests.nested 1.0
+import qtprotobufnamespace.tests.nested.NestedFieldMessage 1.0 as NestedFieldMessage_
 
 TestCase {
     name: "Simple values assignment"
@@ -74,6 +76,29 @@ TestCase {
 
     LowerCaseMessageName {
         id: lowerCaseMsg
+    }
+
+    ComplexMessage {
+        id: complexMsg
+        testComplexField: SimpleStringMessage {
+            id: innerMessage
+            testFieldString: "inner"
+        }
+    }
+
+    SimpleStringMessage {
+        id: outerMessage
+        testFieldString: "outer"
+    }
+
+    NestedFieldMessage {
+        id: nestedParent
+        nested: nestedMsg
+    }
+
+    NestedFieldMessage_.NestedMessage {
+        id: nestedMsg
+        testFieldInt: 100
     }
 
     function test_1initialization() {
@@ -288,5 +313,23 @@ TestCase {
     function test_sfixed32LocaleStringConversion() {
         compare(sfixed32Msg.testFieldFixedInt32.toLocaleString(Qt.locale()), Number(sfixed32Msg.testFieldFixedInt32).toLocaleString(Qt.locale()),
                 "Locale number string is not match " + sfixed32Msg.testFieldFixedInt32.toLocaleString(Qt.locale()) + " != " + Number(sfixed32Msg.testFieldFixedInt32).toLocaleString(Qt.locale()))
+    }
+
+    function test_complexMessage() {
+        compare(complexMsg.testComplexField, innerMessage, "Invalid object is inside complex message")
+        compare(complexMsg.testComplexField.testFieldString, "inner", "Invalid value of object inside complex message")
+
+        complexMsg.testComplexField = outerMessage
+        compare(complexMsg.testComplexField, outerMessage, "Invalid object is inside complex message")
+        compare(complexMsg.testComplexField.testFieldString, "outer", "Invalid value of object inside complex message")
+
+        complexMsg.testComplexField = innerMessage
+        compare(complexMsg.testComplexField, innerMessage, "Invalid object is inside complex message")
+        compare(complexMsg.testComplexField.testFieldString, "inner", "Invalid value of object inside complex message")
+    }
+
+    function test_nestedMessage() {
+        compare(nestedMsg.testFieldInt, 100, "Nested message initialization failed");
+        compare(nestedParent.nested, nestedMsg, "Nested message assignment failed");
     }
 }

@@ -231,7 +231,7 @@ void MessageDefinitionPrinter::printCopyFunctionality()
     Indent();
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
         if (common::isPureMessage(field)) {
-            mPrinter->Print(propertyMap, Templates::CopyComplexFieldTemplate);
+            mPrinter->Print(propertyMap, Templates::AssignComplexFieldTemplate);
         } else {
             mPrinter->Print(propertyMap, Templates::CopyFieldTemplate);
         }
@@ -292,7 +292,7 @@ void MessageDefinitionPrinter::printMoveSemantic()
                 || field->type() == FieldDescriptor::TYPE_BYTES
                 || field->is_repeated()) {
             if (common::isPureMessage(field)) {
-                mPrinter->Print(propertyMap, Templates::MoveMessageFieldTemplate);
+                mPrinter->Print(propertyMap, Templates::MoveAssignMessageFieldTemplate);
             } else {
                 mPrinter->Print(propertyMap, Templates::MoveComplexFieldTemplate);
             }

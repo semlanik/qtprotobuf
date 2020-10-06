@@ -107,7 +107,9 @@ public:
     static const char *DeletedMoveConstructorTemplate;
     static const char *CopyFieldTemplate;
     static const char *CopyComplexFieldTemplate;
+    static const char *AssignComplexFieldTemplate;
     static const char *MoveMessageFieldTemplate;
+    static const char *MoveAssignMessageFieldTemplate;
     static const char *MoveComplexFieldTemplate;
     static const char *MoveComplexFieldConstructorTemplate;
     static const char *MoveFieldTemplate;
@@ -135,7 +137,6 @@ public:
     static const char *GetterContainerExtraTemplate;
     static const char *GetterQmlListDeclarationTemplate;
     static const char *GetterQmlListDefinitionTemplate;
-
     static const char *SetterPrivateTemplateDeclarationMessageType;
     static const char *SetterPrivateTemplateDefinitionMessageType;
     static const char *SetterTemplateDeclarationMessageType;

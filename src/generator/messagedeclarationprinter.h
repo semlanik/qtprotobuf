@@ -53,6 +53,8 @@ private:
     void printProperties();
     void printGetters();
     void printSetters();
+    void printPrivateGetters();
+    void printPrivateSetters();
     void printSignals();
     void printPrivateMethods();
     void printClassMembers();

@@ -28,6 +28,7 @@
 #include <google/protobuf/compiler/code_generator.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <string>
+#include <list>
 #include <memory>
 
 #include "generatorbase.h"
@@ -58,6 +59,8 @@ public:
                              const std::string &parameter,
                              ::google::protobuf::compiler::GeneratorContext *generatorContext,
                              std::string *error) const override;
+private:
+    std::list<const ::google::protobuf::Descriptor *> findNestedDependency(const ::google::protobuf::Descriptor *message) const;
 };
 
 } //namespace generator

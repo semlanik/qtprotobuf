@@ -37,3 +37,14 @@ message NestedNoFields {
   }
 }
 
+message NestedCyclingA {
+  message NestedCyclingB {
+    NestedCyclingAA.NestedCyclingBB testField = 1;
+  }
+}
+
+message NestedCyclingAA {
+  message NestedCyclingBB {
+    NestedCyclingA.NestedCyclingB testField = 1;
+  }
+}

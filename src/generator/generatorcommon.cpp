@@ -26,7 +26,6 @@
 #include "generatorcommon.h"
 #include "generatoroptions.h"
 
-#include "templates.h"
 #include <assert.h>
 
 using namespace ::QtProtobuf::generator;
@@ -96,8 +95,12 @@ TypeMap common::produceQtTypeMap(const ::Descriptor *type, const Descriptor *sco
 TypeMap common::produceMessageTypeMap(const ::Descriptor *type, const Descriptor *scope)
 {
     std::vector<std::string> namespaceList = getNamespaces(type);
+    std::vector<std::string> nestedNamespaceList = namespaceList;
+    if(isNested(type)) {
+        nestedNamespaceList = getNestedNamespaces(type);
+    }
     std::string namespaces = getNamespacesString(namespaceList, "::");
-    std::string scopeNamespaces = getScopeNamespacesString(namespaces, getNamespacesString(getNamespaces(scope), "::"));
+    std::string scopeNamespaces = getScopeNamespacesString(getNamespacesString(nestedNamespaceList, "::"), getNamespacesString(getNamespaces(scope), "::"));
     std::string qmlPackage = getNamespacesString(namespaceList, ".");
 
     std::string name = utils::upperCaseName(type->name());
@@ -425,11 +428,13 @@ void common::iterateNestedMessages(const ::google::protobuf::Descriptor *message
         auto nestedMessage = message->nested_type(i);
         if (message->field_count() <= 0) {
             callback(nestedMessage);
+            continue;
         }
         for (int j = 0; j < message->field_count(); j++) {
             auto field = message->field(j);
             if (!field->is_map() && field->message_type() == nestedMessage) { //Probably there is more correct way to detect map in nested messages.                                                                              //TODO: Have idea to make maps nested classes instead of typedefs.
                 callback(nestedMessage);
+                break;
             }
         }
     }
@@ -456,7 +461,22 @@ bool common::hasNestedMessages(const ::google::protobuf::Descriptor *message)
 
 bool common::isNested(const ::google::protobuf::Descriptor *message)
 {
-    return message->containing_type() != nullptr;
+    if (message->containing_type() == nullptr) {
+        return false;
+    }
+
+    auto containingType = message->containing_type();
+    bool isNested = true;
+
+    for (int i = 0; i < containingType->field_count(); i++) {
+        auto field = containingType->field(i);
+        if (field->message_type() == message) {
+            isNested = !field->is_map();
+            break;
+        }
+    }
+
+    return isNested;
 }
 
 const ::google::protobuf::Descriptor *common::findHighestMessage(const ::google::protobuf::Descriptor *message)

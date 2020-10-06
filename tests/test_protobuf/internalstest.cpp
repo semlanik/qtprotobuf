@@ -23,12 +23,49 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "qtprotobufnamespace/tests/nested/neighbornested.h"
-#include "qtprotobufnamespace/tests/nested/nestedfieldmessage.h"
-#include "qtprotobufnamespace/tests/nested/nestedfieldmessage2.h"
-#include "qtprotobufnamespace/tests/nested/nestedexternal.h"
-#include "qtprotobufnamespace/tests/nested/nestednofields.h"
-#include "qtprotobufnamespace/tests/nested/nestedcyclinga.h"
-#include "qtprotobufnamespace/tests/nested/nestedcyclingaa.h"
+#define private public
+#define protected public
+#include "simpletest.qpb.h"
+#include "sequencetest.qpb.h"
+#include "externalpackagetest.qpb.h"
+#include "globalenums.qpb.h"
+#include "globalenumssamenamespace.qpb.h"
+#include "nestedmessages.qpb.h"
+#undef private
+#undef protected
 
-#include "../test_protobuf/nestedtest.cpp.inc"
+#include <gtest/gtest.h>
+#include "../testscommon.h"
+
+using namespace qtprotobufnamespace::tests;
+using namespace qtprotobufnamespace::tests::nested;
+using namespace qtprotobufnamespace::tests::sequence;
+
+namespace QtProtobuf {
+namespace tests {
+
+class InternalsTest : public ::testing::Test
+{
+public:
+    InternalsTest() = default;
+};
+
+TEST_F(InternalsTest, NullPointerMessageTest)
+{
+    ComplexMessage msg(0, {QString("not null")});
+    msg.setTestComplexField_p(nullptr);
+    ASSERT_TRUE(msg.testComplexField().testFieldString().isEmpty());
+    ASSERT_TRUE(msg.testComplexField_p() != nullptr);
+}
+
+TEST_F(InternalsTest, NullPointerGetterMessageTest)
+{
+    ComplexMessage msg;
+    ASSERT_TRUE(msg.testComplexField_p() != nullptr);
+    msg.setTestComplexField_p(nullptr);
+    ASSERT_TRUE(msg.testComplexField().testFieldString().isEmpty());
+    ASSERT_TRUE(msg.testComplexField_p() != nullptr);
+}
+
+}
+}

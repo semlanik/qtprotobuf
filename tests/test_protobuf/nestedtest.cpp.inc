@@ -199,5 +199,16 @@ TEST_F(NestedTest, NestedNoFieldsTest)
     ASSERT_TRUE(test.testFieldInt() == 55);
 }
 
+TEST_F(NestedTest, NestedCyclingTest)
+{
+    assertMessagePropertyRegistered<NestedCyclingA::NestedCyclingB, qtprotobufnamespace::tests::nested::NestedCyclingAA::NestedCyclingBB*>(1, "qtprotobufnamespace::tests::nested::NestedCyclingAA::NestedCyclingBB*", "testField");
+    assertMessagePropertyRegistered<NestedCyclingAA::NestedCyclingBB, qtprotobufnamespace::tests::nested::NestedCyclingA::NestedCyclingB*>(1, "qtprotobufnamespace::tests::nested::NestedCyclingA::NestedCyclingB*", "testField");
+
+    NestedCyclingA::NestedCyclingB test;
+    NestedCyclingAA::NestedCyclingBB test2;
+    test.setTestField(test2);
+    test2.setTestField(test);
+}
+
 }
 }

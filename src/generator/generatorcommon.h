@@ -31,6 +31,7 @@
 #include <functional>
 
 #include "utils.h"
+#include "templates.h"
 
 #include <google/protobuf/descriptor.h>
 
@@ -60,6 +61,16 @@ struct common {
         }
         return namespacesList;
     }
+
+    static std::vector<std::string> getNestedNamespaces(const ::google::protobuf::Descriptor *type) {
+        auto namespaces = getNamespaces(type);
+        auto package = utils::split(type->file()->package(), '.');
+        for (size_t i = package.size(); i < namespaces.size(); i++) {
+                namespaces[i] += Templates::QtProtobufNestedNamespace;
+        }
+        return namespaces;
+    }
+
 
     static std::string getNamespacesString(const std::vector<std::string> &namespacesList, const std::string &separator);
     static std::string getScopeNamespacesString(std::string original, const std::string &scope);
