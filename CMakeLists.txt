@@ -19,6 +19,7 @@ set(QT_PROTOBUF_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(QT_PROTOBUF_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 include("${QT_PROTOBUF_CMAKE_DIR}/dependencies.cmake")
+include("${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake" EXCLUDE_FROM_ALL)
 
 set(GENERATOR_TARGET qtprotobufgen)
 set(PROTOBUF_QUICK_PLUGIN_NAME protobufquickplugin)
