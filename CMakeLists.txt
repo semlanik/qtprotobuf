@@ -28,7 +28,8 @@ set(GRPC_QUICK_PLUGIN_NAME grpcquickplugin)
 set(QT_PROTOBUF_MAKE_TESTS ON CACHE BOOL "Enable QtProtobuf tests build")
 set(QT_PROTOBUF_MAKE_EXAMPLES ON CACHE BOOL "Enable QtProtobuf examples build")
 set(QT_PROTOBUF_MAKE_COVERAGE OFF CACHE BOOL "Enable QtProtobuf build for profiler (gcov)")
-set(BUILD_SHARED_LIBS ON CACHE BOOL "Enable QtProtobuf static library build (disables shared library build)")
+set(QT_PROTOBUF_FIELD_ENUM OFF CACHE BOOL "Enable generation of enumeration with fields numbers for well-known and Qt types libraries")
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Enable QtProtobuf shared library build (disables static library build)")
 
 if(CMAKE_CROSSCOMPILING)
     set(QT_PROTOBUF_MAKE_TESTS OFF)
@@ -66,6 +67,12 @@ add_subdirectory("src/generator")
 
 add_subdirectory("src/protobuf")
 add_subdirectory("src/grpc")
+
+set(EXTRA_TYPE_LIBRARIES_OPTIONS "") #Prevent to set from outside
+if(QT_PROTOBUF_FIELD_ENUM)
+    set(EXTRA_TYPE_LIBRARIES_OPTIONS "FIELDENUM ${EXTRA_TYPE_LIBRARIES_OPTIONS}")
+endif()
+
 if(NOT WIN32)#TODO: There are linking issues with windows build of well-known types...
     add_subdirectory("src/wellknowntypes")
 endif()

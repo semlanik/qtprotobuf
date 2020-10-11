@@ -211,6 +211,10 @@ public:
 
     static const char *QtProtobufNamespace;
     static const char *QtProtobufNestedNamespace;
+
+    static const char *FieldEnumTemplate;
+    static const char *FieldNumberTemplate;
+    static const char *QtProtobufFieldEnum;
 };
 
 } //namespace generator

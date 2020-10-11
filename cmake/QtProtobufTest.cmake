@@ -3,7 +3,7 @@ find_package(${QT_PROTOBUF_PROJECT} COMPONENTS QtProtobuf QtGrpc REQUIRED)
 include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
 function(add_test_target)
-    set(options MULTI QML)
+    set(options MULTI QML FIELDENUM)
     set(oneValueArgs QML_DIR TARGET)
     set(multiValueArgs SOURCES GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
     cmake_parse_arguments(add_test_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -32,6 +32,9 @@ function(add_test_target)
     endif()
     if(add_test_target_QML)
         set(EXTRA_OPTIONS ${EXTRA_OPTIONS} QML)
+    endif()
+    if(add_test_target_FIELDENUM)
+        set(EXTRA_OPTIONS ${EXTRA_OPTIONS} FIELDENUM)
     endif()
 
     qtprotobuf_generate(TARGET ${add_test_target_TARGET}

@@ -393,3 +393,7 @@ const char *Templates::EnumClassSuffix = "Gadget";
 
 const char *Templates::QtProtobufNamespace = "QtProtobuf";
 const char *Templates::QtProtobufNestedNamespace = "_QtProtobufNested";
+
+const char *Templates::QtProtobufFieldEnum = "QtProtobufFieldEnum";
+const char *Templates::FieldEnumTemplate = "enum QtProtobufFieldEnum {\n";
+const char *Templates::FieldNumberTemplate = "$property_name_cap$ProtoFieldNumber = $number$,\n";

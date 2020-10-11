@@ -39,7 +39,7 @@ function(add_wellknowntype TYPENAME)
                 OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
                 PROTO_FILES ${PROTO_FILE}
                 PROTO_INCLUDES "-I\"${INCLUDE_DIR}\""
-                QML FOLDER)
+                QML FOLDER ${EXTRA_TYPE_LIBRARIES_OPTIONS})
             target_include_directories(${TYPENAME} PRIVATE
                 $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
             get_target_property(GENERATED_PUBLIC_HEADER_PRIVATE ${TYPENAME} PUBLIC_HEADER)

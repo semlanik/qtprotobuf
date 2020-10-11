@@ -12,7 +12,8 @@ add_test_target(TARGET ${TARGET}
     PROTO_FILES ${PROTO_FILES}
     SOURCES ${SOURCES}
     QML
-    MULTI)
+    MULTI
+    FIELDENUM)
 add_target_windeployqt(TARGET ${TARGET}
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

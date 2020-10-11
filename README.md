@@ -45,17 +45,19 @@ QtProtobuf provides Qt-native support of Google protocol buffers. Generated code
 
 ## Build options
 
-*QT_PROTOBUF_MAKE_COVERAGE* - if **TRUE/ON**, enables gcov intergration, to collect code coverage reports(usefull for developers). **FALSE** by default
+*QT_PROTOBUF_MAKE_COVERAGE* - if **TRUE/ON**, enables gcov intergration, to collect code coverage reports(usefull for developers). **FALSE** by default.
 
-*QT_PROTOBUF_MAKE_TESTS* - if **TRUE/ON**, enables tests for QtProtobuf. **TRUE** by default
+*QT_PROTOBUF_MAKE_TESTS* - if **TRUE/ON**, enables tests for QtProtobuf. **TRUE** by default.
 
-*QT_PROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON**, enables built-in examples. **TRUE** by default
+*QT_PROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON**, enables built-in examples. **TRUE** by default.
 
-*QT_PROTOBUF_NATIVE_GRPC_CHANNEL* - if **TRUE/ON**, enables build of an additional channel wrapping native gGRPC C++ library (**Note:** grpc++ library is required)
+*QT_PROTOBUF_NATIVE_GRPC_CHANNEL* - if **TRUE/ON**, enables build of an additional channel wrapping native gGRPC C++ library (**Note:** grpc++ library is required).
 
 *BUILD_SHARED_LIBS* - if **TRUE/ON**, enables shared libraries build, **FALSE** by default, static libraries build is performed.
 
-> **Note:** In case if you use static QtProtobuf in your non-cmake/-qmake build system, you additionaly **need manually** add QT_PROTOBUF_STATIC compiler definition
+> **Note:** In case if you use static QtProtobuf in your non-cmake/-qmake build system, you additionaly **need manually** add QT_PROTOBUF_STATIC compiler definition.
+
+*QT_PROTOBUF_FIELD_ENUM* - if **TRUE/ON**, adds enumeration with message fields for generated messages in QtProtobufTypes and QtProtobufWellKnownTypes libraries. **FALSE** by default.
 
 ## Linux Build
 ### Prerequesties
@@ -137,7 +139,7 @@ sudo zypper --non-interactive in --type pattern devel_C_C++
 
 If required versions of libraries are not found in your system, you may use all-in-one build procedure for prerequesties.
 
-Manually install Qt version you need [](https://www.qt.io/download)
+Manually install Qt version you need [](https://www.qt.io/download).
 
 Update submodules to fetch 3rdparty dependencies:
 
@@ -145,7 +147,7 @@ Update submodules to fetch 3rdparty dependencies:
 git submodule update --init --recursive
 ```
 
->**Note:** All installation rules are disabled for all-in-one build
+>**Note:** All installation rules are disabled for all-in-one build.
 
 #### Option 3: Use as sub-module
 
@@ -298,7 +300,7 @@ To intergrate QtProtobuf add it as a dependency to your conanfile.py:
 ## Direct usage of generator
 
 ```bash
-[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER:FIELDENUM"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
 
 ### QT_PROTOBUF_OPTIONS
@@ -306,7 +308,7 @@ To intergrate QtProtobuf add it as a dependency to your conanfile.py:
 For protoc command you also may specify extra options using QT_PROTOBUF_OPTIONS environment variable and colon-separated format:
 
 ``` bash
-[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER:FIELDENUM"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
 
 Following options are supported:
@@ -324,6 +326,8 @@ Following options are supported:
 *COMMENTS* - enables comments copying from .proto files
 
 *FOLDER* - enables folder-based generation
+
+*FIELDENUM* - adds enumeration with message fields for generated messages.
 
 ## Integration with CMake project
 
@@ -390,7 +394,7 @@ qtprotobuf_generate is cmake helper function that automatically generates STATIC
 
 ***Options:***
 
-*MULTI* - Enables multi-files generation mode. If provided in parameter list generator will create pair of header/source files for each message
+*MULTI* - Enables multi-files generation mode. If provided in parameter list generator will create pair of header/source files for each message.
 
 >**Note:** multi-files generation mode is defined as deprecated by QtProtobuf team, and might have poor support in future
 
@@ -398,9 +402,11 @@ qtprotobuf_generate is cmake helper function that automatically generates STATIC
 
 *COMMENTS* - Enables comments copying from .proto files. If provided in parameter list message and field related comments will be copied to generated header files.
 
-*FOLDER* - Enables folder based generation. If provided in parameter list generator will place generated artifacts to folder structure according to package of corresponding .proto file
+*FOLDER* - Enables folder based generation. If provided in parameter list generator will place generated artifacts to folder structure according to package of corresponding .proto file.
 
 >**Note:** enabled by default if MULTI option provided
+
+*FIELDENUM* - Adds enumeration with message fields for generated messages.
 
 #### qtprotobuf_link_target
 
