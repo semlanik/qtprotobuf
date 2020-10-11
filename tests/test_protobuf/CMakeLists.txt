@@ -18,7 +18,7 @@ endif()
 
 add_test_target(TARGET ${TARGET}
     SOURCES ${SOURCES}
-    QML)
+    QML FIELDENUM)
 add_target_windeployqt(TARGET ${TARGET}
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

@@ -337,11 +337,17 @@ void MessageDeclarationPrinter::printPrivateMethods()
 }
 
 void MessageDeclarationPrinter::printQEnums() {
+    if (GeneratorOptions::instance().generateFieldEnum()) {
+        printFieldEnum();
+        Indent();
+            mPrinter->Print({{"type", Templates::QtProtobufFieldEnum}}, Templates::QEnumTemplate);
+        Outdent();
+        mPrinter->Print("\n");
+    }
+
     if (mDescriptor->enum_type_count() <= 0) {
         return;
     }
-
-    printPublicBlock();
 
     Indent();
     for (int i = 0; i < mDescriptor->enum_type_count(); i++) {
@@ -371,9 +377,9 @@ void MessageDeclarationPrinter::printQEnums() {
 void MessageDeclarationPrinter::printClassBody()
 {
     printProperties();
-    printQEnums();
 
     printPublicBlock();
+    printQEnums();
     printNested();
     printMaps();
 
@@ -429,4 +435,17 @@ void MessageDeclarationPrinter::printClassMembers()
 void MessageDeclarationPrinter::printDestructor()
 {
     mPrinter->Print({{"classname", mName}}, "virtual ~$classname$();\n");
+}
+
+void MessageDeclarationPrinter::printFieldEnum()
+{
+    Indent();
+    mPrinter->Print(Templates::FieldEnumTemplate);
+    Indent();
+    common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *, const PropertyMap &propertyMap) {
+        mPrinter->Print(propertyMap, Templates::FieldNumberTemplate);
+    });
+    Outdent();
+    mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);
+    Outdent();
 }

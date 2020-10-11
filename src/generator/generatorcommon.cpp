@@ -321,6 +321,7 @@ PropertyMap common::producePropertyMap(const FieldDescriptor *field, const Descr
     propertyMap["key_type"] = "";
     propertyMap["value_type"] = "";
     propertyMap["classname"] = scope != nullptr ? utils::upperCaseName(scope->name()) : "";
+    propertyMap["number"] = std::to_string(field->number());
 
     if (field->is_map()) {
         const Descriptor *type = field->message_type();

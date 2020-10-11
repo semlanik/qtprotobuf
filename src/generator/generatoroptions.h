@@ -50,12 +50,14 @@ public:
     bool hasQml() const { return mHasQml; }
     bool generateComments() const { return mGenerateComments; }
     bool isFolder() const { return mIsFolder; }
+    bool generateFieldEnum() const { return mGenerateFieldEnum; }
 
 private:
     bool mIsMulti;
     bool mHasQml;
     bool mGenerateComments;
     bool mIsFolder;
+    bool mGenerateFieldEnum;
 };
 
 }}

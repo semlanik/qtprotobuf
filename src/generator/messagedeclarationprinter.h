@@ -66,6 +66,7 @@ private:
     void printNested();
     void printMetaTypesDeclaration();
     void printClassDeclarationBegin();
+    void printFieldEnum();
 
     void printQEnums();
 
