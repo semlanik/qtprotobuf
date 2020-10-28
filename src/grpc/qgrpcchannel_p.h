@@ -29,7 +29,7 @@
 #include <grpcpp/channel.h>
 #include <grpcpp/impl/codegen/byte_buffer.h>
 #include <grpcpp/impl/codegen/client_context.h>
-#include <grpcpp/impl/codegen/sync_stream_impl.h>
+#include <grpcpp/impl/codegen/sync_stream.h>
 #include <grpcpp/security/credentials.h>
 
 #include "qabstractgrpccredentials.h"
@@ -64,7 +64,7 @@ public:
 private:
     QThread *thread;
     grpc::ClientContext context;
-    grpc_impl::ClientReader<grpc::ByteBuffer> *reader = nullptr;
+    grpc::ClientReader<grpc::ByteBuffer> *reader = nullptr;
 };
 
 //! \private
