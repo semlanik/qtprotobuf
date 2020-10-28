@@ -40,7 +40,7 @@
 #include <grpcpp/impl/codegen/rpc_method.h>
 #include <grpcpp/impl/codegen/slice.h>
 #include <grpcpp/impl/codegen/status.h>
-#include <grpcpp/impl/codegen/sync_stream_impl.h>
+#include <grpcpp/impl/codegen/sync_stream.h>
 #include <grpcpp/security/credentials.h>
 
 #include "qabstractgrpccredentials.h"
@@ -83,7 +83,7 @@ QGrpcChannelSubscription::QGrpcChannelSubscription(grpc::Channel *channel, const
     grpc::ByteBuffer request;
     parseQByteArray(data, request);
 
-    reader = grpc_impl::internal::ClientReaderFactory<grpc::ByteBuffer>::Create(channel,
+    reader = grpc::internal::ClientReaderFactory<grpc::ByteBuffer>::Create(channel,
         grpc::internal::RpcMethod(method.toStdString().c_str(), grpc::internal::RpcMethod::SERVER_STREAMING),
         &context, request);
 
