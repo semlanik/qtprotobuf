@@ -185,6 +185,7 @@ public:
     static const char *ClientMethodDeclarationAsyncTemplate;
     static const char *ClientMethodDeclarationAsync2Template;
     static const char *ClientMethodDeclarationQmlTemplate;
+    static const char *ClientMethodDeclarationQml2Template;
 
     static const char *ServerMethodDeclarationTemplate;
 
@@ -192,6 +193,7 @@ public:
     static const char *ClientMethodDefinitionAsyncTemplate;
     static const char *ClientMethodDefinitionAsync2Template;
     static const char *ClientMethodDefinitionQmlTemplate;
+    static const char *ClientMethodDefinitionQml2Template;
 
     //Streaming
     static const char *ClientMethodSignalDeclarationTemplate;

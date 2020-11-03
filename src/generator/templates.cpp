@@ -292,6 +292,7 @@ const char *Templates::ClientMethodDeclarationSyncTemplate = "QtProtobuf::QGrpcS
 const char *Templates::ClientMethodDeclarationAsyncTemplate = "QtProtobuf::QGrpcAsyncReplyShared $method_name$(const $param_type$ &$param_name$);\n";
 const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcAsyncReplyShared)> &callback);\n";
 const char *Templates::ClientMethodDeclarationQmlTemplate = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, const QJSValue &callback, const QJSValue &errorCallback);\n";
+const char *Templates::ClientMethodDeclarationQml2Template = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, $return_type$ *$return_name$, const QJSValue &errorCallback);\n";
 
 const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $return_type$ $method_name$(const $param_type$ &$param_name$) = 0;\n";
 
@@ -339,6 +340,33 @@ const char *Templates::ClientMethodDefinitionQmlTemplate = "\nvoid $classname$::
                                                            "        QJSValue(errorCallback).call(QJSValueList{jsEngine->toScriptValue(status)});\n"
                                                            "    });\n"
                                                            "}\n";
+const char *Templates::ClientMethodDefinitionQml2Template = "\nvoid $classname$::$method_name$($param_type$ *$param_name$, $return_type$ *$return_name$, const QJSValue &errorCallback)\n"
+                                                            "{\n"
+                                                            "    if ($return_name$ == nullptr) {\n"
+                                                            "        qProtoWarning() << \"Invalid argument provided for method $classname$::$method_name$, argument of type '$return_type$ *' expected\";\n"
+                                                            "        return;\n"
+                                                            "    }\n\n"
+                                                            "    QPointer<$return_type$> safeReturn($return_name$);\n\n"
+                                                            "    if ($param_name$ == nullptr) {\n"
+                                                            "        qProtoWarning() << \"Invalid argument provided for method $classname$::$method_name$, argument of type '$param_type$ *' expected\";\n"
+                                                            "        return;\n"
+                                                            "    }\n\n"
+                                                            "    QJSEngine *jsEngine = qjsEngine(this);\n"
+                                                            "    if (jsEngine == nullptr) {\n"
+                                                            "        qProtoWarning() << \"Unable to call $classname$::$method_name$, it's only callable from JS engine context\";\n"
+                                                            "        return;\n"
+                                                            "    }\n\n"
+                                                            "    QtProtobuf::QGrpcAsyncReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
+                                                            "    reply->subscribe(jsEngine, [this, reply, jsEngine, safeReturn]() {\n"
+                                                            "        if (safeReturn.isNull()) {\n"
+                                                            "            qProtoWarning() << \"Return value is destroyed. Ignore call result\";\n"
+                                                            "            return;\n"
+                                                            "        }\n"
+                                                            "        *safeReturn = $return_type$(reply->read<$return_type$>());\n"
+                                                            "    }, [errorCallback, jsEngine](const QGrpcStatus &status) {\n"
+                                                            "        QJSValue(errorCallback).call(QJSValueList{jsEngine->toScriptValue(status)});\n"
+                                                            "    });\n"
+                                                            "}\n";
 const char *Templates::RegisterSerializersTemplate = "qRegisterProtobufType<$classname$>();\n";
 const char *Templates::RegisterEnumSerializersTemplate = "qRegisterProtobufEnumType<$full_type$>();\n";
 const char *Templates::RegistrarTemplate = "static QtProtobuf::ProtoTypeRegistrar<$classname$> ProtoTypeRegistrar$classname$(qRegisterProtobufType<$classname$>);\n";
