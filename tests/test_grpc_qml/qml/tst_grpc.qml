@@ -206,4 +206,17 @@ TestCase {
         compare(subscriptionLoader.item.updateCount, 1, "Subscription failed, update was not called right amount times")
         subscriptionLoader.active = false;
     }
+
+    SimpleStringMessage {
+        id: returnStringMsg
+    }
+
+    function test_returnValueAsParameter() {
+        var errorCalled = false;
+        TestServiceClient.testMethod(stringMsg, returnStringMsg, function(status) {
+            errorCalled = true
+        })
+        wait(300)
+        compare(returnStringMsg.testFieldString == stringMsg.testFieldString && !errorCalled, true, "testMethod was not called proper way")
+    }
 }

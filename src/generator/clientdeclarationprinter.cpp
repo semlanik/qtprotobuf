@@ -88,6 +88,7 @@ void ClientDeclarationPrinter::printClientMethodsDeclaration()
             mPrinter->Print(parameters, Templates::ClientMethodDeclarationAsync2Template);
             if (GeneratorOptions::instance().hasQml()) {
                 mPrinter->Print(parameters, Templates::ClientMethodDeclarationQmlTemplate);
+                mPrinter->Print(parameters, Templates::ClientMethodDeclarationQml2Template);
             }
         }
         mPrinter->Print("\n");
