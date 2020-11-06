@@ -89,10 +89,10 @@ QGrpcChannelSubscription::QGrpcChannelSubscription(grpc::Channel *channel, const
 
     thread = QThread::create([this](){
         grpc::ByteBuffer response;
-        QByteArray data;
         grpc::Status status;
 
         while (reader->Read(&response)) {
+            QByteArray data;
             status = parseByteBuffer(response, data);
 
             if (!status.ok()) {
