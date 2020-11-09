@@ -33,6 +33,7 @@ static const std::string MultifileBuildOption("MULTI");
 static const std::string QmlPluginOption("QML");
 static const std::string CommentsGenerationOption("COMMENTS");
 static const std::string FolderGenerationOption("FOLDER");
+static const std::string FieldEnumGenerationOption("FIELDENUM");
 
 
 using namespace ::QtProtobuf::generator;
@@ -41,13 +42,13 @@ GeneratorOptions::GeneratorOptions() : mIsMulti(false)
   , mHasQml(false)
   , mGenerateComments(false)
   , mIsFolder(false)
+  , mGenerateFieldEnum(false)
 {
 }
 
 void GeneratorOptions::parseFromEnv(const std::string &options)
 {
-    std::vector<std::string> optionsList;
-    utils::split(options, optionsList, ':');
+    std::vector<std::string> optionsList = utils::split(options, ':');
     for (auto option : optionsList) {
         QT_PROTOBUF_DEBUG("option: " << option);
         if (option.compare(MultifileBuildOption) == 0) {
@@ -62,6 +63,9 @@ void GeneratorOptions::parseFromEnv(const std::string &options)
         } else if (option.compare(FolderGenerationOption) == 0) {
             QT_PROTOBUF_DEBUG("set mIsFolder: true");
             mIsFolder = true;
+        } else if (option.compare(FieldEnumGenerationOption) == 0) {
+            QT_PROTOBUF_DEBUG("set mGenerateFieldEnum: true");
+            mGenerateFieldEnum = true;
         }
     }
 }

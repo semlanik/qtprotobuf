@@ -17,3 +17,10 @@ enum ExternalTestEnum {
     EXTERNAL_TEST_ENUM_VALUE3 = 3;
     EXTERNAL_TEST_ENUM_VALUE4 = 4;
 }
+
+message NestedFieldMessage {
+    message NestedMessage {
+        sint32 field = 1;
+    }
+    NestedMessage nested = 1;   
+}

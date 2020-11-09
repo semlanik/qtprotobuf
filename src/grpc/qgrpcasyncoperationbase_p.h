@@ -91,7 +91,7 @@ signals:
      * \brief The signal is emitted when error happend in channel or during serialization
      * \param[out] status received from gRPC channel
      */
-    void error(const QGrpcStatus &status);
+    void error(const QtProtobuf::QGrpcStatus &status);
 
 protected:
     //! \private

@@ -1,13 +1,8 @@
-if(DEFINED $ENV{QT_PROTOBUF_MAKE_COVERAGE})
-    set(QT_PROTOBUF_MAKE_COVERAGE $ENV{QT_PROTOBUF_MAKE_COVERAGE})
-elseif(NOT DEFINED QT_PROTOBUF_MAKE_COVERAGE)
-    set(QT_PROTOBUF_MAKE_COVERAGE OFF)
-endif()
-
 if(QT_PROTOBUF_MAKE_COVERAGE AND UNIX)
     message(STATUS "Enable gcov")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
+    add_custom_target(coverage)
 endif()
 
 function(add_coverage_target)
@@ -37,5 +32,6 @@ function(add_coverage_target)
                 ${CMAKE_SOURCE_DIR} --html --html-details -o ${GCOVR_OUTPUT_DIR}/${add_coverage_target_TARGET}.html ${OBJECTS_DIR} .
                 WORKING_DIRECTORY ${GCOV_OUTPUT_DIR})
         endif()
+        add_dependencies(coverage ${COVERAGE_TARGET})
     endif()
 endfunction(add_coverage_target)

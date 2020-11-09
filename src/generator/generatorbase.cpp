@@ -34,6 +34,7 @@
 #include "utils.h"
 #include "templates.h"
 #include "generatoroptions.h"
+#include "generatorcommon.h"
 
 using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
@@ -43,28 +44,6 @@ GeneratorBase::GeneratorBase(Mode mode) : m_mode(mode)
 {
 
 }
-void GeneratorBase::iterateNonNestedFileds(const ::google::protobuf::FileDescriptor *file, std::function<void(const ::google::protobuf::Descriptor *)> callback) const
-{
-    for (int i = 0; i < file->message_type_count(); i++) {
-        const Descriptor *message = file->message_type(i);
-
-        //Detect nested fields and filter maps fields
-        int mapsFieldsCount = 0;
-        for (int j = 0; j < message->nested_type_count(); j++) {
-            for (int k = 0; k < message->field_count(); k++) {
-                if (message->field(k)->is_map() && message->field(k)->message_type() == message->nested_type(j)) {
-                    ++mapsFieldsCount;
-                }
-            }
-        }
-
-        if (message->nested_type_count() > 0 && message->nested_type_count() > mapsFieldsCount) {
-            std::cerr << file->name() << ":" << (message->index() + 1) << ": " << " Error: Meta object features not supported for nested classes in " << message->full_name() << std::endl;
-            continue;
-        }
-        callback(message);
-    }
-}
 
 bool GeneratorBase::GenerateAll(const std::vector<const FileDescriptor *> &files, const string &parameter, GeneratorContext *generatorContext, string *error) const
 {
@@ -73,8 +52,7 @@ bool GeneratorBase::GenerateAll(const std::vector<const FileDescriptor *> &files
 
 std::string GeneratorBase::generateBaseName(const ::google::protobuf::FileDescriptor *file, std::string name)
 {
-    std::vector<std::string> packages;
-    utils::split(file->package(), packages, '.');
+    std::vector<std::string> packages = utils::split(file->package(), '.');
     std::string outFileBasename = "";
     if (GeneratorOptions::instance().isFolder()) {
         for (auto package : packages) {
@@ -87,3 +65,113 @@ std::string GeneratorBase::generateBaseName(const ::google::protobuf::FileDescri
 
     return outFileBasename;
 }
+
+
+void GeneratorBase::printDisclaimer(const std::shared_ptr<::google::protobuf::io::Printer> printer)
+{
+    printer->Print(Templates::DisclaimerTemplate);
+}
+
+void GeneratorBase::printPreamble(const std::shared_ptr<::google::protobuf::io::Printer> printer)
+{
+    printer->Print(Templates::PreambleTemplate);
+}
+
+void GeneratorBase::printInclude(const std::shared_ptr<::google::protobuf::io::Printer> printer, const google::protobuf::Descriptor *message, const FieldDescriptor *field, std::set<std::string> &existingIncludes)
+{
+    assert(field != nullptr);
+    std::string newInclude;
+    const char *includeTemplate = "";
+    switch (field->type()) {
+    case FieldDescriptor::TYPE_MESSAGE:
+        if (field->is_map()) {
+            newInclude = "QMap";
+            assert(field->message_type() != nullptr);
+            assert(field->message_type()->field_count() == 2);
+            printInclude(printer, message, field->message_type()->field(0), existingIncludes);
+            printInclude(printer, message, field->message_type()->field(1), existingIncludes);
+            includeTemplate = Templates::ExternalIncludeTemplate;
+        } else if (common::isQtType(field)) {
+            newInclude = field->message_type()->name();
+            includeTemplate = Templates::ExternalIncludeTemplate;
+        } else {
+            if (!common::isNested(field->message_type())) {
+                std::string outFileBasename = "";
+                std::string fieldPackage = field->message_type()->file()->package();
+                if (fieldPackage != message->file()->package()) {
+                    std::vector<std::string> packages = utils::split(fieldPackage, '.');
+                    for (auto package : packages) {
+                        outFileBasename += package + "/";
+                    }
+                }
+
+                std::string typeName = field->message_type()->name();
+                utils::tolower(typeName);
+                newInclude = outFileBasename + typeName;
+                includeTemplate = Templates::InternalIncludeTemplate;
+            } else if (!common::isNestedOf(field->message_type(), message)) {
+                auto containingMessage = common::findHighestMessage(field->message_type());
+                if (containingMessage != message) {
+                    std::string outFileBasename = "";
+                    std::string fieldPackage = containingMessage->file()->package();
+                    if (fieldPackage != message->file()->package()) {
+                        std::vector<std::string> packages = utils::split(fieldPackage, '.');
+                        for (auto package : packages) {
+                            outFileBasename += package + "/";
+                        }
+                    }
+
+                    std::string typeName = containingMessage->name();
+                    utils::tolower(typeName);
+                    newInclude = outFileBasename + typeName;
+                    includeTemplate = Templates::InternalIncludeTemplate;
+                }
+            }
+        }
+        break;
+    case FieldDescriptor::TYPE_BYTES:
+        newInclude = "QByteArray";
+        includeTemplate = Templates::ExternalIncludeTemplate;
+        break;
+    case FieldDescriptor::TYPE_STRING:
+        newInclude = "QString";
+        includeTemplate = Templates::ExternalIncludeTemplate;
+        break;
+    case FieldDescriptor::TYPE_ENUM: {
+        common::EnumVisibility enumVisibily = common::enumVisibility(field->enum_type(), message);
+        if (enumVisibily == common::GLOBAL_ENUM) {
+            includeTemplate = Templates::GlobalEnumIncludeTemplate;
+        } else if (enumVisibily == common::NEIGHBOR_ENUM) {
+            includeTemplate = Templates::InternalIncludeTemplate;
+            std::string fullEnumName = field->enum_type()->full_name();
+            std::vector<std::string> fullEnumNameParts = utils::split(fullEnumName, '.');
+            std::string enumTypeOwner = fullEnumNameParts.at(fullEnumNameParts.size() - 2);
+            utils::tolower(enumTypeOwner);
+            newInclude = enumTypeOwner;
+        } else {
+            return;
+        }
+    }
+        break;
+    default:
+        return;
+    }
+
+    if (existingIncludes.find(newInclude) == std::end(existingIncludes)) {
+        printer->Print({{"include", newInclude}}, includeTemplate);
+        existingIncludes.insert(newInclude);
+    }
+}
+
+void GeneratorBase::printQtProtobufUsingNamespace(const std::shared_ptr<::google::protobuf::io::Printer> printer)
+{
+    printer->Print({{"namespace", "QtProtobuf"}}, Templates::UsingNamespaceTemplate);
+}
+
+void GeneratorBase::printNamespaces(const std::shared_ptr<::google::protobuf::io::Printer> printer, const std::vector<std::string> namespaces) {
+    printer->Print("\n");
+    for (auto ns : namespaces) {
+        printer->Print({{"namespace", ns}}, Templates::NamespaceTemplate);
+    }
+}
+

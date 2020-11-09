@@ -1,11 +1,50 @@
 syntax = "proto3";
 
 package qtprotobufnamespace.tests.nested;
+import "externalpackagetest.proto";
 
-message NestedSimpleIntMessage {
+message NestedFieldMessage {
     sint32 testFieldInt = 1;
-    message SimpleIntMessage {
+    message NestedMessage {
         sint32 testFieldInt = 1;
     }
+    NestedMessage nested = 2;   
 }
 
+message NestedFieldMessage2 {
+    message NestedMessageLevel1 {
+        message NestedMessageLevel2 {
+            sint32 testFieldInt = 1;
+        }
+        NestedMessageLevel2 nested = 1;
+    }
+    NestedMessageLevel1 nested1 = 2;   
+    NestedMessageLevel1.NestedMessageLevel2 nested2 = 3;   
+}
+
+message NeighborNested {
+    NestedFieldMessage.NestedMessage neighborNested = 1;
+    NestedFieldMessage2.NestedMessageLevel1.NestedMessageLevel2 neighborNested2 = 2;
+}
+
+message NestedExternal {
+    qtprotobufnamespace1.externaltests.NestedFieldMessage.NestedMessage externalNested = 1;
+}
+
+message NestedNoFields {
+  message Nested {
+    sint32 testFieldInt = 1;
+  }
+}
+
+message NestedCyclingA {
+  message NestedCyclingB {
+    NestedCyclingAA.NestedCyclingBB testField = 1;
+  }
+}
+
+message NestedCyclingAA {
+  message NestedCyclingBB {
+    NestedCyclingA.NestedCyclingB testField = 1;
+  }
+}

@@ -1,23 +1,11 @@
-function(qtprotobuf_link_archive TARGET GENERATED_TARGET)
-    set_target_properties(${qtprotobuf_generate_TARGET} PROPERTIES LINKER_LANGUAGE CXX)
-    set_target_properties(${TARGET} PROPERTIES LINK_DIRECTORIES "$<TARGET_FILE_DIR:${GENERATED_TARGET}>")
-    get_target_property(EXISTING_FLAGS ${TARGET} LINK_FLAGS)
-    if(WIN32)
-        if("${EXISTING_FLAGS}" STREQUAL "EXISTING_FLAGS-NOTFOUND")
-            set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "/WHOLEARCHIVE:${GENERATED_TARGET}")
-        else()
-            set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "${EXISTING_FLAGS} /WHOLEARCHIVE:${GENERATED_TARGET}")
-        endif()
-    else()
-        target_link_libraries(${TARGET} PRIVATE
-        -Wl,--whole-archive $<TARGET_FILE:${GENERATED_TARGET}> -Wl,--no-whole-archive)
-    endif()
-    target_include_directories(${TARGET} PRIVATE $<TARGET_PROPERTY:${GENERATED_TARGET},INCLUDE_DIRECTORIES>)
+function(qtprotobuf_link_target TARGET GENERATED_TARGET)
+    target_sources(${TARGET} PRIVATE $<TARGET_OBJECTS:${GENERATED_TARGET}>)
+    target_include_directories(${TARGET} PRIVATE $<TARGET_PROPERTY:${GENERATED_TARGET},INTERFACE_INCLUDE_DIRECTORIES>)
     add_dependencies(${TARGET} ${GENERATED_TARGET})
 endfunction()
 
 function(qtprotobuf_generate)
-    set(options MULTI QML COMMENTS FOLDER)
+    set(options MULTI QML COMMENTS FOLDER FIELDENUM)
     set(oneValueArgs OUT_DIR TARGET GENERATED_TARGET)
     set(multiValueArgs GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
     cmake_parse_arguments(qtprotobuf_generate "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -32,9 +20,7 @@ function(qtprotobuf_generate)
 
     set(GEN_TARGET ${GENERATED_TARGET_NAME}_generate)
 
-    if(NOT DEFINED QT_PROTOBUF_EXECUTABLE)
-        set(QT_PROTOBUF_EXECUTABLE "${QT_PROTOBUF_EXECUTABLE_INSTALL}")
-    endif()
+    set(QT_PROTOBUF_EXECUTABLE $<TARGET_FILE:${QT_PROTOBUF_PROJECT}::${GENERATOR_TARGET}>)
 
     #Options handling
     set(GENERATION_TYPE "SIGNLE")
@@ -61,6 +47,10 @@ function(qtprotobuf_generate)
         set(FOLDER_ENABLED "FOLDER")
     endif()
 
+    if(qtprotobuf_generate_FIELDENUM)
+        message(STATUS "Enabled FIELDENUM generation for ${GENERATED_TARGET_NAME}")
+        set(GENERATION_OPTIONS "${GENERATION_OPTIONS}:FIELDENUM")
+    endif()
 
     if(WIN32)
         set(PROTOC_COMMAND set QT_PROTOBUF_OPTIONS=${GENERATION_OPTIONS}&& $<TARGET_FILE:protobuf::protoc>)
@@ -80,7 +70,7 @@ function(qtprotobuf_generate)
 
         foreach(PROTO_FILE IN LISTS qtprotobuf_generate_PROTO_FILES)
             get_filename_component(BASE_DIR ${PROTO_FILE} DIRECTORY)
-            set(PROTO_INCLUDES -I"${BASE_DIR}" ${PROTO_INCLUDES})
+            set(PROTO_INCLUDES "-I\"${BASE_DIR}\"" ${PROTO_INCLUDES})
             execute_process(COMMAND ${GO_EXECUTABLE} run ${PROTO_PARSER} ${PROTO_FILE} ${GENERATION_TYPE} ${FOLDER_ENABLED} OUTPUT_VARIABLE GENERATED_HEADERS_PART ERROR_VARIABLE PARSER_ERROR)
             set(GENERATED_HEADERS ${GENERATED_HEADERS} ${GENERATED_HEADERS_PART})
         endforeach()
@@ -124,6 +114,8 @@ function(qtprotobuf_generate)
             list(APPEND GENERATED_HEADERS_FULL ${OUT_DIR}/${GENERATED_BASENAME}.h)
         endif()
         set_property(SOURCE ${OUT_DIR}/${GENERATED_DIRECTORY}/${GENERATED_BASENAME}.cpp PROPERTY SKIP_AUTOMOC ON)
+        set_property(SOURCE ${OUT_DIR}/${GENERATED_DIRECTORY}/${GENERATED_BASENAME}.cpp PROPERTY SKIP_AUTOUIC ON)
+        set_property(SOURCE ${OUT_DIR}/${GENERATED_DIRECTORY}/${GENERATED_BASENAME}.cpp PROPERTY SKIP_AUTOGEN ON)
     endforeach()
 
     set_source_files_properties(${GENERATED_SOURCES_FULL} PROPERTIES GENERATED TRUE)
@@ -139,16 +131,17 @@ function(qtprotobuf_generate)
             WORKING_DIRECTORY ${OUT_DIR}
             DEPENDS ${qtprotobuf_generate_PROTO_FILES} ${QT_PROTOBUF_EXECUTABLE}
             COMMENT "Generating QtProtobuf ${GENERATED_TARGET_NAME} sources..."
+            COMMAND_EXPAND_LISTS
     )
 
     add_custom_target(${GEN_TARGET} DEPENDS ${GENERATED_SOURCES_FULL} ${GENERATED_HEADERS_FULL} ${qtprotobuf_generate_PROTO_FILES})
 
-    add_library(${GENERATED_TARGET_NAME} ${GENERATED_SOURCES_FULL} ${MOC_SOURCES})
+    add_library(${GENERATED_TARGET_NAME} OBJECT ${GENERATED_SOURCES_FULL} ${MOC_SOURCES})
     add_dependencies(${GENERATED_TARGET_NAME} ${GEN_TARGET})
     set_target_properties(${GENERATED_TARGET_NAME} PROPERTIES PUBLIC_HEADER "${GENERATED_HEADERS_FULL}")
 
     #Add include directories in case if projects are enabled by find_project
-    target_include_directories(${GENERATED_TARGET_NAME} PUBLIC ${OUT_DIR} PRIVATE ${Qt5Core_INCLUDE_DIRS}
+    target_include_directories(${GENERATED_TARGET_NAME} PUBLIC ${OUT_DIR} PRIVATE
         $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobuf,INTERFACE_INCLUDE_DIRECTORIES>)
 
     if(TARGET ${QT_PROTOBUF_PROJECT}::QtGrpc)
@@ -163,8 +156,13 @@ function(qtprotobuf_generate)
         endif()
     endif()
 
+    if(TARGET ${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes)
+        target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
+            $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes,INTERFACE_INCLUDE_DIRECTORIES>)
+    endif()
+
     #Automatically link whole static library to specified in parameters target
     if(DEFINED qtprotobuf_generate_TARGET)
-        qtprotobuf_link_archive(${qtprotobuf_generate_TARGET} ${GENERATED_TARGET_NAME})
+        qtprotobuf_link_target(${qtprotobuf_generate_TARGET} ${GENERATED_TARGET_NAME})
     endif()
 endfunction()

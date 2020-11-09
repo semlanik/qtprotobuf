@@ -1,5 +1,4 @@
 set(TARGET QtProtobuf)
-set(TARGET_STATIC ${TARGET}Static)
 set(TARGET_EXPORT ${TARGET}Targets)
 set(TARGET_CONFIG ${TARGET}Config)
 
@@ -12,9 +11,23 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
-find_package(microjson CONFIG REQUIRED)
 
-include(${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake)
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/3rdparty/microjson/CMakeLists.txt")
+    set(MICROJSON_MAKE_TESTS OFF)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/microjson")
+    message(STATUS "Using microjson from 3rdparty")
+    message("Note: microjson will be added to install set")
+else()
+    find_package(microjson CONFIG REQUIRED)
+endif()
+if(NOT TARGET microjson)
+    message(FATAL_ERROR "microjson is not found.")
+endif()
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ${Qt5_POSITION_INDEPENDENT_CODE})
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
 
@@ -43,7 +56,8 @@ file(GLOB HEADERS
     qprotobufselfcheckiterator.h
     qprotobufmetaproperty.h
     qprotobufmetaobject.h
-    qprotobufserializationplugininterface.h)
+    qprotobufserializationplugininterface.h
+    qprotobuflazymessagepointer.h)
 
 file(GLOB PUBLIC_HEADER
     qtprotobufglobal.h
@@ -58,25 +72,35 @@ file(GLOB PUBLIC_HEADER
     qprotobufselfcheckiterator.h
     qprotobufmetaproperty.h
     qprotobufmetaobject.h
-    qprotobufserializationplugininterface.h)
+    qprotobufserializationplugininterface.h
+    qprotobuflazymessagepointer.h)
 
 protobuf_generate_qt_headers(PUBLIC_HEADER ${PUBLIC_HEADER} COMPONENT ${TARGET})
 
-if(QT_PROTOBUF_STATIC)
+add_library(${TARGET} ${SOURCES})
+
+set(QT_PROTOBUF_STATIC OFF)
+if(NOT BUILD_SHARED_LIBS)
+    set(QT_PROTOBUF_STATIC ON)
     if(WIN32)
         message(WARNING "Static version of QtProtobuf is not fully tested on Win32 platforms")
     endif()
-    add_library(${TARGET} STATIC ${SOURCES})
     target_compile_definitions(${TARGET} PRIVATE QT_PROTOBUF_STATIC)
     set(QT_PROTOBUF_EXTRA_COMPILE_DIFINITIONS QT_PROTOBUF_STATIC)
-else()
-    add_library(${TARGET} SHARED ${SOURCES})
+    set(QT_PROTOBUF_EXTRA_CONFIG "staticlib") #extra config for .pri file in case if static build enabled
 endif()
 
 if(NOT DEFINED QT_QMAKE_EXECUTABLE)
-    find_program(QT_QMAKE_EXECUTABLE "qmake")
+    find_program(QT_QMAKE_EXECUTABLE "qmake" NO_DEFAULT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH)
     if(QT_QMAKE_EXECUTABLE STREQUAL QT_QMAKE_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "Could not find qmake executable")
+        find_program(QT_QMAKE_EXECUTABLE "qmake")
+        if(QT_QMAKE_EXECUTABLE STREQUAL QT_QMAKE_EXECUTABLE-NOTFOUND)
+            message(FATAL_ERROR "Could not find qmake executable")
+        else()
+            message(STATUS "Use qmake ${QT_QMAKE_EXECUTABLE}")
+        endif()
+    else()
+        message(STATUS "Use qmake ${QT_QMAKE_EXECUTABLE}")
     endif()
 endif()
 
@@ -105,42 +129,32 @@ target_compile_features(${TARGET} PUBLIC cxx_std_14
                                          cxx_lambdas
                                          cxx_func_identifier)
 
-target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml PRIVATE microjson)
+target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml microjson)
 
 add_library(${QT_PROTOBUF_PROJECT}::${TARGET} ALIAS ${TARGET})
-
-install(TARGETS ${TARGET}
-    EXPORT ${TARGET_EXPORT} COMPONENT dev
-    ARCHIVE DESTINATION ${TARGET_LIB_DIR} COMPONENT lib
-    PUBLIC_HEADER DESTINATION ${TARGET_INCLUDE_DIR} COMPONENT dev
-    LIBRARY DESTINATION ${TARGET_LIB_DIR} COMPONENT lib
-    RUNTIME DESTINATION ${TARGET_BINDIR} COMPONENT lib)
-
-install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
     "${TARGET_CONFIG}.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake"
     INSTALL_DESTINATION "${TARGET_CMAKE_DIR}")
 
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
+set(QT_PROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${GENERATOR_TARGET})
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_protobuf.pri.in" "${QT_PROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" @ONLY)
+
+if(QT_PROTOBUF_INSTALL)
+    install(TARGETS ${TARGET}
+        EXPORT ${TARGET_EXPORT} COMPONENT dev
+        ARCHIVE DESTINATION ${TARGET_LIB_DIR} COMPONENT lib
+        PUBLIC_HEADER DESTINATION ${TARGET_INCLUDE_DIR} COMPONENT dev
+        LIBRARY DESTINATION ${TARGET_LIB_DIR} COMPONENT lib
+        RUNTIME DESTINATION ${TARGET_BINDIR} COMPONENT lib)
+    install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
+    install(FILES "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
+    install(FILES "${QT_PROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" DESTINATION "${QT_HOST_DATA}/mkspecs/modules" COMPONENT dev)
+endif()
 
 export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake)
-
-configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake" "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" COPYONLY)
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
-
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/parsemessages.go" "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go" COPYONLY)
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
-
-configure_file("${QT_PROTOBUF_CMAKE_DIR}/ProtobufLookup.cmake" "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
-
-if(QT_PROTOBUF_STATIC) #extra config for .pri file in case if static build enabled
-    set(QT_PROTOBUF_EXTRA_CONFIG "staticlib")
-endif()
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_protobuf.pri.in" "${QT_PROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" @ONLY)
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/qt_lib_protobuf.pri" DESTINATION "${QT_HOST_DATA}/mkspecs/modules" COMPONENT dev)
 
 add_subdirectory("quick")
 

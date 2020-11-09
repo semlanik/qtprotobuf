@@ -50,3 +50,41 @@
         Q_DISABLE_COPY(Class) \
         Q_DISABLE_MOVE(Class)
 #endif
+/*!
+ * \ingroup QtProtobuf
+ * \def Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
+ *      Imports statically linked QtProtobufQuickPlugin.<br/>
+ *      If you use statically linked QtProtobuf, you need to call
+ *      Q_PROTOBUF_IMPORT_QUICK_PLUGIN macro before use QtProtobuf in QML.<br/>
+ * C++:
+ * \code
+ * int main(int argc, char *argv[]) {
+ *     ...
+ *     QtProtobuf::qRegisterProtobufTypes();
+ *     Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
+ *     ...
+ * }
+ * \endcode
+ *
+ * QML:
+ * \code
+ * //Make QtProtobuf types visible in QML
+ * import QtProtobuf 0.4 //Use recent QtProtobuf version
+ * ...
+ * Item {
+ *     //QtProtobuf usage
+ * }
+ * ...
+ * \endcode
+ */
+#ifndef Q_PROTOBUF_IMPORT_QUICK_PLUGIN
+    #ifdef QT_PROTOBUF_STATIC
+        #include <QtPlugin>
+        #include <QQmlExtensionPlugin>
+        #define Q_PROTOBUF_IMPORT_QUICK_PLUGIN() \
+            Q_IMPORT_PLUGIN(QtProtobufQuickPlugin) \
+            qobject_cast<QQmlExtensionPlugin*>(qt_static_plugin_QtProtobufQuickPlugin().instance())->registerTypes("QtProtobuf");
+    #else
+        #define Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
+    #endif //QT_PROTOBUF_STATIC
+#endif //Q_PROTOBUF_IMPORT_QUICK_PLUGIN

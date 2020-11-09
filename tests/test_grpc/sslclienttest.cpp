@@ -26,6 +26,9 @@
 #include "testservice_grpc.qpb.h"
 
 #include <QGrpcHttp2Channel>
+#ifdef QT_PROTOBUF_NATIVE_GRPC_CHANNEL
+#include <QGrpcChannel>
+#endif
 #include <QGrpcSslCredentials>
 #include <QGrpcInsecureCredentials>
 
@@ -55,7 +58,7 @@ protected:
 int ClientTest::m_argc(0);
 QCoreApplication ClientTest::m_app(m_argc, nullptr);
 
-TEST_F(ClientTest, IncorrectSecureCredentialsTest)
+TEST_F(ClientTest, Http2ChannelIncorrectSecureCredentialsTest)
 {
     //Prepare ssl configuration
     QSslConfiguration conf = QSslConfiguration::defaultConfiguration();
@@ -70,5 +73,27 @@ TEST_F(ClientTest, IncorrectSecureCredentialsTest)
     testClient.attachChannel(std::make_shared<QtProtobuf::QGrpcHttp2Channel>(QUrl("https://localhost:60051", QUrl::StrictMode), QtProtobuf::QGrpcInsecureCallCredentials()|QtProtobuf::QGrpcSslCredentials(conf)));
 
     std::unique_ptr<SimpleStringMessage> result = std::make_unique<SimpleStringMessage>();
-    EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, result.get()) == QGrpcStatus::Ok);
+    EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, QPointer<SimpleStringMessage>(result.get())) == QGrpcStatus::Ok);
 }
+
+#ifdef QT_PROTOBUF_NATIVE_GRPC_CHANNEL
+
+TEST_F(ClientTest, GrpcHttpChannelIncorrectSecureCredentialsTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QtProtobuf::QGrpcChannel>(QUrl("localhost:60051"), grpc::SslCredentials(grpc::SslCredentialsOptions())));
+
+    std::unique_ptr<SimpleStringMessage> result = std::make_unique<SimpleStringMessage>();
+    EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, QPointer<SimpleStringMessage>(result.get())) == QGrpcStatus::Ok);
+}
+
+TEST_F(ClientTest, GrpcSocketChannelIncorrectSecureCredentialsTest)
+{
+    TestServiceClient testClient;
+    testClient.attachChannel(std::make_shared<QtProtobuf::QGrpcChannel>(QUrl("unix:///tmp/test.sock"), grpc::SslCredentials(grpc::SslCredentialsOptions())));
+
+    std::unique_ptr<SimpleStringMessage> result = std::make_unique<SimpleStringMessage>();
+    EXPECT_FALSE(testClient.testMethod(SimpleStringMessage{"Hello beach!"}, QPointer<SimpleStringMessage>(result.get())) == QGrpcStatus::Ok);
+}
+
+#endif

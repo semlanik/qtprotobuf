@@ -50,9 +50,7 @@ public:
     /*!
      * \brief Cancels this subscription and try to abort call in channel
      */
-    void cancel() {
-        m_channel->cancel(this);
-    }
+    void cancel();
 
     /*!
      * \brief Returns method for this subscription
@@ -69,24 +67,22 @@ public:
     }
 
     /*!
-     * \brief Invokes handler method assigned to this subscription
+     * \brief Invokes handler method assigned to this subscription.
+     * \param data updated subscription data buffer
+     * \details Should be used by QAbstractGrpcChannel implementations,
+     *          to update data in subscription and notify clients about subscription updates.
      */
     void handler(const QByteArray& data) {
         setData(data);
-        updated();
         for (auto handler : m_handlers) {
             handler(data);
         }
-    }
-
-    bool operator ==(const QGrpcSubscription &other) const {
-        return other.method() == this->method() &&
-                other.arg() == this->arg();
+        updated();
     }
 
 signals:
     /*!
-     * \brief The signal is emitted when subscription is finished by user
+     * \brief The signal is emitted when subscription received updated value from server
      */
     void updated();
 
@@ -99,6 +95,12 @@ protected:
 
     //! \private
     void addHandler(const SubscriptionHandler &handler);
+
+    bool operator ==(const QGrpcSubscription &other) const {
+        return other.method() == this->method() &&
+                other.arg() == this->arg();
+    }
+
 private:
     friend class QAbstractGrpcClient;
     QString m_method;

@@ -1,5 +1,4 @@
 set(TARGET QtProtobufWellKnownTypes)
-set(TARGET_STATIC ${TARGET}Static)
 set(TARGET_EXPORT ${TARGET}Targets)
 set(TARGET_CONFIG ${TARGET}Config)
 
@@ -13,12 +12,18 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 find_package(Protobuf QUIET)
+if(NOT TARGET ${GENERATOR_TARGET})
+    find_package(QtProtobufProject COMPONENTS Generator CONFIG REQUIRED)
+else()
+    set(PROTO_PARSER ${QT_PROTOBUF_BINARY_DIR}/parsemessages.go)
+    include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake)
+endif()
 
-set(PROTO_PARSER ${QT_PROTOBUF_BINARY_DIR}/parsemessages.go)
+set(CMAKE_POSITION_INDEPENDENT_CODE ${Qt5_POSITION_INDEPENDENT_CODE})
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake)
 include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake)
 
 file(GLOB SOURCES
     dummy.cpp)
@@ -28,13 +33,13 @@ function(add_wellknowntype TYPENAME)
     list(APPEND LOOKUP_DIRS ${Protobuf_INCLUDE_DIRS})
     foreach(INCLUDE_DIR ${LOOKUP_DIRS})
         file(GLOB PROTO_FILE ${INCLUDE_DIR}/google/protobuf/${TYPENAME}.proto)
-        if (NOT "${PROTO_FILE}" STREQUAL "")
+        if(NOT "${PROTO_FILE}" STREQUAL "")
             message(STATUS "Add well-known type ${PROTO_FILE}")
             qtprotobuf_generate(TARGET ${TARGET} GENERATED_TARGET ${TYPENAME}
                 OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
                 PROTO_FILES ${PROTO_FILE}
-                PROTO_INCLUDES -I${INCLUDE_DIR}
-                QML FOLDER)
+                PROTO_INCLUDES "-I\"${INCLUDE_DIR}\""
+                QML FOLDER ${EXTRA_TYPE_LIBRARIES_OPTIONS})
             target_include_directories(${TYPENAME} PRIVATE
                 $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
             get_target_property(GENERATED_PUBLIC_HEADER_PRIVATE ${TYPENAME} PUBLIC_HEADER)
@@ -42,13 +47,12 @@ function(add_wellknowntype TYPENAME)
             break()
         endif()
     endforeach()
+    if(NOT TARGET ${TYPENAME})
+        message(FATAL_ERROR "Unable to add well-know type ${TYPENAME}")
+    endif()
 endfunction()
 
-if(QT_PROTOBUF_STATIC AND NOT WIN32)
-    add_library(${TARGET} STATIC ${SOURCES})
-else()
-    add_library(${TARGET} SHARED ${SOURCES})
-endif()
+add_library(${TARGET} ${SOURCES})
 
 add_wellknowntype(any)
 add_wellknowntype(duration)
@@ -69,7 +73,7 @@ target_compile_definitions(${TARGET} PRIVATE QT_BUILD_PROTOBUF_WELLKNOWNTYPES_LI
     QT_PROTOBUF_VERSION_MINOR=${PROJECT_VERSION_MINOR})
 
 set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "${GENERATED_PUBLIC_HEADER}" OUTPUT_NAME ${TARGET}
-    PROTO_INCLUDES -I${QT_PROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src)
+    PROTO_INCLUDES "-I\"${QT_PROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src\"")
 
 target_compile_features(${TARGET} PUBLIC cxx_std_14
     cxx_auto_type
@@ -91,21 +95,21 @@ add_library(${QT_PROTOBUF_PROJECT}::${TARGET} ALIAS ${TARGET})
 
 target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml ${QT_PROTOBUF_PROJECT}::QtProtobuf)
 
-install(TARGETS ${TARGET}
-    EXPORT ${TARGET_EXPORT} COMPONENT dev
-    ARCHIVE DESTINATION ${TARGET_LIB_DIR} COMPONENT lib
-    PUBLIC_HEADER DESTINATION ${TARGET_INCLUDE_DIR} COMPONENT dev
-    LIBRARY DESTINATION ${TARGET_LIB_DIR} COMPONENT lib
-    RUNTIME DESTINATION ${TARGET_BINDIR} COMPONENT lib)
-
-install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
-
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
     "${TARGET_CONFIG}.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake"
     INSTALL_DESTINATION "${TARGET_CMAKE_DIR}")
 
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
+if(QT_PROTOBUF_INSTALL)
+    install(TARGETS ${TARGET}
+        EXPORT ${TARGET_EXPORT} COMPONENT dev
+        ARCHIVE DESTINATION ${TARGET_LIB_DIR} COMPONENT lib
+        PUBLIC_HEADER DESTINATION ${TARGET_INCLUDE_DIR} COMPONENT dev
+        LIBRARY DESTINATION ${TARGET_LIB_DIR} COMPONENT lib
+        RUNTIME DESTINATION ${TARGET_BINDIR} COMPONENT lib)
+    install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
+    install(FILES "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
+endif()
 
 export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake)
 

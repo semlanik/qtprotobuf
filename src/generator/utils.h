@@ -52,17 +52,19 @@ namespace generator {
  */
 class utils {
 public:
-static void split(const std::string &str, std::vector<std::string> &container, char delim)
+static std::vector<std::string> split(const std::string &str, char delim)
 {
-    container.clear();
+    std::vector<std::string> container;
     if (str.size() <= 0) {
-        return;
+        return container;
     }
     std::stringstream stream(str);
     std::string token;
     while (std::getline(stream, token, delim)) {
         container.push_back(token);
     }
+
+    return container;
 }
 
 static void replace(std::string &data, const std::string &from, const std::string &to) {

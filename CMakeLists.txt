@@ -1,53 +1,40 @@
 cmake_minimum_required(VERSION 3.6)
 
-set(QT_PROTOBUF_VERSION 0.2.0)
+set(QT_PROTOBUF_VERSION 0.5.0)
 set(QT_PROTOBUF_PROJECT QtProtobufProject)
 
 project(${QT_PROTOBUF_PROJECT} VERSION ${QT_PROTOBUF_VERSION} LANGUAGES CXX)
 
+# Conan support, optional
+if(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup()
+endif()
+
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 set(QT_PROTOBUF_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(QT_PROTOBUF_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(QT_PROTOBUF_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
-find_package(Qt5 COMPONENTS Core Network Qml REQUIRED)
+include("${QT_PROTOBUF_CMAKE_DIR}/dependencies.cmake")
+include("${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake" EXCLUDE_FROM_ALL)
 
-set(MICROJSON_MAKE_TESTS OFF)
-if(NOT EXISTS "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson/CMakeLists.txt")
-    message(FATAL_ERROR "microjson is not found. Please initialize microjson module: git submodule update --init 3rdparty/microjson")
-else()
-    add_subdirectory("${QT_PROTOBUF_SOURCE_DIR}/3rdparty/microjson" EXCLUDE_FROM_ALL)
-endif()
-
-if(Qt5Core_VERSION VERSION_LESS "5.12.4")
-    # grpc target requires QT version not less than 5.12.4
-    # earlier versions Http2DirectAttribute is broken: https://doc.qt.io/qt-5/whatsnew511.html
-    #                                                  https://bugreports.qt.io/browse/QTBUG-74765
-    message(FATAL_ERROR "Required Qt version is 5.12.4+")
-endif()
-
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/grpc/CMakeLists.txt")
-    message(STATUS "Found local gRPC sources directory. Perform all-in-one build")
-    set(gRPC_BUILD_TESTS FALSE)
-    set(protobuf_BUILD_TESTS FALSE)
-    add_subdirectory("3rdparty/grpc" EXCLUDE_FROM_ALL)
-    if(TARGET grpc AND TARGET grpc++ AND TARGET grpc_cpp_plugin)
-        add_library(gRPC::grpc ALIAS grpc)
-        add_library(gRPC::grpc++ ALIAS grpc++)
-        add_executable(gRPC::grpc_cpp_plugin ALIAS grpc_cpp_plugin)
-        set(gRPC_FOUND TRUE)
-    endif()
-else()
-    include("${QT_PROTOBUF_CMAKE_DIR}/ProtobufLookup.cmake")
-    include("${QT_PROTOBUF_CMAKE_DIR}/gRPCLookup.cmake")
-endif()
-
-set(gtest_force_shared_crt OFF)
 set(GENERATOR_TARGET qtprotobufgen)
-set(QT_PROTOBUF_EXECUTABLE_INSTALL ${CMAKE_INSTALL_FULL_BINDIR}/${GENERATOR_TARGET})
-set(QT_PROTOBUF_EXECUTABLE $<TARGET_FILE:${GENERATOR_TARGET}> CACHE STRING "QT_PROTOBUF_EXECUTABLE is set ${QT_PROTOBUF_EXECUTABLE}" FORCE)
+set(PROTOBUF_QUICK_PLUGIN_NAME protobufquickplugin)
+set(GRPC_QUICK_PLUGIN_NAME grpcquickplugin)
+
+set(QT_PROTOBUF_MAKE_TESTS ON CACHE BOOL "Enable QtProtobuf tests build")
+set(QT_PROTOBUF_MAKE_EXAMPLES ON CACHE BOOL "Enable QtProtobuf examples build")
+set(QT_PROTOBUF_MAKE_COVERAGE OFF CACHE BOOL "Enable QtProtobuf build for profiler (gcov)")
+set(QT_PROTOBUF_FIELD_ENUM OFF CACHE BOOL "Enable generation of enumeration with fields numbers for well-known and Qt types libraries")
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Enable QtProtobuf shared library build (disables static library build)")
+
+if(CMAKE_CROSSCOMPILING)
+    set(QT_PROTOBUF_MAKE_TESTS OFF)
+    set(QT_PROTOBUF_MAKE_EXAMPLES OFF)
+endif()
 
 if(UNIX)
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -70,72 +57,31 @@ elseif(WIN32)
     endif()
 endif()
 
-if(Qt5_POSITION_INDEPENDENT_CODE)
-    set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-endif()
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_subdirectory("src/protobuf")
-add_subdirectory("src/grpc")
-add_subdirectory("src/generator")
-if(NOT WIN32)#TODO: There are linking issues with windows build of well-known types...
-    add_subdirectory("src/wellknowntypes")
-endif()
 configure_package_config_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
     INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
 install(FILES "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
     COMPONENT dev)
-
 export(PACKAGE ${PROJECT_NAME})
+add_subdirectory("src/generator")
 
-# add a target to generate API documentation with Doxygen
-find_package(Doxygen)
-if(NOT DOXYGEN_FOUND)
-    find_program(DOXYGEN_EXECUTABLE doxygen)
-endif()
-if(DEFINED DOXYGEN_EXECUTABLE)
-    message(STATUS "Using doxygen to generate documenation: ${DOXYGEN_EXECUTABLE}")
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen/customdoxygen.css ${CMAKE_CURRENT_BINARY_DIR}/customdoxygen.css COPYONLY)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen/header.html ${CMAKE_CURRENT_BINARY_DIR}/header.html COPYONLY)
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen/html)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxygen/TitilliumWeb.woff2 ${CMAKE_CURRENT_BINARY_DIR}/doxygen/html/TitilliumWeb.woff2 COPYONLY)
+add_subdirectory("src/protobuf")
+add_subdirectory("src/grpc")
 
-    add_custom_target(doc
-        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating API documentation with Doxygen" VERBATIM
-    )
+set(EXTRA_TYPE_LIBRARIES_OPTIONS "") #Prevent to set from outside
+if(QT_PROTOBUF_FIELD_ENUM)
+    set(EXTRA_TYPE_LIBRARIES_OPTIONS "FIELDENUM ${EXTRA_TYPE_LIBRARIES_OPTIONS}")
 endif()
 
-if(DEFINED $ENV{QT_PROTOBUF_MAKE_TESTS})
-    set(QT_PROTOBUF_MAKE_TESTS $ENV{QT_PROTOBUF_MAKE_TESTS})
-elseif(NOT DEFINED QT_PROTOBUF_MAKE_TESTS)
-    set(QT_PROTOBUF_MAKE_TESTS ON)
+if(NOT WIN32)#TODO: There are linking issues with windows build of well-known types...
+    add_subdirectory("src/wellknowntypes")
 endif()
-
-if(DEFINED $ENV{QT_PROTOBUF_MAKE_EXAMPLES})
-    set(QT_PROTOBUF_MAKE_EXAMPLES $ENV{QT_PROTOBUF_MAKE_EXAMPLES})
-elseif(NOT DEFINED QT_PROTOBUF_MAKE_EXAMPLES)
-    set(QT_PROTOBUF_MAKE_EXAMPLES ON)
-endif()
-
-if(NOT gRPC_FOUND)
-    message(WARNING "gRPC not found: some tests and examples cannot be built.")
-    message(STATUS "Force disable test")
-    set(QT_PROTOBUF_MAKE_TESTS OFF)
-    message(STATUS "Force disable examples")
-    set(QT_PROTOBUF_MAKE_EXAMPLES OFF)
-endif()
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/QtProtobufCommon.cmake")
+add_subdirectory("src/qttypes")
 
 if(QT_PROTOBUF_MAKE_TESTS)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/googletest/CMakeLists.txt")
-        set(BUILD_GMOCK OFF CACHE BOOL "Disable gmock build functionality" FORCE)
-        set(gtest_force_shared_crt ON CACHE BOOL "Enable shared crt" FORCE)
+        set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
         add_subdirectory("3rdparty/googletest" EXCLUDE_FROM_ALL)
         set(GTest_FOUND TRUE)
     else()
@@ -145,7 +91,7 @@ if(QT_PROTOBUF_MAKE_TESTS)
         enable_testing()
         add_subdirectory("tests")
     else()
-        message(STATUS "Force disable test")
+        message(STATUS "googletest not found. Force disable tests.")
     endif()
 endif()
 
@@ -153,5 +99,8 @@ if(QT_PROTOBUF_MAKE_EXAMPLES)
     add_subdirectory("examples")
 endif()
 
-include("${QT_PROTOBUF_CMAKE_DIR}/packaging.cmake")
+if(QT_PROTOBUF_INSTALL)
+    include("${QT_PROTOBUF_CMAKE_DIR}/packaging.cmake")
+endif()
 
+include("${QT_PROTOBUF_CMAKE_DIR}/doxygen.cmake")

@@ -26,6 +26,7 @@
 #include "qgrpcsubscription.h"
 
 #include <qtprotobuflogging.h>
+#include <QThread>
 
 using namespace QtProtobuf;
 
@@ -43,5 +44,14 @@ void QGrpcSubscription::addHandler(const SubscriptionHandler &handler)
 {
     if (handler) {
         m_handlers.push_back(handler);
+    }
+}
+
+void QGrpcSubscription::cancel()
+{
+    if (thread() != QThread::currentThread()) {
+        QMetaObject::invokeMethod(this, [this](){m_channel->cancel(this);}, Qt::BlockingQueuedConnection);
+    } else {
+        m_channel->cancel(this);
     }
 }

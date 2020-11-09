@@ -30,6 +30,7 @@
 #include "qprotobufserializerregistry_p.h"
 
 #include <QTimer>
+#include <QThread>
 
 namespace QtProtobuf {
 
@@ -43,7 +44,7 @@ public:
     std::shared_ptr<QAbstractGrpcChannel> channel;
     const QString service;
     std::shared_ptr<QAbstractProtobufSerializer> serializer;
-    std::vector<QGrpcSubscription *> activeSubscriptions;
+    std::vector<QGrpcSubscriptionShared> activeSubscriptions;
 };
 }
 
@@ -59,6 +60,12 @@ QAbstractGrpcClient::~QAbstractGrpcClient()
 
 void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChannel> &channel)
 {
+    if (channel->thread() != QThread::currentThread()) {
+        qProtoCritical() << "QAbstractGrpcClient::attachChannel is called from different thread.\n"
+                           "QtGrpc doesn't guarantie thread safety on channel level.\n"
+                           "You have to be confident that channel routines are working in the same thread as QAbstractGrpcClient";
+        assert(channel->thread() == QThread::currentThread());
+    }
     dPtr->channel = channel;
     dPtr->serializer = channel->serializer();
 }
@@ -66,6 +73,14 @@ void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChann
 QGrpcStatus QAbstractGrpcClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
 {
     QGrpcStatus callStatus{QGrpcStatus::Unknown};
+    if (thread() != QThread::currentThread()) {
+        QMetaObject::invokeMethod(this, [&]()->QGrpcStatus {
+                                                qProtoDebug() << "Method: " << dPtr->service << method << " called from different thread";
+                                                return call(method, arg, ret);
+                                            }, Qt::BlockingQueuedConnection, &callStatus);
+        return callStatus;
+    }
+
     if (dPtr->channel) {
         callStatus = dPtr->channel->call(method, dPtr->service, arg, ret);
     } else {
@@ -79,22 +94,33 @@ QGrpcStatus QAbstractGrpcClient::call(const QString &method, const QByteArray &a
     return callStatus;
 }
 
-QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArray &arg)
+QGrpcAsyncReplyShared QAbstractGrpcClient::call(const QString &method, const QByteArray &arg)
 {
-    QGrpcAsyncReply *reply = nullptr;
-    if (dPtr->channel) {
-        reply = new QGrpcAsyncReply(dPtr->channel, this);
+    QGrpcAsyncReplyShared reply;
+    if (thread() != QThread::currentThread()) {
+        QMetaObject::invokeMethod(this, [&]()->QGrpcAsyncReplyShared {
+                                      qProtoDebug() << "Method: " << dPtr->service << method << " called from different thread";
+                                      return call(method, arg);
+                                  }, Qt::BlockingQueuedConnection, &reply);
+    } else if (dPtr->channel) {
+        reply.reset(new QGrpcAsyncReply(dPtr->channel, this), [](QGrpcAsyncReply *reply) { reply->deleteLater(); });
 
-        connect(reply, &QGrpcAsyncReply::error, this, [this, reply](const QGrpcStatus &status) {
+        auto errorConnection = std::make_shared<QMetaObject::Connection>();
+        auto finishedConnection = std::make_shared<QMetaObject::Connection>();
+        *errorConnection = connect(reply.get(), &QGrpcAsyncReply::error, this, [this, reply, errorConnection, finishedConnection](const QGrpcStatus &status) mutable {
             error(status);
-            reply->deleteLater();
+            QObject::disconnect(*finishedConnection);
+            QObject::disconnect(*errorConnection);
+            reply.reset();
         });
 
-        connect(reply, &QGrpcAsyncReply::finished, this, [reply] {
-            reply->deleteLater();
+        *finishedConnection = connect(reply.get(), &QGrpcAsyncReply::finished, [reply, errorConnection, finishedConnection]() mutable {
+            QObject::disconnect(*finishedConnection);
+            QObject::disconnect(*errorConnection);
+            reply.reset();
         });
 
-        dPtr->channel->call(method, dPtr->service, arg, reply);
+        dPtr->channel->call(method, dPtr->service, arg, reply.get());
     } else {
         error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});
     }
@@ -102,13 +128,19 @@ QGrpcAsyncReply *QAbstractGrpcClient::call(const QString &method, const QByteArr
     return reply;
 }
 
-QGrpcSubscription *QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg, const QtProtobuf::SubscriptionHandler &handler)
+QGrpcSubscriptionShared QAbstractGrpcClient::subscribe(const QString &method, const QByteArray &arg, const QtProtobuf::SubscriptionHandler &handler)
 {
-    QGrpcSubscription *subscription = nullptr;
-    if (dPtr->channel) {
-        subscription = new QGrpcSubscription(dPtr->channel, method, arg, handler, this);
+    QGrpcSubscriptionShared subscription;
 
-        auto it = std::find_if(std::begin(dPtr->activeSubscriptions), std::end(dPtr->activeSubscriptions), [subscription](QGrpcSubscription *activeSubscription) {
+    if (thread() != QThread::currentThread()) {
+        QMetaObject::invokeMethod(this, [&]()->QGrpcSubscriptionShared {
+                                      qProtoDebug() << "Subscription: " << dPtr->service << method << " called from different thread";
+                                      return subscribe(method, arg, handler);
+                                  }, Qt::BlockingQueuedConnection, &subscription);
+    } else if (dPtr->channel) {
+        subscription.reset(new QGrpcSubscription(dPtr->channel, method, arg, handler, this), [](QGrpcSubscription *subscription) { subscription->deleteLater(); });
+
+        auto it = std::find_if(std::begin(dPtr->activeSubscriptions), std::end(dPtr->activeSubscriptions), [subscription](const QGrpcSubscriptionShared &activeSubscription) {
            return *activeSubscription == *subscription;
         });
 
@@ -117,25 +149,38 @@ QGrpcSubscription *QAbstractGrpcClient::subscribe(const QString &method, const Q
             return *it; //If subscription already exists return it for handling
         }
 
-        connect(subscription, &QGrpcSubscription::error, this, [this, subscription](const QGrpcStatus &status) {
+        auto errorConnection = std::make_shared<QMetaObject::Connection>();
+        *errorConnection = connect(subscription.get(), &QGrpcSubscription::error, this, [this, subscription](const QGrpcStatus &status) {
             qProtoWarning() << subscription->method() << "call" << dPtr->service << "subscription error: " << status.message();
             error(status);
-            dPtr->channel->subscribe(subscription, dPtr->service, this);
+            std::weak_ptr<QGrpcSubscription> weakSubscription = subscription;
+            //TODO: Make timeout configurable from channel settings
+            QTimer::singleShot(1000, this, [this, weakSubscription, method = subscription->method()] {
+                auto subscription = weakSubscription.lock();
+                if (subscription) {
+                    dPtr->channel->subscribe(subscription.get(), dPtr->service, this);
+                } else {
+                    qProtoDebug() << "Subscription for " << dPtr->service << "method" << method << " will not be restored by timeout.";
+                }
+            });
         });
 
-        connect(subscription, &QGrpcSubscription::finished, this, [this, subscription] {
+        auto finishedConnection = std::make_shared<QMetaObject::Connection>();
+        *finishedConnection = connect(subscription.get(), &QGrpcSubscription::finished, this, [this, subscription, errorConnection, finishedConnection]() mutable {
             qProtoWarning() << subscription->method() << "call" << dPtr->service << "subscription finished";
-            auto it = std::find_if(std::begin(dPtr->activeSubscriptions), std::end(dPtr->activeSubscriptions), [subscription](QGrpcSubscription *activeSubscription) {
+            auto it = std::find_if(std::begin(dPtr->activeSubscriptions), std::end(dPtr->activeSubscriptions), [subscription](QGrpcSubscriptionShared activeSubscription) {
                return *activeSubscription == *subscription;
             });
 
             if (it != std::end(dPtr->activeSubscriptions)) {
                 dPtr->activeSubscriptions.erase(it);
             }
-            subscription->deleteLater();
+            QObject::disconnect(*errorConnection);
+            QObject::disconnect(*finishedConnection);
+            subscription.reset();
         });
 
-        dPtr->channel->subscribe(subscription, dPtr->service, this);
+        dPtr->channel->subscribe(subscription.get(), dPtr->service, this);
         dPtr->activeSubscriptions.push_back(subscription);
     } else {
         error({QGrpcStatus::Unknown, QLatin1String("No channel(s) attached.")});

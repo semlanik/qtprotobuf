@@ -1,0 +1,91 @@
+set(TARGET QtProtobufQtTypes)
+set(TARGET_EXPORT ${TARGET}Targets)
+set(TARGET_CONFIG ${TARGET}Config)
+
+set(TARGET_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR}/QtProtobuf)
+set(TARGET_LIB_DIR ${CMAKE_INSTALL_LIBDIR})
+set(TARGET_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+set(TARGET_BINDIR ${CMAKE_INSTALL_BINDIR})
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+find_package(Qt5 COMPONENTS Core Gui Qml REQUIRED)
+find_package(Protobuf QUIET)
+if(NOT TARGET ${GENERATOR_TARGET})
+    find_package(QtProtobufProject COMPONENTS Generator CONFIG REQUIRED)
+else()
+    set(PROTO_PARSER ${QT_PROTOBUF_BINARY_DIR}/parsemessages.go)
+    include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake)
+endif()
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ${Qt5_POSITION_INDEPENDENT_CODE})
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(${QT_PROTOBUF_CMAKE_DIR}/GenerateQtHeaders.cmake)
+
+file(GLOB SOURCES
+    qtprotobufqttypes.cpp)
+
+file(GLOB HEADERS
+    qtprotobufqttypes.h
+    qtprotobufqttypesglobal.h)
+
+
+protobuf_generate_qt_headers(PUBLIC_HEADER ${HEADERS} COMPONENT QtProtobuf)
+
+add_library(${TARGET} ${SOURCES})
+
+file(GLOB PROTO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/QtProtobuf/Qt*.proto)
+qtprotobuf_generate(TARGET ${TARGET}
+    OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+    PROTO_FILES ${PROTO_FILE}
+    QML FOLDER ${EXTRA_TYPE_LIBRARIES_OPTIONS})
+
+target_compile_definitions(${TARGET} PRIVATE QT_BUILD_PROTOBUF_QT_TYPES_LIB PUBLIC QT_PROTOBUF_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+    QT_PROTOBUF_VERSION_MINOR=${PROJECT_VERSION_MINOR})
+
+set_target_properties(${TARGET} PROPERTIES VERSION ${PROJECT_VERSION} OUTPUT_NAME ${TARGET}
+    PROTO_INCLUDES "-I\"${CMAKE_CURRENT_SOURCE_DIR}\"" PUBLIC_HEADER "${HEADERS};${GENERATED_PUBLIC_HEADER}")
+
+target_compile_features(${TARGET} PUBLIC cxx_std_14
+    cxx_auto_type
+    cxx_decltype
+    cxx_final
+    cxx_override
+    cxx_nullptr
+    cxx_lambdas
+    cxx_func_identifier)
+
+target_include_directories(${TARGET} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
+    $<BUILD_INTERFACE:${QT_PROTOBUF_BINARY_DIR}/include/QtProtobuf>
+    $<INSTALL_INTERFACE:${TARGET_INCLUDE_DIR}>
+    )
+
+add_library(${QT_PROTOBUF_PROJECT}::${TARGET} ALIAS ${TARGET})
+
+target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Gui Qt5::Qml ${QT_PROTOBUF_PROJECT}::QtProtobuf)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    "${TARGET_CONFIG}.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake"
+    INSTALL_DESTINATION "${TARGET_CMAKE_DIR}")
+
+if(QT_PROTOBUF_INSTALL)
+    install(TARGETS ${TARGET}
+        EXPORT ${TARGET_EXPORT} COMPONENT dev
+        ARCHIVE DESTINATION ${TARGET_LIB_DIR} COMPONENT lib
+        PUBLIC_HEADER DESTINATION ${TARGET_INCLUDE_DIR} COMPONENT dev
+        LIBRARY DESTINATION ${TARGET_LIB_DIR} COMPONENT lib
+        RUNTIME DESTINATION ${TARGET_BINDIR} COMPONENT lib)
+    install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/QtProtobuf/QtCore.proto ${CMAKE_CURRENT_SOURCE_DIR}/QtProtobuf/QtGui.proto DESTINATION "${TARGET_INCLUDE_DIR}" COMPONENT dev)
+    install(FILES "${QT_PROTOBUF_BINARY_DIR}/${TARGET_CONFIG}.cmake" DESTINATION "${TARGET_CMAKE_DIR}" COMPONENT dev)
+endif()
+
+export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake)
+
+add_coverage_target(TARGET ${TARGET})

@@ -25,7 +25,7 @@
 
 #include <google/protobuf/compiler/plugin.h>
 
-#include "generator.h"
+#include "multifilegenerator.h"
 #include "singlefilegenerator.h"
 #include "generatoroptions.h"
 #include "utils.h"
@@ -38,11 +38,17 @@
  * QtProtobuf distributed in terms of MIT license and is free for modification and use under MIT
  * license <a href="https://github.com/semlanik/qtprotobuf/blob/master/LICENSE">terms</a>.
  *
- * QtProtobuf has 4 modules:
  *  - \ref generator
  *  - \ref QtProtobuf
  *  - \ref QtGrpc
  *  - \ref QtProtobufWellKnownTypes
+ *  - \ref QtProtobufQtTypes
+ *  - \ref QtProtobufQML
+ *  - \ref QtGrpcQML
+ *
+ * \subsection gettingstarted Getting Started with QtProtobuf
+ *
+ * \ref clienttutorial
  */
 using namespace ::QtProtobuf::generator;
 int main(int argc, char *argv[])
@@ -53,7 +59,7 @@ int main(int argc, char *argv[])
         GeneratorOptions::instance().parseFromEnv(optionsPtr);
     }
     if (GeneratorOptions::instance().isMulti()) {
-        QtProtobuf::generator::QtGenerator generator;
+        QtProtobuf::generator::MultiFileGenerator generator;
         return ::google::protobuf::compiler::PluginMain(argc, argv, &generator);
     }
     QtProtobuf::generator::SingleFileGenerator generator;

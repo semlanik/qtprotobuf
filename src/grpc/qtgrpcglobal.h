@@ -50,3 +50,24 @@
         Q_DISABLE_COPY(Class) \
         Q_DISABLE_MOVE(Class)
 #endif
+
+#ifndef Q_GRPC_IMPORT_QUICK_PLUGIN
+    #ifdef QT_PROTOBUF_STATIC
+        #include <QtPlugin>
+        #include <QQmlExtensionPlugin>
+        #define Q_GRPC_IMPORT_QUICK_PLUGIN() \
+            Q_IMPORT_PLUGIN(QtGrpcQuickPlugin) \
+            qobject_cast<QQmlExtensionPlugin*>(qt_static_plugin_QtGrpcQuickPlugin().instance())->registerTypes("QtGrpc");
+    #else
+        #define Q_GRPC_IMPORT_QUICK_PLUGIN()
+    #endif //QT_PROTOBUF_STATIC
+#endif //Q_PROTOBUF_IMPORT_QUICK_PLUGIN
+
+#include <memory>
+
+namespace QtProtobuf {
+class QGrpcAsyncReply;
+class QGrpcSubscription;
+using QGrpcAsyncReplyShared = std::shared_ptr<QGrpcAsyncReply>;
+using QGrpcSubscriptionShared = std::shared_ptr<QGrpcSubscription>;
+}

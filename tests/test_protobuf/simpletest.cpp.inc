@@ -28,6 +28,7 @@
 #include <QSignalSpy>
 
 #include <gtest/gtest.h>
+#include "../testscommon.h"
 
 using namespace qtprotobufnamespace::tests;
 
@@ -40,17 +41,6 @@ public:
     // see simpletest.proto for property names and their field indices
     SimpleTest()
     {
-    }
-
-    template<typename MessageType, typename PropertyType>
-    static void assertMessagePropertyRegistered(int fieldIndex, const char *propertyTypeName, const char *propertyName)
-    {
-        // TODO: there should be(?) a mapping avaialble: PropertyType -> propertyTypeName
-
-        const int propertyNumber = MessageType::propertyOrdering.at(fieldIndex);
-        ASSERT_STREQ(MessageType::staticMetaObject.property(propertyNumber).typeName(), propertyTypeName);
-        ASSERT_EQ(MessageType::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<PropertyType>());
-        ASSERT_STREQ(MessageType::staticMetaObject.property(propertyNumber).name(), propertyName);
     }
 
     static void SetUpTestCase();
@@ -70,6 +60,8 @@ TEST_F(SimpleTest, SimpleBoolMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(true)));
     ASSERT_EQ(test.property(propertyName).value<bool>(), true);
     ASSERT_EQ(test.testFieldBool(), true);
+
+    EXPECT_EQ(SimpleBoolMessage::TestFieldBoolProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleIntMessageTest)
@@ -81,6 +73,8 @@ TEST_F(SimpleTest, SimpleIntMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int32>(1)));
     ASSERT_EQ(test.property(propertyName).value<int32>(), 1);
     ASSERT_EQ(test.testFieldInt(), 1);
+
+    EXPECT_EQ(SimpleIntMessage::TestFieldIntProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleSIntMessageTest)
@@ -92,6 +86,8 @@ TEST_F(SimpleTest, SimpleSIntMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sint32>(1)));
     ASSERT_EQ(test.property(propertyName).value<sint32>(), 1);
     ASSERT_EQ(test.testFieldInt(), 1);
+
+    EXPECT_EQ(SimpleSIntMessage::TestFieldIntProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleUIntMessageTest)
@@ -103,6 +99,8 @@ TEST_F(SimpleTest, SimpleUIntMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<uint32>(1)));
     ASSERT_EQ(test.property(propertyName).value<uint32>(), 1);
     ASSERT_EQ(test.testFieldInt(), 1);
+
+    EXPECT_EQ(SimpleUIntMessage::TestFieldIntProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleInt64MessageTest)
@@ -114,6 +112,8 @@ TEST_F(SimpleTest, SimpleInt64MessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int64>(1)));
     ASSERT_EQ(test.property(propertyName).value<int64>(), 1);
     ASSERT_EQ(test.testFieldInt(), 1);
+
+    EXPECT_EQ(SimpleInt64Message::TestFieldIntProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleSInt64MessageTest)
@@ -125,6 +125,8 @@ TEST_F(SimpleTest, SimpleSInt64MessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sint64>(1)));
     ASSERT_EQ(test.property(propertyName).value<sint64>(), 1);
     ASSERT_EQ(test.testFieldInt(), 1);
+
+    EXPECT_EQ(SimpleSInt64Message::TestFieldIntProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleUInt64MessageTest)
@@ -136,6 +138,8 @@ TEST_F(SimpleTest, SimpleUInt64MessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<uint64>(1)));
     ASSERT_EQ(test.property(propertyName).value<uint64>(), 1);
     ASSERT_EQ(test.testFieldInt(), 1);
+
+    EXPECT_EQ(SimpleUInt64Message::TestFieldIntProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
@@ -147,6 +151,8 @@ TEST_F(SimpleTest, SimpleFixedInt32MessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<fixed32>(1)));
     ASSERT_EQ(test.property(propertyName).value<fixed32>(), 1);
     ASSERT_EQ(test.testFieldFixedInt32(), 1);
+
+    EXPECT_EQ(SimpleFixedInt32Message::TestFieldFixedInt32ProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
@@ -158,6 +164,8 @@ TEST_F(SimpleTest, SimpleFixedInt64MessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<fixed64>(1)));
     ASSERT_EQ(test.property(propertyName).value<fixed64>(), 1);
     ASSERT_EQ(test.testFieldFixedInt64(), 1);
+
+    EXPECT_EQ(SimpleFixedInt64Message::TestFieldFixedInt64ProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleSFixedInt32MessageTest)
@@ -169,6 +177,8 @@ TEST_F(SimpleTest, SimpleSFixedInt32MessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sfixed32>(1)));
     ASSERT_EQ(test.property(propertyName).value<sfixed32>(), 1);
     ASSERT_EQ(test.testFieldFixedInt32(), 1);
+
+    EXPECT_EQ(SimpleSFixedInt32Message::TestFieldFixedInt32ProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleSFixedInt64MessageTest)
@@ -180,6 +190,8 @@ TEST_F(SimpleTest, SimpleSFixedInt64MessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<sfixed64>(1)));
     ASSERT_EQ(test.property(propertyName).value<sfixed64>(), 1);
     ASSERT_EQ(test.testFieldFixedInt64(), 1);
+
+    EXPECT_EQ(SimpleSFixedInt64Message::TestFieldFixedInt64ProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleStringMessageTest)
@@ -192,6 +204,8 @@ TEST_F(SimpleTest, SimpleStringMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue(QString("test1"))));
     ASSERT_STREQ(test.property(propertyName).toString().toStdString().c_str(), "test1");
     ASSERT_STREQ(test.testFieldString().toStdString().c_str(), "test1");
+
+    EXPECT_EQ(SimpleStringMessage::TestFieldStringProtoFieldNumber, 6);
 }
 
 TEST_F(SimpleTest, SimpleFloatMessageTest)
@@ -206,6 +220,8 @@ TEST_F(SimpleTest, SimpleFloatMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<float>(assignedValue)));
     ASSERT_FLOAT_EQ(test.property(propertyName).toFloat(), assignedValue);
     ASSERT_FLOAT_EQ(test.testFieldFloat(), assignedValue);
+
+    EXPECT_EQ(SimpleFloatMessage::TestFieldFloatProtoFieldNumber, 7);
 }
 
 TEST_F(SimpleTest, SimpleDoubleMessageTest)
@@ -220,6 +236,8 @@ TEST_F(SimpleTest, SimpleDoubleMessageTest)
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<double>(assignedValue)));
     ASSERT_DOUBLE_EQ(test.property(propertyName).toDouble(), assignedValue);
     ASSERT_DOUBLE_EQ(test.testFieldDouble(), assignedValue);
+
+    EXPECT_EQ(SimpleDoubleMessage::TestFieldDoubleProtoFieldNumber, 8);
 }
 
 TEST_F(SimpleTest, SimpleLocalEnumTest)
@@ -250,7 +268,7 @@ TEST_F(SimpleTest, SimpleLocalEnumListTest)
     ASSERT_GT(SimpleEnumListMessage::staticMetaObject.enumeratorCount(), 0);
 
     const char *propertyName = "localEnumList";
-    assertMessagePropertyRegistered<SimpleEnumListMessage, SimpleEnumListMessage::LocalEnumRepeated>(1,  "SimpleEnumListMessage::LocalEnumRepeated", propertyName);
+    assertMessagePropertyRegistered<SimpleEnumListMessage, SimpleEnumListMessage::LocalEnumRepeated>(1,  "qtprotobufnamespace::tests::SimpleEnumListMessage::LocalEnumRepeated", propertyName);
 
     SimpleEnumListMessage::LocalEnumRepeated value({SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
                                                 SimpleEnumListMessage::LOCAL_ENUM_VALUE2,
@@ -336,7 +354,14 @@ TEST_F(SimpleTest, SimpleFileEnumsTest)
 
 TEST_F(SimpleTest, ComplexMessageTest)
 {
-    ComplexMessage msg;
+    const char *propertyName = "testComplexField";
+    assertMessagePropertyRegistered<qtprotobufnamespace::tests::ComplexMessage, qtprotobufnamespace::tests::SimpleStringMessage*>(
+                2, "qtprotobufnamespace::tests::SimpleStringMessage*", propertyName);
+
+    ComplexMessage test;
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobufnamespace::tests::SimpleStringMessage*>(new qtprotobufnamespace::tests::SimpleStringMessage{"test qwerty"})));
+    ASSERT_TRUE(*(test.property(propertyName).value<qtprotobufnamespace::tests::SimpleStringMessage*>()) == qtprotobufnamespace::tests::SimpleStringMessage{"test qwerty"});
+    ASSERT_TRUE(test.testComplexField() == qtprotobufnamespace::tests::SimpleStringMessage{"test qwerty"});
 }
 
 TEST_F(SimpleTest, SimpleBytesMessageTest)
@@ -652,7 +677,7 @@ TEST_F(SimpleTest, StepChildEnumListMessageTest)
 TEST_F(SimpleTest, SimpleSInt32StringMapMessageTest)
 {
     const char *propertyName = "mapField";
-    assertMessagePropertyRegistered<SimpleSInt32StringMapMessage, SimpleSInt32StringMapMessage::MapFieldEntry>(1, "SimpleSInt32StringMapMessage::MapFieldEntry", propertyName);
+    assertMessagePropertyRegistered<SimpleSInt32StringMapMessage, SimpleSInt32StringMapMessage::MapFieldEntry>(1, "qtprotobufnamespace::tests::SimpleSInt32StringMapMessage::MapFieldEntry", propertyName);
 
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleSInt32StringMapMessage::MapFieldEntry>()));
 
@@ -675,7 +700,7 @@ TEST_F(SimpleTest, SimpleSInt32StringMapMessageTest)
 TEST_F(SimpleTest, SimpleStringStringMapMessageTest)
 {
     const char *propertyName = "mapField";
-    assertMessagePropertyRegistered<SimpleStringStringMapMessage, SimpleStringStringMapMessage::MapFieldEntry>(13, "SimpleStringStringMapMessage::MapFieldEntry", propertyName);
+    assertMessagePropertyRegistered<SimpleStringStringMapMessage, SimpleStringStringMapMessage::MapFieldEntry>(13, "qtprotobufnamespace::tests::SimpleStringStringMapMessage::MapFieldEntry", propertyName);
 
     ASSERT_TRUE(QMetaType::isRegistered(qMetaTypeId<SimpleStringStringMapMessage::MapFieldEntry>()));
 
@@ -699,13 +724,6 @@ TEST_F(SimpleTest, EmptyMessageTest)
 {
     ASSERT_EQ(EmptyMessage::propertyOrdering.size(), 0);
     ASSERT_EQ(EmptyMessage::staticMetaObject.propertyCount(), 1);
-}
-
-TEST_F(SimpleTest, NullPointerMessageTest)
-{
-    ComplexMessage msg(0, {QString("not null")});
-    msg.setTestComplexField_p(nullptr);
-    ASSERT_TRUE(msg.testComplexField().testFieldString().isEmpty());
 }
 
 TEST_F(SimpleTest, AssignmentOperatorTest)
@@ -785,14 +803,18 @@ TEST_F(SimpleTest, UnderscoresTest)
 
 TEST_F(SimpleTest, SequenceTest)
 {
-    assertMessagePropertyRegistered<sequence::TestMessageSequence, sequence::TestMessageSequence2*>(1, "TestMessageSequence2*", "testField");
+    assertMessagePropertyRegistered<sequence::TestMessageSequence, sequence::TestMessageSequence2*>(1, "qtprotobufnamespace::tests::sequence::TestMessageSequence2*", "testField");
     assertMessagePropertyRegistered<sequence::TestMessageSequence2, bool>(1, "bool", "testField");
 }
 
 TEST_F(SimpleTest, CyclingTest)
 {
-    assertMessagePropertyRegistered<sequence::CyclingFirstDependency, sequence::CyclingSecondDependency*>(1, "CyclingSecondDependency*", "testField");
-    assertMessagePropertyRegistered<sequence::CyclingSecondDependency, sequence::CyclingFirstDependency*>(1, "CyclingFirstDependency*", "testField");
+    assertMessagePropertyRegistered<sequence::CyclingFirstDependency, sequence::CyclingSecondDependency*>(1, "qtprotobufnamespace::tests::sequence::CyclingSecondDependency*", "testField");
+    assertMessagePropertyRegistered<sequence::CyclingSecondDependency, sequence::CyclingFirstDependency*>(1, "qtprotobufnamespace::tests::sequence::CyclingFirstDependency*", "testField");
+    sequence::CyclingFirstDependency test;
+    sequence::CyclingSecondDependency test2;
+    test.setTestField(test2);
+    test2.setTestField(test);
 }
 
 TEST_F(SimpleTest, UpperCaseTest)
@@ -854,8 +876,8 @@ TEST_F(SimpleTest, LowerCaseEnumTest)
 
 TEST_F(SimpleTest, MapRepeatedFieldSequenceTest)
 {
-    assertMessagePropertyRegistered<sequence::RepeatedFieldSequence, sequence::RepeatedFieldSequence2Repeated>(1, "RepeatedFieldSequence2Repeated", "testField");
-    assertMessagePropertyRegistered<sequence::MapFieldSequence, sequence::MapFieldSequence::TestFieldEntry>(1, "MapFieldSequence::TestFieldEntry", "testField");
+    assertMessagePropertyRegistered<sequence::RepeatedFieldSequence, sequence::RepeatedFieldSequence2Repeated>(1, "qtprotobufnamespace::tests::sequence::RepeatedFieldSequence2Repeated", "testField");
+    assertMessagePropertyRegistered<sequence::MapFieldSequence, sequence::MapFieldSequence::TestFieldEntry>(1, "qtprotobufnamespace::tests::sequence::MapFieldSequence::TestFieldEntry", "testField");
 }
 
 } // tests

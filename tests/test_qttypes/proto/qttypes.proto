@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package qtprotobufnamespace.qttypes.tests;
+import "QtProtobuf/QtCore.proto";
+import "QtProtobuf/QtGui.proto";
+
+message QUrlMessage {
+    QtProtobuf.QUrl testField = 1;
+}
+
+message QUuidMessage {
+    QtProtobuf.QUuid testField = 1;
+}
+
+message QCharMessage {
+    QtProtobuf.QChar testField = 1;
+}
+
+message QTimeMessage {
+    QtProtobuf.QTime testField = 1;
+}
+
+message QDateMessage {
+    QtProtobuf.QDate testField = 1;
+}
+
+message QDateTimeMessage {
+    QtProtobuf.QDateTime testField = 1;
+}
+
+message QSizeMessage {
+    QtProtobuf.QSize testField = 1;
+}
+
+message QSizeFMessage {
+    QtProtobuf.QSizeF testField = 1;
+}
+
+message QPointMessage {
+    QtProtobuf.QPoint testField = 1;
+}
+
+message QPointFMessage {
+    QtProtobuf.QPointF testField = 1;
+}
+
+message QRectMessage {
+    QtProtobuf.QRect testField = 1;
+}
+
+message QRectFMessage {
+    QtProtobuf.QRectF testField = 1;
+}
+
+message QPolygonMessage {
+    QtProtobuf.QPolygon testField = 1;
+}
+
+message QPolygonFMessage {
+    QtProtobuf.QPolygonF testField = 1;
+}
+
+//Gui
+
+message QColorMessage {
+    QtProtobuf.QColor testField = 1;
+}
+
+message QMatrix4x4Message {
+    QtProtobuf.QMatrix4x4 testField = 1;
+}
+
+message QVector2DMessage {
+    QtProtobuf.QVector2D testField = 1;
+}
+
+message QVector3DMessage {
+    QtProtobuf.QVector3D testField = 1;
+}
+
+message QVector4DMessage {
+    QtProtobuf.QVector4D testField = 1;
+}
+
+message QTransformMessage {
+    QtProtobuf.QTransform testField = 1;
+}
+
+message QQuaternionMessage {
+    QtProtobuf.QQuaternion testField = 1;
+}
+
+message QImageMessage {
+    QtProtobuf.QImage testField = 1;
+}

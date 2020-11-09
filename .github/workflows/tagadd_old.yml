@@ -1,0 +1,82 @@
+name: Release build
+
+on:
+  push:
+    tags:
+      - 'v0.1*'
+      - 'v0.2*'
+      - 'v0.3*'
+      - 'v0.4*'
+      - 'v0.5*'
+jobs:
+  build-packages:
+    name: Build release packages
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Init submodules
+      run: git submodule update --init 3rdparty/microjson
+    - name: Build release packages on ubuntu and opensuse latest
+      id: build_release
+      run: |
+        mkdir artifacts
+        docker build . --file .ci/Dockerfile.ubuntu_deb --tag ubuntu_debimage:latest
+        docker run --mount type=bind,source="$(pwd)"/artifacts,target=/artifacts ubuntu_debimage:latest sh -c "mv /build/*.deb /artifacts"
+        docker build . --file .ci/Dockerfile.opensuse_rpm --tag opensuse_rpmimage:latest
+        docker run --mount type=bind,source="$(pwd)"/artifacts,target=/artifacts opensuse_rpmimage:latest sh -c "mv /build/*.rpm /artifacts"
+        ls artifacts/*
+        cd artifacts
+        echo "##[set-output name=libpackage;]$(ls -1 libqtprotobuf_*.deb)"
+        echo "##[set-output name=devpackage;]$(ls -1 libqtprotobuf-dev_*.deb)"
+        echo "##[set-output name=devrpmpackage;]$(ls -1 libqtprotobuf-*-devel.rpm)"
+        echo "##[set-output name=librpmpackage;]$(ls -1 libqtprotobuf-*.rpm | grep -v 'devel')"
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Upload release lib .deb package
+      id: upload_lib
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ steps.build_release.outputs.libpackage }}
+        asset_name: ${{ steps.build_release.outputs.libpackage }}
+        asset_content_type: application/x-debian-package
+    - name: Upload release develop .deb package
+      id: upload_dev
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ steps.build_release.outputs.devpackage }}
+        asset_name: ${{ steps.build_release.outputs.devpackage }}
+        asset_content_type: application/x-debian-package
+    - name: Upload release .rpm package
+      id: upload_rpm_lib
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ steps.build_release.outputs.librpmpackage }}
+        asset_name: ${{ steps.build_release.outputs.librpmpackage }}
+        asset_content_type: application/x-rpm
+    - name: Upload release develop .rpm package
+      id: upload_rpm_dev
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ steps.build_release.outputs.devrpmpackage }}
+        asset_name: ${{ steps.build_release.outputs.devrpmpackage }}
+        asset_content_type: application/x-rpm

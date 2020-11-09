@@ -233,7 +233,7 @@ using DoubleList = QList<double>;
 
 /*!
  * \ingroup QtProtobuf
- * \brief registerTypes
+ * \brief qRegisterProtobufTypes
  * This method should be called in all applications that supposed to use QtProtobuf
  */
 extern Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
@@ -253,6 +253,7 @@ struct ProtoTypeRegistrar {
         registerFunctions().push_back(initializer);
     }
 };
+
 }
 
 Q_DECLARE_METATYPE(QtProtobuf::int32)

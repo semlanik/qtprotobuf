@@ -79,6 +79,9 @@ int main(int, char *[])
     std::string server_uri("localhost:60051");
     builder.AddListeningPort(server_uri, grpc::SslServerCredentials(opts));
 
+    std::string socket_uri("unix://tmp/test.sock");
+    builder.AddListeningPort(socket_uri, grpc::SslServerCredentials(opts));
+
     SimpleTestImpl service;
     builder.RegisterService(&service);
 

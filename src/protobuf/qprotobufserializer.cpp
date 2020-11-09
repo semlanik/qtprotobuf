@@ -87,7 +87,7 @@ QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QP
         Q_ASSERT_X(fieldIndex < 536870912 && fieldIndex > 0, "", "fieldIndex is out of range");
         QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
-        const QVariant &propertyValue = object->property(propertyName);
+        QVariant propertyValue = object->property(propertyName);
         result.append(dPtr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
     }
 
@@ -272,7 +272,7 @@ QByteArray QProtobufSerializerPrivate::serializeProperty(const QVariant &propert
             result.prepend(QProtobufSerializerPrivate::encodeHeader(metaProperty.protoFieldIndex(), type));
         }
     } else {
-        auto &handler = QtProtobufPrivate::findHandler(userType);
+        auto handler = QtProtobufPrivate::findHandler(userType);
         handler.serializer(q_ptr, propertyValue, QProtobufMetaProperty(metaProperty, metaProperty.protoFieldIndex()), result);
     }
     return result;
@@ -313,7 +313,7 @@ void QProtobufSerializerPrivate::deserializeProperty(QObject *object, const QPro
     if (basicIt != handlers.end()) {
         basicIt->second.deserializer(it, newPropertyValue);
     } else {
-        auto &handler = QtProtobufPrivate::findHandler(userType);
+        auto handler = QtProtobufPrivate::findHandler(userType);
         handler.deserializer(q_ptr, it, newPropertyValue);
     }
 
@@ -341,7 +341,7 @@ void QProtobufSerializerPrivate::deserializeMapPair(QVariant &key, QVariant &val
             if (basicIt != handlers.end()) {
                 basicIt->second.deserializer(it, value);
             } else {
-                auto &handler = QtProtobufPrivate::findHandler(userType);
+                auto handler = QtProtobufPrivate::findHandler(userType);
                 handler.deserializer(q_ptr, it, value);//throws if not implemented
             }
         }

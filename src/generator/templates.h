@@ -57,29 +57,44 @@ public:
     static const char *ComplexListTypeUsingTemplate;
     static const char *MapTypeUsingTemplate;
     static const char *MessageMapTypeUsingTemplate;
+    static const char *NestedMessageUsingTemplate;
     static const char *EnumTypeRepeatedTemplate;
     static const char *NamespaceTemplate;
     static const char *UsingNamespaceTemplate;
-    static const char *NonProtoClassDefinitionTemplate;
-    static const char *ProtoClassDeclarationTemplate;
-    static const char *ProtoClassDefinitionTemplate;
+    static const char *ClassDeclarationTemplate;
+    static const char *ProtoClassForwardDeclarationTemplate;
+    static const char *ProtoClassDeclarationBeginTemplate;
     static const char *ConstructorHeaderTemplate;
     static const char *ClassDefinitionTemplate;
     static const char *QObjectMacro;
+
     static const char *PropertyTemplate;
+    static const char *RepeatedPropertyTemplate;
     static const char *NonScriptablePropertyTemplate;
     static const char *NonScriptableAliasPropertyTemplate;
     static const char *MessagePropertyTemplate;
     static const char *QmlListPropertyTemplate;
+
+    static const char *ConstructorParameterTemplate;
+    static const char *ConstructorMessageParameterTemplate;
+    static const char *ConstructorRepeatedParameterTemplate;
+    static const char *ProtoConstructorBeginTemplate;
+    static const char *ProtoConstructorEndTemplate;
+
+    static const char *ConstructorParameterDefinitionTemplate;
+    static const char *ConstructorMessageParameterDefinitionTemplate;
+    static const char *ConstructorRepeatedParameterDefinitionTemplate;
+
+    static const char *ProtoConstructorDefinitionBeginTemplate;
+    static const char *ProtoConstructorDefinitionEndTemplate;
+
     static const char *MemberTemplate;
+    static const char *ListMemberTemplate;
     static const char *ComplexMemberTemplate;
-    static const char *EnumMemberTemplate;
     static const char *PublicBlockTemplate;
     static const char *PrivateBlockTemplate;
     static const char *EnumDefinitionTemplate;
     static const char *EnumFieldTemplate;
-    static const char *ProtoConstructorTemplate;
-    static const char *ProtoConstructorDefinitionTemplate;
     static const char *ConstructorTemplate;
     static const char *QObjectConstructorTemplate;
     static const char *CopyConstructorDeclarationTemplate;
@@ -92,7 +107,9 @@ public:
     static const char *DeletedMoveConstructorTemplate;
     static const char *CopyFieldTemplate;
     static const char *CopyComplexFieldTemplate;
+    static const char *AssignComplexFieldTemplate;
     static const char *MoveMessageFieldTemplate;
+    static const char *MoveAssignMessageFieldTemplate;
     static const char *MoveComplexFieldTemplate;
     static const char *MoveComplexFieldConstructorTemplate;
     static const char *MoveFieldTemplate;
@@ -117,11 +134,9 @@ public:
     static const char *GetterMessageDefinitionTemplate;
     static const char *GetterTemplate;
     static const char *NonScriptableGetterTemplate;
-    static const char *GetterContainerExtraDeclarationTemplate;
-    static const char *GetterContainerExtraDefinitionTemplate;
+    static const char *GetterContainerExtraTemplate;
     static const char *GetterQmlListDeclarationTemplate;
     static const char *GetterQmlListDefinitionTemplate;
-
     static const char *SetterPrivateTemplateDeclarationMessageType;
     static const char *SetterPrivateTemplateDefinitionMessageType;
     static const char *SetterTemplateDeclarationMessageType;
@@ -139,45 +154,55 @@ public:
     static const char *SemicolonBlockEnclosureTemplate;
     static const char *EmptyBlockTemplate;
     static const char *PropertyInitializerTemplate;
-    static const char *PropertyEmptyInitializerTemplate;
+    static const char *PropertyDefaultInitializerTemplate;
     static const char *MessagePropertyInitializerTemplate;
-    static const char *MessagePropertyEmptyInitializerTemplate;
+    static const char *MessagePropertyDefaultInitializerTemplate;
     static const char *ConstructorContentTemplate;
     static const char *DeclareMetaTypeTemplate;
     static const char *DeclareMetaTypeListTemplate;
     static const char *DeclareMessageMetaTypeTemplate;
     static const char *DeclareComplexListTypeTemplate;
     static const char *DeclareComplexQmlListTypeTemplate;
-    static const char *RegisterMetaTypeDefaultTemplate;
+    static const char *DeclareMetaTypeMapTemplate;
+    static const char *RegisterLocalEnumTemplate;
+    static const char *RegisterMapTemplate;
     static const char *RegisterMetaTypeTemplate;
+    static const char *RegisterGlobalEnumMetaTypeTemplate;
     static const char *RegisterMetaTypeTemplateNoNamespace;
     static const char *RegisterQmlListPropertyMetaTypeTemplate;
     static const char *QEnumTemplate;
-    static const char *MapSerializationRegisterTemplate;
     static const char *RegisterSerializersTemplate;
     static const char *RegisterEnumSerializersTemplate;
     static const char *RegistrarTemplate;
     static const char *EnumRegistrarTemplate;
     static const char *QmlRegisterTypeTemplate;
     static const char *QmlRegisterTypeUncreatableTemplate;
+    static const char *QmlRegisterEnumTypeTemplate;
     //Service templates
     static const char *ClientConstructorDefinitionTemplate;
 
     static const char *ClientMethodDeclarationSyncTemplate;
     static const char *ClientMethodDeclarationAsyncTemplate;
     static const char *ClientMethodDeclarationAsync2Template;
+    static const char *ClientMethodDeclarationQmlTemplate;
+    static const char *ClientMethodDeclarationQml2Template;
+
     static const char *ServerMethodDeclarationTemplate;
 
     static const char *ClientMethodDefinitionSyncTemplate;
     static const char *ClientMethodDefinitionAsyncTemplate;
     static const char *ClientMethodDefinitionAsync2Template;
+    static const char *ClientMethodDefinitionQmlTemplate;
+    static const char *ClientMethodDefinitionQml2Template;
 
     //Streaming
     static const char *ClientMethodSignalDeclarationTemplate;
     static const char *ClientMethodServerStreamDeclarationTemplate;
     static const char *ClientMethodServerStream2DeclarationTemplate;
+    static const char *ClientMethodServerStreamQmlDeclarationTemplate;
     static const char *ClientMethodServerStreamDefinitionTemplate;
     static const char *ClientMethodServerStream2DefinitionTemplate;
+    static const char *ClientMethodServerStreamQmlDefinitionTemplate;
 
     static const char *ListSuffix;
     static const char *ProtoFileSuffix;
@@ -185,6 +210,13 @@ public:
     static const char *EnumClassSuffix;
 
     static const std::unordered_map<::google::protobuf::FieldDescriptor::Type, std::string> TypeReflection;
+
+    static const char *QtProtobufNamespace;
+    static const char *QtProtobufNestedNamespace;
+
+    static const char *FieldEnumTemplate;
+    static const char *FieldNumberTemplate;
+    static const char *QtProtobufFieldEnum;
 };
 
 } //namespace generator

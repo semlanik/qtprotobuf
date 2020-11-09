@@ -24,15 +24,15 @@
  */
 
 #include "singlefilegenerator.h"
+#include "messagedeclarationprinter.h"
+#include "messagedefinitionprinter.h"
+#include "enumdeclarationprinter.h"
+#include "enumdefinitionprinter.h"
+#include "serverdeclarationprinter.h"
+#include "clientdeclarationprinter.h"
+#include "clientdefinitionprinter.h"
+
 #include "templates.h"
-#include "classgeneratorbase.h"
-#include "protobufclassgenerator.h"
-#include "protobufsourcegenerator.h"
-#include "enumsgenerator.h"
-#include "enumssourcegenerator.h"
-#include "servergenerator.h"
-#include "clientgenerator.h"
-#include "clientsourcegenerator.h"
 #include "utils.h"
 #include "generatoroptions.h"
 
@@ -73,116 +73,94 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
         return true;
     }
 
-    std::string outFileBasename = generateBaseName(file, utils::extractFileBasename(file->name()));
     std::set<std::string> internalIncludes;
     std::set<std::string> externalIncludes;
-    std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + Templates::ProtoFileSuffix + ".h"));
-    std::shared_ptr<io::ZeroCopyOutputStream> outSource(generatorContext->Open(outFileBasename + Templates::ProtoFileSuffix + ".cpp"));
-    std::shared_ptr<::google::protobuf::io::Printer> outHeaderPrinter(new ::google::protobuf::io::Printer(outHeader.get(), '$'));
-    std::shared_ptr<::google::protobuf::io::Printer> outSourcePrinter(new ::google::protobuf::io::Printer(outSource.get(), '$'));
 
+    std::string basename = generateBaseName(file, utils::extractFileBasename(file->name()));
+    std::unique_ptr<io::ZeroCopyOutputStream> headerStream(generatorContext->Open(basename + Templates::ProtoFileSuffix + ".h"));
+    std::unique_ptr<io::ZeroCopyOutputStream> sourceStream(generatorContext->Open(basename + Templates::ProtoFileSuffix + ".cpp"));
 
-    outHeaderPrinter->Print(Templates::DisclaimerTemplate);
-    outHeaderPrinter->Print(Templates::PreambleTemplate);
-    outHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
+    std::shared_ptr<::google::protobuf::io::Printer> headerPrinter(new ::google::protobuf::io::Printer(headerStream.get(), '$'));
+    std::shared_ptr<::google::protobuf::io::Printer> sourcePrinter(new ::google::protobuf::io::Printer(sourceStream.get(), '$'));
+
+    printDisclaimer(headerPrinter);
+    printPreamble(headerPrinter);
+
+    headerPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
     if (GeneratorOptions::instance().hasQml()) {
-        outHeaderPrinter->Print(Templates::QmlProtobufIncludesTemplate);
+        headerPrinter->Print(Templates::QmlProtobufIncludesTemplate);
     }
 
-    outSourcePrinter->Print(Templates::DisclaimerTemplate);
-    outSourcePrinter->Print({{"include", outFileBasename + Templates::ProtoFileSuffix}}, Templates::InternalIncludeTemplate);
+    printDisclaimer(sourcePrinter);
+    sourcePrinter->Print({{"include", basename + Templates::ProtoFileSuffix}}, Templates::InternalIncludeTemplate);
 
     externalIncludes.insert("QByteArray");
     externalIncludes.insert("QString");
 
+    bool hasQtTypes = false;
+    common::iterateMessages(file, [&externalIncludes, &hasQtTypes](const ::google::protobuf::Descriptor *message) {
+        for (int i = 0; i < message->field_count(); i++) {
+            auto field = message->field(i);
+            if (field->type() == ::google::protobuf::FieldDescriptor::TYPE_MESSAGE
+                    && !field->is_map() && !field->is_repeated()
+                    && common::isQtType(field)) {                
+                externalIncludes.insert(field->message_type()->name());
+                hasQtTypes = true;
+            }
+        }
+        if (message->full_name() == "google.protobuf.Timestamp") {
+            externalIncludes.insert("QDateTime");
+        }
+    });
+
+    if (hasQtTypes) {
+        externalIncludes.insert("QtProtobufQtTypes");
+    }
+
     for (int i = 0; i < file->dependency_count(); i++) {
+        if (file->dependency(i)->name() == "QtProtobuf/QtCore.proto"
+                || file->dependency(i)->name() == "QtProtobuf/QtGui.proto") {
+            continue;
+        }
         internalIncludes.insert(utils::removeFileSuffix(file->dependency(i)->name()) + Templates::ProtoFileSuffix);
     }
 
-    for(auto include : externalIncludes) {
-        outHeaderPrinter->Print({{"include", include}}, Templates::ExternalIncludeTemplate);
+    for (auto include : externalIncludes) {
+        headerPrinter->Print({{"include", include}}, Templates::ExternalIncludeTemplate);
     }
 
-    for(auto include : internalIncludes) {
-        outHeaderPrinter->Print({{"include", include}}, Templates::InternalIncludeTemplate);
+    for (auto include : internalIncludes) {
+        headerPrinter->Print({{"include", include}}, Templates::InternalIncludeTemplate);
     }
 
     if (GeneratorOptions::instance().hasQml()) {
-        outSourcePrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+        sourcePrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
     }
-    outSourcePrinter->Print({{"namespace", "QtProtobuf"}}, Templates::UsingNamespaceTemplate);
 
+    printQtProtobufUsingNamespace(sourcePrinter);
 
     PackagesList packageList;
     packageList[file->package()].push_back(file);
 
-    for(int i = 0; i < file->enum_type_count(); i++) {
-        EnumsGenerator enumGen2(file->enum_type(i),
-                                outHeaderPrinter);
-        enumGen2.run();
+    for (int i = 0; i < file->enum_type_count(); i++) {
+        EnumDeclarationPrinter enumDecl(file->enum_type(i), headerPrinter);
+        enumDecl.run();
+        EnumDefinitionPrinter enumSourceDef(file->enum_type(i), sourcePrinter);
+        enumSourceDef.run();
     }
 
-    for(int i = 0; i < file->enum_type_count(); i++) {
-        auto enumType = file->enum_type(i);
-        EnumsSourceGenerator enumSourceGen2(enumType,
-                                outSourcePrinter);
-        enumSourceGen2.run();
-    }
-
-    std::vector<std::string> namespaces;
-    std::string namespacesColonDelimited;
-
-    utils::split(file->package(), namespaces, '.');
-    assert(namespaces.size() > 0);
-    for (size_t i = 0; i < namespaces.size(); i++) {
-        if (i > 0) {
-            namespacesColonDelimited = namespacesColonDelimited.append("::");
-        }
-        namespacesColonDelimited = namespacesColonDelimited.append(namespaces[i]);
-        outHeaderPrinter->Print({{"namespace", namespaces[i]}}, Templates::NamespaceTemplate);
-    }
-
-    iterateNonNestedFileds(file, [&outHeaderPrinter](const ::google::protobuf::Descriptor *message){
-        std::string qualifiedClassName = utils::upperCaseName(message->name());
-        outHeaderPrinter->Print({{"classname", qualifiedClassName}}, Templates::ProtoClassDeclarationTemplate);
-        outHeaderPrinter->Print({{"classname", qualifiedClassName}}, Templates::ComplexListTypeUsingTemplate);
+    common::iterateMessages(file, [&headerPrinter](const ::google::protobuf::Descriptor *message) {
+        MessageDeclarationPrinter messageDecl(message, headerPrinter);
+        messageDecl.printClassForwardDeclaration();
     });
 
-    for (size_t i = 0; i < namespaces.size(); i++) {
-        outHeaderPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
-    }
+    common::iterateMessages(file, [&headerPrinter, &sourcePrinter](const ::google::protobuf::Descriptor *message) {
+        MessageDeclarationPrinter messageDecl(message, headerPrinter);
+        messageDecl.printClassDeclaration();
 
-    iterateNonNestedFileds(file, [&outHeaderPrinter, &outSourcePrinter](const ::google::protobuf::Descriptor *message){
-        ProtobufClassGenerator classGen(message,
-                                        outHeaderPrinter);
 
-        classGen.printNamespaces();
-        classGen.printComments(message);
-        classGen.printClassDeclaration();
-        classGen.printProperties();
-        classGen.printPrivate();
-        classGen.printClassMembers();
-        classGen.printPublic();
-        classGen.printDestructor();
-        classGen.encloseClass();
-        classGen.encloseNamespaces();
-        classGen.printMetaTypeDeclaration();
-        classGen.printMapsMetaTypesDeclaration();
-        classGen.printLocalEnumsMetaTypesDeclaration();
-
-        ProtobufSourceGenerator srcGen(message,
-                                       outSourcePrinter);
-        srcGen.printNamespaces();
-        srcGen.printFieldsOrdering();
-        srcGen.printRegisterBody();
-        srcGen.printDestructor();
-        srcGen.printConstructor();
-        srcGen.printCopyFunctionality();
-        srcGen.printMoveSemantic();
-        srcGen.printComparisonOperators();
-        srcGen.printGetters();
-        srcGen.encloseNamespaces();
-
+        MessageDefinitionPrinter messageDef(message, sourcePrinter);
+        messageDef.printClassDefinition();
     });
 
     return true;
@@ -198,23 +176,24 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
         return true;
     }
 
-    std::string outFileBasename = generateBaseName(file, utils::extractFileBasename(file->name()));
     std::set<std::string> internalIncludes;
     std::set<std::string> externalIncludes;
-    std::shared_ptr<io::ZeroCopyOutputStream> outHeader(generatorContext->Open(outFileBasename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix + ".h"));
-    std::shared_ptr<io::ZeroCopyOutputStream> outSource(generatorContext->Open(outFileBasename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix + ".cpp"));
-    std::shared_ptr<::google::protobuf::io::Printer> outHeaderPrinter(new ::google::protobuf::io::Printer(outHeader.get(), '$'));
-    std::shared_ptr<::google::protobuf::io::Printer> outSourcePrinter(new ::google::protobuf::io::Printer(outSource.get(), '$'));
 
-    outHeaderPrinter->Print(Templates::DisclaimerTemplate);
-    outHeaderPrinter->Print(Templates::PreambleTemplate);
-    outHeaderPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
+    std::string basename = generateBaseName(file, utils::extractFileBasename(file->name()));
+    std::unique_ptr<io::ZeroCopyOutputStream> headerStream(generatorContext->Open(basename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix + ".h"));
+    std::unique_ptr<io::ZeroCopyOutputStream> sourceStream(generatorContext->Open(basename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix + ".cpp"));
+    std::shared_ptr<::google::protobuf::io::Printer> headerPrinter(new ::google::protobuf::io::Printer(headerStream.get(), '$'));
+    std::shared_ptr<::google::protobuf::io::Printer> sourcePrinter(new ::google::protobuf::io::Printer(sourceStream.get(), '$'));
+
+    printDisclaimer(headerPrinter);
+    printPreamble(headerPrinter);
+    headerPrinter->Print(Templates::DefaultProtobufIncludesTemplate);
     if (GeneratorOptions::instance().hasQml()) {
-        outHeaderPrinter->Print(Templates::QmlProtobufIncludesTemplate);
+        headerPrinter->Print(Templates::QmlProtobufIncludesTemplate);
     }
 
-    outSourcePrinter->Print(Templates::DisclaimerTemplate);
-    outSourcePrinter->Print({{"include", outFileBasename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix}}, Templates::InternalIncludeTemplate);
+    printDisclaimer(sourcePrinter);
+    sourcePrinter->Print({{"include", basename + Templates::GrpcFileSuffix + Templates::ProtoFileSuffix}}, Templates::InternalIncludeTemplate);
 
     for (int i = 0; i < file->service_count(); i++) {
         const ServiceDescriptor *service = file->service(i);
@@ -235,18 +214,24 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
     externalIncludes.insert("QGrpcSubscription");
 
     if (file->message_type_count() > 0) {
-        internalIncludes.insert(outFileBasename + Templates::ProtoFileSuffix);
+        internalIncludes.insert(basename + Templates::ProtoFileSuffix);
     }
-    for(auto include : externalIncludes) {
-        outHeaderPrinter->Print({{"include", include}}, Templates::ExternalIncludeTemplate);
-    }
-
-    for(auto include : internalIncludes) {
-        outHeaderPrinter->Print({{"include", include}}, Templates::InternalIncludeTemplate);
+    for (auto include : externalIncludes) {
+        headerPrinter->Print({{"include", include}}, Templates::ExternalIncludeTemplate);
     }
 
+    for (auto include : internalIncludes) {
+        headerPrinter->Print({{"include", include}}, Templates::InternalIncludeTemplate);
+    }
 
-    outSourcePrinter->Print({{"namespace", "QtProtobuf"}}, Templates::UsingNamespaceTemplate);
+    if (GeneratorOptions::instance().hasQml()) {
+        sourcePrinter->Print({{"include", "QQmlEngine"}}, Templates::ExternalIncludeTemplate);
+        sourcePrinter->Print({{"include", "QJSEngine"}}, Templates::ExternalIncludeTemplate);
+        sourcePrinter->Print({{"include", "QJSValue"}}, Templates::ExternalIncludeTemplate);
+    }
+
+
+    printQtProtobufUsingNamespace(sourcePrinter);
 
     for (int i = 0; i < file->service_count(); i++) {
         const ServiceDescriptor *service = file->service(i);
@@ -255,26 +240,15 @@ bool SingleFileGenerator::GenerateServices(const ::google::protobuf::FileDescrip
         //        utils::tolower(baseFilename);
 
         //        std::string fullFilename = baseFilename + "server.h";
-        //        ServerGenerator serverGen(service,
+        //        ServerDeclarationprinter serverGen(service,
         //                                  std::shared_ptr<io::ZeroCopyOutputStream>(generatorContext->Open(fullFilename)));
         //        serverGen.run();
 
-        ClientGenerator clientGen(service,
-                                  outHeaderPrinter);
-        clientGen.printNamespaces();
-        clientGen.printClientClass();
-        clientGen.printPublic();
-        clientGen.printConstructor();
-        clientGen.printClientMethodsDeclaration();
-        clientGen.encloseClass();
-        clientGen.encloseNamespaces();
+        ClientDeclarationPrinter clientDecl(service, headerPrinter);
+        clientDecl.run();
 
-        ClientSourceGenerator clientSrcGen(service,
-                                           outSourcePrinter);
-        clientSrcGen.printNamespaces();
-        clientSrcGen.printConstructor();
-        clientSrcGen.printMethods();
-        clientSrcGen.encloseNamespaces();
+        ClientDefinitionPrinter clientDef(service, sourcePrinter);
+        clientDef.run();
     }
 
     return true;

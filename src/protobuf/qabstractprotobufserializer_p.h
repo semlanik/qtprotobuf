@@ -68,7 +68,7 @@ struct SerializationHandler {
     HandlerType type;/*!< Serialization WireType */
 };
 
-extern Q_PROTOBUF_EXPORT SerializationHandler &findHandler(int userType);
+extern Q_PROTOBUF_EXPORT SerializationHandler findHandler(int userType);
 extern Q_PROTOBUF_EXPORT void registerHandler(int userType, const SerializationHandler &handlers);
 
 /*!

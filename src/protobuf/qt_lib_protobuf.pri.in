@@ -16,7 +16,7 @@ defineTest(qtprotobuf_generate) {
     QML_ENABLED = $$1
     $$QML_ENABLED:GENERATOR_OPTIONS="$$GENERATOR_OPTIONS:QML"
 
-    for(PROTO_FILE_REL, PROTO_FILES) {
+    for (PROTO_FILE_REL, PROTO_FILES) {
         PROTO_FILE_ABS = $$absolute_path($$PROTO_FILE_REL)
         PROTO_FILES_PRIV *= $$PROTO_FILE_ABS
         PROTO_INCLUDES_PRIV = "$$PROTO_INCLUDES_PRIV -I$$dirname(PROTO_FILE_ABS)"

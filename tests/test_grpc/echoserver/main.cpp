@@ -63,15 +63,25 @@ public:
     {
         return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, request->testfieldstring());
     }
+
+    ::grpc::Status testMethodNonCompatibleArgRet(grpc::ServerContext *, const qtprotobufnamespace::tests::SimpleIntMessage *request, qtprotobufnamespace::tests::SimpleStringMessage *response) override
+    {
+        std::cerr << "testMethodNonCompatibleArgRet called" << std::endl << request->testfield() << std::endl;
+        response->set_testfieldstring(std::to_string(request->testfield()));
+        return ::grpc::Status();
+    }
+
 };
 
 int main(int, char *[])
 {
     std::string server_address("localhost:50051");
+    std::string socket_path("unix://tmp/test.sock");
     SimpleTestImpl service;
 
     grpc::ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    builder.AddListeningPort(socket_path, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
     std::cout << "Server listening on " << server_address << std::endl;

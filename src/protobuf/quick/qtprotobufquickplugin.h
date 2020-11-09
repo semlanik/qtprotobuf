@@ -29,6 +29,60 @@
 #include "qtprotobufquick_global.h"
 
 /*!
+ * \defgroup QtProtobufQML QML QtProtobuf
+ * \brief QML bindings for QtGrpc
+ * \details
+ * QtProtobuf allows to use generated classes in QML. All types are registred automatically when QtProtobuf::qRegisterProtobufTypes() called.
+ * To make generated classes and QtProtobuf types visible in QML you need to import QtProtobuf QML plugin and your protobuf package
+ *
+ * sample.proto:
+ * \code
+ * syntax = "proto3";
+ * package qtprotobuf.sample;
+ * message SampleMessage {
+ *     int32 sampleField = 1;
+ * }
+ * \endcode
+ *
+ * QML:
+ * \code
+ * //Enable QtProtobuf types
+ * import QtProtobuf 0.4 //Use recent QtProtobuf version
+ * //Import types from sample.proto
+ * import qtprotobuf.sample 1.0
+ *
+ * Item {
+ * ...
+ *     SampleMessage {
+ *         sampleField: 10
+ *     }
+ * ...
+ * }
+ * \endcode
+ *
+ * \section qtprotobufquick_static Static QtProtobuf with QML
+ * For statically built QtProtobuf it's neccssary to link `protobufquickplugin` target manually:
+ * CMakeLists.txt:
+ * \code
+ * ...
+ * if(QT_PROTOBUF_STATIC)
+ *     target_link_libraries(${TARGET} PRIVATE QtProtobufProject::protobufquickplugin)
+ * endif()
+ * ...
+ * \endcode
+ *
+ * To make QtProtobuf QML plugin visible in QML, call Q_PROTOBUF_IMPORT_QUICK_PLUGIN() macro:
+ * \code
+ * int main(int argc, char *argv[]) {
+ *     ...
+ *     QtProtobuf::qRegisterProtobufTypes();
+ *     Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
+ *     ...
+ * }
+ * \endcode
+ */
+
+/*!
  * \private
  * \brief The QtProtobufQuickPlugin class
  */

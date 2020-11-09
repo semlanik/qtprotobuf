@@ -50,9 +50,7 @@ public:
     /*!
      * \brief Aborts this reply and try to abort call in channel
      */
-    void abort() {
-        m_channel->abort(this);
-    }
+    void abort();
 
     /*!
      * \brief Subscribe to QGrpcAsyncReply signals

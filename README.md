@@ -3,14 +3,18 @@
 gRPC and Protobuf generator and bindings for Qt framework
 > see [Protobuf](https://developers.google.com/protocol-buffers) and [gRPC](https://grpc.io/) for more information
 
+QtProtobuf provides Qt-native support of Google protocol buffers. Generated code doesn't depend on any framework except Qt framework. QtProtobuf uses existing Qt meta-object information to access object fields and supports most of features of original C++ protocol buffers. It's not just a wrapper arround protocol buffers, but pure Qt generator with own serializers. Our target to provide deep Qt, protocol buffers and gRPC intergration.
 
 ### Test results
 
-| Branch | Results Linux | Results Windows |
-| --- | --- | --- |
-| [master](https://github.com/semlanik/qtprotobuf/tree/master) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=master) |
-| [0.1.0](https://github.com/semlanik/qtprotobuf/tree/0.1.0) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.1.0) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.1.0) |
-| [0.2](https://github.com/semlanik/qtprotobuf/tree/0.2) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.2) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.2) |
+| Branch | Results Linux | Results Windows | Support |
+| --- | --- | --- | --- |
+| [master](https://github.com/semlanik/qtprotobuf/tree/master) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=master) | :heavy_check_mark: |
+| [0.5](https://github.com/semlanik/qtprotobuf/tree/0.5) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.5) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.5) | :heavy_check_mark: |
+| [0.4](https://github.com/semlanik/qtprotobuf/tree/0.4) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.4) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.4) | :heavy_check_mark: |
+| [0.3](https://github.com/semlanik/qtprotobuf/tree/0.3) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.3) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.3) | :heavy_check_mark: |
+| [0.2](https://github.com/semlanik/qtprotobuf/tree/0.2) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.2) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.2) |  |
+| [0.1.0](https://github.com/semlanik/qtprotobuf/tree/0.1.0) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.1.0) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.1.0) |  |
 
 
 # Table of contents
@@ -33,32 +37,109 @@ gRPC and Protobuf generator and bindings for Qt framework
 
 [QtProtobuf development](#qtprotobuf-development)
 
+## Tutorials
 
-# Linux Build
-## Prerequesties
+[QtProtobuf Client Tutorial](https://semlanik.github.io/qtprotobuf/clienttutorial.html)
+
+# Build
+
+## Build options
+
+*QT_PROTOBUF_MAKE_COVERAGE* - if **TRUE/ON**, enables gcov intergration, to collect code coverage reports(usefull for developers). **FALSE** by default.
+
+*QT_PROTOBUF_MAKE_TESTS* - if **TRUE/ON**, enables tests for QtProtobuf. **TRUE** by default.
+
+*QT_PROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON**, enables built-in examples. **TRUE** by default.
+
+*QT_PROTOBUF_NATIVE_GRPC_CHANNEL* - if **TRUE/ON**, enables build of an additional channel wrapping native gGRPC C++ library (**Note:** grpc++ library is required).
+
+*BUILD_SHARED_LIBS* - if **TRUE/ON**, enables shared libraries build, **FALSE** by default, static libraries build is performed.
+
+> **Note:** In case if you use static QtProtobuf in your non-cmake/-qmake build system, you additionaly **need manually** add QT_PROTOBUF_STATIC compiler definition.
+
+*QT_PROTOBUF_FIELD_ENUM* - if **TRUE/ON**, adds enumeration with message fields for generated messages in QtProtobufTypes and QtProtobufWellKnownTypes libraries. **FALSE** by default.
+
+## Linux Build
+### Prerequesties
 
 Check installation of following packages in your system:
+
 - cmake 3.6 or higher
 - Qt 5.12.4 or higher
-- protobuf 3.6.0 or higher
-- grpc 1.15.0 or higher
-- golang 1.10 or higher (Mandatory dependency for any type of build)
+- protobuf 3.6.0 or higher (might be used from submodule)
+- golang 1.10 or higher
 
->**Note:** Older versions could be supported as well but not officially tested.
+Optional:
 
+- grpc 1.15.0 or higher (might be used from submodule)
 
-### For Ubuntu 19.10 or higher
+>**Note:** Older versions could be supported as well but not tested.
 
+#### Option 1: Use system libraries
+
+##### For Ubuntu 19.10 or higher
 Install dependencies:
 
 ```bash
-sudo apt-get install qtdeclarative5-private-dev qtbase5-private-dev protobuf-compiler libprotoc-dev protobuf-compiler-grpc libgrpc++-dev libgrpc-dev libgtest-dev
+sudo apt-get
+    build-essential \
+    cmake \
+    golang \
+    wget \
+    libdbus-1-3 \
+    libfreetype6 libfontconfig libx11-6 \
+    libgl1-mesa-dev \
+    libsm6 \
+    libice6 \
+    libxext6 \
+    libxrender1 \
+    doxygen \
+    qt5-default \
+    qtdeclarative5-private-dev \
+    qtbase5-private-dev \
+    protobuf-compiler \
+    libprotoc-dev \
+    protobuf-compiler-grpc \
+    libgrpc++-dev \
+    libgrpc-dev \
+    libgtest-dev
 ```
 
+##### For OpenSUSE 15.2 or higher
+Install dependencies:
 
-### All-in-one build
+```bash
+sudo zypper in go \
+    wget \
+    cmake \
+    libXrender1 \
+    libXext6 \
+    libSM6 \
+    Mesa-libGL1 \
+    libfreetype6 \
+    libX11-6 \
+    libdbus-1-3 \
+    fontconfig \
+    libICE6 \
+    gcc-c++ \
+    Mesa-devel \
+    libgthread-2_0-0 \
+    libqt5-qttools \
+    protobuf-devel \
+    grpc-devel \
+    libqt5-qtdeclarative-devel \
+    libqt5-qtbase-devel \
+    libqt5-qtdeclarative-private-headers-devel \
+    libqt5-qtbase-private-headers-devel \
+    rpm-build
+sudo zypper --non-interactive in --type pattern devel_C_C++
+```
+
+#### Option 2: All-in-one build
 
 If required versions of libraries are not found in your system, you may use all-in-one build procedure for prerequesties.
+
+Manually install Qt version you need [](https://www.qt.io/download).
 
 Update submodules to fetch 3rdparty dependencies:
 
@@ -66,19 +147,55 @@ Update submodules to fetch 3rdparty dependencies:
 git submodule update --init --recursive
 ```
 
+>**Note:** All installation rules are disabled for all-in-one build.
 
-## Build
+#### Option 3: Use as sub-module
+
+QtProtobuf build procedure is designed to use QtProtobuf as sub-project.
+
+>**Note:** This option only supported by projects that use CMake as build tool.
+
+Add QtProtobuf as git submodule in your Project folder:
+
 ```bash
+git submodule add https://github.com/semlanik/qtprotobuf.git qtprotobuf
+git submodule init qtprotobuf
+git submodule update qtprotobuf
+
+#(Optional) You also may initialize all internal QtProtobuf sub-modules for all-in-one build using steps bellow:
+cd qtprotobuf
+git submodule update --init --recursive
+```
+
+Next add QtProtobuf subproject to your CMake tree, edit CMakeLists.txt:
+
+```cmake
+...
+add_subdirectory("qtprotobuf")
+...
+```
+
+QtProtobuf and dependencies from source tree will be built within your Project.
+
+>**Note:** All installation rules of QtProtobuf project are disabled for sub-project build.
+
+### Build
+
+```bash
+git submodule init src/protobuf/3rdparty/microjson #microjson is part of build and installation tree. Made this to simplify dependency management, but you always may use system microjson if installed.
+git submodule update src/protobuf/3rdparty/microjson
 mkdir build
 cd build
 cmake .. [-DCMAKE_PREFIX_PATH="<path/to/qt/installation>/Qt<qt_version>/<qt_version>/gcc_64/lib/cmake"]
 cmake --build . [--config <RELEASE|DEBUG>] -- -j<N>
 ```
 
-## Packaging
+### Packaging
+
 QtProtobuf has packaging support based on CPack.
 
-### .deb
+#### .deb
+
 You can create .deb package for debian-like operating systems, using commands below:
 
 ```bash
@@ -90,7 +207,8 @@ cpack -G DEB ..
 
 >**Note:** Only tested on Ubuntu 19.10
 
-### .rpm
+#### .rpm
+
 You can create .rpm package for rpm-based operating systems, using commands below:
 
 ```bash
@@ -102,8 +220,9 @@ cpack -G RPM ..
 
 >**Note:** Only tested on OpenSUSE 15.2
 
-# Windows Build
-## Prerequesties
+## Windows Build
+### Prerequesties
+
 Download and install:
 
 - Qt 5.12.3 or higher [1](https://download.qt.io/official_releases/qt/)
@@ -121,7 +240,8 @@ Update submodules to fetch 3rdparty dependencies:
 git submodule update --init --recursive
 ```
 
-## Build
+### Build
+
 Open Qt MSVC command line and follow steps:
 
 ```bash
@@ -133,11 +253,54 @@ cmake ..
 cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 ```
 
+## Conan build
+
+QtProtobuf supports conan builds since version 0.4.0.
+
+### Build QtProtobuf
+
+Before build make sure that all sub-modules are deinitilized:
+
+```bash
+git submodule deinit -f --all
+```
+
+Build QtProtobuf:
+
+```bash
+mkdir -p build_conan
+cd build_conan
+conan source ..
+conan install .. --build=microjson
+conan build ..
+```
+
+### Conan project integration
+
+QtProtobuf conan source packages are hosted on JFrog Bintray. Add remote to conan:
+
+```bash
+conan remote add semlanik https://api.bintray.com/conan/semlanik/libs
+```
+
+To intergrate QtProtobuf add it as a dependency to your conanfile.py:
+
+```python
+    ...
+    requires = [
+        ...
+        "qtprotobuf/0.5.0@semlanik/stable",
+        ...
+    ]
+    ...
+```
+>**Note:** You also may use QtProtobuf package is built localy or from other remote source. Look in conan documentation for details.
+
 # Usage
 ## Direct usage of generator
 
 ```bash
-[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER:FIELDENUM"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
 
 ### QT_PROTOBUF_OPTIONS
@@ -145,7 +308,7 @@ cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 For protoc command you also may specify extra options using QT_PROTOBUF_OPTIONS environment variable and colon-separated format:
 
 ``` bash
-[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER:FIELDENUM"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
 
 Following options are supported:
@@ -164,6 +327,8 @@ Following options are supported:
 
 *FOLDER* - enables folder-based generation
 
+*FIELDENUM* - adds enumeration with message fields for generated messages.
+
 ## Integration with CMake project
 
 You can integrate QtProtobuf as submodule in your project or as installed in system package. Add following line in your project CMakeLists.txt:
@@ -176,7 +341,7 @@ file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.pr
  ...
  ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofileN.proto)
 # Function below generates source files for specified PROTO_FILES,
-# and link them to the MyTarget as static library 
+# and link them to the MyTarget as static library
 add_executable(MyTarget main.cpp) # Add your target here
 qtprotobuf_generate(TARGET MyTarget
 OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
@@ -201,6 +366,13 @@ GENERATED_HEADERS ${GENERATED_HEADERS})
 ...
 ```
 
+In case if you somehow avoided ```qtprotobuf_generate``` usage, you need manualy link QtProtobuf libraries used by project, e.g.:
+```cmake
+...
+target_link_libraries(${TARGET} QtProtobuf::QtProtobuf QtProtobuf::QtGrpc QtProtobuf::QtProtobufWellKnownTypes)
+...
+```
+
 ### CMake functions reference
 #### qtprotobuf_generate
 
@@ -222,7 +394,7 @@ qtprotobuf_generate is cmake helper function that automatically generates STATIC
 
 ***Options:***
 
-*MULTI* - Enables multi-files generation mode. If provided in parameter list generator will create pair of header/source files for each message
+*MULTI* - Enables multi-files generation mode. If provided in parameter list generator will create pair of header/source files for each message.
 
 >**Note:** multi-files generation mode is defined as deprecated by QtProtobuf team, and might have poor support in future
 
@@ -230,13 +402,15 @@ qtprotobuf_generate is cmake helper function that automatically generates STATIC
 
 *COMMENTS* - Enables comments copying from .proto files. If provided in parameter list message and field related comments will be copied to generated header files.
 
-*FOLDER* - Enables folder based generation. If provided in parameter list generator will place generated artifacts to folder structure according to package of corresponding .proto file
+*FOLDER* - Enables folder based generation. If provided in parameter list generator will place generated artifacts to folder structure according to package of corresponding .proto file.
 
 >**Note:** enabled by default if MULTI option provided
 
-#### qtprotobuf_link_archive
+*FIELDENUM* - Adds enumeration with message fields for generated messages.
 
-qtprotobuf_link_archive is cmake helper function that links whole archive to your library or executable target. It's useful when you try to link generated target to shared library or/and to executable that doesn't utilize all protobuf generated classes directly from C++ code, but requires them from QML.
+#### qtprotobuf_link_target
+
+qtprotobuf_link_target is cmake helper function that links generated protobuf target to your binary. It's useful when you try to link generated target to shared library or/and to executable that doesn't utilize all protobuf generated classes directly from C++ code, but requires them from QML.
 
 ***Parameters:***
 
@@ -244,20 +418,9 @@ qtprotobuf_link_archive is cmake helper function that links whole archive to you
 
 *GENERATED_TARGET* - protobuf generated target name
 
-#### Usefull definitions
+#### Useful definitions
 
-*QT_PROTOBUF_MAKE_COVERAGE* - if **TRUE/ON** for QtProtobuf project build, QtProtobuf will be built with gcov intergration, to collect code coverage reports(usefull for developers). **FALSE** by default
-
-*QT_PROTOBUF_MAKE_TESTS* - if **TRUE/ON** for QtProtobuf project build, tests for QtProtobuf will be built. **TRUE** by default
-
-*QT_PROTOBUF_MAKE_EXAMPLES* - if **TRUE/ON** for QtProtobuf project build, built-in examples will be built. **TRUE** by default
-
-*QT_PROTOBUF_STATIC* - if **TRUE/ON** for QtProtobuf project build, static libraries will be produced for all QtProtobuf targets except qml plugin. **FALSE** by default
-
->**Note:** In case if you use static QtProtobuf not with cmake/qmake build system, you additionaly **need manually** add QT_PROTOBUF_STATIC compiler definition
-
-</br>
-*QT_PROTOBUF_EXECUTABLE* - contains full path to QtProtobuf generator add_executable
+*QT_PROTOBUF_EXECUTABLE* - contains full path to QtProtobuf generator
 
 ## Integration with qmake project
 

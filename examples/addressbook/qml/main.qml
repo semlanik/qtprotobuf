@@ -50,9 +50,9 @@ ApplicationWindow {
         id: contactList
         ContactList {
             anchors.fill: background
-            model: abEngine.contacts
+            model: AddressBookEngine.contacts
             Component.onCompleted: {
-                console.log("abEngine.contacts.list.length " + abEngine.contacts.count)
+                console.log("AddressBookEngine.contacts.list.length " + AddressBookEngine.contacts.count)
             }
             onRequestAddContact: {
                 mainStack.push(addContactView, {"stack": mainStack})
@@ -76,19 +76,15 @@ ApplicationWindow {
         }
     }
 
-    Connections {
-        target: abEngine.callStatus
-        onStatusChanged: {
-            console.log("Call status: " + abEngine.callStatus.status);
-        }
-    }
-
     CallPopup {
         id: activeCallPopup
         width: 300
         height: 170
         anchors.centerIn: parent
-        callStatus: abEngine.callStatus
+        callStatus: AddressBookEngine.callStatus
+        onCallStatusChanged: {
+            console.log("activeCallPopup: " + activeCallPopup.callStatus.status)
+        }
     }
 
     Component.onCompleted: {

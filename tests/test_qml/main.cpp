@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2020 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,28 +23,6 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <QtQuickTest>
-#include <QQmlEngine>
-#include <QQmlContext>
-
-#include "simpletest.qpb.h"
-
-using namespace qtprotobufnamespace::tests;
-
-class TestSetup : public QObject {
-    Q_OBJECT
-public:
-    TestSetup() {
-        QtProtobuf::qRegisterProtobufTypes();
-    }
-    ~TestSetup() = default;
-public slots:
-    void qmlEngineAvailable(QQmlEngine *engine)
-    {
-        engine->rootContext()->setContextProperty("qVersion", QT_VERSION);
-    }
-};
+#include "test.h"
 
 QUICK_TEST_MAIN_WITH_SETUP(qtprotobuf_qml_test, TestSetup)
-
-#include "main.moc"
