@@ -1,12 +1,13 @@
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
+include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufInternalHelpers.cmake)
+qt_protobuf_internal_find_dependencies()
 
 # clients
-add_test_target(TARGET qtgrpc_test
+qt_protobuf_internal_add_test_target(TARGET qtgrpc_test
     SOURCES clienttest.cpp QML)
 add_target_windeployqt(TARGET qtgrpc_test
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_test_target(TARGET qtgrpc_secure_test
+qt_protobuf_internal_add_test_target(TARGET qtgrpc_secure_test
     SOURCES sslclienttest.cpp)
 add_target_windeployqt(TARGET qtgrpc_secure_test
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})

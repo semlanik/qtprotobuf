@@ -1,6 +1,7 @@
 set(TARGET qtprotobuf_test_multifile)
 
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
+include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufInternalHelpers.cmake)
+qt_protobuf_internal_find_dependencies()
 
 file(GLOB SOURCES
     simpletest.cpp
@@ -8,7 +9,7 @@ file(GLOB SOURCES
 
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/../test_protobuf/proto/*.proto)
 
-add_test_target(TARGET ${TARGET}
+qt_protobuf_internal_add_test_target(TARGET ${TARGET}
     PROTO_FILES ${PROTO_FILES}
     SOURCES ${SOURCES}
     QML

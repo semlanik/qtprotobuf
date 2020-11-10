@@ -68,6 +68,11 @@ function(qtprotobuf_generate)
             message(FATAL_ERROR "Golang is mandatory dependency for QtProtobuf if GENERATED_HEADERS is not specified. Please install it and ensure that it's accessible by PATH environment variable")
         endif()
 
+        get_target_property(PROTO_PARSER ${QT_PROTOBUF_PROJECT}::${GENERATOR_TARGET} PROTO_PARSER)
+        if(NOT PROTO_PARSER)
+            message(FATAL_ERROR "Unable to locate parsemessages.go script")
+        endif()
+
         foreach(PROTO_FILE IN LISTS qtprotobuf_generate_PROTO_FILES)
             get_filename_component(BASE_DIR ${PROTO_FILE} DIRECTORY)
             set(PROTO_INCLUDES "-I\"${BASE_DIR}\"" ${PROTO_INCLUDES})
@@ -149,11 +154,9 @@ function(qtprotobuf_generate)
             $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtGrpc,INTERFACE_INCLUDE_DIRECTORIES>)
     endif()
 
-    if(NOT WIN32)
-        if(TARGET ${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes)
-            target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
-                $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
-        endif()
+    if(TARGET ${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes)
+        target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
+            $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
     endif()
 
     if(TARGET ${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes)

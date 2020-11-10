@@ -1,15 +1,23 @@
 set(TARGET qtprotobuf_plugin_test)
 
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
+include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufInternalHelpers.cmake)
+qt_protobuf_internal_find_dependencies()
+find_package(Qt5 CONFIG COMPONENTS Test REQUIRED)
 
 find_package(Threads REQUIRED)
-find_package(Qt5 COMPONENTS Test REQUIRED)
 
 file(GLOB SOURCES
     serializationplugintest.cpp)
 
 add_executable(${TARGET} ${SOURCES})
-target_link_libraries(${TARGET} PRIVATE gtest_main gtest ${QT_PROTOBUF_PROJECT}::QtProtobuf ${QT_PROTOBUF_PROJECT}::QtGrpc Qt5::Core Qt5::Test Qt5::Network ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${TARGET} PRIVATE gtest_main
+                                        gtest
+                                        ${QT_PROTOBUF_PROJECT}::QtProtobuf
+                                        ${QT_PROTOBUF_PROJECT}::QtGrpc
+                                        Qt5::Core
+                                        Qt5::Test
+                                        Qt5::Network
+                                        ${CMAKE_THREAD_LIBS_INIT})
 add_target_windeployqt(TARGET ${TARGET}
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

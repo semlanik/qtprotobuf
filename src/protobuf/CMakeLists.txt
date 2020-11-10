@@ -7,17 +7,16 @@ set(TARGET_LIB_DIR ${CMAKE_INSTALL_LIBDIR})
 set(TARGET_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 set(TARGET_BINDIR ${CMAKE_INSTALL_BINDIR})
 
+find_package(Qt5 COMPONENTS Core Qml REQUIRED)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-
-find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/3rdparty/microjson/CMakeLists.txt")
     set(MICROJSON_MAKE_TESTS OFF)
     set(MICROJSON_OBJECT_LIB_ONLY ON)
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/microjson")
     message(STATUS "Using microjson from 3rdparty")
-    message("Note: microjson will be added to install set")
 else()
     message(FATAL_ERROR "microjson is not found.")
 endif()
@@ -77,13 +76,13 @@ protobuf_generate_qt_headers(PUBLIC_HEADER ${PUBLIC_HEADER} COMPONENT ${TARGET})
 
 add_library(${TARGET} ${SOURCES})
 
-set(QT_PROTOBUF_STATIC OFF)
+set(QT_PROTOBUF_STATIC OFF CACHE INTERNAL "")
 if(NOT BUILD_SHARED_LIBS)
-    set(QT_PROTOBUF_STATIC ON)
+    set(QT_PROTOBUF_STATIC ON CACHE INTERNAL "" FORCE)
     if(WIN32)
-        message(WARNING "Static version of QtProtobuf is not fully tested on Win32 platforms")
+        message(WARNING "Static version of ${TARGET} is not fully tested on Win32 platforms")
     endif()
-    target_compile_definitions(${TARGET} PRIVATE QT_PROTOBUF_STATIC)
+    target_compile_definitions(${TARGET} PUBLIC QT_PROTOBUF_STATIC)
     set(QT_PROTOBUF_EXTRA_COMPILE_DIFINITIONS QT_PROTOBUF_STATIC)
     set(QT_PROTOBUF_EXTRA_CONFIG "staticlib") #extra config for .pri file in case if static build enabled
 endif()

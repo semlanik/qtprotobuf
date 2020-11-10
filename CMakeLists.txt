@@ -73,9 +73,7 @@ if(QT_PROTOBUF_FIELD_ENUM)
     set(EXTRA_TYPE_LIBRARIES_OPTIONS "FIELDENUM ${EXTRA_TYPE_LIBRARIES_OPTIONS}")
 endif()
 
-if(NOT WIN32)#TODO: There are linking issues with windows build of well-known types...
-    add_subdirectory("src/wellknowntypes")
-endif()
+add_subdirectory("src/wellknowntypes")
 add_subdirectory("src/qttypes")
 
 if(QT_PROTOBUF_MAKE_TESTS)

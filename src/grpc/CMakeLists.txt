@@ -69,9 +69,9 @@ add_library(${TARGET} ${SOURCES})
 
 if(NOT BUILD_SHARED_LIBS)
     if(WIN32)
-        message(WARNING "Static version of QtGrpc is not fully tested on Win32 platforms")
+        message(WARNING "Static version of ${TARGET} is not fully tested on Win32 platforms")
     endif()
-    target_compile_definitions(${TARGET} PRIVATE QT_PROTOBUF_STATIC)
+    target_compile_definitions(${TARGET} PUBLIC QT_PROTOBUF_STATIC)
     set(QT_PROTOBUF_EXTRA_CONFIG "staticlib") #extra config for .pri file in case if static build enabled
 endif()
 

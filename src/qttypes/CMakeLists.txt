@@ -7,15 +7,14 @@ set(TARGET_LIB_DIR ${CMAKE_INSTALL_LIBDIR})
 set(TARGET_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 set(TARGET_BINDIR ${CMAKE_INSTALL_BINDIR})
 
+find_package(Qt5 COMPONENTS Core Gui Qml REQUIRED)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5 COMPONENTS Core Gui Qml REQUIRED)
-find_package(Protobuf QUIET)
 if(NOT TARGET ${GENERATOR_TARGET})
     find_package(QtProtobufProject COMPONENTS Generator CONFIG REQUIRED)
 else()
-    set(PROTO_PARSER ${QT_PROTOBUF_BINARY_DIR}/parsemessages.go)
     include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake)
 endif()
 
@@ -36,6 +35,13 @@ file(GLOB HEADERS
 protobuf_generate_qt_headers(PUBLIC_HEADER ${HEADERS} COMPONENT QtProtobuf)
 
 add_library(${TARGET} ${SOURCES})
+
+if(NOT BUILD_SHARED_LIBS)
+    if(WIN32)
+        message(WARNING "Static version of ${TARGET} is not fully tested on Win32 platforms")
+    endif()
+    target_compile_definitions(${TARGET} PUBLIC QT_PROTOBUF_STATIC)
+endif()
 
 file(GLOB PROTO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/QtProtobuf/Qt*.proto)
 qtprotobuf_generate(TARGET ${TARGET}

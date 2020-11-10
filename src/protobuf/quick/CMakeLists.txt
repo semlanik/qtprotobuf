@@ -29,7 +29,7 @@ if(NOT BUILD_SHARED_LIBS)
     if(WIN32)
         message(WARNING "Static version of QtProtobuf is not fully tested on Win32 platforms")
     endif()
-    target_compile_definitions(${TARGET} PRIVATE QT_PROTOBUF_STATIC QT_STATICPLUGIN PUBLIC QT_PROTOBUF_QUICK_PLUGIN_NAME="QtProtobufQuickPlugin")
+    target_compile_definitions(${TARGET} PUBLIC QT_STATICPLUGIN QT_PROTOBUF_QUICK_PLUGIN_NAME="QtProtobufQuickPlugin")
 endif()
 
 target_link_libraries(${TARGET} PRIVATE Qt5::Core Qt5::Qml ${QT_PROTOBUF_PROJECT}::QtProtobuf)
