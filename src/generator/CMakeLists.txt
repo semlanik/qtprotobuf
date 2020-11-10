@@ -58,6 +58,8 @@ configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake" "${QT_PROTOBUF_BIN
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/parsemessages.go" "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go" COPYONLY)
 configure_file("${QT_PROTOBUF_CMAKE_DIR}/ProtobufLookup.cmake" "${QT_PROTOBUF_BINARY_DIR}/ProtobufLookup.cmake" COPYONLY)
 
+set_property(TARGET ${TARGET} PROPERTY PROTO_PARSER "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go")
+
 if(QT_PROTOBUF_INSTALL)
     install(TARGETS ${TARGET}
         EXPORT ${TARGET_EXPORT} COMPONENT dev

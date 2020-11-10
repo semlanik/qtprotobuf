@@ -19,5 +19,5 @@ endif()
 
 @PACKAGE_INIT@
 if(QT_PROTOBUF_STATIC)
-    add_definitions(-DQT_PROTOBUF_STATIC)#Old cmake versions compatibility
+    add_compile_definitions(QT_PROTOBUF_STATIC)#Old cmake versions compatibility
 endif()

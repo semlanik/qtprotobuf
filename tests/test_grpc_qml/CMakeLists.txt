@@ -1,7 +1,6 @@
-find_package(Qt5 COMPONENTS Core Quick Network Test QuickTest REQUIRED)
-find_package(QtProtobufProject COMPONENTS QtGrpc REQUIRED)
-
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
+include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufInternalHelpers.cmake)
+qt_protobuf_internal_find_dependencies()
+find_package(Qt5 COMPONENTS Quick QuickTest REQUIRED)
 
 set(CMAKE_AUTOMOC OFF)
 

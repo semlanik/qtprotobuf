@@ -15,7 +15,6 @@ find_package(Protobuf QUIET)
 if(NOT TARGET ${GENERATOR_TARGET})
     find_package(QtProtobufProject COMPONENTS Generator CONFIG REQUIRED)
 else()
-    set(PROTO_PARSER ${QT_PROTOBUF_BINARY_DIR}/parsemessages.go)
     include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake)
 endif()
 
@@ -92,6 +91,13 @@ target_include_directories(${TARGET} PUBLIC
     )
 
 add_library(${QT_PROTOBUF_PROJECT}::${TARGET} ALIAS ${TARGET})
+
+if(NOT BUILD_SHARED_LIBS)
+    if(WIN32)
+        message(WARNING "Static version of ${TARGET} is not fully tested on Win32 platforms")
+    endif()
+    target_compile_definitions(${TARGET} PUBLIC QT_PROTOBUF_STATIC)
+endif()
 
 target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml ${QT_PROTOBUF_PROJECT}::QtProtobuf)
 

@@ -73,7 +73,7 @@ public:
         L listValue = propertyValue.value<L>();
         QByteArray result("[");
         for (auto value : listValue) {
-            result += QString::number(value) + ",";
+            result += QString::number(value).toUtf8() + ",";
         }
         if (listValue.size() > 0) {
             result.resize(result.size() - 1);//Remove trailing `,`

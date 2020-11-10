@@ -1,13 +1,17 @@
 set(TARGET qttypes_test)
 
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
-find_package(QtProtobufProject CONFIG COMPONENTS QtProtobuf QtProtobufQtTypes REQUIRED)
+include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufInternalHelpers.cmake)
+qt_protobuf_internal_find_dependencies()
+
+if(NOT TARGET QtProtobufProject::QtProtobufQtTypes)
+    find_package(QtProtobufProject CONFIG COMPONENTS QtProtobufQtTypes REQUIRED)
+endif()
 
 file(GLOB SOURCES
     qtcoretest.cpp
     qtguitest.cpp)
 
-add_test_target(TARGET ${TARGET}
+qt_protobuf_internal_add_test_target(TARGET ${TARGET}
     SOURCES ${SOURCES}
     PROTO_INCLUDES $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes,PROTO_INCLUDES>
     QML)
