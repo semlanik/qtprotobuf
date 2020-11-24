@@ -1,0 +1,21 @@
+
+syntax="proto3";
+
+package qtprotobuf.examples;
+
+message SparseMessage {
+    repeated uint32 fieldsUsed = 1;
+    bool   attendedParty = 2;
+    uint32 numberOfKids  = 3;
+    string nickName      = 4;
+}
+
+message ExplicitMessage {
+    enum PARTY_STATUS {ATTENDED=0; DIDNT_ATTEND=1; DIDNT_ASK=2;};
+    PARTY_STATUS attendedParty = 1;
+    bool   indicatedKids = 2;
+    uint32 numberOfKids  = 3;
+    enum NO_NICK_STATUS {HAS_NO_NICKNAMES=0; WOULD_NOT_ADMIT_TO_HAVING_HAD_NICKNAMES=1;};
+    NO_NICK_STATUS noNickStatus = 4;
+    string nickName      = 5;
+}
