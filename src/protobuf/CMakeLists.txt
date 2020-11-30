@@ -14,13 +14,11 @@ find_package(Qt5 COMPONENTS Core Qml REQUIRED)
 
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/3rdparty/microjson/CMakeLists.txt")
     set(MICROJSON_MAKE_TESTS OFF)
+    set(MICROJSON_OBJECT_LIB_ONLY ON)
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/microjson")
     message(STATUS "Using microjson from 3rdparty")
     message("Note: microjson will be added to install set")
 else()
-    find_package(microjson CONFIG REQUIRED)
-endif()
-if(NOT TARGET microjson)
     message(FATAL_ERROR "microjson is not found.")
 endif()
 
@@ -118,7 +116,10 @@ target_include_directories(${TARGET} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${QT_PROTOBUF_BINARY_DIR}/include/${TARGET}>
     $<INSTALL_INTERFACE:${TARGET_INCLUDE_DIR}>
+    PRIVATE
+    $<TARGET_PROPERTY:microjson,INCLUDE_DIRECTORIES>
 )
+add_dependencies(${TARGET} microjson)
 
 target_compile_features(${TARGET} PUBLIC cxx_std_14
                                          cxx_auto_type
@@ -129,7 +130,7 @@ target_compile_features(${TARGET} PUBLIC cxx_std_14
                                          cxx_lambdas
                                          cxx_func_identifier)
 
-target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml microjson)
+target_link_libraries(${TARGET} PUBLIC Qt5::Core Qt5::Qml PRIVATE $<TARGET_OBJECTS:microjson>)
 
 add_library(${QT_PROTOBUF_PROJECT}::${TARGET} ALIAS ${TARGET})
 
