@@ -1,9 +1,6 @@
 include(CMakeFindDependencyMacro)
 
 set(QT_PROTOBUF_STATIC @QT_PROTOBUF_STATIC@)
-if(QT_PROTOBUF_STATIC)
-    find_dependency(microjson REQUIRED CONFIG)
-endif()
 
 find_dependency(Qt5 COMPONENTS Core Qml REQUIRED CONFIG)
 find_dependency(QtProtobufProject COMPONENTS Generator CONFIG REQUIRED)
