@@ -1,7 +1,5 @@
 set(TARGET addressbookserver)
 
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
-
 set(GENERATED_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/addressbook.pb.cc
     ${CMAKE_CURRENT_BINARY_DIR}/addressbook.grpc.pb.cc)
@@ -18,7 +16,7 @@ if(UNIX)
 endif()
 
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/../addressbook/proto/*.proto)
-protobuf_generate_all(TARGET ${TARGET}
+qt_protobuf_internal_protobuf_generate_all(TARGET ${TARGET}
     GENERATED_SOURCES ${GENERATED_SOURCES}
     PROTO_FILES ${PROTO_FILES})
 

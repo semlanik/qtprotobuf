@@ -66,12 +66,12 @@
  *
  * \subsubsection Usage
  *
- * To enable Qt types support add QtProtobufQtTypes as dependency to CMake project:
+ * To enable Qt types support add ProtobufQtTypes as dependency to CMake project:
  * \code
  * ...
- * find_package(QtProtobufProject CONFIG COMPONENTS QtProtobuf QtProtobufQtTypes REQUIRED)
+ * find_package(QtProtobuf CONFIG COMPONENTS Protobuf ProtobufQtTypes REQUIRED)
  * ... #After target creation
- * target_link_libraries(${TARGET} PRIVATE ${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes)
+ * target_link_libraries(${TARGET} PRIVATE ${QT_PROTOBUF_NAMESPACE}::ProtobufQtTypes)
  * \endcode
  *
  * Starting from this point you are almost complete preparation. Unlike automatical registration of generated code, QtProtobufQtTypes requires additional intialization step.

@@ -1,4 +1,5 @@
-if(gRPC_FOUND)
+if(WrapgRPC_FOUND)
+    include(QtProtobufTestHelpers)
     add_subdirectory("examples_common")
 
     add_subdirectory("addressbook")

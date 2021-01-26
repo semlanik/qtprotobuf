@@ -1,9 +1,8 @@
 set(TARGET addressbook)
 
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufInternalHelpers.cmake)
 qt_protobuf_internal_find_dependencies()
 
-qt_protobuf_internal_add_example_target(TARGET ${TARGET}
+qt_protobuf_internal_add_example(TARGET ${TARGET}
                    PROTO_FILES "${CMAKE_CURRENT_SOURCE_DIR}/proto/addressbook.proto"
                    SOURCES main.cpp
                            addressbookengine.cpp

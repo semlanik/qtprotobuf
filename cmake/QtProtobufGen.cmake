@@ -18,9 +18,9 @@ function(qtprotobuf_generate)
         message(FATAL_ERROR "Either TARGET or GENERATED_TARGET must be specified")
     endif()
 
-    set(GEN_TARGET ${GENERATED_TARGET_NAME}_generate)
+    set(deps_target ${GENERATED_TARGET_NAME}_deps)
 
-    set(QT_PROTOBUF_EXECUTABLE $<TARGET_FILE:${QT_PROTOBUF_PROJECT}::${GENERATOR_TARGET}>)
+    set(QT_PROTOBUF_EXECUTABLE $<TARGET_FILE:${QT_PROTOBUF_NAMESPACE}::qtprotobufgen>)
 
     #Options handling
     set(GENERATION_TYPE "SIGNLE")
@@ -68,7 +68,7 @@ function(qtprotobuf_generate)
             message(FATAL_ERROR "Golang is mandatory dependency for QtProtobuf if GENERATED_HEADERS is not specified. Please install it and ensure that it's accessible by PATH environment variable")
         endif()
 
-        get_target_property(PROTO_PARSER ${QT_PROTOBUF_PROJECT}::${GENERATOR_TARGET} PROTO_PARSER)
+        get_target_property(PROTO_PARSER ${QT_PROTOBUF_NAMESPACE}::qtprotobufgen PROTO_PARSER)
         if(NOT PROTO_PARSER)
             message(FATAL_ERROR "Unable to locate parsemessages.go script")
         endif()
@@ -77,7 +77,7 @@ function(qtprotobuf_generate)
             get_filename_component(BASE_DIR ${PROTO_FILE} DIRECTORY)
             set(PROTO_INCLUDES "-I\"${BASE_DIR}\"" ${PROTO_INCLUDES})
             execute_process(COMMAND ${GO_EXECUTABLE} run ${PROTO_PARSER} ${PROTO_FILE} ${GENERATION_TYPE} ${FOLDER_ENABLED} OUTPUT_VARIABLE GENERATED_HEADERS_PART ERROR_VARIABLE PARSER_ERROR)
-            set(GENERATED_HEADERS ${GENERATED_HEADERS} ${GENERATED_HEADERS_PART})
+            list(APPEND GENERATED_HEADERS ${GENERATED_HEADERS_PART})
         endforeach()
     endif()
 
@@ -112,25 +112,28 @@ function(qtprotobuf_generate)
         string(REGEX REPLACE "\\.[^.]*$" "" GENERATED_BASENAME ${GENERATED_BASENAME})
 
         if(qtprotobuf_generate_FOLDER)
-            list(APPEND GENERATED_SOURCES_FULL ${OUT_DIR}/${GENERATED_DIRECTORY}/${GENERATED_BASENAME}.cpp)
-            list(APPEND GENERATED_HEADERS_FULL ${OUT_DIR}/${GENERATED_DIRECTORY}/${GENERATED_BASENAME}.h)
+            list(APPEND GENERATED_SOURCES_FULL "${OUT_DIR}/${GENERATED_DIRECTORY}/${GENERATED_BASENAME}.cpp")
+            list(APPEND GENERATED_HEADERS_FULL "${OUT_DIR}/${GENERATED_DIRECTORY}/${GENERATED_BASENAME}.h")
         else()
-            list(APPEND GENERATED_SOURCES_FULL ${OUT_DIR}/${GENERATED_BASENAME}.cpp)
-            list(APPEND GENERATED_HEADERS_FULL ${OUT_DIR}/${GENERATED_BASENAME}.h)
+            list(APPEND GENERATED_SOURCES_FULL "${OUT_DIR}/${GENERATED_BASENAME}.cpp")
+            list(APPEND GENERATED_HEADERS_FULL "${OUT_DIR}/${GENERATED_BASENAME}.h")
         endif()
-        set_property(SOURCE ${OUT_DIR}/${GENERATED_DIRECTORY}/${GENERATED_BASENAME}.cpp PROPERTY SKIP_AUTOMOC ON)
-        set_property(SOURCE ${OUT_DIR}/${GENERATED_DIRECTORY}/${GENERATED_BASENAME}.cpp PROPERTY SKIP_AUTOUIC ON)
-        set_property(SOURCE ${OUT_DIR}/${GENERATED_DIRECTORY}/${GENERATED_BASENAME}.cpp PROPERTY SKIP_AUTOGEN ON)
     endforeach()
 
-    set_source_files_properties(${GENERATED_SOURCES_FULL} PROPERTIES GENERATED TRUE)
+    set_source_files_properties(${GENERATED_SOURCES_FULL} PROPERTIES
+        GENERATED TRUE
+        SKIP_AUTOMOC ON
+        SKIP_AUTOUIC ON
+        SKIP_AUTOGEN ON
+    )
+
     qt5_wrap_cpp(MOC_SOURCES ${GENERATED_HEADERS_FULL})
 
     add_custom_command(
             OUTPUT ${GENERATED_SOURCES_FULL} ${GENERATED_HEADERS_FULL}
             COMMAND ${PROTOC_COMMAND}
-                --plugin=protoc-gen-${GENERATOR_TARGET}=${QT_PROTOBUF_EXECUTABLE}
-                --${GENERATOR_TARGET}_out=${OUT_DIR}
+                --plugin=protoc-gen-qtprotobufgen=${QT_PROTOBUF_EXECUTABLE}
+                --qtprotobufgen_out=${OUT_DIR}
                 ${PROTO_INCLUDES}
                 ${qtprotobuf_generate_PROTO_FILES}
             WORKING_DIRECTORY ${OUT_DIR}
@@ -139,29 +142,32 @@ function(qtprotobuf_generate)
             COMMAND_EXPAND_LISTS
     )
 
-    add_custom_target(${GEN_TARGET} DEPENDS ${GENERATED_SOURCES_FULL} ${GENERATED_HEADERS_FULL} ${qtprotobuf_generate_PROTO_FILES})
+    add_custom_target(${deps_target} DEPENDS ${GENERATED_SOURCES_FULL} ${GENERATED_HEADERS_FULL}
+        ${qtprotobuf_generate_PROTO_FILES}
+    )
 
     add_library(${GENERATED_TARGET_NAME} OBJECT ${GENERATED_SOURCES_FULL} ${MOC_SOURCES})
-    add_dependencies(${GENERATED_TARGET_NAME} ${GEN_TARGET})
+    add_dependencies(${GENERATED_TARGET_NAME} ${deps_target})
     set_target_properties(${GENERATED_TARGET_NAME} PROPERTIES PUBLIC_HEADER "${GENERATED_HEADERS_FULL}")
 
-    #Add include directories in case if projects are enabled by find_project
+    #Add include directories in case if targets are found by find_project or in source tree
     target_include_directories(${GENERATED_TARGET_NAME} PUBLIC ${OUT_DIR} PRIVATE
-        $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobuf,INTERFACE_INCLUDE_DIRECTORIES>)
+        $<TARGET_PROPERTY:${QT_PROTOBUF_NAMESPACE}::Protobuf,INTERFACE_INCLUDE_DIRECTORIES>)
 
-    if(TARGET ${QT_PROTOBUF_PROJECT}::QtGrpc)
+    #TODO: Do not link targets if they are not used in .proto files.
+    if(TARGET ${QT_PROTOBUF_NAMESPACE}::Grpc)
         target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
-            $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtGrpc,INTERFACE_INCLUDE_DIRECTORIES>)
+            $<TARGET_PROPERTY:${QT_PROTOBUF_NAMESPACE}::Grpc,INTERFACE_INCLUDE_DIRECTORIES>)
     endif()
 
-    if(TARGET ${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes)
+    if(TARGET ${QT_PROTOBUF_NAMESPACE}::ProtobufWellKnownTypes)
         target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
-            $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
+            $<TARGET_PROPERTY:${QT_PROTOBUF_NAMESPACE}::ProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>)
     endif()
 
-    if(TARGET ${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes)
+    if(TARGET ${QT_PROTOBUF_NAMESPACE}::ProtobufQtTypes)
         target_include_directories(${GENERATED_TARGET_NAME} PRIVATE
-            $<TARGET_PROPERTY:${QT_PROTOBUF_PROJECT}::QtProtobufQtTypes,INTERFACE_INCLUDE_DIRECTORIES>)
+            $<TARGET_PROPERTY:${QT_PROTOBUF_NAMESPACE}::ProtobufQtTypes,INTERFACE_INCLUDE_DIRECTORIES>)
     endif()
 
     #Automatically link whole static library to specified in parameters target

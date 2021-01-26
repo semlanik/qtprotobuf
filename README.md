@@ -335,7 +335,7 @@ You can integrate QtProtobuf as submodule in your project or as installed in sys
 
 ```cmake
 ...
-find_package(QtProtobufProject CONFIG REQUIRED COMPONENTS QtProtobuf QtGrpc)
+find_package(QtProtobuf CONFIG REQUIRED COMPONENTS Protobuf Grpc)
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.proto
  ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile2.proto
  ...
@@ -369,7 +369,7 @@ GENERATED_HEADERS ${GENERATED_HEADERS})
 In case if you somehow avoided ```qtprotobuf_generate``` usage, you need manualy link QtProtobuf libraries used by project, e.g.:
 ```cmake
 ...
-target_link_libraries(${TARGET} QtProtobuf::QtProtobuf QtProtobuf::QtGrpc QtProtobuf::QtProtobufWellKnownTypes)
+target_link_libraries(${TARGET} QtProtobuf::Protobuf QtProtobuf::Grpc QtProtobuf::ProtobufWellKnownTypes)
 ...
 ```
 
