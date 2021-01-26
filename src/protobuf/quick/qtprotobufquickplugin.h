@@ -66,7 +66,7 @@
  * \code
  * ...
  * if(QT_PROTOBUF_STATIC)
- *     target_link_libraries(${TARGET} PRIVATE QtProtobufProject::protobufquickplugin)
+ *     target_link_libraries(${TARGET} PRIVATE QtProtobuf::protobufquickplugin)
  * endif()
  * ...
  * \endcode

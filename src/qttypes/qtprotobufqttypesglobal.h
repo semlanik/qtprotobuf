@@ -28,7 +28,7 @@
 #include <QtCore/QtGlobal>
 
 #ifndef QT_PROTOBUF_STATIC
-    #if defined(QT_BUILD_PROTOBUF_QT_TYPES_LIB)
+    #if defined(QT_BUILD_PROTOBUFQTTYPES_LIB)
         #define Q_PROTOBUF_QT_TYPES_EXPORT Q_DECL_EXPORT
     #else
         #define Q_PROTOBUF_QT_TYPES_EXPORT Q_DECL_IMPORT

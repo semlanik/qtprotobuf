@@ -103,7 +103,7 @@ bool SingleFileGenerator::GenerateMessages(const ::google::protobuf::FileDescrip
             auto field = message->field(i);
             if (field->type() == ::google::protobuf::FieldDescriptor::TYPE_MESSAGE
                     && !field->is_map() && !field->is_repeated()
-                    && common::isQtType(field)) {                
+                    && common::isQtType(field)) {
                 externalIncludes.insert(field->message_type()->name());
                 hasQtTypes = true;
             }

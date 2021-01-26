@@ -35,9 +35,9 @@
  * Add following line in your CMakeLists.txt to add QtProtobuf as project dependency:
  *
  * \code
- * find_package(QtProtobufProject COMPONENTS QtProtobuf QtGrpc REQUIRED)
+ * find_package(QtProtobuf COMPONENTS Protobuf Grpc REQUIRED)
  * ...
- * target_link_libraries(clienttutorial PRIVATE QtProtobufProject::QtGrpc QtProtobufProject::QtProtobuf)
+ * target_link_libraries(clienttutorial PRIVATE QtProtobuf::Grpc QtProtobuf::Protobuf)
  * \endcode
  * At this point you will have full access to QtProtobuf libraries and macroses.
  *
@@ -242,7 +242,7 @@
 #include "echoclientengine.h"
 
 int main(int argc, char *argv[])
-{ 
+{
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
 
