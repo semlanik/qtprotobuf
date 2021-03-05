@@ -45,22 +45,22 @@ TEST_F(ConverterTest, TestFromTypeConverters)
     QVariant testVariant;
 
     testVariant.setValue<uint32_t>(42);
-    ASSERT_EQ(42, testVariant.value<fixed32>()._t);
+    EXPECT_EQ(42, testVariant.value<fixed32>()._t);
 
     testVariant.setValue<uint64_t>(43);
-    ASSERT_EQ(43, testVariant.value<fixed64>()._t);
+    EXPECT_EQ(43, testVariant.value<fixed64>()._t);
 
     testVariant.setValue<int32_t>(44);
-    ASSERT_EQ(44, testVariant.value<sfixed32>()._t);
+    EXPECT_EQ(44, testVariant.value<sfixed32>()._t);
 
     testVariant.setValue<int64_t>(45);
-    ASSERT_EQ(45, testVariant.value<sfixed64>()._t);
+    EXPECT_EQ(45, testVariant.value<sfixed64>()._t);
 
     testVariant.setValue<int32_t>(46);
-    ASSERT_EQ(46, testVariant.value<int32>()._t);
+    EXPECT_EQ(46, testVariant.value<int32>()._t);
 
     testVariant.setValue<int64_t>(47);
-    ASSERT_EQ(47, testVariant.value<int64>()._t);
+    EXPECT_EQ(47, testVariant.value<int64>()._t);
 }
 
 TEST_F(ConverterTest, TestToTypeConverters)
@@ -68,33 +68,33 @@ TEST_F(ConverterTest, TestToTypeConverters)
     bool ok = false;
     QVariant testVariant;
     testVariant.setValue<fixed32>({42});
-    ASSERT_EQ(42, testVariant.toUInt(&ok));
-    ASSERT_TRUE(ok);
+    EXPECT_EQ(42, testVariant.toUInt(&ok));
+    EXPECT_TRUE(ok);
 
     ok = false;
     testVariant.setValue<fixed64>({43});
-    ASSERT_EQ(43, testVariant.toULongLong(&ok));
-    ASSERT_TRUE(ok);
+    EXPECT_EQ(43, testVariant.toULongLong(&ok));
+    EXPECT_TRUE(ok);
 
     ok = false;
     testVariant.setValue<sfixed32>({44});
-    ASSERT_EQ(44, testVariant.toInt(&ok));
-    ASSERT_TRUE(ok);
+    EXPECT_EQ(44, testVariant.toInt(&ok));
+    EXPECT_TRUE(ok);
 
     ok = false;
     testVariant.setValue<sfixed64>({45});
-    ASSERT_EQ(45, testVariant.toLongLong(&ok));
-    ASSERT_TRUE(ok);
+    EXPECT_EQ(45, testVariant.toLongLong(&ok));
+    EXPECT_TRUE(ok);
 
     ok = false;
     testVariant.setValue<int32>({46});
-    ASSERT_EQ(46, testVariant.toInt(&ok));
-    ASSERT_TRUE(ok);
+    EXPECT_EQ(46, testVariant.toInt(&ok));
+    EXPECT_TRUE(ok);
 
     ok = false;
     testVariant.setValue<int64>({47});
-    ASSERT_EQ(47, testVariant.toLongLong(&ok));
-    ASSERT_TRUE(ok);
+    EXPECT_EQ(47, testVariant.toLongLong(&ok));
+    EXPECT_TRUE(ok);
 }
 
 }
