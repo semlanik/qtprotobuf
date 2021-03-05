@@ -55,3 +55,37 @@ jobs:
       run: docker build . --file .ci/Dockerfile.opensuse_static --tag opensuse_debugimage_static:latest
     - name: Run tests
       run: docker run opensuse_debugimage_static:latest ctest /build --output-on-failure
+  build-windows:
+    name: Static Build and Test Windows MSVC
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Init submodules
+      run: git submodule update --init --recursive
+    - uses: shogo82148/actions-setup-perl@v1
+      with:
+        perl-version: '5.30'
+        distribution: strawberry
+    - uses: microsoft/setup-msbuild@v1.0.2
+      with:
+        vs-version: '16.4'
+    - name: Install Deps
+      run: choco install wget golang yasm
+    - name: Install Qt
+      run: |
+        wget -q https://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe -O C:/qt-unified-windows-x86-online.exe
+        C:/qt-unified-windows-x86-online.exe --script ./.ci/qt_installer_windows.qs -d
+    - name: Build in Windows
+      run: |
+        mkdir build-static
+        cd build-static
+        setx GOROOT "c:\Go"
+        setx path "%path%;C:\Qt\5.15.2\msvc2019_64\bin;C:\Go\bin;C:\ProgramData\chocolatey\lib\yasm\tools"
+        set GOROOT="c:\Go"
+        set PATH="%PATH%;C:\Qt\5.15.2\msvc2019_64\bin;C:\Go\bin;C:\ProgramData\chocolatey\lib\yasm\tools"
+        cmake -DCMAKE_PREFIX_PATH="C:\Qt\5.15.2\msvc2019_64;C:\Go\bin;C:\ProgramData\chocolatey\lib\yasm\tools" -DBUILD_SHARED_LIBS=OFF ..
+        cmake --build . --config Debug
+    - name: Run tests
+      run: |
+        cd build-static
+        ctest -C Debug --output-on-failure

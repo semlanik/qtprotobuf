@@ -33,7 +33,7 @@ Controller.prototype.DynamicTelemetryPluginFormCallback = function() {
 Controller.prototype.ComponentSelectionPageCallback = function() {
     var widget = gui.currentPageWidget();
     widget.deselectAll();
-    widget.selectComponent("qt.qt5.5152.win32_msvc2019");
+    widget.selectComponent("qt.qt5.5152.win64_msvc2019_64");
 
     gui.clickButton(buttons.NextButton);
 }
