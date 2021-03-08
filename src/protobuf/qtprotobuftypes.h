@@ -236,7 +236,7 @@ using DoubleList = QList<double>;
  * \brief qRegisterProtobufTypes
  * This method should be called in all applications that supposed to use QtProtobuf
  */
-extern Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
+Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
 
 /*! \} */
 
@@ -244,7 +244,7 @@ extern Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
 using RegisterFunction = std::function<void(void)>;
 
 //!\private
-extern Q_PROTOBUF_EXPORT std::list<RegisterFunction>& registerFunctions();
+Q_PROTOBUF_EXPORT std::list<RegisterFunction>& registerFunctions();
 
 //!\private
 template <typename T>
