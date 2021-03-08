@@ -123,5 +123,5 @@ namespace QtProtobuf {
  * \brief qRegisterProtobufQtTypes registers serializers set for Qt types supported by QtProtobufQtTypes
  * \note Call it before any serialization\deserialization of messages that use QtProtobufQtTypes directly on indirectly
  */
-extern Q_PROTOBUF_QT_TYPES_EXPORT void qRegisterProtobufQtTypes();
+Q_PROTOBUF_QT_TYPES_EXPORT void qRegisterProtobufQtTypes();
 }
