@@ -7,14 +7,14 @@ QtProtobuf provides Qt-native support of Google protocol buffers. Generated code
 
 ### Test results
 
-| Branch | Results Linux | Results Windows | Support |
-| --- | --- | --- | --- |
-| [master](https://github.com/semlanik/qtprotobuf/tree/master) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=master) | :heavy_check_mark: |
-| [0.5](https://github.com/semlanik/qtprotobuf/tree/0.5) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.5) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.5) | :heavy_check_mark: |
-| [0.4](https://github.com/semlanik/qtprotobuf/tree/0.4) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.4) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.4) | :heavy_check_mark: |
-| [0.3](https://github.com/semlanik/qtprotobuf/tree/0.3) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.3) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.3) | :heavy_check_mark: |
-| [0.2](https://github.com/semlanik/qtprotobuf/tree/0.2) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.2) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.2) |  |
-| [0.1.0](https://github.com/semlanik/qtprotobuf/tree/0.1.0) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.1.0) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.1.0) |  |
+| Branch | Results | Support |
+| --- | --- | --- |
+| [master](https://github.com/semlanik/qtprotobuf/tree/master) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master) | :heavy_check_mark: |
+| [0.5](https://github.com/semlanik/qtprotobuf/tree/0.5) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.5) | :heavy_check_mark: |
+| [0.4](https://github.com/semlanik/qtprotobuf/tree/0.4) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.4) | :heavy_check_mark: |
+| [0.3](https://github.com/semlanik/qtprotobuf/tree/0.3) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.3) | :heavy_check_mark: |
+| [0.2](https://github.com/semlanik/qtprotobuf/tree/0.2) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.2) |  |
+| [0.1.0](https://github.com/semlanik/qtprotobuf/tree/0.1.0) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.1.0) |  |
 
 
 # Table of contents
