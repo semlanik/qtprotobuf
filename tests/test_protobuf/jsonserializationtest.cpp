@@ -75,7 +75,7 @@ TEST_F(JsonSerializationTest, SFixedInt32MessageSerializeTest)
 
 TEST_F(JsonSerializationTest, Int32MessageSerializeTest)
 {
-    SimpleIntMessage msg;
+    qtprotobufnamespace::tests::SimpleIntMessage msg;
     msg.setTestFieldInt(555);
     QByteArray result = msg.serialize(serializer.get());
     ASSERT_STREQ(QString::fromUtf8(result).toStdString().c_str(), "{\"testFieldInt\":555}");

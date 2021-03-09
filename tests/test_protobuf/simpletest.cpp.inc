@@ -67,14 +67,14 @@ TEST_F(SimpleTest, SimpleBoolMessageTest)
 TEST_F(SimpleTest, SimpleIntMessageTest)
 {
     const char *propertyName = "testFieldInt_p";
-    assertMessagePropertyRegistered<SimpleIntMessage, int32>(1, "QtProtobuf::int32", propertyName);
+    assertMessagePropertyRegistered<qtprotobufnamespace::tests::SimpleIntMessage, int32>(1, "QtProtobuf::int32", propertyName);
 
-    SimpleIntMessage test;
+    qtprotobufnamespace::tests::SimpleIntMessage test;
     ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int32>(1)));
     ASSERT_EQ(test.property(propertyName).value<int32>(), 1);
     ASSERT_EQ(test.testFieldInt(), 1);
 
-    EXPECT_EQ(SimpleIntMessage::TestFieldIntProtoFieldNumber, 1);
+    EXPECT_EQ(qtprotobufnamespace::tests::SimpleIntMessage::TestFieldIntProtoFieldNumber, 1);
 }
 
 TEST_F(SimpleTest, SimpleSIntMessageTest)
@@ -296,10 +296,10 @@ TEST_F(SimpleTest, SimpleExternalEnumMessageTest)
 
 TEST_F(SimpleTest, SimpleEnumsTest)
 {
-    EXPECT_GT(TestEnumGadget::staticMetaObject.enumeratorCount(), 0);
+    EXPECT_GT(qtprotobufnamespace::tests::TestEnumGadget::staticMetaObject.enumeratorCount(), 0);
     QMetaEnum testEnum;
-    for (int i = 0; i < TestEnumGadget::staticMetaObject.enumeratorCount(); i++) {
-        QMetaEnum tmp = TestEnumGadget::staticMetaObject.enumerator(i);
+    for (int i = 0; i < qtprotobufnamespace::tests::TestEnumGadget::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = qtprotobufnamespace::tests::TestEnumGadget::staticMetaObject.enumerator(i);
         if (QString(tmp.name()) == QString("TestEnum")) {
             testEnum = tmp;
             break;
@@ -339,16 +339,16 @@ TEST_F(SimpleTest, SimpleEnumsTest)
 TEST_F(SimpleTest, SimpleFileEnumsTest)
 {
     const char *propertyName = "globalEnumListData";
-    assertMessagePropertyRegistered<SimpleFileEnumMessage, TestEnumGadget::TestEnumRepeated>(2, "qtprotobufnamespace::tests::TestEnumGadget::TestEnumRepeated", propertyName);
+    assertMessagePropertyRegistered<SimpleFileEnumMessage, qtprotobufnamespace::tests::TestEnumGadget::TestEnumRepeated>(2, "qtprotobufnamespace::tests::TestEnumGadget::TestEnumRepeated", propertyName);
 
-    TestEnumGadget::TestEnumRepeated value{TestEnumGadget::TEST_ENUM_VALUE1,
-                                     TestEnumGadget::TEST_ENUM_VALUE3,
-                                     TestEnumGadget::TEST_ENUM_VALUE4,
-                                     TestEnumGadget::TEST_ENUM_VALUE2,
-                                     TestEnumGadget::TEST_ENUM_VALUE1};
+    qtprotobufnamespace::tests::TestEnumGadget::TestEnumRepeated value{qtprotobufnamespace::tests::TestEnumGadget::TEST_ENUM_VALUE1,
+                                     qtprotobufnamespace::tests::TestEnumGadget::TEST_ENUM_VALUE3,
+                                     qtprotobufnamespace::tests::TestEnumGadget::TEST_ENUM_VALUE4,
+                                     qtprotobufnamespace::tests::TestEnumGadget::TEST_ENUM_VALUE2,
+                                     qtprotobufnamespace::tests::TestEnumGadget::TEST_ENUM_VALUE1};
     SimpleFileEnumMessage test;
-    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<TestEnumGadget::TestEnumRepeated>(value)));
-    ASSERT_TRUE(test.property(propertyName).value<TestEnumGadget::TestEnumRepeated>() == value);
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<qtprotobufnamespace::tests::TestEnumGadget::TestEnumRepeated>(value)));
+    ASSERT_TRUE(test.property(propertyName).value<qtprotobufnamespace::tests::TestEnumGadget::TestEnumRepeated>() == value);
     ASSERT_TRUE(test.globalEnumList() == value);
 }
 
@@ -722,17 +722,17 @@ TEST_F(SimpleTest, SimpleStringStringMapMessageTest)
 
 TEST_F(SimpleTest, EmptyMessageTest)
 {
-    ASSERT_EQ(EmptyMessage::propertyOrdering.size(), 0);
-    ASSERT_EQ(EmptyMessage::staticMetaObject.propertyCount(), 1);
+    ASSERT_EQ(qtprotobufnamespace::tests::EmptyMessage::propertyOrdering.size(), 0);
+    ASSERT_EQ(qtprotobufnamespace::tests::EmptyMessage::staticMetaObject.propertyCount(), 1);
 }
 
 TEST_F(SimpleTest, AssignmentOperatorTest)
 {
     const char *propertyName = "testFieldInt";
-    SimpleIntMessage test;
-    SimpleIntMessage test2{35};
+    qtprotobufnamespace::tests::SimpleIntMessage test;
+    qtprotobufnamespace::tests::SimpleIntMessage test2{35};
 
-    QSignalSpy updateSpy(&test, &SimpleIntMessage::testFieldIntChanged);
+    QSignalSpy updateSpy(&test, &qtprotobufnamespace::tests::SimpleIntMessage::testFieldIntChanged);
     test.setProperty(propertyName, QVariant::fromValue<int32>(15));
     test.setTestFieldInt(25);
     test = test2;
@@ -745,13 +745,13 @@ TEST_F(SimpleTest, AssignmentOperatorTest)
 TEST_F(SimpleTest, MoveOperatorTest)
 {
     const char *propertyName = "testFieldInt";
-    SimpleIntMessage test;
-    SimpleIntMessage test2{35};
+    qtprotobufnamespace::tests::SimpleIntMessage test;
+    qtprotobufnamespace::tests::SimpleIntMessage test2{35};
 
-    QSignalSpy updateSpy(&test, &SimpleIntMessage::testFieldIntChanged);
-    QSignalSpy movedUpdateSpy(&test2, &SimpleIntMessage::testFieldIntChanged);
+    QSignalSpy updateSpy(&test, &qtprotobufnamespace::tests::SimpleIntMessage::testFieldIntChanged);
+    QSignalSpy movedUpdateSpy(&test2, &qtprotobufnamespace::tests::SimpleIntMessage::testFieldIntChanged);
 
-    SimpleIntMessage test3(std::move(test2));
+    qtprotobufnamespace::tests::SimpleIntMessage test3(std::move(test2));
     test2.setTestFieldInt(35);
 
     test.setProperty(propertyName, QVariant::fromValue<int32>(15));
@@ -880,5 +880,70 @@ TEST_F(SimpleTest, MapRepeatedFieldSequenceTest)
     assertMessagePropertyRegistered<sequence::MapFieldSequence, sequence::MapFieldSequence::TestFieldEntry>(1, "qtprotobufnamespace::tests::sequence::MapFieldSequence::TestFieldEntry", "testField");
 }
 
+TEST_F(SimpleTest, NoPackageEmptyMessageMessageTest)
+{
+    ASSERT_EQ(::EmptyMessage::propertyOrdering.size(), 0);
+    ASSERT_EQ(::EmptyMessage::staticMetaObject.propertyCount(), 1);
+}
+
+TEST_F(SimpleTest, NoPackageSimpleIntMessageTest)
+{
+    const char *propertyName = "testFieldInt_p";
+    assertMessagePropertyRegistered<::SimpleIntMessage, int32>(1, "QtProtobuf::int32", propertyName);
+
+    ::SimpleIntMessage test;
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<int32>(1)));
+    ASSERT_EQ(test.property(propertyName).value<int32>(), 1);
+    ASSERT_EQ(test.testFieldInt(), 1);
+
+    EXPECT_EQ(::SimpleIntMessage::TestFieldIntProtoFieldNumber, 1);
+}
+
+TEST_F(SimpleTest, NoPackageEnumTest)
+{
+    EXPECT_GT(::TestEnumGadget::staticMetaObject.enumeratorCount(), 0);
+    QMetaEnum testEnum;
+    for (int i = 0; i < ::TestEnumGadget::staticMetaObject.enumeratorCount(); i++) {
+        QMetaEnum tmp = ::TestEnumGadget::staticMetaObject.enumerator(i);
+        if (QString(tmp.name()) == QString("TestEnum")) {
+            testEnum = tmp;
+            break;
+        }
+    }
+    ASSERT_EQ(testEnum.keyCount(), 4);
+    EXPECT_TRUE(testEnum.isValid());
+    EXPECT_STREQ(testEnum.key(0), "LOCAL_ENUM_VALUE0");
+    EXPECT_STREQ(testEnum.key(1), "LOCAL_ENUM_VALUE1");
+    EXPECT_STREQ(testEnum.key(2), "LOCAL_ENUM_VALUE2");
+    EXPECT_STREQ(testEnum.key(3), "LOCAL_ENUM_VALUE3");
+
+    EXPECT_EQ(testEnum.value(0), 0);
+    EXPECT_EQ(testEnum.value(1), 1);
+    EXPECT_EQ(testEnum.value(2), 2);
+    EXPECT_EQ(testEnum.value(3), 5);
+}
+
+TEST_F(SimpleTest, NoPackageExternalTest)
+{
+    const char *propertyName = "testField";
+    assertMessagePropertyRegistered<NoPackageExternalMessage, SimpleIntMessageExt*>(1, "SimpleIntMessageExt*", propertyName);
+
+    NoPackageExternalMessage test;
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<SimpleIntMessageExt*>(new SimpleIntMessageExt{42})));
+    ASSERT_EQ(test.property(propertyName).value<SimpleIntMessageExt*>()->testFieldInt(), 42);
+    ASSERT_EQ(test.testField().testFieldInt(), 42);
+}
+
+
+TEST_F(SimpleTest, NoPackageMessageTest)
+{
+    const char *propertyName = "testField";
+    assertMessagePropertyRegistered<NoPackageMessage, SimpleIntMessageExt*>(1, "SimpleIntMessageExt*", propertyName);
+
+    NoPackageMessage test;
+    ASSERT_TRUE(test.setProperty(propertyName, QVariant::fromValue<SimpleIntMessageExt*>(new SimpleIntMessageExt{42})));
+    ASSERT_EQ(test.property(propertyName).value<SimpleIntMessageExt*>()->testFieldInt(), 42);
+    ASSERT_EQ(test.testField().testFieldInt(), 42);
+}
 } // tests
 } // qtprotobuf

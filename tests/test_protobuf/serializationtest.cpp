@@ -45,7 +45,7 @@ void SerializationTest::SetUp()
 
 TEST_F(SerializationTest, IntMessageSerializeTest)
 {
-    SimpleIntMessage test;
+    qtprotobufnamespace::tests::SimpleIntMessage test;
     test.setTestFieldInt(15);
     QByteArray result = test.serialize(serializer.get());
     ASSERT_EQ(result.size(), 2);
@@ -1304,7 +1304,7 @@ TEST_F(SerializationTest, EmptyStringMessageTest)
 
 TEST_F(SerializationTest, DISABLED_BenchmarkTest)
 {
-    SimpleIntMessage msg;
+    qtprotobufnamespace::tests::SimpleIntMessage msg;
     for (int i = INT16_MIN; i < INT16_MAX; i++) {
         msg.setTestFieldInt(i);
         msg.serialize(serializer.get());

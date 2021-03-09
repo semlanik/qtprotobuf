@@ -101,6 +101,11 @@ TestCase {
         testFieldInt: 100
     }
 
+    NoPackageMessage {
+        id: noPackageMessageUser
+        testField.testFieldInt: 42
+    }
+
     function test_1initialization() {
         compare(int32Msg.testFieldInt, 2147483647, "SimpleIntMessage initialization")
         compare(sint32Msg.testFieldInt, 2147483647, "SimpleSIntMessage initialization")
@@ -331,5 +336,11 @@ TestCase {
     function test_nestedMessage() {
         compare(nestedMsg.testFieldInt, 100, "Nested message initialization failed");
         compare(nestedParent.nested, nestedMsg, "Nested message assignment failed");
+    }
+
+    function test_noPackageMessageUser() {
+        compare(noPackageMessageUser.testField.testFieldInt, 42, "Package-less message contains invalid value");
+        noPackageMessageUser.testField.testFieldInt = 43;
+        compare(noPackageMessageUser.testField.testFieldInt, 43, "Package-less message contains invalid value");
     }
 }

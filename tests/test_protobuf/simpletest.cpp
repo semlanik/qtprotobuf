@@ -28,5 +28,6 @@
 #include "externalpackagetest.qpb.h"
 #include "globalenums.qpb.h"
 #include "globalenumssamenamespace.qpb.h"
+#include "nopackage.qpb.h"
 
 #include "./simpletest.cpp.inc"
