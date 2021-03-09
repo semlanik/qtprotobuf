@@ -242,7 +242,7 @@ const char *Templates::SignalTemplate = "void $property_name$Changed();\n";
 
 const char *Templates::FieldsOrderingContainerTemplate = "const QtProtobuf::QProtobufMetaObject $type$::protobufMetaObject = QtProtobuf::QProtobufMetaObject($type$::staticMetaObject, $type$::propertyOrdering);\n"
                                                          "const QtProtobuf::QProtobufPropertyOrdering $type$::propertyOrdering = {";
-const char *Templates::FieldOrderTemplate = "{$field_number$, $property_number$}";
+const char *Templates::FieldOrderTemplate = "{$field_number$, {$property_number$, \"$json_name$\"}}";
 
 const char *Templates::EnumTemplate = "$type$";
 

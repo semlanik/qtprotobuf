@@ -174,7 +174,7 @@ public:
     }
 
     QByteArray serializeProperty(const QVariant &propertyValue, const QProtobufMetaProperty &metaProperty) {
-        return QByteArray("\"") + metaProperty.protoPropertyName().toUtf8() + "\":" + serializeValue(propertyValue, metaProperty);
+        return QByteArray("\"") + metaProperty.jsonPropertyName().toUtf8() + "\":" + serializeValue(propertyValue, metaProperty);
     }
 
     QByteArray serializeObject(const QObject *object, const QProtobufMetaObject &metaObject) {
@@ -186,7 +186,9 @@ public:
             QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
             const char *propertyName = metaProperty.name();
             const QVariant &propertyValue = object->property(propertyName);
-            result.append(serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
+            result.append(serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty,
+                                                                                 fieldIndex,
+                                                                                 field.second)));
             result.append(",");
         }
         result.resize(result.size() - 1);//Remove trailing `,`
@@ -335,19 +337,23 @@ public:
 
         for (auto &property : obj) {
             auto name = property.first;
-            int propertyIndex = metaObject.staticMetaObject.indexOfProperty(name.data());
-            if (propertyIndex >= 0) {
-                QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
+            auto it = std::find_if(metaObject.propertyOrdering.begin(),
+                                   metaObject.propertyOrdering.end(),
+                                   [&name](const auto &val)->bool {
+                return val.second == QString::fromStdString(name);
+            });
+            if (it != metaObject.propertyOrdering.end()) {
+                QMetaProperty metaProperty = metaObject.staticMetaObject.property(it->second);
                 auto userType = metaProperty.userType();
                 QByteArray rawValue = QByteArray::fromStdString(property.second.value);
                 if (rawValue == "null" && property.second.type == microjson::JsonObjectType) {
-                    object->setProperty(name.c_str(), QVariant());//Initialize with default value
+                    metaProperty.write(object, QVariant());
                     continue;
                 }
                 bool ok = false;
                 QVariant value = deserializeValue(userType, rawValue, property.second.type, ok);
                 if (ok) {
-                    object->setProperty(name.c_str(), value);
+                    metaProperty.write(object, value);
                 }
             }
         }

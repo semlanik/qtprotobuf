@@ -33,6 +33,7 @@
 #include <unordered_map>
 #include <functional>
 #include <list>
+#include <type_traits>
 
 namespace QtProtobuf {
 
@@ -54,7 +55,26 @@ enum WireTypes {
 };
 
 //! \private
-using QProtobufPropertyOrdering = std::unordered_map<int, int>;
+struct PropertyOrderingInfo {
+    PropertyOrderingInfo(int _qtProperty, const QString &_jsonName) : qtProperty(_qtProperty)
+      , jsonName(_jsonName) {}
+
+    int qtProperty;
+    QString jsonName;
+    template<typename T,
+             typename std::enable_if_t<std::is_integral<T>::value, int> = 0>
+    operator T() const { return qtProperty; }
+    operator QString() const { return jsonName; }
+
+    template<typename T,
+             typename std::enable_if_t<std::is_integral<T>::value, int> = 0>
+    bool operator==(const T _qtProperty) const { return _qtProperty == qtProperty; }
+    bool operator==(const QString &_jsonName) const { return _jsonName == jsonName; }
+};
+
+//! \private
+//!
+using QProtobufPropertyOrdering = std::unordered_map<int, PropertyOrderingInfo>;
 
 /*!
  * \private
