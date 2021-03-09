@@ -371,8 +371,8 @@ const char *Templates::RegisterSerializersTemplate = "qRegisterProtobufType<$cla
 const char *Templates::RegisterEnumSerializersTemplate = "qRegisterProtobufEnumType<$full_type$>();\n";
 const char *Templates::RegistrarTemplate = "static QtProtobuf::ProtoTypeRegistrar<$classname$> ProtoTypeRegistrar$classname$(qRegisterProtobufType<$classname$>);\n";
 const char *Templates::EnumRegistrarTemplate = "static QtProtobuf::ProtoTypeRegistrar<$enum_gadget$> ProtoTypeRegistrar$enum_gadget$($enum_gadget$::registerTypes);\n";
-const char *Templates::QmlRegisterTypeTemplate = "qmlRegisterType<$scope_type$>(\"$qml_package$\", 1, 0, \"$type$\");\n";
-const char *Templates::QmlRegisterEnumTypeTemplate = "qmlRegisterUncreatableType<$enum_gadget$>(\"$qml_package$\", 1, 0, \"$type$\", \"$full_type$ Could not be created from qml context\");\n";
+const char *Templates::QmlRegisterTypeTemplate = "Q_ASSERT(qmlRegisterType<$scope_type$>(\"$qml_package$\", 1, 0, \"$type$\") >= 0);\n";
+const char *Templates::QmlRegisterEnumTypeTemplate = "Q_ASSERT(qmlRegisterUncreatableType<$enum_gadget$>(\"$qml_package$\", 1, 0, \"$type$\", \"$full_type$ Could not be created from qml context\") >= 0);\n";
 
 
 const char *Templates::ClientMethodSignalDeclarationTemplate = "Q_SIGNAL void $method_name$Updated(const $return_type$ &);\n";

@@ -86,6 +86,10 @@
 #include "qtprotobufnamespace/tests/lowercasemessagename.h"
 #include "qtprotobufnamespace/tests/lowercasefieldmessagename.h"
 #include "qtprotobufnamespace/tests/messageuppercase.h"
+#include "emptymessage.h"
+#include "simpleintmessage.h"
+#include "nopackageexternalmessage.h"
+#include "qtprotobufnamespace/tests/nopackagemessage.h"
 
 #include "globalenums.h"
 

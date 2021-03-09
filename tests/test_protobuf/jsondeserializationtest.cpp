@@ -87,7 +87,7 @@ TEST_F(JsonDeserializationTest, SFixedInt32MessageSerializeTest)
 
 TEST_F(JsonDeserializationTest, Int32MessageSerializeTest)
 {
-    SimpleIntMessage msg;
+    qtprotobufnamespace::tests::SimpleIntMessage msg;
     msg.deserialize(serializer.get(), QByteArray("{\"testFieldInt\":555}"));
     EXPECT_EQ(msg.testFieldInt(), 555);
 }
