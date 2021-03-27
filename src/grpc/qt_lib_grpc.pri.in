@@ -1,9 +1,9 @@
 QT.grpc.VERSION = @QT_PROTOBUF_VERSION@
 QT.grpc.name = QtGrpc
 QT.grpc.module = QtGrpc
-QT.protobuf.includes = @CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/QtGrpc
-QT.protobuf.private_includes =
-QT.protobuf.libs = @CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
+QT.grpc.includes = @CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/QtGrpc
+QT.grpc.private_includes =
+QT.grpc.libs = @CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
 QT.grpc.depends = core network protobuf
 QT.grpc.module_config = @QT_PROTOBUF_EXTRA_CONFIG@
 
