@@ -146,3 +146,5 @@ if(QT_PROTOBUF_INSTALL)
     include(packaging)
 endif()
 include(doxygen)
+
+qt_protobuf_internal_install_targets()

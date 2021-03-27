@@ -120,7 +120,7 @@ function(qtprotobuf_generate)
         endif()
     endforeach()
 
-    set_source_files_properties(${GENERATED_SOURCES_FULL} PROPERTIES
+    set_source_files_properties(${GENERATED_SOURCES_FULL};${GENERATED_HEADERS_FULL} PROPERTIES
         GENERATED TRUE
         SKIP_AUTOMOC ON
         SKIP_AUTOUIC ON
@@ -148,6 +148,9 @@ function(qtprotobuf_generate)
 
     add_library(${GENERATED_TARGET_NAME} OBJECT ${GENERATED_SOURCES_FULL} ${MOC_SOURCES})
     add_dependencies(${GENERATED_TARGET_NAME} ${deps_target})
+    if(qtprotobuf_generate_TARGET)
+        set_property(TARGET ${qtprotobuf_generate_TARGET} APPEND PROPERTY PUBLIC_HEADER ${GENERATED_HEADERS_FULL})
+    endif()
     set_target_properties(${GENERATED_TARGET_NAME} PROPERTIES PUBLIC_HEADER "${GENERATED_HEADERS_FULL}")
 
     #Add include directories in case if targets are found by find_project or in source tree
