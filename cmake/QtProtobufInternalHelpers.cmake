@@ -2,9 +2,9 @@ set(_qtprotobuf_all_known_multi_args SOURCES PUBLIC_HEADER INCLUDE_DIRECTORIES L
     PUBLIC_LIBRARIES PUBLIC_INCLUDE_DIRECTORIES DEFINES PUBLIC_DEFINES)
 
 function(qtprotobuf_parse_arguments prefix option single multi)
-    cmake_parse_arguments(arg "" "" "${_qtprotobuf_all_known_multi_args}" ${ARGN})
-    foreach(_arg IN LISTS _qtprotobuf_all_known_multi_args)
-        if(${_arg} IN_LIST multi)
+    cmake_parse_arguments(arg "${option}" "${single}" "${_qtprotobuf_all_known_multi_args}" ${ARGN})
+    foreach(_arg IN ITEMS ${_qtprotobuf_all_known_multi_args};${single};${option})
+        if(${_arg} IN_LIST multi OR ${_arg} IN_LIST single OR ${_arg} IN_LIST option)
             set(${prefix}_${_arg} ${arg_${_arg}} PARENT_SCOPE)
         else()
             list(APPEND ${prefix}_UNPARSED_ARGUMENTS ${_arg} ${arg_${_arg}})
@@ -25,12 +25,12 @@ function(qt_protobuf_internal_add_test)
         cmake_policy(SET CMP0071 NEW)
     endif()
 
-    set(GENERATED_SOURCES_DIR ${CMAKE_CURRENT_BINARY_DIR}/${add_test_target_TARGET}_generated)
+    set(GENERATED_SOURCES_DIR "${CMAKE_CURRENT_BINARY_DIR}/${add_test_target_TARGET}_generated")
 
     if(DEFINED add_test_target_PROTO_FILES)
         file(GLOB PROTO_FILES ABSOLUTE ${add_test_target_PROTO_FILES})
     else()
-        file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto)
+        file(GLOB PROTO_FILES ABSOLUTE "${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto")
     endif()
 
     add_executable(${add_test_target_TARGET} ${add_test_target_SOURCES})
@@ -149,16 +149,22 @@ endfunction()
 function(qt_protobuf_internal_add_library target)
     qtprotobuf_parse_arguments(arg
         ""
-        ""
+        "INSTALL_LIBDIR;INSTALL_INCLUDEDIR"
         "SOURCES;PUBLIC_HEADER"
         ${ARGN}
     )
     set(target_export "${QT_PROTOBUF_NAMESPACE}${target}Targets")
     set(target_config "${QT_PROTOBUF_NAMESPACE}${target}Config")
 
-    set(target_include_dir ${CMAKE_INSTALL_INCLUDEDIR}/${prefixed_target})
-    set(target_lib_dir ${CMAKE_INSTALL_LIBDIR})
-    set(target_cmake_dir ${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE})
+    if(arg_INSTALL_INCLUDEDIR)
+        set(target_install_includedir "${arg_INSTALL_INCLUDEDIR}")
+    else()
+        set(target_install_includedir
+            "${CMAKE_INSTALL_INCLUDEDIR}/${QT_PROTOBUF_NAMESPACE}${target}"
+        )
+    endif()
+    set(target_install_libdir "${CMAKE_INSTALL_LIBDIR}")
+    set(target_install_cmakedir "${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE}")
 
     set(CMAKE_AUTOMOC ON)
     set(CMAKE_AUTORCC ON)
@@ -204,7 +210,7 @@ function(qt_protobuf_internal_add_library target)
         PUBLIC
            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
            "$<BUILD_INTERFACE:${QT_PROTOBUF_BINARY_DIR}/include/${target}>"
-           "$<INSTALL_INTERFACE:${target_include_dir}>"
+           "$<INSTALL_INTERFACE:${target_install_includedir}>"
     )
 
     qt_protobuf_internal_extend_target(${target} ${arg_UNPARSED_ARGUMENTS}
@@ -216,31 +222,29 @@ function(qt_protobuf_internal_add_library target)
     include(CMakePackageConfigHelpers)
     configure_package_config_file("Qt${target}Config.cmake.in"
         "${QT_PROTOBUF_BINARY_DIR}/${target_config}.cmake"
-        INSTALL_DESTINATION "${target_cmake_dir}"
+        INSTALL_DESTINATION "${target_install_cmakedir}"
     )
-
-    if(QT_PROTOBUF_INSTALL)
-        install(TARGETS ${target}
-            EXPORT ${target_export} COMPONENT dev
-            ARCHIVE DESTINATION ${target_lib_dir} COMPONENT lib
-            PUBLIC_HEADER DESTINATION ${target_include_dir} COMPONENT dev
-            LIBRARY DESTINATION ${target_lib_dir} COMPONENT lib
-            RUNTIME DESTINATION ${target_cmake_dir} COMPONENT lib)
-
-        install(EXPORT ${target_export}
-            NAMESPACE ${QT_PROTOBUF_NAMESPACE}::
-            FILE ${target_export}.cmake
-            DESTINATION ${target_cmake_dir}
-            COMPONENT dev)
-
-        install(FILES "${QT_PROTOBUF_BINARY_DIR}/${target_config}.cmake"
-            DESTINATION "${target_cmake_dir}"
-            COMPONENT dev)
-    endif()
 
     export(TARGETS ${target}
         NAMESPACE ${QT_PROTOBUF_NAMESPACE}::
-        FILE ${target_export}.cmake)
+        FILE ${target_export}.cmake
+    )
+
+    if(QT_PROTOBUF_INSTALL)
+        if(NOT arg_INSTALL_LIBDIR)
+            unset(arg_INSTALL_LIBDIR)
+        endif()
+
+        if(NOT arg_INSTALL_INCLUDEDIR)
+            unset(arg_INSTALL_INCLUDEDIR)
+        endif()
+
+        set_target_properties(${target} PROPERTIES
+            qt_protobuf_install_libdir "${arg_INSTALL_LIBDIR}"
+            qt_protobuf_install_includedir "${arg_INSTALL_INCLUDEDIR}"
+        )
+        set_property(GLOBAL APPEND PROPERTY qt_protobuf_install_targets ${target})
+    endif()
 
     qt_protobuf_internal_add_coverage_target(TARGET ${target})
 endfunction()
@@ -310,15 +314,14 @@ endfunction()
 function(qt_protobuf_internal_add_executable target)
     qtprotobuf_parse_arguments(arg
         ""
-        ""
+        "INSTALL_BINDIR"
         "SOURCES"
         ${ARGN}
     )
     set(target_export "${QT_PROTOBUF_NAMESPACE}${target}Targets")
     set(target_config "${QT_PROTOBUF_NAMESPACE}${target}Config")
 
-    set(target_cmake_dir ${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE})
-    set(target_bindir ${CMAKE_INSTALL_BINDIR})
+    set(target_install_cmakedir "${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE}")
 
     file(GLOB sources ${arg_SOURCES})
     add_executable(${target} ${sources})
@@ -332,23 +335,76 @@ function(qt_protobuf_internal_add_executable target)
     include(CMakePackageConfigHelpers)
     configure_package_config_file("Qt${target}Config.cmake.in"
         "${QT_PROTOBUF_BINARY_DIR}/${target_config}.cmake"
-        INSTALL_DESTINATION "${target_cmake_dir}"
+        INSTALL_DESTINATION "${target_install_cmakedir}"
     )
 
+    export(TARGETS ${target} NAMESPACE ${QT_PROTOBUF_NAMESPACE}:: FILE ${target_export}.cmake)
+
     if(QT_PROTOBUF_INSTALL)
-        install(TARGETS ${target}
-            EXPORT ${target_export} COMPONENT dev
-            RUNTIME DESTINATION ${target_bindir}
-            COMPONENT lib)
+        if(arg_INSTALL_BINDIR)
+            set_target_properties(${target} PROPERTIES
+                qt_protobuf_install_bindir "${arg_INSTALL_BINDIR}"
+            )
+        endif()
+        set_property(GLOBAL APPEND PROPERTY qt_protobuf_install_targets ${target})
+    endif()
+endfunction()
+
+function(qt_protobuf_internal_install_targets)
+    if(NOT QT_PROTOBUF_INSTALL)
+        return()
+    endif()
+    get_property(install_targets GLOBAL PROPERTY qt_protobuf_install_targets)
+
+    list(REMOVE_DUPLICATES install_targets)
+    foreach(target ${install_targets})
+        set(target_config "${QT_PROTOBUF_NAMESPACE}${target}Config")
+        set(target_export "${QT_PROTOBUF_NAMESPACE}${target}Targets")
+        set(target_install_cmakedir "${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE}")
+
+        get_target_property(type ${target} TYPE)
+        if("${type}" STREQUAL "EXECUTABLE")
+            get_target_property(target_install_bindir ${target} qt_protobuf_install_bindir)
+            if(NOT target_install_bindir)
+                set(target_install_bindir "${CMAKE_INSTALL_BINDIR}")
+            endif()
+
+            install(TARGETS ${target}
+                EXPORT ${target_export} COMPONENT dev
+                RUNTIME DESTINATION "${target_install_bindir}" COMPONENT lib
+            )
+        else()
+            set(target_install_bindir "${CMAKE_INSTALL_BINDIR}")
+            get_target_property(target_install_includedir ${target} qt_protobuf_install_includedir)
+            if(NOT target_install_includedir)
+                set(target_install_includedir
+                    "${CMAKE_INSTALL_INCLUDEDIR}/${QT_PROTOBUF_NAMESPACE}${target}"
+                )
+            endif()
+
+            get_target_property(target_install_libdir ${target} qt_protobuf_install_libdir)
+            if(NOT target_install_libdir)
+                set(target_install_libdir "${CMAKE_INSTALL_LIBDIR}")
+            endif()
+
+            install(TARGETS ${target}
+                EXPORT ${target_export} COMPONENT dev
+                ARCHIVE DESTINATION "${target_install_libdir}" COMPONENT lib
+                PUBLIC_HEADER DESTINATION "${target_install_includedir}" COMPONENT dev
+                LIBRARY DESTINATION "${target_install_libdir}" COMPONENT lib
+                RUNTIME DESTINATION "${target_install_bindir}" COMPONENT lib
+            )
+        endif()
+
         install(EXPORT ${target_export}
             NAMESPACE ${QT_PROTOBUF_NAMESPACE}::
             FILE ${target_export}.cmake
-            DESTINATION ${target_cmake_dir}
-            COMPONENT dev)
+            DESTINATION "${target_install_cmakedir}"
+            COMPONENT dev
+        )
         install(FILES "${QT_PROTOBUF_BINARY_DIR}/${target_config}.cmake"
-            DESTINATION "${target_cmake_dir}"
-            COMPONENT dev)
-    endif()
-
-    export(TARGETS ${target} NAMESPACE ${QT_PROTOBUF_NAMESPACE}:: FILE ${target_export}.cmake)
+            DESTINATION "${target_install_cmakedir}"
+            COMPONENT dev
+        )
+    endforeach()
 endfunction()
