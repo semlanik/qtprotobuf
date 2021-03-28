@@ -86,9 +86,9 @@ jobs:
         setx path "%path%;C:\Qt\5.15.2\msvc2019_64\bin;C:\Go\bin;C:\yasm"
         set GOROOT="c:\Go"
         set PATH="%PATH%;C:\Qt\5.15.2\msvc2019_64\bin;C:\Go\bin;C:\yasm"
-        cmake -DCMAKE_PREFIX_PATH="C:\Qt\5.15.2\msvc2019_64;C:\Go\bin;C:\yasm" -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Debug ..
-        cmake --build . --config Debug
+        cmake -DCMAKE_PREFIX_PATH="C:\Qt\5.15.2\msvc2019_64;C:\Go\bin;C:\yasm" -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release ..
+        cmake --build . --config Release
     - name: Run tests
       run: |
         cd build-static
-        ctest -C Debug -E grpc --output-on-failure
+        ctest -C Release -E grpc --output-on-failure
