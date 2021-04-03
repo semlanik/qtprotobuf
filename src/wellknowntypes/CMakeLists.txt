@@ -2,7 +2,7 @@ qt_protobuf_internal_add_library(ProtobufWellKnownTypes
     SOURCES
         dummy.cpp
     INSTALL_INCLUDEDIR
-         "${CMAKE_INSTALL_INCLUDEDIR}/QtProtobuf/google/protobuf"
+         "${CMAKE_INSTALL_INCLUDEDIR}/${QT_PROTOBUF_NAMESPACE}Protobuf/google/protobuf"
     PUBLIC_INCLUDE_DIRECTORIES
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>"
     PUBLIC_LIBRARIES
