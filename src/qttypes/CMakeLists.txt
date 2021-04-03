@@ -1,4 +1,4 @@
-set(qttypes_install_includedir ${CMAKE_INSTALL_INCLUDEDIR}/QtProtobuf)
+set(qttypes_install_includedir ${CMAKE_INSTALL_INCLUDEDIR}/${QT_PROTOBUF_NAMESPACE}Protobuf)
 
 qt_protobuf_internal_add_library(ProtobufQtTypes
     SOURCES
@@ -9,7 +9,6 @@ qt_protobuf_internal_add_library(ProtobufQtTypes
     INSTALL_INCLUDEDIR
         "${qttypes_install_includedir}"
     PUBLIC_INCLUDE_DIRECTORIES
-        "$<BUILD_INTERFACE:${QT_PROTOBUF_BINARY_DIR}/include/QtProtobuf>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>"
     PUBLIC_LIBRARIES
         Qt5::Core
