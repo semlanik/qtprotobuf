@@ -775,6 +775,7 @@ TEST_P(ClientTest, StringEchoStreamThreadTest)
 
 TEST_F(ClientTest, AttachChannelThreadTest)
 {
+    ::testing::FLAGS_gtest_death_test_style = "threadsafe";
     std::shared_ptr<QGrpcHttp2Channel> channel;
     std::shared_ptr<QThread> thread(QThread::create([&](){
         channel = std::make_shared<QGrpcHttp2Channel>(m_echoServerAddress, QGrpcInsecureCallCredentials() | QGrpcInsecureChannelCredentials());
@@ -782,9 +783,7 @@ TEST_F(ClientTest, AttachChannelThreadTest)
     thread->start();
     QThread::msleep(1000);
     TestServiceClient testClient;
-    EXPECT_DEATH({
-                     testClient.attachChannel(channel);
-                 }, ".*");
+    EXPECT_THROW(testClient.attachChannel(channel), std::runtime_error);
 }
 
 TEST_P(ClientTest, StreamCancelWhileErrorTimeoutTest)
