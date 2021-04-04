@@ -1,5 +1,6 @@
 include(CMakeFindDependencyMacro)
-find_dependency(WrapProtobuf REQUIRED)
+# We only look for protoc, libprotoc should already be in rpath or linked statically
+find_package(WrapProtobuf COMPONENTS Generator REQUIRED)
 
 if(NOT TARGET @QT_PROTOBUF_NAMESPACE@::@target@)
     include("${CMAKE_CURRENT_LIST_DIR}/@target_export@.cmake")
