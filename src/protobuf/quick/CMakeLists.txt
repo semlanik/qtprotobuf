@@ -10,7 +10,11 @@ set(CMAKE_AUTORCC ON)
 
 qt_protobuf_extract_qt_variable(QT_INSTALL_QML)
 
-set(TARGET_IMPORTS_DIR ${QT_INSTALL_QML}/QtProtobuf)
+if(NOT WIN32)
+    set(TARGET_IMPORTS_DIR ${QT_INSTALL_QML}/QtProtobuf)
+else()
+    set(TARGET_IMPORTS_DIR ${CMAKE_INSTALL_LIBDIR}/qml/QtProtobuf)
+endif()
 
 file(GLOB SOURCES
     qtprotobufquickplugin.cpp)
