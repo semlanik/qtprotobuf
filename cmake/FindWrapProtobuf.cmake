@@ -3,48 +3,102 @@ cmake_minimum_required(VERSION 3.10)
 find_package(Protobuf QUIET)
 
 unset(WrapProtobuf_FOUND)
-if(NOT Protobuf_FOUND OR NOT TARGET protobuf::libprotobuf
-    OR NOT TARGET protobuf::protoc OR NOT TARGET protobuf::libprotoc)
 
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(FIND_LIBRARY_USE_LIB64_PATHS TRUE)
-        set(FIND_LIBRARY_USE_LIBX32_PATHS FALSE)
-        set(FIND_LIBRARY_USE_LIB32_PATHS FALSE)
-    else()
-        set(FIND_LIBRARY_USE_LIBX32_PATHS TRUE)
-        set(FIND_LIBRARY_USE_LIB32_PATHS TRUE)
-        set(FIND_LIBRARY_USE_LIB64_PATHS FALSE)
-    endif()
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(FIND_LIBRARY_USE_LIB64_PATHS TRUE)
+    set(FIND_LIBRARY_USE_LIBX32_PATHS FALSE)
+    set(FIND_LIBRARY_USE_LIB32_PATHS FALSE)
+else()
+    set(FIND_LIBRARY_USE_LIBX32_PATHS TRUE)
+    set(FIND_LIBRARY_USE_LIB32_PATHS TRUE)
+    set(FIND_LIBRARY_USE_LIB64_PATHS FALSE)
+endif()
 
-    find_library(Protobuf_LIBRARY protobuf)
-    if(NOT TARGET protobuf::libprotobuf AND Protobuf_LIBRARY)
-        add_library(protobuf::libprotobuf UNKNOWN IMPORTED)
-        set_target_properties(protobuf::libprotobuf PROPERTIES
-            IMPORTED_LOCATION ${Protobuf_LIBRARY}
-        )
-        if(DEFINED Protobuf_INCLUDE_DIRS)
+if("Protobuf" IN_LIST WrapProtobuf_FIND_COMPONENTS OR NOT WrapProtobuf_FIND_COMPONENTS)
+    set(WrapProtobuf_Protobuf_FOUND TRUE)
+    if(NOT TARGET protobuf::libprotobuf)
+        find_library(Protobuf_LIBRARY protobuf)
+        if(Protobuf_LIBRARY)
+            add_library(protobuf::libprotobuf UNKNOWN IMPORTED)
             set_target_properties(protobuf::libprotobuf PROPERTIES
-                INTERFACE_INCLUDE_DIRECTORIES ${Protobuf_INCLUDE_DIRS})
+                IMPORTED_LOCATION "${Protobuf_LIBRARY}"
+            )
+            find_path(Protobuf_INCLUDE_DIRS "message.h"
+                PATH_SUFFIXES "google/protobuf"
+            )
+            if(Protobuf_INCLUDE_DIRS)
+                set_target_properties(protobuf::libprotobuf PROPERTIES
+                    INTERFACE_INCLUDE_DIRECTORIES "${Protobuf_INCLUDE_DIRS}"
+                )
+            else()
+                set(WrapProtobuf_Protobuf_FOUND FALSE)
+            endif()
+        else()
+            set(WrapProtobuf_Protobuf_FOUND FALSE)
+        endif()
+    else()
+        if(NOT Protobuf_INCLUDE_DIRS)
+            get_target_property(Protobuf_INCLUDE_DIRS protobuf::libprotobuf INTERFACE_INCLUDE_DIRECTORIES)
         endif()
     endif()
+endif()
 
-    find_program(Protobuf_PROTOC_EXECUTABLE protoc)
-    if(NOT TARGET protobuf::protoc AND Protobuf_PROTOC_EXECUTABLE)
-        add_executable(protobuf::protoc IMPORTED)
-        set_target_properties(protobuf::protoc PROPERTIES IMPORTED_LOCATION ${Protobuf_PROTOC_EXECUTABLE})
-    endif()
+if("Protoc" IN_LIST WrapProtobuf_FIND_COMPONENTS OR NOT WrapProtobuf_FIND_COMPONENTS)
+    set(WrapProtobuf_Protoc_FOUND TRUE)
+    if(NOT TARGET protobuf::libprotoc)
+        find_package(Threads REQUIRED)
+        find_library(Protoc_LIBRARY protoc)
+        if(Protoc_LIBRARY)
+            add_library(protobuf::libprotoc UNKNOWN IMPORTED)
+            set_target_properties(protobuf::libprotoc PROPERTIES
+                IMPORTED_LOCATION "${Protoc_LIBRARY}"
+                INTERFACE_LINK_LIBRARIES Threads::Threads
+            )
 
-    find_package(Threads)
-    find_library(Protobuf_PROTOC_LIBRARY protoc)
-    if(NOT TARGET protobuf::libprotoc AND Protobuf_PROTOC_LIBRARY)
-        add_library(protobuf::libprotoc UNKNOWN IMPORTED)
-        set_target_properties(protobuf::libprotoc PROPERTIES IMPORTED_LOCATION ${Protobuf_PROTOC_LIBRARY}
-            INTERFACE_LINK_LIBRARIES Threads::Threads)
-    endif()
+            message(WARNING "aedelev: Protoc_INCLUDE_DIRS")
+            find_path(Protoc_INCLUDE_DIRS "descriptor.h"
+                PATH_SUFFIXES "google/protobuf"
+            )
 
-    if(TARGET protobuf::libprotoc AND TARGET protobuf::protoc AND TARGET protobuf::libprotobuf)
-        set(WrapProtobuf_FOUND TRUE)
+            if(Protoc_INCLUDE_DIRS)
+                set_target_properties(protobuf::libprotoc PROPERTIES
+                    INTERFACE_INCLUDE_DIRECTORIES "${Protoc_INCLUDE_DIRS}"
+                )
+            else()
+                set(WrapProtobuf_Protoc_FOUND FALSE)
+            endif()
+        else()
+            set(WrapProtobuf_Protoc_FOUND FALSE)
+        endif()
+    else()
+        if(NOT Protoc_INCLUDE_DIRS)
+            get_target_property(Protoc_INCLUDE_DIRS protobuf::libprotoc INTERFACE_INCLUDE_DIRECTORIES)
+        endif()
     endif()
-else()
-    set(WrapProtobuf_FOUND TRUE)
+endif()
+
+if("Generator" IN_LIST WrapProtobuf_FIND_COMPONENTS OR NOT WrapProtobuf_FIND_COMPONENTS)
+    set(WrapProtobuf_Generator_FOUND TRUE)
+    if(NOT TARGET protobuf::protoc)
+        find_program(Protobuf_Protoc_EXECUTABLE protoc)
+        if(Protobuf_Protoc_EXECUTABLE)
+            add_executable(protobuf::protoc IMPORTED)
+            set_target_properties(protobuf::protoc PROPERTIES
+                IMPORTED_LOCATION "${Protobuf_Protoc_EXECUTABLE}"
+            )
+        else()
+            set(WrapProtobuf_Generator_FOUND FALSE)
+        endif()
+    endif()
+endif()
+
+if(WrapProtobuf_FIND_COMPONENTS)
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(WrapProtobuf HANDLE_COMPONENTS
+        REQUIRED_VARS Protoc_INCLUDE_DIRS Protobuf_INCLUDE_DIRS
+    )
+elseif(TARGET protobuf::protoc AND TARGET protobuf::libprotoc AND TARGET protobuf::libprotobuf)
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(WrapProtobuf REQUIRED_VARS
+        Protoc_INCLUDE_DIRS Protobuf_INCLUDE_DIRS)
 endif()

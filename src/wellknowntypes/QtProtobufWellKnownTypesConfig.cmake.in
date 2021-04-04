@@ -1,5 +1,5 @@
 include(CMakeFindDependencyMacro)
-find_dependency(WrapProtobuf REQUIRED)
+find_dependency(WrapProtobuf COMPONENTS Protobuf REQUIRED)
 
 if(NOT TARGET @QT_PROTOBUF_NAMESPACE@::@target@)
     include("${CMAKE_CURRENT_LIST_DIR}/@target_export@.cmake")
@@ -9,9 +9,7 @@ endif()
 # $<TARGET_PROPERTY:${QT_PROTOBUF_NAMESPACE}::ProtobufWellKnownTypes,PROTO_INCLUDES>
 # outside the build tree. Expecting that WrapProtobuf sets Protobuf_INCLUDE_DIRS.
 
-if(DEFINED Protobuf_INCLUDE_DIRS)
-    string(JOIN " -I" proto_includes ${Protobuf_INCLUDE_DIRS})
-endif()
+string(JOIN " -I" proto_includes ${Protobuf_INCLUDE_DIRS})
 
 set_target_properties(@QT_PROTOBUF_NAMESPACE@::@target@ PROPERTIES
     PROTO_INCLUDES "-I${proto_includes}"

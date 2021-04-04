@@ -22,8 +22,8 @@ set(QT_PROTOBUF_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 list(APPEND CMAKE_MODULE_PATH ${QT_PROTOBUF_CMAKE_DIR})
 
-find_package(WrapProtobuf REQUIRED)
 find_package(WrapgRPC)
+find_package(WrapProtobuf COMPONENTS Protoc OPTIONAL_COMPONENTS Generator Protobuf REQUIRED)
 find_package(Threads)
 find_package(${QT_VERSIONED_PREFIX} COMPONENTS Core Qml CONFIG REQUIRED)
 find_package(${QT_VERSIONED_PREFIX} OPTIONAL_COMPONENTS Network Quick Gui CONFIG)
@@ -116,10 +116,10 @@ if(TARGET ${QT_VERSIONED_PREFIX}::Network)
     endif()
 endif()
 
-if(TARGET protobuf::libprotobuf)
+if(TARGET protobuf::libprotobuf AND TARGET protobuf::protoc)
     add_subdirectory("src/wellknowntypes")
 endif()
-if(TARGET ${QT_VERSIONED_PREFIX}::Gui)
+if(TARGET ${QT_VERSIONED_PREFIX}::Gui AND TARGET protobuf::protoc)
     add_subdirectory("src/qttypes")
 endif()
 
