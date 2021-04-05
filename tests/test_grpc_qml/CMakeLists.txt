@@ -18,7 +18,10 @@ target_link_libraries(qtgrpc_qml_test_http2
 qtprotobuf_link_target(qtgrpc_qml_test_http2 qtgrpc_test_qtprotobuf_gen)
 
 if(QT_PROTOBUF_STATIC)
-    target_link_libraries(qtgrpc_qml_test_http2 PRIVATE ${PROTOBUF_QUICK_PLUGIN_NAME} ${GRPC_QUICK_PLUGIN_NAME})
+    target_link_libraries(qtgrpc_qml_test_http2 PRIVATE
+        ${QT_PROTOBUF_NAMESPACE}::${PROTOBUF_QUICK_PLUGIN_NAME}
+        ${QT_PROTOBUF_NAMESPACE}::${GRPC_QUICK_PLUGIN_NAME}
+    )
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../test_grpc/${TEST_DRIVER_NAME}.in ${TEST_DRIVER_NAME} @ONLY)
@@ -33,12 +36,17 @@ add_test(NAME qtgrpc_qml_test_http2
 qt_protobuf_internal_add_target_qml(TARGET qtgrpc_qml_test_http2 QML_FILES ${QML_FILES})
 qt_protobuf_internal_add_target_windeployqt(TARGET qtgrpc_qml_test_http2 QML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/qml)
 
-if(WIN32)
+if(NOT QT_PROTOBUF_STATIC AND NOT QT_PROTOBUF_STANDALONE_TESTS)
+    set(path_separator ":")
+    if(WIN32)
+        set(path_separator "$<SEMICOLON>")
+    endif()
+
     set_tests_properties(qtgrpc_qml_test_http2 PROPERTIES
-        ENVIRONMENT QML2_IMPORT_PATH=$<TARGET_FILE_DIR:${PROTOBUF_QUICK_PLUGIN_NAME}>/..\;$<TARGET_FILE_DIR:${GRPC_QUICK_PLUGIN_NAME}>/..)
-else()
-    set_tests_properties(qtgrpc_qml_test_http2 PROPERTIES
-        ENVIRONMENT QML2_IMPORT_PATH=$<TARGET_FILE_DIR:${PROTOBUF_QUICK_PLUGIN_NAME}>/..:$<TARGET_FILE_DIR:${GRPC_QUICK_PLUGIN_NAME}>/..)
+        ENVIRONMENT "QML2_IMPORT_PATH=$ENV{QML2_IMPORT_PATH}${path_separator}\
+$<TARGET_FILE_DIR:${QT_PROTOBUF_NAMESPACE}::${PROTOBUF_QUICK_PLUGIN_NAME}>/..${path_separator}\
+$<TARGET_FILE_DIR:${QT_PROTOBUF_NAMESPACE}::${GRPC_QUICK_PLUGIN_NAME}>/.."
+    )
 endif()
 
 if(QT_PROTOBUF_NATIVE_GRPC_CHANNEL)

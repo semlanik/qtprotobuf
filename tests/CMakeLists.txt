@@ -1,3 +1,9 @@
+if(QT_PROTOBUF_STANDALONE_TESTS)
+    find_package(QtProtobuf COMPONENTS Protobuf ProtobufGenerator
+        OPTIONAL_COMPONENTS Grpc ProtobufWellKnownTypes ProtobufQtTypes REQUIRED
+    )
+endif()
+
 include(QtProtobufTestHelpers)
 
 add_subdirectory("test_protobuf")
@@ -5,9 +11,12 @@ if(TARGET ${QT_VERSIONED_PREFIX}::QuickTest)
     add_subdirectory("test_qml")
 endif()
 add_subdirectory("test_protobuf_multifile")
-add_subdirectory("test_qprotobuf_serializer_plugin")
 add_subdirectory("test_extra_namespace")
-add_subdirectory("test_extra_namespace_qml")
+if(NOT QT_PROTOBUF_STANDALONE_TESTS) # Disable in standalone mode as it requires some private
+                                     # headers to work properly.
+    add_subdirectory("test_extra_namespace_qml")
+    add_subdirectory("test_qprotobuf_serializer_plugin")
+endif()
 
 if(TARGET ${QT_PROTOBUF_NAMESPACE}::ProtobufWellKnownTypes)
     add_subdirectory("test_wellknowntypes")

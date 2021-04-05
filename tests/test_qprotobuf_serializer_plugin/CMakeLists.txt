@@ -24,5 +24,5 @@ add_subdirectory("serialization")
 
 add_test(NAME ${TARGET} COMMAND ${TARGET})
 set_tests_properties(${TARGET} PROPERTIES
-    ENVIRONMENT QT_PROTOBUF_PLUGIN_PATH=$<TARGET_FILE_DIR:serializationplugin>)
+    ENVIRONMENT "QT_PROTOBUF_PLUGIN_PATH=$<TARGET_FILE_DIR:serializationplugin>")
 
