@@ -17,7 +17,7 @@ if(TARGET ${QT_PROTOBUF_NAMESPACE}::ProtobufWellKnownTypes)
 endif()
 
 if(QT_PROTOBUF_STATIC)
-    target_link_libraries(${TARGET} PRIVATE ${PROTOBUF_QUICK_PLUGIN_NAME})
+    target_link_libraries(${TARGET} PRIVATE ${QT_PROTOBUF_NAMESPACE}::${PROTOBUF_QUICK_PLUGIN_NAME})
 endif()
 
 qtprotobuf_link_target(${TARGET} qtprotobuf_test_qtprotobuf_gen)
@@ -27,5 +27,14 @@ qt_protobuf_internal_add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CUR
 
 add_test(NAME ${TARGET} COMMAND ${TARGET})
 
-set_tests_properties(${TARGET} PROPERTIES
-    ENVIRONMENT QML2_IMPORT_PATH=$<TARGET_FILE_DIR:${PROTOBUF_QUICK_PLUGIN_NAME}>/..)
+if(NOT QT_PROTOBUF_STATIC AND NOT QT_PROTOBUF_STANDALONE_TESTS)
+    set(path_separator ":")
+    if(WIN32)
+        set(path_separator "$<SEMICOLON>")
+    endif()
+
+    set_tests_properties(${TARGET} PROPERTIES
+        ENVIRONMENT "QML2_IMPORT_PATH=$ENV{QML2_IMPORT_PATH}${path_separator}\
+$<TARGET_FILE_DIR:${QT_PROTOBUF_NAMESPACE}::${PROTOBUF_QUICK_PLUGIN_NAME}>/.."
+    )
+endif()
