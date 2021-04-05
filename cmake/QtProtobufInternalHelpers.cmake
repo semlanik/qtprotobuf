@@ -105,7 +105,7 @@ function(qt_protobuf_internal_check_install)
 
     if(NOT "${QT_PROTOBUF_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
         message(STATUS "QtProtobuf configured as sub-project.")
-        set(QT_PROTOBUF_INSTALL TRUE CACHE INTERNAL "" FORCE)
+        set(QT_PROTOBUF_INSTALL FALSE CACHE INTERNAL "" FORCE)
         message(STATUS "All install rules are disabled.")
     endif()
 endfunction()
