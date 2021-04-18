@@ -112,6 +112,7 @@ TypeMap common::produceMessageTypeMap(const ::Descriptor *type, const Descriptor
     std::string scopeListName = scopeNamespaces.empty() ? listName : (scopeNamespaces + "::" + listName);
 
     return {
+        {"classname", name},
         {"type", name},
         {"full_type", fullName},
         {"scope_type", scopeName},
@@ -160,6 +161,7 @@ TypeMap common::produceEnumTypeMap(const EnumDescriptor *type, const Descriptor 
     }
 
     return {
+        {"classname", enumGadget},
         {"type", name},
         {"full_type", fullName},
         {"scope_type", scopeName},
@@ -318,9 +320,10 @@ PropertyMap common::producePropertyMap(const FieldDescriptor *field, const Descr
     propertyMap["property_name_cap"] = propertyNameCap;
     propertyMap["scriptable"] = scriptable;
 
+    auto scopeTypeMap = produceMessageTypeMap(scope, nullptr);
     propertyMap["key_type"] = "";
     propertyMap["value_type"] = "";
-    propertyMap["classname"] = scope != nullptr ? utils::upperCaseName(scope->name()) : "";
+    propertyMap["classname"] = scope != nullptr ? scopeTypeMap["classname"] : "";
     propertyMap["number"] = std::to_string(field->number());
 
     if (field->is_map()) {

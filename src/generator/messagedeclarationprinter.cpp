@@ -46,7 +46,7 @@ MessageDeclarationPrinter::MessageDeclarationPrinter(const Descriptor *message, 
 void MessageDeclarationPrinter::printClassForwardDeclarationPrivate()
 {
     if (common::hasNestedMessages(mDescriptor)) {
-        mPrinter->Print({{"namespace", mName + Templates::QtProtobufNestedNamespace}}, Templates::NamespaceTemplate);
+        mPrinter->Print({{"namespace", mTypeMap["classname"] + Templates::QtProtobufNestedNamespace}}, Templates::NamespaceTemplate);
         common::iterateNestedMessages(mDescriptor, [this](const ::google::protobuf::Descriptor *nestedMessage) {
             MessageDeclarationPrinter nesterPrinter(nestedMessage, mPrinter);
             nesterPrinter.printClassForwardDeclarationPrivate();
@@ -54,8 +54,8 @@ void MessageDeclarationPrinter::printClassForwardDeclarationPrivate()
         mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
     }
 
-    mPrinter->Print({{"classname", mName}}, Templates::ProtoClassForwardDeclarationTemplate);
-    mPrinter->Print({{"classname", mName}}, Templates::ComplexListTypeUsingTemplate);
+    mPrinter->Print(mTypeMap, Templates::ProtoClassForwardDeclarationTemplate);
+    mPrinter->Print(mTypeMap, Templates::ComplexListTypeUsingTemplate);
 }
 
 void MessageDeclarationPrinter::printClassForwardDeclaration()
@@ -75,7 +75,7 @@ void MessageDeclarationPrinter::printClassDeclaration()
 
 void MessageDeclarationPrinter::printClassDeclarationPrivate()
 {
-    mPrinter->Print({{"namespace", mName + Templates::QtProtobufNestedNamespace}}, Templates::NamespaceTemplate);
+    mPrinter->Print({{"namespace", mTypeMap["classname"] + Templates::QtProtobufNestedNamespace}}, Templates::NamespaceTemplate);
     common::iterateNestedMessages(mDescriptor, [this](const ::google::protobuf::Descriptor *nestedMessage) {
         MessageDeclarationPrinter nesterPrinter(nestedMessage, mPrinter);
         nesterPrinter.printClassDeclarationPrivate();
@@ -92,29 +92,29 @@ void MessageDeclarationPrinter::printClassDeclarationPrivate()
 void MessageDeclarationPrinter::printCopyFunctionality()
 {
     assert(mDescriptor != nullptr);
-    mPrinter->Print({{"classname", mName}},
+    mPrinter->Print(mTypeMap,
                     Templates::CopyConstructorDeclarationTemplate);
 
-    mPrinter->Print({{"classname", mName}},
+    mPrinter->Print(mTypeMap,
                     Templates::AssignmentOperatorDeclarationTemplate);
 }
 
 void MessageDeclarationPrinter::printMoveSemantic()
 {
     assert(mDescriptor != nullptr);
-    mPrinter->Print({{"classname", mName}},
+    mPrinter->Print(mTypeMap,
                     Templates::MoveConstructorDeclarationTemplate);
 
-    mPrinter->Print({{"classname", mName}},
+    mPrinter->Print(mTypeMap,
                     Templates::MoveAssignmentOperatorDeclarationTemplate);
 }
 
 void MessageDeclarationPrinter::printComparisonOperators()
 {
     assert(mDescriptor != nullptr);
-    mPrinter->Print({{"classname", mName}}, Templates::EqualOperatorDeclarationTemplate);
+    mPrinter->Print(mTypeMap, Templates::EqualOperatorDeclarationTemplate);
 
-    mPrinter->Print({{"classname", mName}}, Templates::NotEqualOperatorDeclarationTemplate);
+    mPrinter->Print(mTypeMap, Templates::NotEqualOperatorDeclarationTemplate);
 }
 
 void MessageDeclarationPrinter::printConstructors()
@@ -132,7 +132,7 @@ void MessageDeclarationPrinter::printConstructors()
 void MessageDeclarationPrinter::printConstructor(int fieldCount)
 {
     std::vector<std::string> parameterList;
-    mPrinter->Print({{"classname", mName}}, Templates::ProtoConstructorBeginTemplate);
+    mPrinter->Print(mTypeMap, Templates::ProtoConstructorBeginTemplate);
     for (int i = 0; i < fieldCount; i++) {
         const FieldDescriptor *field = mDescriptor->field(i);
         const char *parameterTemplate = Templates::ConstructorParameterTemplate;
@@ -148,7 +148,7 @@ void MessageDeclarationPrinter::printConstructor(int fieldCount)
         mPrinter->Print(common::producePropertyMap(field, mDescriptor), parameterTemplate);
     }
 
-    mPrinter->Print({{"classname", mName}}, Templates::ProtoConstructorEndTemplate);
+    mPrinter->Print(mTypeMap, Templates::ProtoConstructorEndTemplate);
 }
 
 void MessageDeclarationPrinter::printMaps()
@@ -176,7 +176,7 @@ void MessageDeclarationPrinter::printNested()
 
 void MessageDeclarationPrinter::printClassDeclarationBegin()
 {
-    mPrinter->Print({{"classname", mName}}, Templates::ProtoClassDeclarationBeginTemplate);
+    mPrinter->Print(mTypeMap, Templates::ProtoClassDeclarationBeginTemplate);
 }
 
 void MessageDeclarationPrinter::printMetaTypesDeclaration()
@@ -397,7 +397,7 @@ void MessageDeclarationPrinter::printClassBody()
     printSetters();
 
     Indent();
-    mPrinter->Print({{"classname", mName}}, Templates::ManualRegistrationDeclaration);
+    mPrinter->Print(mTypeMap, Templates::ManualRegistrationDeclaration);
     Outdent();
 
     printSignalsBlock();
@@ -414,7 +414,7 @@ void MessageDeclarationPrinter::printClassBody()
 
 void MessageDeclarationPrinter::printListType()
 {
-    mPrinter->Print({{"classname", mName}}, Templates::ComplexListTypeUsingTemplate);
+    mPrinter->Print(mTypeMap, Templates::ComplexListTypeUsingTemplate);
 }
 
 void MessageDeclarationPrinter::printClassMembers()
@@ -434,7 +434,7 @@ void MessageDeclarationPrinter::printClassMembers()
 
 void MessageDeclarationPrinter::printDestructor()
 {
-    mPrinter->Print({{"classname", mName}}, "virtual ~$classname$();\n");
+    mPrinter->Print(mTypeMap, "virtual ~$classname$();\n");
 }
 
 void MessageDeclarationPrinter::printFieldEnum()

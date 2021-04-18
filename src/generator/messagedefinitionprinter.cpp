@@ -40,7 +40,7 @@ MessageDefinitionPrinter::MessageDefinitionPrinter(const Descriptor *message, co
 void MessageDefinitionPrinter::printClassDefinitionPrivate()
 {
     if (common::hasNestedMessages(mDescriptor)) {
-        mPrinter->Print({{"namespace", mName + Templates::QtProtobufNestedNamespace}}, Templates::NamespaceTemplate);
+        mPrinter->Print({{"namespace", mTypeMap["classname"] + Templates::QtProtobufNestedNamespace}}, Templates::NamespaceTemplate);
         common::iterateNestedMessages(mDescriptor, [this](const Descriptor *nestedMessage) {
             MessageDefinitionPrinter nestedPrinter(nestedMessage, mPrinter);
             nestedPrinter.printClassDefinitionPrivate();
@@ -89,7 +89,7 @@ void MessageDefinitionPrinter::printRegisterBody()
 }
 
 void MessageDefinitionPrinter::printFieldsOrdering() {
-    mPrinter->Print({{"type", mName}}, Templates::FieldsOrderingContainerTemplate);
+    mPrinter->Print({{"type", mTypeMap["classname"]}}, Templates::FieldsOrderingContainerTemplate);
     Indent();
     for (int i = 0; i < mDescriptor->field_count(); i++) {
         const FieldDescriptor *field = mDescriptor->field(i);
@@ -208,7 +208,7 @@ void MessageDefinitionPrinter::printCopyFunctionality()
         assignmentOperatorTemplate = Templates::EmptyAssignmentOperatorDefinitionTemplate;
     }
 
-    mPrinter->Print({{"classname", mName}},
+    mPrinter->Print(mTypeMap,
                     constructorTemplate);
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
         if (common::isPureMessage(field)) {
@@ -228,7 +228,7 @@ void MessageDefinitionPrinter::printCopyFunctionality()
     Outdent();
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 
-    mPrinter->Print({{"classname", mName}}, assignmentOperatorTemplate);
+    mPrinter->Print(mTypeMap, assignmentOperatorTemplate);
     Indent();
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
         if (common::isPureMessage(field)) {
@@ -253,7 +253,7 @@ void MessageDefinitionPrinter::printMoveSemantic()
         assignmentOperatorTemplate = Templates::EmptyMoveAssignmentOperatorDefinitionTemplate;
     }
 
-    mPrinter->Print({{"classname", mName}},
+    mPrinter->Print(mTypeMap,
                     constructorTemplate);
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
         if (common::isPureMessage(field)) {
@@ -285,7 +285,7 @@ void MessageDefinitionPrinter::printMoveSemantic()
     Outdent();
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 
-    mPrinter->Print({{"classname", mName}}, assignmentOperatorTemplate);
+    mPrinter->Print(mTypeMap, assignmentOperatorTemplate);
     Indent();
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, const PropertyMap &propertyMap) {
         if (field->type() == FieldDescriptor::TYPE_MESSAGE
@@ -315,12 +315,12 @@ void MessageDefinitionPrinter::printComparisonOperators()
 {
     assert(mDescriptor != nullptr);
     if (mDescriptor->field_count() <= 0) {
-        mPrinter->Print({{"classname", mName}}, Templates::EmptyEqualOperatorDefinitionTemplate);
-        mPrinter->Print({{"classname", mName}}, Templates::NotEqualOperatorDefinitionTemplate);
+        mPrinter->Print(mTypeMap, Templates::EmptyEqualOperatorDefinitionTemplate);
+        mPrinter->Print(mTypeMap, Templates::NotEqualOperatorDefinitionTemplate);
         return;
     }
 
-    mPrinter->Print({{"classname", mName}}, Templates::EqualOperatorDefinitionTemplate);
+    mPrinter->Print(mTypeMap, Templates::EqualOperatorDefinitionTemplate);
 
     bool isFirst = true;
     common::iterateMessageFields(mDescriptor, [&](const FieldDescriptor *field, PropertyMap &propertyMap) {
@@ -347,7 +347,7 @@ void MessageDefinitionPrinter::printComparisonOperators()
     mPrinter->Print(";\n");
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 
-    mPrinter->Print({{"classname", mName}}, Templates::NotEqualOperatorDefinitionTemplate);
+    mPrinter->Print(mTypeMap, Templates::NotEqualOperatorDefinitionTemplate);
 }
 
 void MessageDefinitionPrinter::printGetters()
@@ -387,7 +387,7 @@ void MessageDefinitionPrinter::printGetters()
 
 void MessageDefinitionPrinter::printDestructor()
 {
-    mPrinter->Print({{"classname", mName}}, Templates::RegistrarTemplate);
-    mPrinter->Print({{"classname", mName}}, "$classname$::~$classname$()\n"
+    mPrinter->Print(mTypeMap, Templates::RegistrarTemplate);
+    mPrinter->Print(mTypeMap, "$classname$::~$classname$()\n"
                                                  "{}\n\n");
 }

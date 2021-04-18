@@ -49,7 +49,7 @@ class DescriptorPrinterBase : public BasePrinter
 public:
     DescriptorPrinterBase(const T* descriptor, const std::shared_ptr<::google::protobuf::io::Printer> &printer) : BasePrinter(printer)
       , mDescriptor(descriptor)
-      , mName(utils::upperCaseName(descriptor->name()))
+      , mName(utils::upperCaseName(descriptor->name()))// TODO: migrate to typemaps for the client and service generators
     {}
     virtual ~DescriptorPrinterBase() = default;
 public:
@@ -77,7 +77,7 @@ public:
 
 protected:
     const T* mDescriptor;
-    std::string mName;
+    std::string mName;// TODO: migrate to typemaps for the client and service generators
     TypeMap mTypeMap;
 };
 
