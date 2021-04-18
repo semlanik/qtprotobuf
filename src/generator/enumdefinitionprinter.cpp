@@ -36,7 +36,6 @@ EnumDefinitionPrinter::EnumDefinitionPrinter(const google::protobuf::EnumDescrip
     DescriptorPrinterBase<google::protobuf::EnumDescriptor>(descriptor, printer)
 {
     mTypeMap = common::produceEnumTypeMap(descriptor, nullptr);
-    mName += Templates::EnumClassSuffix;
 }
 
 void EnumDefinitionPrinter::run() {
@@ -48,7 +47,6 @@ void EnumDefinitionPrinter::run() {
 void EnumDefinitionPrinter::printRegisterBody()
 {
     auto typeMap = mTypeMap;
-    typeMap["classname"] = mName;
     mPrinter->Print(typeMap, Templates::EnumRegistrarTemplate);
     mPrinter->Print(typeMap, Templates::ManualRegistrationGlobalEnumDefinition);
     Indent();

@@ -33,7 +33,6 @@ EnumDeclarationPrinter::EnumDeclarationPrinter(const EnumDescriptor *descriptor,
     DescriptorPrinterBase<google::protobuf::EnumDescriptor>(descriptor, printer)
 {
     mTypeMap = common::produceEnumTypeMap(descriptor, nullptr);
-    mName += Templates::EnumClassSuffix;
 }
 
 void EnumDeclarationPrinter::startEnum()
@@ -42,7 +41,7 @@ void EnumDeclarationPrinter::startEnum()
     printEnumClass();
     printPublicBlock();
     Indent();
-    mPrinter->Print({{"classname", mName}}, Templates::ManualRegistrationDeclaration);
+    mPrinter->Print(mTypeMap, Templates::ManualRegistrationDeclaration);
     Outdent();
     printPrivateBlock();
     printConstructor();
@@ -72,9 +71,9 @@ void EnumDeclarationPrinter::printEnum()
 void EnumDeclarationPrinter::printConstructor()
 {
     Indent();
-    mPrinter->Print({{"classname", mName}}, Templates::ConstructorHeaderTemplate);
-    mPrinter->Print({{"classname", mName}}, Templates::DeletedCopyConstructorTemplate);
-    mPrinter->Print({{"classname", mName}}, Templates::DeletedMoveConstructorTemplate);
+    mPrinter->Print(mTypeMap, Templates::ConstructorHeaderTemplate);
+    mPrinter->Print(mTypeMap, Templates::DeletedCopyConstructorTemplate);
+    mPrinter->Print(mTypeMap, Templates::DeletedMoveConstructorTemplate);
     Outdent();
 }
 
@@ -92,5 +91,5 @@ void EnumDeclarationPrinter::encloseEnum()
 
 void EnumDeclarationPrinter::printEnumClass()
 {
-    mPrinter->Print({{"classname", mName}}, Templates::ClassDeclarationTemplate);
+    mPrinter->Print(mTypeMap, Templates::ClassDeclarationTemplate);
 }
