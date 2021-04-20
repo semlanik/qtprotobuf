@@ -300,7 +300,7 @@ To intergrate QtProtobuf add it as a dependency to your conanfile.py:
 ## Direct usage of generator
 
 ```bash
-[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER:FIELDENUM"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER:FIELDENUM:EXTRA_NAMESPACE=<value>"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
 
 ### QT_PROTOBUF_OPTIONS
@@ -308,7 +308,7 @@ To intergrate QtProtobuf add it as a dependency to your conanfile.py:
 For protoc command you also may specify extra options using QT_PROTOBUF_OPTIONS environment variable and colon-separated format:
 
 ``` bash
-[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER:FIELDENUM"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
+[QT_PROTOBUF_OPTIONS="[SINGLE|MULTI]:QML:COMMENTS:FOLDER:FIELDENUM:EXTRA_NAMESPACE=<value>"] protoc --plugin=protoc-gen-qtprotobuf=<path/to/bin/>qtprotobufgen --qtprotobuf_out=<output_dir> [-I/extra/proto/include/path] <protofile>.proto
 ```
 
 Following options are supported:
@@ -407,6 +407,8 @@ qtprotobuf_generate is cmake helper function that automatically generates STATIC
 >**Note:** enabled by default if MULTI option provided
 
 *FIELDENUM* - Adds enumeration with message fields for generated messages.
+
+*EXTRA_NAMESPACE <namespace>* - Wraps the generated code with the specified namespace. (EXPERIMETAL)
 
 #### qtprotobuf_link_target
 

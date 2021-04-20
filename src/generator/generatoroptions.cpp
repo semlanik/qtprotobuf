@@ -34,7 +34,7 @@ static const std::string QmlPluginOption("QML");
 static const std::string CommentsGenerationOption("COMMENTS");
 static const std::string FolderGenerationOption("FOLDER");
 static const std::string FieldEnumGenerationOption("FIELDENUM");
-
+static const std::string ExtraNamespaceGenerationOption("EXTRA_NAMESPACE");
 
 using namespace ::QtProtobuf::generator;
 
@@ -66,6 +66,16 @@ void GeneratorOptions::parseFromEnv(const std::string &options)
         } else if (option.compare(FieldEnumGenerationOption) == 0) {
             QT_PROTOBUF_DEBUG("set mGenerateFieldEnum: true");
             mGenerateFieldEnum = true;
+        } else if (option.find(ExtraNamespaceGenerationOption) == 0) {
+            QT_PROTOBUF_DEBUG("set mGenerateFieldEnum: true");
+            std::vector<std::string> compositeOption = utils::split(options, '=');
+            if (compositeOption.size() == 2) {
+                mExtraNamespace = compositeOption[1];
+                if (mExtraNamespace.size() > 1 && mExtraNamespace[0] == '\"'
+                        && mExtraNamespace[mExtraNamespace.size() - 1] == '\"') {
+                    mExtraNamespace = mExtraNamespace.substr(1, mExtraNamespace.size() - 2);
+                }
+            }
         }
     }
 }

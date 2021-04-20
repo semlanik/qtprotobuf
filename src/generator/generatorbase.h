@@ -101,6 +101,7 @@ namespace generator {
  * \param COMMENTS Enables comments copying from .proto files. If provided in parameter list message and field related comments will be copied to generated header files.
  * \param FOLDER Enables folder based generation. If provided in parameter list generator will place generated artifacts to folder structure according to package of corresponding .proto file
  * \param FIELDENUM Enables generation of field numbers as an enum within the message class.
+ * \param EXTRA_NAMESPACE <namespace> Wraps the generated code with the specified namespace(EXPERIMENTAL).
  *
  * \subsection cmake_qtprotobuf_link_target qtprotobuf_link_target
  *

@@ -95,6 +95,10 @@ TypeMap common::produceQtTypeMap(const ::Descriptor *type, const Descriptor *sco
 TypeMap common::produceMessageTypeMap(const ::Descriptor *type, const Descriptor *scope)
 {
     std::vector<std::string> namespaceList = getNamespaces(type);
+    if (!GeneratorOptions::instance().extraNamespace().empty()) {
+        namespaceList.insert(namespaceList.begin(), GeneratorOptions::instance().extraNamespace());
+    }
+
     std::vector<std::string> nestedNamespaceList = namespaceList;
     if(isNested(type)) {
         nestedNamespaceList = getNestedNamespaces(type);
@@ -133,6 +137,9 @@ TypeMap common::produceEnumTypeMap(const EnumDescriptor *type, const Descriptor 
 {
     EnumVisibility visibility = enumVisibility(type, scope);
     std::vector<std::string> namespaceList = getNamespaces(type);
+    if (!GeneratorOptions::instance().extraNamespace().empty()) {
+        namespaceList.insert(namespaceList.begin(), GeneratorOptions::instance().extraNamespace());
+    }
 
     std::string name = utils::upperCaseName(type->name());
     std::string qmlPackage = getNamespacesString(namespaceList, ".");//qml package should consist only from proto spackage
@@ -144,7 +151,6 @@ TypeMap common::produceEnumTypeMap(const EnumDescriptor *type, const Descriptor 
 
     std::string namespaces = getNamespacesString(namespaceList, "::");
     std::string scopeNamespaces = getScopeNamespacesString(namespaces, getNamespacesString(getNamespaces(scope), "::"));
-
 
     std::string fullName = namespaces.empty() ? name : (namespaces + "::" + name);
     std::string scopeName = scopeNamespaces.empty() ? name : (scopeNamespaces + "::" + name);

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2021 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,43 +23,26 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include <QtQuickTest>
+#include <QQmlEngine>
+#include <QQmlContext>
+#include <QQmlExtensionPlugin>
 
-#include <string>
+#include "extra_namespace.qpb.h"
 
-namespace QtProtobuf {
-namespace generator {
+using namespace MyTestNamespace::qtprotobufnamespace::tests;
 
-/*!
- * \ingroup generator
- * \private
- * \brief The GeneratorOptions class
- */
-class GeneratorOptions
-{
-    GeneratorOptions();
+class TestSetup : public QObject {
+    Q_OBJECT
 public:
-    static GeneratorOptions &instance() {
-        static GeneratorOptions _instance;
-        return _instance;
+    TestSetup() {
+        QtProtobuf::qRegisterProtobufTypes();
+        Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
     }
-
-    void parseFromEnv(const std::string &options);
-
-    bool isMulti() const { return mIsMulti; }
-    bool hasQml() const { return mHasQml; }
-    bool generateComments() const { return mGenerateComments; }
-    bool isFolder() const { return mIsFolder; }
-    bool generateFieldEnum() const { return mGenerateFieldEnum; }
-    const std::string &extraNamespace() const { return mExtraNamespace; }
-
-private:
-    bool mIsMulti;
-    bool mHasQml;
-    bool mGenerateComments;
-    bool mIsFolder;
-    bool mGenerateFieldEnum;
-    std::string mExtraNamespace;
+    ~TestSetup() = default;
+public slots:
+    void qmlEngineAvailable(QQmlEngine *engine)
+    {
+        engine->rootContext()->setContextProperty("qVersion", QT_VERSION);
+    }
 };
-
-}}

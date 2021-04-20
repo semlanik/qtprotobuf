@@ -60,6 +60,9 @@ public:
 
     void printNamespaces() {
         auto namespaces = common::getNamespaces(mDescriptor);
+        if (!GeneratorOptions::instance().extraNamespace().empty()) {
+            namespaces.insert(namespaces.begin(), GeneratorOptions::instance().extraNamespace());
+        }
         mPrinter->Print("\n");
         for (auto ns : namespaces) {
             mPrinter->Print({{"namespace", ns}}, Templates::NamespaceTemplate);
@@ -67,9 +70,12 @@ public:
     }
 
     void encloseNamespaces() {
-        auto namespaces = common::getNamespaces(mDescriptor);
+        auto namespacesSize = common::getNamespaces(mDescriptor).size();
+        if (!GeneratorOptions::instance().extraNamespace().empty()) {
+            namespacesSize++;
+        }
         mPrinter->Print("\n");
-        for (size_t i = 0; i < namespaces.size(); ++i) {
+        for (size_t i = 0; i < namespacesSize; ++i) {
             mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
         }
         mPrinter->Print("\n");

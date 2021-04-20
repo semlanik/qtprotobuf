@@ -6,7 +6,7 @@ endfunction()
 
 function(qtprotobuf_generate)
     set(options MULTI QML COMMENTS FOLDER FIELDENUM)
-    set(oneValueArgs OUT_DIR TARGET GENERATED_TARGET)
+    set(oneValueArgs OUT_DIR TARGET GENERATED_TARGET EXTRA_NAMESPACE)
     set(multiValueArgs GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
     cmake_parse_arguments(qtprotobuf_generate "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -50,6 +50,12 @@ function(qtprotobuf_generate)
     if(qtprotobuf_generate_FIELDENUM)
         message(STATUS "Enabled FIELDENUM generation for ${GENERATED_TARGET_NAME}")
         set(GENERATION_OPTIONS "${GENERATION_OPTIONS}:FIELDENUM")
+    endif()
+
+    if(qtprotobuf_generate_EXTRA_NAMESPACE)
+        set(GENERATION_OPTIONS
+            "${GENERATION_OPTIONS}:EXTRA_NAMESPACE=\"${qtprotobuf_generate_EXTRA_NAMESPACE}\""
+        )
     endif()
 
     if(WIN32)

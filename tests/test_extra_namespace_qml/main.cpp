@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Alexey Edelev <semlanik@gmail.com>
+ * Copyright (c) 2021 Alexey Edelev <semlanik@gmail.com>
  *
  * This file is part of QtProtobuf project https://git.semlanik.org/semlanik/qtprotobuf
  *
@@ -23,43 +23,6 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
+#include "test.h"
 
-#include <string>
-
-namespace QtProtobuf {
-namespace generator {
-
-/*!
- * \ingroup generator
- * \private
- * \brief The GeneratorOptions class
- */
-class GeneratorOptions
-{
-    GeneratorOptions();
-public:
-    static GeneratorOptions &instance() {
-        static GeneratorOptions _instance;
-        return _instance;
-    }
-
-    void parseFromEnv(const std::string &options);
-
-    bool isMulti() const { return mIsMulti; }
-    bool hasQml() const { return mHasQml; }
-    bool generateComments() const { return mGenerateComments; }
-    bool isFolder() const { return mIsFolder; }
-    bool generateFieldEnum() const { return mGenerateFieldEnum; }
-    const std::string &extraNamespace() const { return mExtraNamespace; }
-
-private:
-    bool mIsMulti;
-    bool mHasQml;
-    bool mGenerateComments;
-    bool mIsFolder;
-    bool mGenerateFieldEnum;
-    std::string mExtraNamespace;
-};
-
-}}
+QUICK_TEST_MAIN_WITH_SETUP(qtprotobuf_qml_test, TestSetup)
