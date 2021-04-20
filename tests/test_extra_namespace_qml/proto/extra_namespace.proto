@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package qtprotobufnamespace.tests; // Generated namespaces will be prepended with
+                                   // the extra namespace
+message EmptyMessage {
+}
+
+message SimpleStringMessage {
+    string testFieldString = 6;
+}
+
+message ComplexMessage {
+    int32 testFieldInt = 1;
+    SimpleStringMessage testComplexField = 2;
+}
+

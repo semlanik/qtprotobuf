@@ -6,6 +6,8 @@ if(TARGET ${QT_VERSIONED_PREFIX}::QuickTest)
 endif()
 add_subdirectory("test_protobuf_multifile")
 add_subdirectory("test_qprotobuf_serializer_plugin")
+add_subdirectory("test_extra_namespace")
+add_subdirectory("test_extra_namespace_qml")
 
 if(TARGET ${QT_PROTOBUF_NAMESPACE}::ProtobufWellKnownTypes)
     add_subdirectory("test_wellknowntypes")
