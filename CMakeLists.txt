@@ -1,9 +1,11 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.14)
 
 set(QT_PROTOBUF_VERSION 0.5.0)
-set(QT_PROTOBUF_PROJECT QtProtobufProject)
+set(QT_PROTOBUF_NAMESPACE QtProtobuf)
+set(QT_PREFIX Qt)
+set(QT_VERSIONED_PREFIX Qt5)
 
-project(${QT_PROTOBUF_PROJECT} VERSION ${QT_PROTOBUF_VERSION} LANGUAGES CXX)
+project(${QT_PROTOBUF_NAMESPACE} VERSION ${QT_PROTOBUF_VERSION} LANGUAGES CXX)
 
 # Conan support, optional
 if(EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
@@ -18,24 +20,17 @@ set(QT_PROTOBUF_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(QT_PROTOBUF_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(QT_PROTOBUF_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-include("${QT_PROTOBUF_CMAKE_DIR}/dependencies.cmake")
-include("${QT_PROTOBUF_CMAKE_DIR}/Coverage.cmake" EXCLUDE_FROM_ALL)
+list(APPEND CMAKE_MODULE_PATH ${QT_PROTOBUF_CMAKE_DIR})
 
-set(GENERATOR_TARGET qtprotobufgen)
-set(PROTOBUF_QUICK_PLUGIN_NAME protobufquickplugin)
-set(GRPC_QUICK_PLUGIN_NAME grpcquickplugin)
+find_package(WrapgRPC)
+find_package(WrapProtobuf COMPONENTS Protoc OPTIONAL_COMPONENTS Generator Protobuf REQUIRED)
+find_package(Threads)
+find_package(${QT_VERSIONED_PREFIX} COMPONENTS Core Qml CONFIG REQUIRED)
+find_package(${QT_VERSIONED_PREFIX} OPTIONAL_COMPONENTS Network Quick Gui CONFIG)
 
-set(QT_PROTOBUF_MAKE_TESTS ON CACHE BOOL "Enable QtProtobuf tests build")
-set(QT_PROTOBUF_MAKE_EXAMPLES ON CACHE BOOL "Enable QtProtobuf examples build")
-set(QT_PROTOBUF_MAKE_COVERAGE OFF CACHE BOOL "Enable QtProtobuf build for profiler (gcov)")
-set(QT_PROTOBUF_FIELD_ENUM OFF CACHE BOOL "Enable generation of enumeration with fields numbers for well-known and Qt types libraries")
-set(BUILD_SHARED_LIBS ON CACHE BOOL "Enable QtProtobuf shared library build (disables static library build)")
-
-if(CMAKE_CROSSCOMPILING)
-    set(QT_PROTOBUF_MAKE_TESTS OFF)
-    set(QT_PROTOBUF_MAKE_EXAMPLES OFF)
-endif()
-
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ${${QT_VERSIONED_PREFIX}_POSITION_INDEPENDENT_CODE})
 if(UNIX)
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         # using Clang
@@ -57,37 +52,81 @@ elseif(WIN32)
     endif()
 endif()
 
+include(QtProtobufInternalHelpers)
+include(QtProtobufCoverage)
+include(QtProtobufGen)
+
+qt_protobuf_internal_check_install()
+
+set(PROTOBUF_QUICK_PLUGIN_NAME protobufquickplugin)
+set(GRPC_QUICK_PLUGIN_NAME grpcquickplugin)
+
+set(QT_PROTOBUF_MAKE_TESTS ON CACHE BOOL "Enable QtProtobuf tests build")
+set(QT_PROTOBUF_MAKE_EXAMPLES ON CACHE BOOL "Enable QtProtobuf examples build")
+set(QT_PROTOBUF_MAKE_COVERAGE OFF CACHE BOOL "Enable QtProtobuf build for profiler (gcov)")
+set(QT_PROTOBUF_FIELD_ENUM OFF CACHE BOOL "Enable generation of enumeration with fields numbers for well-known and Qt types libraries")
+set(QT_PROTOBUF_NATIVE_GRPC_CHANNEL OFF CACHE BOOL "Enable native gRPC channel implementation")
+
+if(QT_PROTOBUF_NATIVE_GRPC_CHANNEL)
+    if(NOT WrapgRPC_FOUND OR NOT Threads_FOUND)
+        message("QT_PROTOBUF_NATIVE_GRPC_CHANNEL is ON, but required dependencies are not found.")
+        set(QT_PROTOBUF_NATIVE_GRPC_CHANNEL OFF)
+    endif()
+endif()
+
+if(CMAKE_CROSSCOMPILING)
+    set(QT_PROTOBUF_MAKE_TESTS OFF)
+    set(QT_PROTOBUF_MAKE_EXAMPLES OFF)
+endif()
+
+set(QT_PROTOBUF_STATIC OFF CACHE INTERNAL "")
+if(NOT BUILD_SHARED_LIBS)
+    set(QT_PROTOBUF_STATIC ON CACHE INTERNAL "" FORCE)
+endif()
+
+set(extra_type_libraries_options "") #Prevent to set from outside
+if(QT_PROTOBUF_FIELD_ENUM)
+    set(extra_type_libraries_options "FIELDENUM ${extra_type_libraries_options}")
+endif()
+
 configure_package_config_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
     INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
-    COMPONENT dev)
+
+install(FILES "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+    COMPONENT dev
+)
 export(PACKAGE ${PROJECT_NAME})
+install(FILES "${QT_PROTOBUF_CMAKE_DIR}/FindWrapProtobuf.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+    COMPONENT dev
+)
+
 add_subdirectory("src/generator")
-
 add_subdirectory("src/protobuf")
-add_subdirectory("src/grpc")
-
-set(EXTRA_TYPE_LIBRARIES_OPTIONS "") #Prevent to set from outside
-if(QT_PROTOBUF_FIELD_ENUM)
-    set(EXTRA_TYPE_LIBRARIES_OPTIONS "FIELDENUM ${EXTRA_TYPE_LIBRARIES_OPTIONS}")
+if(TARGET ${QT_VERSIONED_PREFIX}::Network)
+    if(${QT_VERSIONED_PREFIX}Core_VERSION VERSION_LESS "5.12.4")
+        # grpc target requires QT version not less than 5.12.4
+        # earlier versions Http2DirectAttribute is broken: https://doc.qt.io/qt-5/whatsnew511.html
+        #                                                  https://bugreports.qt.io/browse/QTBUG-74765
+        message(WARNING "QtGrpc requires the Qt framework version 5.12.4 or higher")
+    else()
+        add_subdirectory("src/grpc")
+    endif()
 endif()
 
-if(NOT WIN32)#TODO: There are linking issues with windows build of well-known types...
+if(TARGET protobuf::libprotobuf AND TARGET protobuf::protoc)
     add_subdirectory("src/wellknowntypes")
 endif()
-add_subdirectory("src/qttypes")
+if(TARGET ${QT_VERSIONED_PREFIX}::Gui AND TARGET protobuf::protoc)
+    add_subdirectory("src/qttypes")
+endif()
 
 if(QT_PROTOBUF_MAKE_TESTS)
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/googletest/CMakeLists.txt")
-        set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
-        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-        add_subdirectory("3rdparty/googletest" EXCLUDE_FROM_ALL)
-        set(GTest_FOUND TRUE)
-    else()
-        find_package(GTest)
-    endif()
-    if(GTest_FOUND)
+    find_package(WrapGTest)
+    find_package(${QT_VERSIONED_PREFIX} OPTIONAL_COMPONENTS Test QuickTest CONFIG)
+    if(WrapGTest_FOUND AND TARGET ${QT_VERSIONED_PREFIX}::Test)
         enable_testing()
         add_subdirectory("tests")
     else()
@@ -96,11 +135,16 @@ if(QT_PROTOBUF_MAKE_TESTS)
 endif()
 
 if(QT_PROTOBUF_MAKE_EXAMPLES)
-    add_subdirectory("examples")
+    if(TARGET ${QT_VERSIONED_PREFIX}::Quick)
+        add_subdirectory("examples")
+    else()
+        message(STATUS "${QT_VERSIONED_PREFIX}::Quick is not found. Disable examples")
+    endif()
 endif()
 
 if(QT_PROTOBUF_INSTALL)
-    include("${QT_PROTOBUF_CMAKE_DIR}/packaging.cmake")
+    include(packaging)
 endif()
+include(doxygen)
 
-include("${QT_PROTOBUF_CMAKE_DIR}/doxygen.cmake")
+qt_protobuf_internal_install_targets()

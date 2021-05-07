@@ -35,15 +35,18 @@ namespace QtProtobuf {
  * \private
  * \brief The QProtobufMetaProperty class
  */
+struct PropertyOrderingInfo;
+
 class Q_PROTOBUF_EXPORT QProtobufMetaProperty : public QMetaProperty
 {
 public:
-    QProtobufMetaProperty(const QMetaProperty &, int fieldIndex);
-    int protoFieldIndex() const { return m_fieldIndex; }
-    QString protoPropertyName() const;
+    QProtobufMetaProperty(const QMetaProperty &, int fieldIndex, const QString &jsonName);
+    int protoFieldIndex() const;
+    QString jsonPropertyName() const;
 private:
     QProtobufMetaProperty();
-    int m_fieldIndex;
+    const int m_fieldIndex;
+    const QString &m_jsonName;
 };
 
 }

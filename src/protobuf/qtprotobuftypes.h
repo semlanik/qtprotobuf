@@ -33,6 +33,7 @@
 #include <unordered_map>
 #include <functional>
 #include <list>
+#include <type_traits>
 
 namespace QtProtobuf {
 
@@ -54,7 +55,26 @@ enum WireTypes {
 };
 
 //! \private
-using QProtobufPropertyOrdering = std::unordered_map<int, int>;
+struct PropertyOrderingInfo {
+    PropertyOrderingInfo(int _qtProperty, const QString &_jsonName) : qtProperty(_qtProperty)
+      , jsonName(_jsonName) {}
+
+    int qtProperty;
+    QString jsonName;
+    template<typename T,
+             typename std::enable_if_t<std::is_integral<T>::value, int> = 0>
+    operator T() const { return qtProperty; }
+    operator QString() const { return jsonName; }
+
+    template<typename T,
+             typename std::enable_if_t<std::is_integral<T>::value, int> = 0>
+    bool operator==(const T _qtProperty) const { return _qtProperty == qtProperty; }
+    bool operator==(const QString &_jsonName) const { return _jsonName == jsonName; }
+};
+
+//! \private
+//!
+using QProtobufPropertyOrdering = std::unordered_map<int, PropertyOrderingInfo>;
 
 /*!
  * \private
@@ -236,7 +256,7 @@ using DoubleList = QList<double>;
  * \brief qRegisterProtobufTypes
  * This method should be called in all applications that supposed to use QtProtobuf
  */
-extern Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
+Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
 
 /*! \} */
 
@@ -244,7 +264,7 @@ extern Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
 using RegisterFunction = std::function<void(void)>;
 
 //!\private
-extern Q_PROTOBUF_EXPORT std::list<RegisterFunction>& registerFunctions();
+Q_PROTOBUF_EXPORT std::list<RegisterFunction>& registerFunctions();
 
 //!\private
 template <typename T>

@@ -1,26 +1,19 @@
 include(CMakeFindDependencyMacro)
 
-set(QT_PROTOBUF_STATIC @QT_PROTOBUF_STATIC@)
-if(QT_PROTOBUF_STATIC)
-    find_dependency(microjson REQUIRED CONFIG)
+find_package(${QT_VERSIONED_PREFIX} COMPONENTS Core Qml REQUIRED CONFIG)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ${${QT_VERSIONED_PREFIX}_POSITION_INDEPENDENT_CODE})
+
+if(NOT TARGET @QT_PROTOBUF_NAMESPACE@::@target@)
+    include("${CMAKE_CURRENT_LIST_DIR}/@target_export@.cmake")
 endif()
 
-find_dependency(Qt5 COMPONENTS Core Qml REQUIRED CONFIG)
-find_dependency(QtProtobufProject COMPONENTS Generator CONFIG REQUIRED)
-
-set(CMAKE_POSITION_INDEPENDENT_CODE @Qt5_POSITION_INDEPENDENT_CODE@)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-if(NOT TARGET @TARGET@ AND NOT @TARGET@_BINARY_DIR)
-    include("${CMAKE_CURRENT_LIST_DIR}/@TARGET_EXPORT@.cmake")
-endif()
-
-if(QT_PROTOBUF_STATIC AND NOT TARGET @PROTOBUF_QUICK_PLUGIN_NAME@ AND NOT @PROTOBUF_QUICK_PLUGIN_NAME@_BINARY_DIR)
+if(QT_PROTOBUF_STATIC AND NOT TARGET @QT_PROTOBUF_NAMESPACE@::@PROTOBUF_QUICK_PLUGIN_NAME@)
     include("${CMAKE_CURRENT_LIST_DIR}/@PROTOBUF_QUICK_PLUGIN_NAME@Targets.cmake")
 endif()
 
 @PACKAGE_INIT@
 if(QT_PROTOBUF_STATIC)
-    add_definitions(-DQT_PROTOBUF_STATIC)#Old cmake versions compatibility
+    add_definitions(-DQT_PROTOBUF_STATIC)# add_definitions is used because old cmake versions
+                                         # compatibility
 endif()

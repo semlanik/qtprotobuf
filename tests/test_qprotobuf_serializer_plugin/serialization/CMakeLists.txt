@@ -20,7 +20,7 @@ file(GLOB HEADERS
     qtserialization_global.h)
 
 add_library(${TARGET} SHARED ${SOURCES})
-target_link_libraries(${TARGET} PRIVATE Qt5::Core Qt5::Qml ${QT_PROTOBUF_PROJECT}::QtProtobuf)
+target_link_libraries(${TARGET} PRIVATE Qt5::Core Qt5::Qml ${QT_PROTOBUF_NAMESPACE}::Protobuf)
 target_compile_definitions(${TARGET} PRIVATE SERIALIZATION_LIB)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/serializeinfo.json" "${CMAKE_CURRENT_BINARY_DIR}/serializeinfo.json" COPYONLY)

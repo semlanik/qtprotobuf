@@ -62,11 +62,14 @@ func main() {
 		}
 	}
 
+	newoffset, err := file.Seek(0, 0)
+	if err != nil || newoffset != 0 {
+		log.Fatal(err)
+	}
+	scanner = bufio.NewScanner(file)
+
 	if multi {
 		for scanner.Scan() {
-			if fullpath == "" {
-				log.Fatalf("Package is not specified correctly in %s file\n", os.Args[1])
-			}
 			capture := messageFinder.FindStringSubmatch(scanner.Text())
 			if len(capture) == 2 {
 				fmt.Printf("%s%s.h;", fullpath, strings.ToLower(capture[1]))
@@ -78,9 +81,6 @@ func main() {
 			}
 		}
 	} else {
-		if folder && fullpath == "" {
-			log.Fatalf("Package is not specified correctly in %s file\n", os.Args[1])
-		}
 		//Singlefile version
 		enumFinder, err := regexp.Compile("^enum\\s+([a-zA-Z0-9_]+)")
 		if err != nil {

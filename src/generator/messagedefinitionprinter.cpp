@@ -99,7 +99,8 @@ void MessageDefinitionPrinter::printFieldsOrdering() {
         //property_number is incremented by 1 because user properties stating from 1.
         //Property with index 0 is "objectName"
         mPrinter->Print({{"field_number", std::to_string(field->number())},
-                         {"property_number", std::to_string(i + 1)}}, Templates::FieldOrderTemplate);
+                         {"property_number", std::to_string(i + 1)},
+                         {"json_name", field->json_name()}}, Templates::FieldOrderTemplate);
     }
     Outdent();
     mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);

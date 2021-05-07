@@ -94,7 +94,6 @@ bool MultiFileGenerator::Generate(const FileDescriptor *file,
             auto field = message->field(i);
             if (common::isPureMessage(field)) {
                 auto dependency = field->message_type();
-                std::cerr << "Found dependency: " << dependency->name() << std::endl;
                 deps.push_back(dependency);
             }
         }
@@ -192,7 +191,6 @@ std::list<const ::google::protobuf::Descriptor *> MultiFileGenerator::findNested
             auto field = message->field(i);
             if (common::isPureMessage(field)) {
                 auto dependency = field->message_type();
-                std::cerr << "Found dependency: " << dependency->name() << std::endl;
                 dependencies.push_back(dependency);
             }
         }

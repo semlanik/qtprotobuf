@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "externalpackagetest.proto";
+import "nopackageexternal.proto";
 
 package qtprotobufnamespace.tests;
 
@@ -630,3 +631,6 @@ message LowerCaseFieldMessageName {
     lowerCaseMessageName testField = 1;
 }
 
+message NoPackageMessage {
+    SimpleIntMessageExt testField = 1;
+}

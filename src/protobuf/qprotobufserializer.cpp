@@ -88,7 +88,9 @@ QByteArray QProtobufSerializer::serializeMessage(const QObject *object, const QP
         QMetaProperty metaProperty = metaObject.staticMetaObject.property(propertyIndex);
         const char *propertyName = metaProperty.name();
         QVariant propertyValue = object->property(propertyName);
-        result.append(dPtr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty, fieldIndex)));
+        result.append(dPtr->serializeProperty(propertyValue, QProtobufMetaProperty(metaProperty,
+                                                                                   fieldIndex,
+                                                                                   field.second)));
     }
 
     return result;
@@ -128,7 +130,9 @@ bool QProtobufSerializer::deserializeListObject(QObject *object, const QProtobuf
 QByteArray QProtobufSerializer::serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const
 {
     QByteArray result = QProtobufSerializerPrivate::encodeHeader(metaProperty.protoFieldIndex(), LengthDelimited);
-    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(dPtr->serializeProperty(key, QProtobufMetaProperty(metaProperty, 1)) + dPtr->serializeProperty(value, QProtobufMetaProperty(metaProperty, 2))));
+    result.append(QProtobufSerializerPrivate::prependLengthDelimitedSize(
+                      dPtr->serializeProperty(key, QProtobufMetaProperty(metaProperty, 1, QString())) +
+                      dPtr->serializeProperty(value, QProtobufMetaProperty(metaProperty, 2, QString()))));
     return result;
 }
 
@@ -273,7 +277,7 @@ QByteArray QProtobufSerializerPrivate::serializeProperty(const QVariant &propert
         }
     } else {
         auto handler = QtProtobufPrivate::findHandler(userType);
-        handler.serializer(q_ptr, propertyValue, QProtobufMetaProperty(metaProperty, metaProperty.protoFieldIndex()), result);
+        handler.serializer(q_ptr, propertyValue, metaProperty, result);
     }
     return result;
 }

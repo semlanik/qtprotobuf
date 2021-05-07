@@ -1,14 +1,31 @@
+include(QtProtobufTestHelpers)
+
 add_subdirectory("test_protobuf")
-add_subdirectory("test_qml")
+if(TARGET ${QT_VERSIONED_PREFIX}::QuickTest)
+    add_subdirectory("test_qml")
+endif()
 add_subdirectory("test_protobuf_multifile")
 add_subdirectory("test_qprotobuf_serializer_plugin")
-if(NOT WIN32)#TODO: There are linking issues with windows build of well-known types...
+
+if(TARGET ${QT_PROTOBUF_NAMESPACE}::ProtobufWellKnownTypes)
     add_subdirectory("test_wellknowntypes")
 endif()
-add_subdirectory("test_qttypes")
-if(gRPC_FOUND)
+
+if(TARGET ${QT_PROTOBUF_NAMESPACE}::ProtobufQtTypes)
+    add_subdirectory("test_qttypes")
+endif()
+
+if(WrapgRPC_FOUND AND TARGET ${QT_PROTOBUF_NAMESPACE}::Grpc)
+    if(UNIX)
+        set(TEST_DRIVER_NAME "test_driver.sh")
+    elseif(WIN32)
+        set(TEST_DRIVER_NAME "test_driver.bat")
+    endif()
+
     add_subdirectory("test_grpc")
-    add_subdirectory("test_grpc_qml")
+    if(TARGET ${QT_VERSIONED_PREFIX}::QuickTest)
+        add_subdirectory("test_grpc_qml")
+    endif()
 else()
     message(WARNING "gRPC not found: some tests cannot be built.")
 endif()

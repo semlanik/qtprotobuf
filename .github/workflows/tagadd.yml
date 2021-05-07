@@ -7,8 +7,8 @@ on:
     tags:
       - 'v0.6*'
 jobs:
-  build-packages:
-    name: Build release packages
+  build-linux-packages:
+    name: Build Linux release packages
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -23,11 +23,73 @@ jobs:
         docker build . --file .ci/Dockerfile.opensuse_rpm --tag opensuse_rpmimage:latest
         docker run --mount type=bind,source="$(pwd)"/artifacts,target=/artifacts opensuse_rpmimage:latest sh -c "mv /build/*.rpm /artifacts"
         ls artifacts/*
+    - uses: actions/upload-artifact@master
+      with:
+        name: linux-binaries
+        path: artifacts
+  build-windows-packages:
+    name: Build Windows release packages
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Init submodules
+      run: git submodule update --init --recursive
+    - uses: shogo82148/actions-setup-perl@v1
+      with:
+        perl-version: '5.30'
+        distribution: strawberry
+    - uses: microsoft/setup-msbuild@v1.0.2
+      with:
+        vs-version: '16.4'
+    - name: Install Deps
+      run: |
+        choco install wget golang
+        mkdir C:\yasm
+        wget -q http://www.tortall.net/projects/yasm/releases/yasm-1.3.0-win64.exe -O C:\yasm\yasm.exe
+    - name: Install Qt
+      run: |
+        wget -q https://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe -O C:/qt-unified-windows-x86-online.exe
+        C:/qt-unified-windows-x86-online.exe --script ./.ci/qt_installer_windows.qs -d
+    - name: Build in Windows
+      id: build_release_windows
+      run: |
+        mkdir build-static
+        cd build-static
+        setx GOROOT "c:\Go"
+        setx path "%path%;C:\Qt\5.15.2\msvc2019_64\bin;C:\Go\bin;C:\yasm"
+        set GOROOT="c:\Go"
+        set PATH="%PATH%;C:\Qt\5.15.2\msvc2019_64\bin;C:\Go\bin;C:\yasm"
+        cmake -DCMAKE_PREFIX_PATH="C:\Qt\5.15.2\msvc2019_64;C:\Go\bin;C:\yasm" -DBUILD_SHARED_LIBS=OFF -DQT_PROTOBUF_MAKE_TESTS=OFF -DQT_PROTOBUF_MAKE_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Release ..
+        cmake --build . --config Release --parallel
+        cpack -G ZIP -C Release -v
+        mkdir artifacts
+        copy *.zip artifacts
+    - uses: actions/upload-artifact@master
+      with:
+        name: windows-binaries
+        path: build-static/artifacts
+  create-release:
+    name: Create release and upload packages
+    runs-on: ubuntu-latest
+    needs: [build-windows-packages, build-linux-packages]
+    steps:
+    - uses: actions/download-artifact@master
+      with:
+        name: linux-binaries
+        path: artifacts
+    - uses: actions/download-artifact@master
+      with:
+        name: windows-binaries
+        path: artifacts
+    - id: set-outputs
+      run: |
         cd artifacts
-        echo "##[set-output name=libpackage;]$(ls -1 libqtprotobuf_*.deb)"
-        echo "##[set-output name=devpackage;]$(ls -1 libqtprotobuf-dev_*.deb)"
-        echo "##[set-output name=devrpmpackage;]$(ls -1 libqtprotobuf-*-devel.rpm)"
-        echo "##[set-output name=librpmpackage;]$(ls -1 libqtprotobuf-*.rpm | grep -v 'devel')"
+        ls .
+        echo "::set-output name=libpackage::$(ls -1 libqtprotobuf_*.deb)"
+        echo "::set-output name=devpackage::$(ls -1 libqtprotobuf-dev_*.deb)"
+        echo "::set-output name=devrpmpackage::$(ls -1 libqtprotobuf-*-devel.rpm)"
+        echo "::set-output name=librpmpackage::$(ls -1 libqtprotobuf-*.rpm | grep -v 'devel')"
+        echo "::set-output name=zippackage::$(ls -1 qtprotobuf-*.zip)"
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -45,8 +107,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/${{ steps.build_release.outputs.libpackage }}
-        asset_name: ${{ steps.build_release.outputs.libpackage }}
+        asset_path: artifacts/${{ steps.set-outputs.outputs.libpackage }}
+        asset_name: ${{ steps.set-outputs.outputs.libpackage }}
         asset_content_type: application/x-debian-package
     - name: Upload release develop .deb package
       id: upload_dev
@@ -55,8 +117,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/${{ steps.build_release.outputs.devpackage }}
-        asset_name: ${{ steps.build_release.outputs.devpackage }}
+        asset_path: artifacts/${{ steps.set-outputs.outputs.devpackage }}
+        asset_name: ${{ steps.set-outputs.outputs.devpackage }}
         asset_content_type: application/x-debian-package
     - name: Upload release .rpm package
       id: upload_rpm_lib
@@ -65,8 +127,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/${{ steps.build_release.outputs.librpmpackage }}
-        asset_name: ${{ steps.build_release.outputs.librpmpackage }}
+        asset_path: artifacts/${{ steps.set-outputs.outputs.librpmpackage }}
+        asset_name: ${{ steps.set-outputs.outputs.librpmpackage }}
         asset_content_type: application/x-rpm
     - name: Upload release develop .rpm package
       id: upload_rpm_dev
@@ -75,6 +137,16 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/${{ steps.build_release.outputs.devrpmpackage }}
-        asset_name: ${{ steps.build_release.outputs.devrpmpackage }}
+        asset_path: artifacts/${{ steps.set-outputs.outputs.devrpmpackage }}
+        asset_name: ${{ steps.set-outputs.outputs.devrpmpackage }}
         asset_content_type: application/x-rpm
+    - name: Upload release .zip package
+      id: upload_zip_dev
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ steps.set-outputs.outputs.zippackage }}
+        asset_name: ${{ steps.set-outputs.outputs.zippackage }}
+        asset_content_type: application/zip

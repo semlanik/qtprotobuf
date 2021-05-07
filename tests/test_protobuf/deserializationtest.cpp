@@ -286,7 +286,7 @@ TEST_F(DeserializationTest, DoubleMessageDeserializeTest)
 
 TEST_F(DeserializationTest, IntMessageDeserializeTest)
 {
-    SimpleIntMessage test;
+    qtprotobufnamespace::tests::SimpleIntMessage test;
     test.deserialize(serializer.get(), QByteArray::fromHex("080f"));
     ASSERT_EQ(15, test.testFieldInt());
 

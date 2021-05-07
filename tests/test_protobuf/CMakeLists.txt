@@ -1,6 +1,6 @@
 set(TARGET qtprotobuf_test)
 
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufTest.cmake)
+qt_protobuf_internal_find_dependencies()
 
 file(GLOB SOURCES
     simpletest.cpp
@@ -16,10 +16,10 @@ if(NOT WIN32)
     list(APPEND SOURCES internalstest.cpp)
 endif()
 
-add_test_target(TARGET ${TARGET}
+qt_protobuf_internal_add_test(TARGET ${TARGET}
     SOURCES ${SOURCES}
     QML FIELDENUM)
-add_target_windeployqt(TARGET ${TARGET}
+qt_protobuf_internal_add_target_windeployqt(TARGET ${TARGET}
     QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_test(NAME ${TARGET} COMMAND ${TARGET})

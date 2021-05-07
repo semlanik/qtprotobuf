@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.10)
+
+find_package(GTest QUIET)
+
+unset(WrapGTest_FOUND)
+if(NOT GTest_FOUND)
+    if(EXISTS "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/googletest/CMakeLists.txt")
+        set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        add_subdirectory("${QT_PROTOBUF_SOURCE_DIR}/3rdparty/googletest" EXCLUDE_FROM_ALL)
+        set(WrapGTest_FOUND TRUE)
+    endif()
+else()
+    set(WrapGTest_FOUND TRUE)
+endif()

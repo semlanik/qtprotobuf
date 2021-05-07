@@ -37,7 +37,7 @@ static void assertMessagePropertyRegistered(int fieldIndex, const char *property
 {
     // TODO: there should be(?) a mapping avaialble: PropertyType -> propertyTypeName
 
-    const int propertyNumber = MessageType::propertyOrdering.at(fieldIndex);
+    const int propertyNumber = MessageType::propertyOrdering.at(fieldIndex).qtProperty;
     ASSERT_STREQ(MessageType::staticMetaObject.property(propertyNumber).typeName(), propertyTypeName);
     if (!skipMetatypeCheck) {
         ASSERT_EQ(MessageType::staticMetaObject.property(propertyNumber).userType(), qMetaTypeId<PropertyType>());

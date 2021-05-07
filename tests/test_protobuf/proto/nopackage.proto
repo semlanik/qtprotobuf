@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "nopackageexternal.proto";
+
+message EmptyMessage {
+}
+
+enum TestEnum {
+    LOCAL_ENUM_VALUE0 = 0;
+    LOCAL_ENUM_VALUE1 = 1;
+    LOCAL_ENUM_VALUE2 = 2;
+    LOCAL_ENUM_VALUE3 = 5;
+}
+
+message SimpleIntMessage {
+    int32 testFieldInt = 1;
+}
+
+message NoPackageExternalMessage {
+    SimpleIntMessageExt testField = 1;
+}

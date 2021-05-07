@@ -100,6 +100,7 @@ namespace generator {
  * \param QML Enables QML code generation in protobuf classes. If provided in parameter list QML related code for lists and QML registration to be generated.
  * \param COMMENTS Enables comments copying from .proto files. If provided in parameter list message and field related comments will be copied to generated header files.
  * \param FOLDER Enables folder based generation. If provided in parameter list generator will place generated artifacts to folder structure according to package of corresponding .proto file
+ * \param FIELDENUM Enables generation of field numbers as an enum within the message class.
  *
  * \subsection cmake_qtprotobuf_link_target qtprotobuf_link_target
  *

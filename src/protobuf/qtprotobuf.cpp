@@ -34,52 +34,24 @@
 namespace QtProtobuf {
 
 namespace  {
-
-template<typename T, typename std::enable_if_t<sizeof(T) == sizeof(int32_t)
-                                      && std::is_signed<T>::value, int> = 0>
+template<typename T>
 void registerBasicConverters() {
     QMetaType::registerConverter<int32_t, T>(T::fromType);
     QMetaType::registerConverter<T, int32_t>(T::toType);
-    QMetaType::registerConverter<double, T>(T::fromType);
-    QMetaType::registerConverter<T, double>(T::toType);
-    QMetaType::registerConverter<T, QString>(T::toString);
-}
-
-template<typename T, typename std::enable_if_t<sizeof(T) == sizeof(int64_t)
-                                      && std::is_signed<T>::value, int> = 0>
-void registerBasicConverters() {
     QMetaType::registerConverter<int64_t, T>(T::fromType);
     QMetaType::registerConverter<T, int64_t>(T::toType);
-    QMetaType::registerConverter<qint64, T>(T::fromType);
-    QMetaType::registerConverter<T, qint64>(T::toType);
-    QMetaType::registerConverter<int32_t, T>(T::fromType);
-    QMetaType::registerConverter<T, int32_t>(T::toType); //Required for enum handling
-    QMetaType::registerConverter<T, QString>(T::toString);
-}
-
-template<typename T, typename std::enable_if_t<sizeof(T) == sizeof(int32_t)
-                                      && !std::is_signed<T>::value, int> = 0>
-void registerBasicConverters() {
     QMetaType::registerConverter<uint32_t, T>(T::fromType);
     QMetaType::registerConverter<T, uint32_t>(T::toType);
-    QMetaType::registerConverter<int32_t, T>(T::fromType);
-    QMetaType::registerConverter<T, int32_t>(T::toType);
+    QMetaType::registerConverter<uint64_t, T>(T::fromType);
+    QMetaType::registerConverter<T, uint64_t>(T::toType);
+    QMetaType::registerConverter<qulonglong, T>(T::fromType);
+    QMetaType::registerConverter<T, qulonglong>(T::toType);
+    QMetaType::registerConverter<qlonglong, T>(T::fromType);
+    QMetaType::registerConverter<T, qlonglong>(T::toType);
     QMetaType::registerConverter<double, T>(T::fromType);
     QMetaType::registerConverter<T, double>(T::toType);
     QMetaType::registerConverter<T, QString>(T::toString);
 }
-
-template<typename T, typename std::enable_if_t<sizeof(T) == sizeof(int64_t)
-                                      && !std::is_signed<T>::value, int> = 0>
-void registerBasicConverters() {
-    QMetaType::registerConverter<uint64_t, T>(T::fromType);
-    QMetaType::registerConverter<T, uint64_t>(T::toType);
-    QMetaType::registerConverter<quint64, T>(T::fromType);
-    QMetaType::registerConverter<T, quint64>(T::toType);
-    QMetaType::registerConverter<uint32_t, T>(T::fromType);
-    QMetaType::registerConverter<T, QString>(T::toString);
-}
-
 }
 
 std::list<RegisterFunction>& registerFunctions() {

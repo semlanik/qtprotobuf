@@ -64,7 +64,7 @@ void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChann
         qProtoCritical() << "QAbstractGrpcClient::attachChannel is called from different thread.\n"
                            "QtGrpc doesn't guarantie thread safety on channel level.\n"
                            "You have to be confident that channel routines are working in the same thread as QAbstractGrpcClient";
-        assert(channel->thread() == QThread::currentThread());
+        throw std::runtime_error("Call from another thread");
     }
     dPtr->channel = channel;
     dPtr->serializer = channel->serializer();

@@ -86,11 +86,11 @@ const char *Templates::ProtoClassDeclarationBeginTemplate = "\nclass $classname$
                                                             "    Q_DECLARE_PROTOBUF_SERIALIZERS($classname$)\n";
 
 const char *Templates::PropertyTemplate = "Q_PROPERTY($property_type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed SCRIPTABLE $scriptable$)\n";
-const char *Templates::RepeatedPropertyTemplate = "Q_PROPERTY($property_list_type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed SCRIPTABLE $scriptable$)\n";
+const char *Templates::RepeatedPropertyTemplate = "Q_PROPERTY($property_list_type$ $property_name$Data READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed SCRIPTABLE $scriptable$)\n";
 const char *Templates::NonScriptablePropertyTemplate = "Q_PROPERTY($property_type$ $property_name$_p READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed SCRIPTABLE false)\n";
 const char *Templates::NonScriptableAliasPropertyTemplate = "Q_PROPERTY($qml_alias_type$ $property_name$ READ $property_name$_p WRITE set$property_name_cap$_p NOTIFY $property_name$Changed SCRIPTABLE true)\n";
 const char *Templates::MessagePropertyTemplate = "Q_PROPERTY($property_type$ *$property_name$ READ $property_name$_p WRITE set$property_name_cap$_p NOTIFY $property_name$Changed)\n";
-const char *Templates::QmlListPropertyTemplate = "Q_PROPERTY(QQmlListProperty<$property_type$> $property_name$Data READ $property_name$_l NOTIFY $property_name$Changed)\n";
+const char *Templates::QmlListPropertyTemplate = "Q_PROPERTY(QQmlListProperty<$property_type$> $property_name$ READ $property_name$_l NOTIFY $property_name$Changed)\n";
 
 const char *Templates::ConstructorParameterTemplate = "$scope_type$ $property_name$,";
 const char *Templates::ConstructorMessageParameterTemplate = "const $scope_type$ &$property_name$,";
@@ -242,7 +242,7 @@ const char *Templates::SignalTemplate = "void $property_name$Changed();\n";
 
 const char *Templates::FieldsOrderingContainerTemplate = "const QtProtobuf::QProtobufMetaObject $type$::protobufMetaObject = QtProtobuf::QProtobufMetaObject($type$::staticMetaObject, $type$::propertyOrdering);\n"
                                                          "const QtProtobuf::QProtobufPropertyOrdering $type$::propertyOrdering = {";
-const char *Templates::FieldOrderTemplate = "{$field_number$, $property_number$}";
+const char *Templates::FieldOrderTemplate = "{$field_number$, {$property_number$, \"$json_name$\"}}";
 
 const char *Templates::EnumTemplate = "$type$";
 

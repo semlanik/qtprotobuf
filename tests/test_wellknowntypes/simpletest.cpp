@@ -78,11 +78,11 @@ TEST_F(WellknowntypesTest, ApiTest)
     ASSERT_GT(qMetaTypeId<Api>(), 0);
 
     assertMessagePropertyRegistered<Api, QString>(1, "QString", "name");
-    assertMessagePropertyRegistered<Api, MethodRepeated>(2, "google::protobuf::MethodRepeated", "methods");
-    assertMessagePropertyRegistered<Api, OptionRepeated>(3, "google::protobuf::OptionRepeated", "options");
+    assertMessagePropertyRegistered<Api, MethodRepeated>(2, "google::protobuf::MethodRepeated", "methodsData");
+    assertMessagePropertyRegistered<Api, OptionRepeated>(3, "google::protobuf::OptionRepeated", "optionsData");
     assertMessagePropertyRegistered<Api, QString>(4, "QString", "version");
     assertMessagePropertyRegistered<Api, SourceContext>(5, "google::protobuf::SourceContext*", "sourceContext", true);
-    assertMessagePropertyRegistered<Api, MixinRepeated>(6, "google::protobuf::MixinRepeated", "mixins");
+    assertMessagePropertyRegistered<Api, MixinRepeated>(6, "google::protobuf::MixinRepeated", "mixinsData");
     assertMessagePropertyRegistered<Api, SyntaxGadget::Syntax>(7, "google::protobuf::SyntaxGadget::Syntax", "syntax");
 }
 
@@ -94,7 +94,7 @@ TEST_F(WellknowntypesTest, MethodTest)
     assertMessagePropertyRegistered<Method, bool>(3, "bool", "requestStreaming");
     assertMessagePropertyRegistered<Method, QString>(4, "QString", "responseTypeUrl");
     assertMessagePropertyRegistered<Method, bool>(5, "bool", "responseStreaming");
-    assertMessagePropertyRegistered<Method, OptionRepeated>(6, "google::protobuf::OptionRepeated", "options");
+    assertMessagePropertyRegistered<Method, OptionRepeated>(6, "google::protobuf::OptionRepeated", "optionsData");
     assertMessagePropertyRegistered<Method, SyntaxGadget::Syntax>(7, "google::protobuf::SyntaxGadget::Syntax", "syntax");
 }
 
@@ -120,7 +120,7 @@ TEST_F(WellknowntypesTest, EmptyTest)
 TEST_F(WellknowntypesTest, FieldMaskTest)
 {
     ASSERT_GT(qMetaTypeId<FieldMask>(), 0);
-    assertMessagePropertyRegistered<FieldMask, QStringList>(1, "QStringList", "paths");
+    assertMessagePropertyRegistered<FieldMask, QStringList>(1, "QStringList", "pathsData");
 }
 
 TEST_F(WellknowntypesTest, SourceContextTest)
@@ -149,7 +149,7 @@ TEST_F(WellknowntypesTest, ValueTest)
 TEST_F(WellknowntypesTest, ListValueTest)
 {
     ASSERT_GT(qMetaTypeId<ListValue>(), 0);
-    assertMessagePropertyRegistered<ListValue, ValueRepeated>(1, "google::protobuf::ValueRepeated", "values");
+    assertMessagePropertyRegistered<ListValue, ValueRepeated>(1, "google::protobuf::ValueRepeated", "valuesData");
 }
 
 TEST_F(WellknowntypesTest, TimestampTest)
@@ -165,9 +165,9 @@ TEST_F(WellknowntypesTest, TypeTest)
     Q_PROPERTY(QStringList oneofs READ oneofs WRITE setOneofs NOTIFY oneofsChanged)
 
     assertMessagePropertyRegistered<Type, QString>(1, "QString", "name");
-    assertMessagePropertyRegistered<Type, FieldRepeated>(2, "google::protobuf::FieldRepeated", "fields");
-    assertMessagePropertyRegistered<Type, QStringList>(3, "QStringList", "oneofs");
-    assertMessagePropertyRegistered<Type, OptionRepeated>(4, "google::protobuf::OptionRepeated", "options");
+    assertMessagePropertyRegistered<Type, FieldRepeated>(2, "google::protobuf::FieldRepeated", "fieldsData");
+    assertMessagePropertyRegistered<Type, QStringList>(3, "QStringList", "oneofsData");
+    assertMessagePropertyRegistered<Type, OptionRepeated>(4, "google::protobuf::OptionRepeated", "optionsData");
     assertMessagePropertyRegistered<Type, SourceContext *>(5, "google::protobuf::SourceContext*", "sourceContext", true);
     assertMessagePropertyRegistered<Type, SyntaxGadget::Syntax>(6, "google::protobuf::SyntaxGadget::Syntax", "syntax");
 }
@@ -183,7 +183,7 @@ TEST_F(WellknowntypesTest, FieldTest)
     assertMessagePropertyRegistered<Field, QString>(6, "QString", "typeUrl");
     assertMessagePropertyRegistered<Field, QtProtobuf::int32>(7, "QtProtobuf::int32", "oneofIndex_p");
     assertMessagePropertyRegistered<Field, bool>(8, "bool", "packed");
-    assertMessagePropertyRegistered<Field, OptionRepeated>(9, "google::protobuf::OptionRepeated", "options");
+    assertMessagePropertyRegistered<Field, OptionRepeated>(9, "google::protobuf::OptionRepeated", "optionsData");
     assertMessagePropertyRegistered<Field, QString>(10, "QString", "jsonName");
     assertMessagePropertyRegistered<Field, QString>(11, "QString", "defaultValue");
 }
@@ -192,8 +192,8 @@ TEST_F(WellknowntypesTest, EnumTest)
 {
     ASSERT_GT(qMetaTypeId<Enum>(), 0);
     assertMessagePropertyRegistered<Enum, QString>(1, "QString", "name");
-    assertMessagePropertyRegistered<Enum, EnumValueRepeated>(2, "google::protobuf::EnumValueRepeated", "enumvalue");
-    assertMessagePropertyRegistered<Enum, OptionRepeated>(3, "google::protobuf::OptionRepeated", "options");
+    assertMessagePropertyRegistered<Enum, EnumValueRepeated>(2, "google::protobuf::EnumValueRepeated", "enumvalueData");
+    assertMessagePropertyRegistered<Enum, OptionRepeated>(3, "google::protobuf::OptionRepeated", "optionsData");
     assertMessagePropertyRegistered<Enum, SourceContext *>(4, "google::protobuf::SourceContext*", "sourceContext", true);
     assertMessagePropertyRegistered<Enum, SyntaxGadget::Syntax>(5, "google::protobuf::SyntaxGadget::Syntax", "syntax");
 }
@@ -203,7 +203,7 @@ TEST_F(WellknowntypesTest, EnumValueTest)
     ASSERT_GT(qMetaTypeId<EnumValue>(), 0);
     assertMessagePropertyRegistered<EnumValue, QString>(1, "QString", "name");
     assertMessagePropertyRegistered<EnumValue, QtProtobuf::int32>(2, "QtProtobuf::int32", "number_p");
-    assertMessagePropertyRegistered<EnumValue, OptionRepeated>(3, "google::protobuf::OptionRepeated", "options");
+    assertMessagePropertyRegistered<EnumValue, OptionRepeated>(3, "google::protobuf::OptionRepeated", "optionsData");
 }
 
 TEST_F(WellknowntypesTest, OptionTest)

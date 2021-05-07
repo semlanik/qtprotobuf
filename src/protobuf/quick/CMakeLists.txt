@@ -4,17 +4,17 @@ set(TARGET_EXPORT ${TARGET}Targets)
 set(TARGET_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR}/${TARGET})
 set(TARGET_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
-find_package(Qt5 COMPONENTS Core Qml REQUIRED)
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOMOC_MOC_OPTIONS -Muri=QtProtobuf)
 set(CMAKE_AUTORCC ON)
 
-include(${QT_PROTOBUF_CMAKE_DIR}/QtProtobufCommon.cmake)
+qt_protobuf_extract_qt_variable(QT_INSTALL_QML)
 
-extract_qt_variable(QT_INSTALL_QML)
-
-set(TARGET_IMPORTS_DIR ${QT_INSTALL_QML}/QtProtobuf)
+if(NOT WIN32)
+    set(TARGET_IMPORTS_DIR ${QT_INSTALL_QML}/QtProtobuf)
+else()
+    set(TARGET_IMPORTS_DIR ${CMAKE_INSTALL_LIBDIR}/qml/QtProtobuf)
+endif()
 
 file(GLOB SOURCES
     qtprotobufquickplugin.cpp)
@@ -26,13 +26,10 @@ file(GLOB HEADERS
 add_library(${TARGET} ${SOURCES})
 
 if(NOT BUILD_SHARED_LIBS)
-    if(WIN32)
-        message(WARNING "Static version of QtProtobuf is not fully tested on Win32 platforms")
-    endif()
-    target_compile_definitions(${TARGET} PRIVATE QT_PROTOBUF_STATIC QT_STATICPLUGIN PUBLIC QT_PROTOBUF_QUICK_PLUGIN_NAME="QtProtobufQuickPlugin")
+    target_compile_definitions(${TARGET} PUBLIC QT_PROTOBUF_STATIC QT_STATICPLUGIN QT_PROTOBUF_QUICK_PLUGIN_NAME="QtProtobufQuickPlugin")
 endif()
 
-target_link_libraries(${TARGET} PRIVATE Qt5::Core Qt5::Qml ${QT_PROTOBUF_PROJECT}::QtProtobuf)
+target_link_libraries(${TARGET} PRIVATE Qt5::Core Qt5::Qml ${QT_PROTOBUF_NAMESPACE}::Protobuf)
 set_target_properties(${TARGET} PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/QtProtobuf"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/QtProtobuf"
@@ -55,16 +52,16 @@ endforeach()
 target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../ ${Qt5Qml_PRIVATE_INCLUDE_DIRS})
 
 if(NOT BUILD_SHARED_LIBS)
-    add_library(${QT_PROTOBUF_PROJECT}::${TARGET} ALIAS ${TARGET})
+    add_library(${QT_PROTOBUF_NAMESPACE}::${TARGET} ALIAS ${TARGET})
     if(QT_PROTOBUF_INSTALL)
         install(TARGETS ${TARGET} COMPONENT lib
             EXPORT ${TARGET_EXPORT} COMPONENT dev
             ARCHIVE DESTINATION "${TARGET_IMPORTS_DIR}" COMPONENT lib
             RUNTIME DESTINATION "${TARGET_IMPORTS_DIR}" COMPONENT lib
             LIBRARY DESTINATION "${TARGET_IMPORTS_DIR}" COMPONENT lib)
-        install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
+        install(EXPORT ${TARGET_EXPORT} NAMESPACE ${QT_PROTOBUF_NAMESPACE}:: FILE ${TARGET_EXPORT}.cmake DESTINATION ${TARGET_CMAKE_DIR} COMPONENT dev)
     endif()
-    export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_PROJECT}:: FILE ${TARGET_EXPORT}.cmake)
+    export(TARGETS ${TARGET} NAMESPACE ${QT_PROTOBUF_NAMESPACE}:: FILE ${TARGET_EXPORT}.cmake)
 else()
     if(QT_PROTOBUF_INSTALL)
         install(TARGETS ${TARGET} COMPONENT lib

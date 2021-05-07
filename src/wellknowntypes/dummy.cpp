@@ -92,9 +92,9 @@
  * ...
  * \endcode
  *
- * In both scenarious you also need to link QtProtobufWellKnownTypes library by adding following lines to
+ * In both scenarious you also need to link QtProtobuf WellKnownTypes library by adding following lines to
  * **CMakeLists.txt** for your target.
  * \code
- *     target_link_libraries(YourTargetName PRIVATE QtProtobufProject::QtProtobufWellKnownTypes)
+ *     target_link_libraries(YourTargetName PRIVATE QtProtobuf::ProtobufWellKnownTypes)
  * \endcode
  */

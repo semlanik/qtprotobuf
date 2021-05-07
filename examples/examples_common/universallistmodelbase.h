@@ -1,11 +1,13 @@
 #pragma once
 
+#include <exmaples_common_global.h>
+
 #include <QAbstractListModel>
 /*!
  * \brief The UniversalListModelBase class to make possible properties definition for UniversalListModel
  * This class should not be used as is, but leaves this possibility.
  */
-class UniversalListModelBase : public QAbstractListModel
+class UNVERSALLISTMODEL_EXPORT UniversalListModelBase : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)

@@ -7,14 +7,14 @@ QtProtobuf provides Qt-native support of Google protocol buffers. Generated code
 
 ### Test results
 
-| Branch | Results Linux | Results Windows | Support |
-| --- | --- | --- | --- |
-| [master](https://github.com/semlanik/qtprotobuf/tree/master) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=master) | :heavy_check_mark: |
-| [0.5](https://github.com/semlanik/qtprotobuf/tree/0.5) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.5) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.5) | :heavy_check_mark: |
-| [0.4](https://github.com/semlanik/qtprotobuf/tree/0.4) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.4) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.4) | :heavy_check_mark: |
-| [0.3](https://github.com/semlanik/qtprotobuf/tree/0.3) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.3) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.3) | :heavy_check_mark: |
-| [0.2](https://github.com/semlanik/qtprotobuf/tree/0.2) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.2) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.2) |  |
-| [0.1.0](https://github.com/semlanik/qtprotobuf/tree/0.1.0) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.1.0) | ![](https://travis-ci.com/semlanik/qtprotobuf.svg?branch=0.1.0) |  |
+| Branch | Results | Support |
+| --- | --- | --- |
+| [master](https://github.com/semlanik/qtprotobuf/tree/master) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=master) | :heavy_check_mark: |
+| [0.5](https://github.com/semlanik/qtprotobuf/tree/0.5) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.5) | :heavy_check_mark: |
+| [0.4](https://github.com/semlanik/qtprotobuf/tree/0.4) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.4) | :heavy_check_mark: |
+| [0.3](https://github.com/semlanik/qtprotobuf/tree/0.3) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.3) | :heavy_check_mark: |
+| [0.2](https://github.com/semlanik/qtprotobuf/tree/0.2) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.2) |  |
+| [0.1.0](https://github.com/semlanik/qtprotobuf/tree/0.1.0) | ![](https://github.com/semlanik/qtprotobuf/workflows/Test%20Verification/badge.svg?branch=0.1.0) |  |
 
 
 # Table of contents
@@ -335,7 +335,7 @@ You can integrate QtProtobuf as submodule in your project or as installed in sys
 
 ```cmake
 ...
-find_package(QtProtobufProject CONFIG REQUIRED COMPONENTS QtProtobuf QtGrpc)
+find_package(QtProtobuf CONFIG REQUIRED COMPONENTS Protobuf Grpc)
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.proto
  ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile2.proto
  ...
@@ -369,7 +369,7 @@ GENERATED_HEADERS ${GENERATED_HEADERS})
 In case if you somehow avoided ```qtprotobuf_generate``` usage, you need manualy link QtProtobuf libraries used by project, e.g.:
 ```cmake
 ...
-target_link_libraries(${TARGET} QtProtobuf::QtProtobuf QtProtobuf::QtGrpc QtProtobuf::QtProtobufWellKnownTypes)
+target_link_libraries(${TARGET} QtProtobuf::Protobuf QtProtobuf::Grpc QtProtobuf::ProtobufWellKnownTypes)
 ...
 ```
 
