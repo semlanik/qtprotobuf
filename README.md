@@ -64,7 +64,7 @@ QtProtobuf provides Qt-native support of Google protocol buffers. Generated code
 
 Check installation of following packages in your system:
 
-- cmake 3.6 or higher
+- cmake 3.14 or higher
 - Qt 5.12.4 or higher
 - protobuf 3.6.0 or higher (might be used from submodule)
 - golang 1.10 or higher
