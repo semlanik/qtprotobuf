@@ -25,6 +25,8 @@ QtProtobuf provides Qt-native support of Google protocol buffers. Generated code
 
 [Windows Build](#windows-build)
 
+[Cross-compiling](#cross-compiling)
+
 [Usage](#usage)
 
 [Integration with CMake project](#integration-with-cmake-project)
@@ -64,7 +66,7 @@ QtProtobuf provides Qt-native support of Google protocol buffers. Generated code
 
 Check installation of following packages in your system:
 
-- cmake 3.6 or higher
+- cmake 3.14 or higher
 - Qt 5.12.4 or higher
 - protobuf 3.6.0 or higher (might be used from submodule)
 - golang 1.10 or higher
@@ -162,7 +164,7 @@ git submodule add https://github.com/semlanik/qtprotobuf.git qtprotobuf
 git submodule init qtprotobuf
 git submodule update qtprotobuf
 
-#(Optional) You also may initialize all internal QtProtobuf sub-modules for all-in-one build using steps bellow:
+#(Optional) You also may initialize all internal QtProtobuf sub-modules for all-in-one build using steps below:
 cd qtprotobuf
 git submodule update --init --recursive
 ```
@@ -253,9 +255,81 @@ cmake ..
 cmake --build . [--config <RELEASE|DEBUG>] -- /m:<N>
 ```
 
+## Cross-compiling
+
+>**Note:** Cross-compiling support is available since version 0.6.0
+
+Cross compiling is only supported in the prefixed builds of QtProtobuf. It's split into three parts:
+
+- Build and install the Qt framework for the target system (Instructions could be found in the documentation for the Qt Framework)
+- Build for the host system
+- Build for the target system
+
+### Build for the host system
+
+Build for the host system must be prefixed, that means you should install it to the system or the temporary directory,
+using the following steps:
+
+```bash
+mkdir build-host
+cd build-host
+cmake </path/to/qtprotobuf/sources> -DQT_PROTOBUF_MAKE_TESTS=OFF -DQT_PROTOBUF_MAKE_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX=</host/sysroot/prefix>
+cmake --build . -- -j<N>
+cmake --install .
+```
+
+### Build for the target system
+
+To build QtProtobuf correctly for the target system you need to specify compiler and other build essentials in the CMake toolchain file.
+Also it's necessary to specify the QT_PROTOBUF_HOST_PATH variable, that is used to find a host binary of the QtProtobuf generator.
+
+:warning: **IMPORTANT** The QT_PROTOBUF_HOST_PATH variable shall point to the *<lib|lib32|lib64>/cmake* directory of the host QtProtobuf installation.
+
+Typical toolchain file looks as following:
+
+```cmake
+set(CMAKE_SYSTEM_NAME Linux)
+
+set(CMAKE_SYSROOT /usr/armv7a-hardfloat-linux-gnueabi/)
+
+set(CMAKE_C_COMPILER /usr/bin/armv7a-hardfloat-linux-gnueabi-gcc)
+set(CMAKE_CXX_COMPILER /usr/bin/armv7a-hardfloat-linux-gnueabi-g++)
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER) # Important to look programms in the host sysroot only
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH) # Important to look packages in both the host and target sysroots
+```
+
+Using the below steps configure and build the target QtProtobuf:
+
+>**Note:** Use values of the expressions same as in the *Build for the host system* step.
+
+```bash
+mkdir build-host
+cd build-host
+cmake </path/to/qtprotobuf/sources> -DQT_PROTOBUF_MAKE_TESTS=OFF -DQT_PROTOBUF_MAKE_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX="</target/sysroot/prefix>" -DCMAKE_TOOLCHAIN_FILE="</path/to/toolchain.cmake>" -DQT_PROTOBUF_HOST_PATH="</host/sysroot/prefix>/<lib|lib32|lib64>/cmake" -DCMAKE_PREFIX_PATH="</target/sysroot/cross-compiled/qt>"
+```
+
+### Build your project using the target QtProtobuf
+
+>**Note:** Only the CMake-based user projects have a cross-compiling support.
+
+When you build your own project using the target QtProtobuf, it's recommented to use the same toolchain file as you used to compile QtProtobuf.
+You also still need to specify the QT_PROTOBUF_HOST_PATH variable to find the host QtProtobuf generator. Use the following steps as example:
+
+```bash
+mkdir build-clienttutorial
+cd build-clienttutorial
+cmake </path/to/qtprotobuf/sources/examples/clienttutorial> -DCMAKE_PREFIX_PATH="</target/sysroot/prefix>;</target/sysroot/cross-compiled/qt>" -DQT_PROTOBUF_HOST_PATH="</host/sysroot/prefix>/<lib|lib32|lib64>/cmake" -DCMAKE_TOOLCHAIN_FILE="</path/to/toolchain.cmake>"
+
+```
+
+If you build the shared version of the QtProtobuf libraries don't forget to copy them to the target filesystem before running the application.
+
 ## Conan build
 
-QtProtobuf supports conan builds since version 0.4.0.
+>**Note:** QtProtobuf supports conan builds since version 0.4.0.
 
 ### Build QtProtobuf
 

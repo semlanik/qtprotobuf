@@ -56,7 +56,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_grpc.pri.in"
 if(QT_PROTOBUF_INSTALL)
     qt_protobuf_extract_qt_variable(QT_HOST_DATA)
     install(FILES "${QT_PROTOBUF_BINARY_DIR}/qt_lib_grpc.pri"
-            DESTINATION "${QT_HOST_DATA}/mkspecs/modules"
+            DESTINATION "${CMAKE_INSTALL_PREFIX}/${QT_HOST_DATA}/mkspecs/modules"
             COMPONENT dev
     )
 endif()

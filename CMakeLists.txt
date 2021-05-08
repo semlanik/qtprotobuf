@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
+cmake_policy(VERSION 3.6...3.14)
 
 set(QT_PROTOBUF_VERSION 0.5.0)
 set(QT_PROTOBUF_NAMESPACE QtProtobuf)
@@ -20,10 +21,21 @@ set(QT_PROTOBUF_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(QT_PROTOBUF_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(QT_PROTOBUF_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-list(APPEND CMAKE_MODULE_PATH ${QT_PROTOBUF_CMAKE_DIR})
+list(PREPEND CMAKE_MODULE_PATH ${QT_PROTOBUF_CMAKE_DIR})
 
 find_package(WrapgRPC)
-find_package(WrapProtobuf COMPONENTS Protoc OPTIONAL_COMPONENTS Generator Protobuf REQUIRED)
+if(NOT CMAKE_CROSSCOMPILING)
+    find_package(WrapProtobuf COMPONENTS Protoc OPTIONAL_COMPONENTS Generator Protobuf REQUIRED)
+else()
+    if(NOT QT_PROTOBUF_HOST_PATH)
+        message(FATAL_ERROR "QT_PROTOBUF_HOST_PATH is not specified. You shall specify
+QT_PROTOBUF_HOST_PATH to find the host version of QtProtobufGenerator")
+    endif()
+    find_package(${QT_PROTOBUF_NAMESPACE} COMPONENTS ProtobufGenerator CONFIG REQUIRED
+        PATHS ${QT_PROTOBUF_HOST_PATH}
+        NO_DEFAULT_PATH
+    )
+endif()
 find_package(Threads)
 find_package(${QT_VERSIONED_PREFIX} COMPONENTS Core Qml CONFIG REQUIRED)
 find_package(${QT_VERSIONED_PREFIX} OPTIONAL_COMPONENTS Network Quick Gui CONFIG)
@@ -90,20 +102,23 @@ if(QT_PROTOBUF_FIELD_ENUM)
 endif()
 
 configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ProjectConfig.cmake.in" "${QT_PROTOBUF_BINARY_DIR}/${QT_PROTOBUF_NAMESPACE}Config.cmake"
     INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake")
 
-install(FILES "${QT_PROTOBUF_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+install(FILES "${QT_PROTOBUF_BINARY_DIR}/${QT_PROTOBUF_NAMESPACE}Config.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE}"
     COMPONENT dev
 )
-export(PACKAGE ${PROJECT_NAME})
+export(PACKAGE ${QT_PROTOBUF_NAMESPACE})
 install(FILES "${QT_PROTOBUF_CMAKE_DIR}/FindWrapProtobuf.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE}"
     COMPONENT dev
 )
 
-add_subdirectory("src/generator")
+if(NOT CMAKE_CROSSCOMPILING)
+    add_subdirectory("src/generator")
+endif()
+
 add_subdirectory("src/protobuf")
 if(TARGET ${QT_VERSIONED_PREFIX}::Network)
     if(${QT_VERSIONED_PREFIX}Core_VERSION VERSION_LESS "5.12.4")

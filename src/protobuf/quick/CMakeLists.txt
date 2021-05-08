@@ -11,7 +11,7 @@ set(CMAKE_AUTORCC ON)
 qt_protobuf_extract_qt_variable(QT_INSTALL_QML)
 
 if(NOT WIN32)
-    set(TARGET_IMPORTS_DIR ${QT_INSTALL_QML}/QtProtobuf)
+    set(TARGET_IMPORTS_DIR ${CMAKE_INSTALL_PREFIX}/${QT_INSTALL_QML}/QtProtobuf)
 else()
     set(TARGET_IMPORTS_DIR ${CMAKE_INSTALL_LIBDIR}/qml/QtProtobuf)
 endif()
@@ -72,7 +72,8 @@ else()
 endif()
 
 add_custom_command(TARGET ${TARGET}
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/qmldir $<TARGET_FILE_DIR:${TARGET}>/qmldir
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/qmldir"
+            "$<TARGET_FILE_DIR:${TARGET}>/qmldir"
     COMMENT "Copying qmldir to binary directory")
 if(QT_PROTOBUF_INSTALL)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/qmldir DESTINATION "${TARGET_IMPORTS_DIR}" COMPONENT lib)
