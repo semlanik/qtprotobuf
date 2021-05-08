@@ -10,6 +10,8 @@ qt_protobuf_internal_add_example(TARGET ${TARGET}
                    QML_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_custom_command(TARGET ${TARGET}
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/../addressbookserver/cert.pem $<TARGET_FILE_DIR:${TARGET}>)
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/../addressbookserver/cert.pem"
+            "$<TARGET_FILE_DIR:${TARGET}>"
+)
 
 set(CLIENT_EXEC_PATH ${CMAKE_CURRENT_BINARY_DIR}/${TARGET} PARENT_SCOPE)

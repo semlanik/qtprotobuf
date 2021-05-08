@@ -10,12 +10,15 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Quick REQUIRED)
 set(CMAKE_POSITION_INDEPENDENT_CODE ${Qt5_POSITION_INDEPENDENT_CODE})
-
+set(QT_PROTOBUF_NAMESPACE QtProtobuf)
+if(NOT TARGET ${QT_PROTOBUF_NAMESPACE}::qtprotobufgen)
+    find_package(${QT_PROTOBUF_NAMESPACE} COMPONENTS ProtobufGenerator CONFIG REQUIRED)
+endif()
 if(NOT TARGET ${QT_PROTOBUF_NAMESPACE}::Protobuf)
-    find_package(${QT_PROTOBUF_NAMESPACE} COMPONENTS Protobuf REQUIRED)
+    find_package(${QT_PROTOBUF_NAMESPACE} COMPONENTS Protobuf CONFIG REQUIRED)
 endif()
 if(NOT TARGET ${QT_PROTOBUF_NAMESPACE}::Grpc)
-    find_package(${QT_PROTOBUF_NAMESPACE} COMPONENTS Grpc REQUIRED)
+    find_package(${QT_PROTOBUF_NAMESPACE} COMPONENTS Grpc CONFIG REQUIRED)
 endif()
 
 add_executable(clienttutorial main.cpp echoclientengine.cpp qml.qrc)

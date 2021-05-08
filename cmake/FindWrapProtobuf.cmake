@@ -14,7 +14,9 @@ else()
     set(FIND_LIBRARY_USE_LIB64_PATHS FALSE)
 endif()
 
+set(WrapProtobuf_REQUIRED_VARS)
 if("Protobuf" IN_LIST WrapProtobuf_FIND_COMPONENTS OR NOT WrapProtobuf_FIND_COMPONENTS)
+    list(APPEND WrapProtobuf_REQUIRED_VARS Protobuf_INCLUDE_DIRS)
     set(WrapProtobuf_Protobuf_FOUND TRUE)
     if(NOT TARGET protobuf::libprotobuf)
         find_library(Protobuf_LIBRARY protobuf)
@@ -44,6 +46,7 @@ if("Protobuf" IN_LIST WrapProtobuf_FIND_COMPONENTS OR NOT WrapProtobuf_FIND_COMP
 endif()
 
 if("Protoc" IN_LIST WrapProtobuf_FIND_COMPONENTS OR NOT WrapProtobuf_FIND_COMPONENTS)
+    list(APPEND WrapProtobuf_REQUIRED_VARS Protoc_INCLUDE_DIRS)
     set(WrapProtobuf_Protoc_FOUND TRUE)
     if(NOT TARGET protobuf::libprotoc)
         find_package(Threads REQUIRED)
@@ -78,6 +81,7 @@ if("Protoc" IN_LIST WrapProtobuf_FIND_COMPONENTS OR NOT WrapProtobuf_FIND_COMPON
 endif()
 
 if("Generator" IN_LIST WrapProtobuf_FIND_COMPONENTS OR NOT WrapProtobuf_FIND_COMPONENTS)
+    list(APPEND WrapProtobuf_REQUIRED_VARS Protobuf_Protoc_EXECUTABLE)
     set(WrapProtobuf_Generator_FOUND TRUE)
     if(NOT TARGET protobuf::protoc)
         find_program(Protobuf_Protoc_EXECUTABLE protoc)
@@ -89,16 +93,19 @@ if("Generator" IN_LIST WrapProtobuf_FIND_COMPONENTS OR NOT WrapProtobuf_FIND_COM
         else()
             set(WrapProtobuf_Generator_FOUND FALSE)
         endif()
+    else()
+        set(Protobuf_Protoc_EXECUTABLE "protobuf::protoc")
     endif()
 endif()
 
 if(WrapProtobuf_FIND_COMPONENTS)
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args(WrapProtobuf HANDLE_COMPONENTS
-        REQUIRED_VARS Protoc_INCLUDE_DIRS Protobuf_INCLUDE_DIRS
+        REQUIRED_VARS ${WrapProtobuf_REQUIRED_VARS}
     )
 elseif(TARGET protobuf::protoc AND TARGET protobuf::libprotoc AND TARGET protobuf::libprotobuf)
     include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args(WrapProtobuf REQUIRED_VARS
-        Protoc_INCLUDE_DIRS Protobuf_INCLUDE_DIRS)
+    find_package_handle_standard_args(WrapProtobuf
+        REQUIRED_VARS ${WrapProtobuf_REQUIRED_VARS}
+    )
 endif()
