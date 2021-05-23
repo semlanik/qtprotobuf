@@ -42,6 +42,8 @@ Controller.prototype.ObligationsPageCallback = function()
 {
     var page = gui.pageWidgetByObjectName("ObligationsPage");
     page.obligationsAgreement.setChecked(true);
+    var individualPerson = gui.findChild(page, "IndividualPerson");
+    individualPerson.setChecked(true);
     page.completeChanged();
     gui.clickButton(buttons.NextButton, 2000);
 }

@@ -415,6 +415,7 @@ endfunction()
 function(qt_protobuf_internal_generate_pri target)
     string(TOLOWER "${target}" target_lower)
     set(pri_name "qt_lib_${target_lower}.pri")
+    get_target_property(QT_PROTOBUF_LIBRARY_OUTPUT_NAME ${target} OUTPUT_NAME)
 
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${pri_name}.in"
         "${QT_PROTOBUF_BINARY_DIR}/${pri_name}" @ONLY

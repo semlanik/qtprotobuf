@@ -26,7 +26,7 @@
 import QtQuick 2.12
 import QtTest 1.0
 
-import QtProtobuf 0.5
+import QtProtobuf 0.6
 import qtprotobufnamespace.tests 1.0
 import qtprotobufnamespace.tests.nested 1.0
 import qtprotobufnamespace.tests.nested.NestedFieldMessage 1.0 as NestedFieldMessage_
