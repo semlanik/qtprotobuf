@@ -411,3 +411,28 @@ function(qt_protobuf_internal_install_targets)
         )
     endforeach()
 endfunction()
+
+function(qt_protobuf_internal_generate_pri target)
+    string(TOLOWER "${target}" target_lower)
+    set(pri_name "qt_lib_${target_lower}.pri")
+
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${pri_name}.in"
+        "${QT_PROTOBUF_BINARY_DIR}/${pri_name}" @ONLY
+    )
+
+    if(QT_PROTOBUF_INSTALL)
+        qt_protobuf_extract_qt_variable(QT_INSTALL_ARCHDATA)
+        qt_protobuf_extract_qt_variable(QT_INSTALL_PREFIX)
+
+        if("${QT_INSTALL_PREFIX}" STREQUAL "${CMAKE_INSTALL_PREFIX}")
+            set(mkspec_install_dir "${QT_INSTALL_ARCHDATA}/mkspecs/modules")
+        else()
+            set(mkspec_install_dir "${CMAKE_INSTALL_PREFIX}/mkspecs/modules")
+        endif()
+
+        install(FILES "${QT_PROTOBUF_BINARY_DIR}/${pri_name}"
+            DESTINATION "${mkspec_install_dir}"
+            COMPONENT dev
+        )
+    endif()
+endfunction()
