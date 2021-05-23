@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 cmake_policy(VERSION 3.6...3.14)
 
-set(QT_PROTOBUF_VERSION 0.5.0)
+set(QT_PROTOBUF_VERSION 0.6.0)
 set(QT_PROTOBUF_NAMESPACE QtProtobuf)
 set(QT_PREFIX Qt)
 set(QT_VERSIONED_PREFIX Qt5)

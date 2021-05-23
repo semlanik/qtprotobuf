@@ -1,3 +1,30 @@
+2021-05-23 version 0.6.0 (generator/QtProtobuf/QtGrpc)
+    QtProtobuf
+    * Split generator and QtProtobuf library
+    * Add standalone tests build
+    * Change the installation folder for the .pri files and qml modules
+    * Initial cross-compiling support
+    * Change the lookup mechanism of 3rdparty components
+    * Add github workflow to build Windows release packages
+    * Fix transparent types converter
+    * Replace ASSERT_EQ by EXPECT_EQ in converter tests
+    * Make microjson build-in only
+    * Tune coverage collecting procedure
+    * Add support of the cycling dependency between nested types
+    QtGrpc
+    * Fix subscription read buffer not clearing on subsequent calls
+    * Add a client QML call with the return value as a parameter
+    * Fixes for newer grpc versions
+    * Add implementation of a QAbstractGrpcChannel based on gRPC C++ native library
+    * Add timeout for subscription error
+    * Add disconnect method for subscription
+    generator
+    * Implement extra namespace for the generated code
+    * Add reflection of the json name to the property ordering
+    * Change the name of QML list properties. Keep the protobuf name for the
+      QML list prtoperties.
+    * Add field enum generation
+
 2020-08-31 version 0.5.0 (generator/QtProtobuf/QtGrpc)
     QtProtobuf
     * Change the qmake executable lookup way

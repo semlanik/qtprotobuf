@@ -1,7 +1,7 @@
 QT.protobuf.VERSION = @QT_PROTOBUF_VERSION@
-QT.protobuf.name = QtProtobuf
-QT.protobuf.module = QtProtobuf
-QT.protobuf.includes = @CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/QtProtobuf
+QT.protobuf.name = Qt@target@
+QT.protobuf.module = @QT_PROTOBUF_LIBRARY_OUTPUT_NAME@
+QT.protobuf.includes = @CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/@QT_PROTOBUF_NAMESPACE@@target@
 QT.protobuf.private_includes =
 QT.protobuf.libs = @CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
 QT.protobuf.depends = core qml
