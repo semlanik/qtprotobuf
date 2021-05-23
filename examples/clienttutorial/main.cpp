@@ -35,7 +35,7 @@
  * Add following line in your CMakeLists.txt to add QtProtobuf as project dependency:
  *
  * \code
- * find_package(QtProtobuf COMPONENTS Protobuf Grpc REQUIRED)
+ * find_package(QtProtobuf COMPONENTS ProtobufGenerator Protobuf Grpc REQUIRED)
  * ...
  * target_link_libraries(clienttutorial PRIVATE QtProtobuf::Grpc QtProtobuf::Protobuf)
  * \endcode

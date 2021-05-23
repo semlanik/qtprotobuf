@@ -409,7 +409,7 @@ You can integrate QtProtobuf as submodule in your project or as installed in sys
 
 ```cmake
 ...
-find_package(QtProtobuf CONFIG REQUIRED COMPONENTS Protobuf Grpc)
+find_package(QtProtobuf CONFIG REQUIRED COMPONENTS ProtobufGenerator Protobuf Grpc)
 file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.proto
  ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile2.proto
  ...

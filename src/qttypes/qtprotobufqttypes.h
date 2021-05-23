@@ -69,7 +69,7 @@
  * To enable Qt types support add ProtobufQtTypes as dependency to CMake project:
  * \code
  * ...
- * find_package(QtProtobuf CONFIG COMPONENTS Protobuf ProtobufQtTypes REQUIRED)
+ * find_package(QtProtobuf CONFIG COMPONENTS ProtobufGenerator Protobuf ProtobufQtTypes REQUIRED)
  * ... #After target creation
  * target_link_libraries(${TARGET} PRIVATE ${QT_PROTOBUF_NAMESPACE}::ProtobufQtTypes)
  * \endcode
