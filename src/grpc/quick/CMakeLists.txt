@@ -9,9 +9,10 @@ set(CMAKE_AUTOMOC_MOC_OPTIONS -Muri=QtGrpc)
 set(CMAKE_AUTORCC ON)
 
 qt_protobuf_extract_qt_variable(QT_INSTALL_QML)
+qt_protobuf_extract_qt_variable(QT_INSTALL_PREFIX)
 
-if(NOT WIN32)
-    set(TARGET_IMPORTS_DIR ${CMAKE_INSTALL_PREFIX}/${QT_INSTALL_QML}/QtGrpc)
+if("${QT_INSTALL_PREFIX}" STREQUAL "${CMAKE_INSTALL_PREFIX}")
+    set(TARGET_IMPORTS_DIR ${QT_INSTALL_QML}/QtGrpc)
 else()
     set(TARGET_IMPORTS_DIR ${CMAKE_INSTALL_LIBDIR}/qml/QtGrpc)
 endif()

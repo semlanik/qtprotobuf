@@ -49,17 +49,7 @@ if(NOT BUILD_SHARED_LIBS)
     set(QT_PROTOBUF_EXTRA_CONFIG "staticlib") #extra config for .pri file in case if static build enabled
 endif()
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qt_lib_grpc.pri.in"
-    "${QT_PROTOBUF_BINARY_DIR}/qt_lib_grpc.pri" @ONLY
-)
-
-if(QT_PROTOBUF_INSTALL)
-    qt_protobuf_extract_qt_variable(QT_HOST_DATA)
-    install(FILES "${QT_PROTOBUF_BINARY_DIR}/qt_lib_grpc.pri"
-            DESTINATION "${CMAKE_INSTALL_PREFIX}/${QT_HOST_DATA}/mkspecs/modules"
-            COMPONENT dev
-    )
-endif()
+qt_protobuf_internal_generate_pri(Grpc)
 
 if(TARGET Qt5::Quick)
     add_subdirectory("quick")

@@ -54,12 +54,13 @@ jobs:
       id: build_release_windows
       run: |
         mkdir build-static
+        mkdir install
         cd build-static
         setx GOROOT "c:\Go"
         setx path "%path%;C:\Qt\5.15.2\msvc2019_64\bin;C:\Go\bin;C:\yasm"
         set GOROOT="c:\Go"
         set PATH="%PATH%;C:\Qt\5.15.2\msvc2019_64\bin;C:\Go\bin;C:\yasm"
-        cmake -DCMAKE_PREFIX_PATH="C:\Qt\5.15.2\msvc2019_64;C:\Go\bin;C:\yasm" -DBUILD_SHARED_LIBS=OFF -DQT_PROTOBUF_MAKE_TESTS=OFF -DQT_PROTOBUF_MAKE_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Release ..
+        cmake -DCMAKE_PREFIX_PATH="C:\Qt\5.15.2\msvc2019_64;C:\Go\bin;C:\yasm" -DBUILD_SHARED_LIBS=OFF -DQT_PROTOBUF_MAKE_TESTS=OFF -DQT_PROTOBUF_MAKE_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="../install" ..
         cmake --build . --config Release --parallel
         cpack -G ZIP -C Release -v
         mkdir artifacts
