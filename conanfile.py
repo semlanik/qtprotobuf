@@ -4,7 +4,7 @@ import os
 
 class QtProtobufConan(ConanFile):
     name = "qtprotobuf"
-    version = "0.5.0"
+    version = "0.6.0"
     license = "MIT"
     url = "https://github.com/semlanik/qtprotobuf"
     description = ("gRPC and Protobuf generator and bindings for Qt framework")
@@ -20,8 +20,7 @@ class QtProtobufConan(ConanFile):
     requires = [
         "protobuf/3.9.1",
         "protoc_installer/3.9.1@bincrafters/stable",
-        "qt/5.14.2@bincrafters/stable",
-        "microjson/0.1.0@semlanik/stable",
+        "qt/5.15.2",
     ]
     scm = {
         "type": "git",
