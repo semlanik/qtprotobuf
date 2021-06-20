@@ -28,6 +28,7 @@
 #include "qtprotobufglobal.h"
 
 #include <QList>
+#include <QMap>
 #include <QMetaType>
 
 #include <unordered_map>
@@ -274,6 +275,45 @@ struct ProtoTypeRegistrar {
     }
 };
 
+template<typename T>
+bool repeatedValueCompare(const QList<QSharedPointer<T>>& a, const QList<QSharedPointer<T>>& b) {
+    if (a.size() != b.size()) {
+        return false;
+    }
+    auto itA = std::begin(a);
+    auto itB = std::begin(b);
+    while (itA != std::end(a) && itB != std::end(b)) {
+        if (*itA != *itB && *(*itA) != *(*itB)) {
+            return false;
+        }
+        ++itA;
+        ++itB;
+    }
+
+    return true;
+}
+
+template<typename K, typename V>
+bool repeatedValueCompare(const QMap<K, V>& a, const QMap<K, V>& b) {
+    return a == b;
+}
+
+template<typename K, typename V>
+bool repeatedValueCompare(const QMap<K, QSharedPointer<V>>& a, const QMap<K, QSharedPointer<V>>& b) {
+    if (a.size() != b.size()) {
+        return false;
+    }
+
+    for (auto itA = a.keyValueBegin(); itA != a.keyValueEnd(); ++itA) {
+        if (b.value((*itA).first) != (*itA).second
+                && *(b.value((*itA).first)) != *((*itA).second)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 }
 
 Q_DECLARE_METATYPE(QtProtobuf::int32)
@@ -366,4 +406,5 @@ template<> struct hash<QString> {
     }
 };
 #endif
+
 }

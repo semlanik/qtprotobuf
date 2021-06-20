@@ -945,5 +945,36 @@ TEST_F(SimpleTest, NoPackageMessageTest)
     ASSERT_EQ(test.property(propertyName).value<SimpleIntMessageExt*>()->testFieldInt(), 42);
     ASSERT_EQ(test.testField().testFieldInt(), 42);
 }
+
+TEST_F(SimpleTest, RepeatedComplexMessageCompareTest)
+{
+    QSharedPointer<ComplexMessage> msg1(new ComplexMessage(10, {"qwerty"}));
+    QSharedPointer<ComplexMessage> msg2(new ComplexMessage(20, {"ytrewq"}));
+
+    QSharedPointer<ComplexMessage> msg3(new ComplexMessage(10, {"qwerty"}));
+    QSharedPointer<ComplexMessage> msg4(new ComplexMessage(20, {"ytrewq"}));
+
+    ASSERT_TRUE(*msg1 == *msg3);
+    ASSERT_TRUE(*msg2 == *msg4);
+
+    RepeatedComplexMessage test1 = RepeatedComplexMessage({msg1, msg2});
+    RepeatedComplexMessage test2 = RepeatedComplexMessage({msg3, msg4});
+    RepeatedComplexMessage test3 = RepeatedComplexMessage({msg4, msg3});
+    ASSERT_TRUE(test1 == test2);
+    ASSERT_FALSE(test3 == test2);
+}
+
+TEST_F(SimpleTest, SimpleInt32ComplexMessageMapMessageCompareTest)
+{
+    QSharedPointer<ComplexMessage> msg1(new ComplexMessage(10, {"qwerty"}));
+    QSharedPointer<ComplexMessage> msg2(new ComplexMessage(20, {"ytrewq"}));
+
+    QSharedPointer<ComplexMessage> msg3(new ComplexMessage(10, {"qwerty"}));
+    QSharedPointer<ComplexMessage> msg4(new ComplexMessage(20, {"ytrewq"}));
+
+    SimpleInt32ComplexMessageMapMessage test1 = SimpleInt32ComplexMessageMapMessage({{20, msg1}, {30, msg2}});
+    SimpleInt32ComplexMessageMapMessage test2 = SimpleInt32ComplexMessageMapMessage({{20, msg3}, {30, msg4}});
+    ASSERT_TRUE(test1 == test2);
+}
 } // tests
 } // qtprotobuf

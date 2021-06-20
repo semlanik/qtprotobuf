@@ -166,7 +166,9 @@ const char *Templates::EmptyEqualOperatorDefinitionTemplate = "bool $classname$:
                                                               "    return true;\n"
                                                               "}\n\n";
 const char *Templates::EqualOperatorPropertyTemplate = "m_$property_name$ == other.m_$property_name$";
-const char *Templates::EqualOperatorMessagePropertyTemplate = "m_$property_name$ == other.m_$property_name$\n";
+const char *Templates::EqualOperatorMessagePropertyTemplate = "(m_$property_name$ == other.m_$property_name$\n"
+                                                              "    || *m_$property_name$ == *other.m_$property_name$)\n";
+const char *Templates::EqualOperatorRepeatedPropertyTemplate = "QtProtobuf::repeatedValueCompare(m_$property_name$, other.m_$property_name$)";
 
 const char *Templates::NotEqualOperatorDeclarationTemplate = "bool operator !=(const $classname$ &other) const;\n";
 const char *Templates::NotEqualOperatorDefinitionTemplate = "bool $classname$::operator !=(const $classname$ &other) const\n{\n"
