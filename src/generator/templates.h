@@ -126,6 +126,7 @@ public:
     static const char *EmptyEqualOperatorDefinitionTemplate;
     static const char *EqualOperatorPropertyTemplate;
     static const char *EqualOperatorMessagePropertyTemplate;
+    static const char *EqualOperatorRepeatedPropertyTemplate;
     static const char *NotEqualOperatorDeclarationTemplate;
     static const char *NotEqualOperatorDefinitionTemplate;
     static const char *GetterPrivateMessageDeclarationTemplate;

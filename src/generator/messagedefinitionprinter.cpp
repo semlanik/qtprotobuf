@@ -333,6 +333,8 @@ void MessageDefinitionPrinter::printComparisonOperators()
         }
         if (common::isPureMessage(field)) {
             mPrinter->Print(propertyMap, Templates::EqualOperatorMessagePropertyTemplate);
+        } else if (field->type() == FieldDescriptor::TYPE_MESSAGE && field->is_repeated()) {
+            mPrinter->Print(propertyMap, Templates::EqualOperatorRepeatedPropertyTemplate);
         } else {
             mPrinter->Print(propertyMap, Templates::EqualOperatorPropertyTemplate);
         }
