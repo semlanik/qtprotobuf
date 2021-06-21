@@ -12,6 +12,7 @@ if(TARGET ${QT_VERSIONED_PREFIX}::QuickTest)
 endif()
 add_subdirectory("test_protobuf_multifile")
 add_subdirectory("test_extra_namespace")
+add_subdirectory("test_qmakebuild")
 if(NOT QT_PROTOBUF_STANDALONE_TESTS) # Disable in standalone mode as it requires some private
                                      # headers to work properly.
     add_subdirectory("test_extra_namespace_qml")
