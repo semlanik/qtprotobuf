@@ -64,8 +64,8 @@ StackItem {
                     Layout.alignment: Qt.AlignVCenter
                     SecondaryText {
                         id: defaultPhoneNumberText
-                        property PhoneNumber defaultPhoneNumber: contactDelegate.contact.phonesData.length > 0 ?
-                                                                     contactDelegate.contact.phonesData[0] : null
+                        property PhoneNumber defaultPhoneNumber: contactDelegate.contact.phones.length > 0 ?
+                                                                     contactDelegate.contact.phones[0] : null
                         visible: defaultPhoneNumber != null
                         text: defaultPhoneNumber ?
                                   "+" + defaultPhoneNumber.countryCode + " " + defaultPhoneNumber.number : ""

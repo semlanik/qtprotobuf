@@ -60,7 +60,7 @@ StackItem {
                 id: _homePhoneField
                 label: qsTr("Home phone")
                 text: _homePhone ? "+" + _homePhone.countryCode + " " + _homePhone.number : ""
-                property PhoneNumber _homePhone: contact.phonesData[0]
+                property PhoneNumber _homePhone: contact.phones[0]
             }
             DropDownColumn {
                 anchors.right: parent.right
@@ -96,7 +96,7 @@ StackItem {
                 TextRow {
                     id: _jzipCode
                     label: qsTr("Zip code")
-                    text: contact.job.officeAddress.zipCode
+                    text: "" + contact.job.officeAddress.zipCode
                 }
                 TextRow {
                     id: _jstate
@@ -129,7 +129,7 @@ StackItem {
                 TextRow {
                     id: _zipCode
                     label: qsTr("Zip code")
-                    text: contact.address.zipCode
+                    text: "" + contact.address.zipCode
                 }
                 TextRow {
                     id: _state
@@ -156,7 +156,7 @@ StackItem {
         primaryColor: "#4CAF50"
         secondaryColor: "#58cb5c"
         onClicked: {
-            AddressBookEngine.makeCall(contact.phonesData[0])
+            AddressBookEngine.makeCall(contact.phones[0])
             stack.pop();
         }
     }

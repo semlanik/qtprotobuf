@@ -167,8 +167,8 @@ StackItem {
         _streetAddress2.text = newContact.address.streetAddress2
         _zipCode.text = newContact.address.zipCode.toString()
         _state.text = newContact.address.state
-        var phoneNumber = newContact.phonesData.length > 0 ?
-                    newContact.phonesData[0] : null
+        var phoneNumber = newContact.phones.length > 0 ?
+                    newContact.phones[0] : null
         if (phoneNumber) {
             homePhone.number = phoneNumber.number.toString()
         }
@@ -186,7 +186,7 @@ StackItem {
             if (homePhone.number.length !== 0) {
                 phones.push(_homePhoneData);
             }
-            newContact.phonesData = phones;
+            newContact.phones = phones;
 
             AddressBookEngine.addContact(newContact)
             stack.pop()
