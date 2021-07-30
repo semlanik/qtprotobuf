@@ -334,6 +334,8 @@ TEST_F(SimpleTest, SimpleEnumsTest)
     ASSERT_EQ(testEnum.value(0), 0);
     ASSERT_EQ(testEnum.value(1), 1);
     ASSERT_EQ(testEnum.value(2), 2);
+
+    ASSERT_TRUE(qtprotobufnamespace::tests::TestEnumGadget::TestEnumToString(qtprotobufnamespace::tests::TestEnumGadget::TEST_ENUM_VALUE0) == QString("TEST_ENUM_VALUE0"));
 }
 
 TEST_F(SimpleTest, SimpleFileEnumsTest)

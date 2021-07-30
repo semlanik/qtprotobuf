@@ -72,6 +72,7 @@ const char *Templates::NestedMessageUsingTemplate = "using $type$ = $scope_names
                                                     "using $list_type$ = $scope_namespaces$::$list_type$;\n";
 
 const char *Templates::EnumTypeRepeatedTemplate = "using $list_type$ = QList<$type$>;\n";
+const char *Templates::EnumToStringTemplate = "Q_INVOKABLE static QString $type$ToString($type$ v) { return QVariant::fromValue(v).toString(); }\n";
 
 const char *Templates::NamespaceTemplate = "namespace $namespace$ {\n";
 const char *Templates::UsingNamespaceTemplate = "using namespace $namespace$;\n";

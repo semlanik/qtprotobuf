@@ -59,6 +59,7 @@ public:
     static const char *MessageMapTypeUsingTemplate;
     static const char *NestedMessageUsingTemplate;
     static const char *EnumTypeRepeatedTemplate;
+    static const char *EnumToStringTemplate;
     static const char *NamespaceTemplate;
     static const char *UsingNamespaceTemplate;
     static const char *ClassDeclarationTemplate;

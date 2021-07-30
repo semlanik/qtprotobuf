@@ -364,6 +364,7 @@ void MessageDeclarationPrinter::printQEnums() {
         Outdent();
         mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);
         mPrinter->Print(typeMap, Templates::QEnumTemplate);
+        mPrinter->Print(typeMap, Templates::EnumToStringTemplate);
     }
 
     for (int i = 0; i < mDescriptor->enum_type_count(); i++) {

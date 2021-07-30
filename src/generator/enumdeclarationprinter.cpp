@@ -65,6 +65,7 @@ void EnumDeclarationPrinter::printEnum()
     mPrinter->Print(Templates::SemicolonBlockEnclosureTemplate);
     mPrinter->Print(typeMap, Templates::QEnumTemplate);
     mPrinter->Print(typeMap, Templates::EnumTypeRepeatedTemplate);
+    mPrinter->Print(typeMap, Templates::EnumToStringTemplate);
     Outdent();
 }
 

@@ -33,6 +33,9 @@ import qtprotobufnamespace.tests.nested.NestedFieldMessage 1.0 as NestedFieldMes
 
 TestCase {
     name: "Simple values assignment"
+    SimpleEnumMessage {
+        id: simpleEnumMsg
+    }
     SimpleBoolMessage {
         id: boolMsg
         testFieldBool: false
@@ -104,6 +107,12 @@ TestCase {
     NoPackageMessage {
         id: noPackageMessageUser
         testField.testFieldInt: 42
+    }
+
+    function test_simpleenummessage() {
+        compare(simpleEnumMsg.LocalEnumToString(SimpleEnumMessage.LOCAL_ENUM_VALUE0), "LOCAL_ENUM_VALUE0", "SimpleEnumMessage.LocalEnumToString(LOCAL_ENUM_VALUE0) works")
+        simpleEnumMsg.localEnum = SimpleEnumMessage.LOCAL_ENUM_VALUE1
+        compare(simpleEnumMsg.LocalEnumToString(simpleEnumMsg.localEnum), "LOCAL_ENUM_VALUE1", "SimpleEnumMessage.LocalEnumToString() on property works")
     }
 
     function test_1initialization() {
