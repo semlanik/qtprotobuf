@@ -98,7 +98,4 @@ macro(qt_protobuf_internal_find_dependencies)
         add_definitions(-DQT_PROTOBUF_STATIC)# add_definitions is used because old cmake versions
                                              # compatibility
     endif()
-
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTORCC ON)
 endmacro()
