@@ -77,9 +77,7 @@ function(qt_protobuf_internal_add_example)
     cmake_parse_arguments(arg "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTORCC ON)
-
+    
     file(GLOB PROTO_FILES ABSOLUTE ${arg_PROTO_FILES})
     file(GLOB SOURCES ${arg_SOURCES})
 
@@ -169,14 +167,11 @@ function(qt_protobuf_internal_add_library target)
     set(target_install_libdir "${CMAKE_INSTALL_LIBDIR}")
     set(target_install_cmakedir "${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE}")
 
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTORCC ON)
-
     if(NOT arg_SOURCES)
         message(FATAL_ERROR "SOURCES are not specified for ${target}")
     endif()
 
-    file(GLOB sources ${arg_SOURCES} ${arg_PUBLIC_HEADER})
+    file(GLOB sources ${arg_SOURCES})
     add_library(${target} ${sources})
 
     if(NOT BUILD_SHARED_LIBS)
@@ -280,13 +275,14 @@ function(qt_protobuf_internal_extend_target target)
     endif()
 
     if(arg_PUBLIC_HEADER)
-        file(GLOB PUBLIC_HEADER ${arg_PUBLIC_HEADER})
+        file(GLOB public_header_paths ${arg_PUBLIC_HEADER})
         qt_protobuf_internal_generate_qt_headers(generated_public_header
-            PUBLIC_HEADER ${PUBLIC_HEADER}
+            PUBLIC_HEADER ${public_header_paths}
             TARGET ${target}
         )
-        set_target_properties(${target} PROPERTIES
-            PUBLIC_HEADER "${PUBLIC_HEADER};${generated_public_header}")
+        set_property(TARGET ${target} APPEND PROPERTY
+            PUBLIC_HEADER "${public_header_paths};${generated_public_header}")
+        target_sources(${target} PRIVATE ${public_header_paths})
     endif()
 
     if(arg_LIBRARIES)
