@@ -52,7 +52,7 @@
 #endif
 
 #ifndef Q_GRPC_IMPORT_QUICK_PLUGIN
-    #ifdef QT_PROTOBUF_STATIC
+    #if defined(QT_PROTOBUF_STATIC) && defined(QT_QML_LIB) // TODO: Check how detect this in Qt6
         #include <QtPlugin>
         #include <QQmlExtensionPlugin>
         #define Q_GRPC_IMPORT_QUICK_PLUGIN() \

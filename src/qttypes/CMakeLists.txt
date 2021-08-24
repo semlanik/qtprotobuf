@@ -19,10 +19,19 @@ qt_protobuf_internal_add_library(ProtobufQtTypes
 
 
 file(GLOB PROTO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/QtProtobuf/Qt*.proto)
+
+set(qml_enabled "")
+if(TARGET Qt5::Qml)
+    set(qml_enabled QML)
+endif()
+
 qtprotobuf_generate(TARGET ProtobufQtTypes
     OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
     PROTO_FILES ${PROTO_FILE}
-    QML FOLDER ${extra_type_libraries_options})
+    FOLDER
+    ${qml_enabled}
+    ${extra_type_libraries_options}
+)
 
 target_compile_definitions(ProtobufQtTypes PRIVATE QT_BUILD_PROTOBUF_QT_TYPES_LIB)
 

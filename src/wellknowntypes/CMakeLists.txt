@@ -15,6 +15,11 @@ function(add_wellknowntype type_name)
     set(lookup_dirs "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src"
         ${Protobuf_INCLUDE_DIRS}
     )
+
+    set(qml_enabled "")
+    if(TARGET Qt5::Qml)
+        set(qml_enabled QML)
+    endif()
     foreach(dir ${lookup_dirs})
         file(GLOB PROTO_FILE "${dir}/google/protobuf/${type_name}.proto")
         if(NOT "${PROTO_FILE}" STREQUAL "")
@@ -24,7 +29,7 @@ function(add_wellknowntype type_name)
                 OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated"
                 PROTO_FILES "${PROTO_FILE}"
                 PROTO_INCLUDES "-I\"${dir}\""
-                QML
+                ${qml_enabled}
                 FOLDER
                 ${extra_type_libraries_options}
             )

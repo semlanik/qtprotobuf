@@ -26,8 +26,10 @@
 #pragma once //QProtobufLazyMessagePointer
 
 #include "qtprotobufglobal.h"
-#include <QQmlEngine>
 #include <QObject>
+#if defined(QT_QML_LIB) // TODO: Check how detect this in Qt6
+#  include <QQmlEngine>
+#endif
 
 #include <memory>
 #include <type_traits>
@@ -96,7 +98,12 @@ public:
 
 private:
     void checkAndRelease() const {
-        if (m_ptr != nullptr && QQmlEngine::objectOwnership(m_ptr.get()) == QQmlEngine::JavaScriptOwnership) {
+#if defined(QT_QML_LIB)
+        bool qmlCheck = QQmlEngine::objectOwnership(m_ptr.get()) == QQmlEngine::JavaScriptOwnership;
+#else
+        bool qmlCheck = true;
+#endif
+        if (m_ptr != nullptr && qmlCheck) {
             m_ptr.release();//In case if object owned by QML it's qml responsibility to clean it up
             QObject::disconnect(m_destroyed);
         }
