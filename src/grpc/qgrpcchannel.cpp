@@ -46,7 +46,7 @@
 #include "qabstractgrpccredentials.h"
 #include "qgrpcasyncreply.h"
 #include "qgrpcstatus.h"
-#include "qgrpcsubscription.h"
+#include "qgrpcstream.h"
 #include "qabstractgrpcclient.h"
 #include "qgrpccredentials.h"
 #include "qprotobufserializerregistry_p.h"
@@ -78,7 +78,7 @@ static inline void parseQByteArray(const QByteArray &bytearray, grpc::ByteBuffer
     buffer.Swap(&tmp);
 }
 
-QGrpcChannelSubscription::QGrpcChannelSubscription(grpc::Channel *channel, const QString &method, const QByteArray &data, QObject *parent) : QObject(parent)
+QGrpcChannelStream::QGrpcChannelStream(grpc::Channel *channel, const QString &method, const QByteArray &data, QObject *parent) : QObject(parent)
 {
     grpc::ByteBuffer request;
     parseQByteArray(data, request);
@@ -117,15 +117,15 @@ QGrpcChannelSubscription::QGrpcChannelSubscription(grpc::Channel *channel, const
         return; // exit thread
     });
 
-    connect(thread, &QThread::finished, this, &QGrpcChannelSubscription::finished);
+    connect(thread, &QThread::finished, this, &QGrpcChannelStream::finished);
 }
 
-void QGrpcChannelSubscription::start()
+void QGrpcChannelStream::start()
 {
     thread->start();
 }
 
-QGrpcChannelSubscription::~QGrpcChannelSubscription()
+QGrpcChannelStream::~QGrpcChannelStream()
 {
     cancel();
     thread->wait();
@@ -136,9 +136,9 @@ QGrpcChannelSubscription::~QGrpcChannelSubscription()
     }
 }
 
-void QGrpcChannelSubscription::cancel() {
+void QGrpcChannelStream::cancel() {
     // TODO: check thread safety
-    qProtoDebug() << "Subscription thread terminated";
+    qProtoDebug() << "Stream thread terminated";
     context.TryCancel();
 }
 
@@ -256,29 +256,29 @@ QGrpcStatus QGrpcChannelPrivate::call(const QString &method, const QString &serv
     return call.status;
 }
 
-void QGrpcChannelPrivate::subscribe(QGrpcSubscription *subscription, const QString &service, QAbstractGrpcClient *client)
+void QGrpcChannelPrivate::subscribe(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client)
 {
-    assert(subscription != nullptr);
+    assert(stream != nullptr);
 
-    QString rpcName = QString("/%1/%2").arg(service).arg(subscription->method());
+    QString rpcName = QString("/%1/%2").arg(service).arg(stream->method());
 
-    std::shared_ptr<QGrpcChannelSubscription> sub;
+    std::shared_ptr<QGrpcChannelStream> sub;
     std::shared_ptr<QMetaObject::Connection> abortConnection(new QMetaObject::Connection);
     std::shared_ptr<QMetaObject::Connection> readConnection(new QMetaObject::Connection);
     std::shared_ptr<QMetaObject::Connection> clientConnection(new QMetaObject::Connection);
     std::shared_ptr<QMetaObject::Connection> connection(new QMetaObject::Connection);
 
     sub.reset(
-        new QGrpcChannelSubscription(m_channel.get(), rpcName, subscription->arg(), subscription),
-        [](QGrpcChannelSubscription * sub) { sub->deleteLater(); }
+        new QGrpcChannelStream(m_channel.get(), rpcName, stream->arg(), stream),
+        [](QGrpcChannelStream * sub) { sub->deleteLater(); }
     );
 
-    *readConnection = QObject::connect(sub.get(), &QGrpcChannelSubscription::dataReady, subscription, [subscription](const QByteArray &data) {
-        subscription->handler(data);
+    *readConnection = QObject::connect(sub.get(), &QGrpcChannelStream::dataReady, stream, [stream](const QByteArray &data) {
+        stream->handler(data);
     });
 
-    *connection = QObject::connect(sub.get(), &QGrpcChannelSubscription::finished, subscription, [sub, subscription, readConnection, abortConnection, service, connection, clientConnection](){
-        qProtoDebug() << "Subscription ended with server closing connection";
+    *connection = QObject::connect(sub.get(), &QGrpcChannelStream::finished, stream, [sub, stream, readConnection, abortConnection, service, connection, clientConnection](){
+        qProtoDebug() << "Stream ended with server closing connection";
 
         QObject::disconnect(*connection);
         QObject::disconnect(*readConnection);
@@ -287,12 +287,12 @@ void QGrpcChannelPrivate::subscribe(QGrpcSubscription *subscription, const QStri
 
         if (sub->status.code() != QGrpcStatus::Ok)
         {
-            subscription->error(sub->status);
+            stream->error(sub->status);
         }
     });
 
-    *abortConnection = QObject::connect(subscription, &QGrpcSubscription::finished, sub.get(), [connection, abortConnection, readConnection, sub, clientConnection] {
-        qProtoDebug() << "Subscription client was finished";
+    *abortConnection = QObject::connect(stream, &QGrpcStream::finished, sub.get(), [connection, abortConnection, readConnection, sub, clientConnection] {
+        qProtoDebug() << "Stream client was finished";
 
         QObject::disconnect(*connection);
         QObject::disconnect(*readConnection);
@@ -335,9 +335,9 @@ void QGrpcChannel::call(const QString &method, const QString &service, const QBy
     dPtr->call(method, service, args, reply);
 }
 
-void QGrpcChannel::subscribe(QGrpcSubscription *subscription, const QString &service, QAbstractGrpcClient *client)
+void QGrpcChannel::subscribe(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client)
 {
-    dPtr->subscribe(subscription, service, client);
+    dPtr->subscribe(stream, service, client);
 }
 
 std::shared_ptr<QAbstractProtobufSerializer> QGrpcChannel::serializer() const

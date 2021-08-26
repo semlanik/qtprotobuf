@@ -23,15 +23,15 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "qgrpcsubscription.h"
+#include "qgrpcstream.h"
 
 #include <qtprotobuflogging.h>
 #include <QThread>
 
 using namespace QtProtobuf;
 
-QGrpcSubscription::QGrpcSubscription(const std::shared_ptr<QAbstractGrpcChannel> &channel, const QString &method,
-                                     const QByteArray &arg, const SubscriptionHandler &handler, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(channel, parent)
+QGrpcStream::QGrpcStream(const std::shared_ptr<QAbstractGrpcChannel> &channel, const QString &method,
+                                     const QByteArray &arg, const StreamHandler &handler, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(channel, parent)
   , m_method(method)
   , m_arg(arg)
 {
@@ -40,14 +40,14 @@ QGrpcSubscription::QGrpcSubscription(const std::shared_ptr<QAbstractGrpcChannel>
     }
 }
 
-void QGrpcSubscription::addHandler(const SubscriptionHandler &handler)
+void QGrpcStream::addHandler(const StreamHandler &handler)
 {
     if (handler) {
         m_handlers.push_back(handler);
     }
 }
 
-void QGrpcSubscription::cancel()
+void QGrpcStream::cancel()
 {
     if (thread() != QThread::currentThread()) {
         QMetaObject::invokeMethod(this, [this](){m_channel->cancel(this);}, Qt::BlockingQueuedConnection);

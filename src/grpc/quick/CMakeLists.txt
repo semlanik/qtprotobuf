@@ -18,12 +18,12 @@ else()
 endif()
 
 file(GLOB SOURCES
-    qquickgrpcsubscription.cpp
+    qquickgrpcstream.cpp
     qtgrpcquickplugin.cpp)
 
 file(GLOB HEADERS
     qtgrpcquickplugin.h
-    qquickgrpcsubscription_p.h
+    qquickgrpcstream_p.h
     qtgrpcquick_global.h)
 
 add_library(${TARGET} ${SOURCES})

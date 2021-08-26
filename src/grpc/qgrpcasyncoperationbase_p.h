@@ -41,7 +41,7 @@ namespace QtProtobuf {
 /*!
  * \ingroup QtGrpc
  * \private
- * \brief The QGrpcAsyncOperationBase class implements subscription logic
+ * \brief The QGrpcAsyncOperationBase class implements stream logic
  */
 class Q_GRPC_EXPORT QGrpcAsyncOperationBase : public QObject
 {

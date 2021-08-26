@@ -34,7 +34,6 @@ TestCase {
     name: "gRPC client qml test"
     SimpleStringMessage {
         id: stringMsg
-        testFieldString: "Test string"
     }
 
     SimpleIntMessage {
@@ -44,11 +43,11 @@ TestCase {
 
     QtObject {
         id: returnMsg
-        property string ret: serverStreamSubscription.returnValue.testFieldString
+        property string ret: serverStream.returnValue.testFieldString
     }
 
-    GrpcSubscription {
-        id: serverStreamSubscription
+    GrpcStream {
+        id: serverStream
         property bool ok: true
         property int updateCount: 0
 
@@ -56,18 +55,18 @@ TestCase {
         client: TestServiceClient
         method: "testMethodServerStream"
         argument: stringMsg
-        onUpdated: {
+        onMessageReceived: {
             ++updateCount;
-            ok = ok && value.testFieldString === ("Test string" + updateCount) && returnMsg.ret == ("Test string" + updateCount)
+            ok = ok && value.testFieldString === ("test_serverStream" + updateCount) && returnMsg.ret == ("test_serverStream" + updateCount)
         }
         onError: {
-            console.log("Subscription error: " + status.code + " " + status.message)
+            console.log("Stream error: " + status.code + " " + status.message)
             ok = false;
         }
     }
 
-    GrpcSubscription {
-        id: serverStreamCancelSubscription
+    GrpcStream {
+        id: serverStreamCancel
         property bool ok: true
         property int updateCount: 0
 
@@ -75,27 +74,27 @@ TestCase {
         client: TestServiceClient
         method: "testMethodServerStream"
         argument: stringMsg
-        onUpdated: {
+        onMessageReceived: {
             ++updateCount;
-            ok = ok && value.testFieldString === "Test string" + updateCount
+            ok = ok && value.testFieldString === "test_serverStreamCancel" + updateCount
             if (updateCount === 3) {
-                serverStreamCancelSubscription.enabled = false;
+                serverStreamCancel.enabled = false;
             }
         }
         onError: {
-            console.log("Subscription error: " + status.code + " " + status.message)
+            console.log("Stream error: " + status.code + " " + status.message)
             ok = false;
         }
     }
 
-    GrpcSubscription {
-        id: serverStreamInvalidSubscription
+    GrpcStream {
+        id: serverStreamInvalid
         property bool ok: false
         enabled: false
         client: TestServiceClient
         method: "testMethodServerStreamNotExist"
         argument: stringMsg
-        onUpdated: {
+        onMessageReceived: {
             ok = false;
         }
         onError: {
@@ -104,29 +103,30 @@ TestCase {
     }
 
     Loader {
-        id: subscriptionLoader
+        id: streamLoader
         active: false
+        property bool ok: true
+        property int updateCount: 0
         sourceComponent: Component {
-            GrpcSubscription {
-                property bool ok: true
-                property int updateCount: 0
+            GrpcStream {
                 enabled: true
                 client: TestServiceClient
                 method: "testMethodServerStream"
                 argument: stringMsg
-                onUpdated: {
-                    ++updateCount;
-                    ok = ok && value.testFieldString === ("Test string" + updateCount)
+                onMessageReceived: {
+                    ++streamLoader.updateCount;
+                    streamLoader.ok = ok && value.testFieldString === ("test_1loader" + streamLoader.updateCount)
                 }
                 onError: {
-                    console.log("Subscription error: " + status.code + " " + status.message)
-                    ok = false;
+                    console.log("Stream error: " + status.code + " " + status.message)
+                    streamLoader.ok = false;
                 }
             }
         }
     }
 
     function test_stringEchoTest() {
+        stringMsg.testFieldString = "test_stringEchoTest";
         var called = false;
         var errorCalled = false;
         TestServiceClient.testMethod(stringMsg, function(result) {
@@ -139,6 +139,7 @@ TestCase {
     }
 
     function test_statusTest() {
+        stringMsg.testFieldString = "test_statusTest";
         var called = false;
         var errorCalled = false;
         TestServiceClient.testMethodStatusMessage(stringMsg, function(result) {
@@ -163,31 +164,32 @@ TestCase {
         compare(!called && !errorCalled, true, "testMethod was not called proper way")
         wait(1000)
         compare(called && !errorCalled, true, "testMethod was not called proper way")
-        stringMsg.testFieldString = "Test string";
     }
 
-    function test_serverStreamSubscription() {
-        serverStreamSubscription.enabled = true;
+    function test_serverStream() {
+        stringMsg.testFieldString = "test_serverStream";
+        serverStream.enabled = true;
         wait(20000);
-        compare(serverStreamSubscription.ok, true, "Subscription data failed")
-        compare(serverStreamSubscription.updateCount, 4, "Subscription failed, update was not called right amount times")
+        compare(serverStream.ok, true, "Stream data failed")
+        compare(serverStream.updateCount, 4, "Stream failed, update was not called right amount times")
     }
 
-    function test_serverStreamCancelSubscription() {
-        serverStreamCancelSubscription.enabled = true;
+    function test_serverStreamCancel() {
+        stringMsg.testFieldString = "test_serverStreamCancel";
+        serverStreamCancel.enabled = true;
         wait(20000);
-        compare(serverStreamCancelSubscription.ok, true, "Subscription data failed")
-        compare(serverStreamCancelSubscription.updateCount, 3, "Subscription failed, update was not called right amount times")
+        compare(serverStreamCancel.ok, true, "Stream data failed")
+        compare(serverStreamCancel.updateCount, 3, "Stream failed, update was not called right amount times")
     }
 
-    function test_serverStreamInvalidSubscription() {
-        serverStreamInvalidSubscription.enabled = true;
+    function test_serverStreamInvalid() {
+        serverStreamInvalid.enabled = true;
         wait(500);
-        compare(serverStreamInvalidSubscription.ok, true, "Subscription data failed")
-        compare(serverStreamInvalidSubscription.enabled, false, "Subscription data failed")
+        compare(serverStreamInvalid.ok, true, "Stream data failed")
+        compare(serverStreamInvalid.enabled, false, "Stream data failed")
     }
 
-    function test_nonCompatibleArgRet() {
+    function test_nonCompatibleArgRet() {        
         var called = false;
         var errorCalled = false;
         TestServiceClient.testMethodNonCompatibleArgRet(intMsg, function(result) {
@@ -200,11 +202,13 @@ TestCase {
     }
 
     function test_1loader() {//This test has to be called first to fail other tests in case if it fails
-        subscriptionLoader.active = true;
+        stringMsg.testFieldString = "test_1loader";
+        streamLoader.active = true;
         wait(1500);
-        compare(subscriptionLoader.item.ok, true, "Subscription data failed")
-        compare(subscriptionLoader.item.updateCount, 1, "Subscription failed, update was not called right amount times")
-        subscriptionLoader.active = false;
+        streamLoader.active = false;
+        wait(2000);
+        compare(streamLoader.ok, true, "Stream data failed")
+        compare(streamLoader.updateCount, 1, "Stream failed, update was not called right amount times")
     }
 
     SimpleStringMessage {

@@ -47,7 +47,7 @@
 namespace QtProtobuf {
 
 class QGrpcAsyncReply;
-class QGrpcSubscription;
+class QGrpcStream;
 class QGrpcAsyncOperationBase;
 class QAbstractGrpcChannel;
 class QAbstractGrpcClientPrivate;
@@ -55,7 +55,7 @@ class QAbstractGrpcClientPrivate;
 /*!
  * \private
  */
-using SubscriptionHandler = std::function<void(const QByteArray&)>;
+using StreamHandler = std::function<void(const QByteArray&)>;
 
 /*!
  * \ingroup QtGrpc
@@ -135,7 +135,7 @@ protected:
      *             update recevied from server-stream
      */
     template<typename A>
-    QGrpcSubscriptionShared subscribe(const QString &method, const A &arg) {
+    QGrpcStreamShared subscribe(const QString &method, const A &arg) {
         return subscribe(method, arg.serialize(serializer()));
     }
 
@@ -150,7 +150,7 @@ protected:
      *       updated message recevied from server-stream
      */
     template<typename A, typename R>
-    QGrpcSubscriptionShared subscribe(const QString &method, const A &arg, const QPointer<R> &ret) {
+    QGrpcStreamShared subscribe(const QString &method, const A &arg, const QPointer<R> &ret) {
         if (ret.isNull()) {
             static const QString nullPointerError("Unable to subscribe method: %1. Pointer to return data is null");
             error({QGrpcStatus::InvalidArgument, nullPointerError.arg(method)});
@@ -162,7 +162,7 @@ protected:
             if (!ret.isNull()) {
                 tryDeserialize(*ret, data);
             } else {
-                static const QLatin1String nullPointerError("Pointer to return data is null while subscription update received");
+                static const QLatin1String nullPointerError("Pointer to return data is null while stream update received");
                 error({QGrpcStatus::InvalidArgument, nullPointerError});
                 qProtoCritical() << nullPointerError;
             }
@@ -170,8 +170,8 @@ protected:
     }
 
     /*!
-     * \brief Canceles all subscriptions for specified \p method
-     * \param[in] method Name of method subscription for to be canceled
+     * \brief Canceles all streams for specified \p method
+     * \param[in] method Name of method stream for to be canceled
      */
     void cancel(const QString &method);
 
@@ -190,7 +190,7 @@ private:
     QGrpcAsyncReplyShared call(const QString &method, const QByteArray &arg);
 
     //!\private
-    QGrpcSubscriptionShared subscribe(const QString &method, const QByteArray &arg, const QtProtobuf::SubscriptionHandler &handler = {});
+    QGrpcStreamShared subscribe(const QString &method, const QByteArray &arg, const QtProtobuf::StreamHandler &handler = {});
 
     /*!
      * \private

@@ -39,7 +39,7 @@ class QThread;
 namespace QtProtobuf {
 
 class QGrpcAsyncReply;
-class QGrpcSubscription;
+class QGrpcStream;
 class QAbstractGrpcClient;
 class QAbstractProtobufSerializer;
 struct QAbstractGrpcChannelPrivate;
@@ -85,7 +85,7 @@ public:
      * \param[in] args serialized argument message
      * \param[in] handler callback that will be called when message recevied from the server-stream
      */
-    virtual void subscribe(QGrpcSubscription *subscription, const QString &service, QAbstractGrpcClient *client) = 0;
+    virtual void subscribe(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client) = 0;
 
     virtual std::shared_ptr<QAbstractProtobufSerializer> serializer() const = 0;
 
@@ -106,13 +106,13 @@ protected:
 
     /*!
      * \private
-     * \brief Cancels \p subscription
-     * \param[in] subscription returned by QAbstractGrpcChannel::subscribe() method
+     * \brief Cancels \p stream
+     * \param[in] stream returned by QAbstractGrpcChannel::subscribe() method
      */
-    virtual void cancel(QGrpcSubscription *subscription);
+    virtual void cancel(QGrpcStream *stream);
 
     friend class QGrpcAsyncReply;
-    friend class QGrpcSubscription;
+    friend class QGrpcStream;
 private:
     Q_DISABLE_COPY(QAbstractGrpcChannel)
     std::unique_ptr<QAbstractGrpcChannelPrivate> dPtr;

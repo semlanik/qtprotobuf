@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once //QGrpcSubscription
+#pragma once //QGrpcStream
 
 #include <functional>
 #include <QMutex>
@@ -41,62 +41,62 @@ class QAbstractGrpcClient;
 
 /*!
  * \ingroup QtGrpc
- * \brief The QGrpcSubscription class
+ * \brief The QGrpcStream class
  */
-class Q_GRPC_EXPORT QGrpcSubscription final : public QGrpcAsyncOperationBase
+class Q_GRPC_EXPORT QGrpcStream final : public QGrpcAsyncOperationBase
 {
     Q_OBJECT
 public:
     /*!
-     * \brief Cancels this subscription and try to abort call in channel
+     * \brief Cancels this stream and try to abort call in channel
      */
     void cancel();
 
     /*!
-     * \brief Returns method for this subscription
+     * \brief Returns method for this stream
      */
     QString method() const {
         return m_method;
     }
 
     /*!
-     * \brief Returns serialized arguments for this subscription
+     * \brief Returns serialized arguments for this stream
      */
     QByteArray arg() const {
         return m_arg;
     }
 
     /*!
-     * \brief Invokes handler method assigned to this subscription.
-     * \param data updated subscription data buffer
+     * \brief Invokes handler method assigned to this stream.
+     * \param data updated stream data buffer
      * \details Should be used by QAbstractGrpcChannel implementations,
-     *          to update data in subscription and notify clients about subscription updates.
+     *          to update data in stream and notify clients about stream updates.
      */
     void handler(const QByteArray& data) {
         setData(data);
         for (auto handler : m_handlers) {
             handler(data);
         }
-        updated();
+        messageReceived();
     }
 
 signals:
     /*!
-     * \brief The signal is emitted when subscription received updated value from server
+     * \brief The signal is emitted when stream received updated value from server
      */
-    void updated();
+    void messageReceived();
 
 protected:
     //! \private
-    QGrpcSubscription(const std::shared_ptr<QAbstractGrpcChannel> &channel, const QString &method,
-                      const QByteArray &arg, const SubscriptionHandler &handler, QAbstractGrpcClient *parent);
+    QGrpcStream(const std::shared_ptr<QAbstractGrpcChannel> &channel, const QString &method,
+                      const QByteArray &arg, const StreamHandler &handler, QAbstractGrpcClient *parent);
     //! \private
-    virtual ~QGrpcSubscription() = default;
+    virtual ~QGrpcStream() = default;
 
     //! \private
-    void addHandler(const SubscriptionHandler &handler);
+    void addHandler(const StreamHandler &handler);
 
-    bool operator ==(const QGrpcSubscription &other) const {
+    bool operator ==(const QGrpcStream &other) const {
         return other.method() == this->method() &&
                 other.arg() == this->arg();
     }
@@ -105,7 +105,7 @@ private:
     friend class QAbstractGrpcClient;
     QString m_method;
     QByteArray m_arg;
-    std::vector<SubscriptionHandler> m_handlers;
+    std::vector<StreamHandler> m_handlers;
 };
 
 }

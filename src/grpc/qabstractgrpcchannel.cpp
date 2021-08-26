@@ -26,7 +26,7 @@
 #include "qabstractgrpcchannel.h"
 
 #include "qgrpcasyncreply.h"
-#include "qgrpcsubscription.h"
+#include "qgrpcstream.h"
 #include <QThread>
 
 namespace QtProtobuf {
@@ -52,10 +52,10 @@ void QAbstractGrpcChannel::abort(QGrpcAsyncReply *reply)
     reply->error({QGrpcStatus::StatusCode::Aborted, QLatin1String("Call aborted by user or timeout")});
 }
 
-void QAbstractGrpcChannel::cancel(QGrpcSubscription *subscription)
+void QAbstractGrpcChannel::cancel(QGrpcStream *stream)
 {
-    assert(subscription != nullptr);
-    subscription->finished();
+    assert(stream != nullptr);
+    stream->finished();
 }
 
 const QThread *QAbstractGrpcChannel::thread() const

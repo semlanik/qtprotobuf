@@ -237,9 +237,9 @@ TEST_P(ClientTest, StringEchoStreamTest)
     QEventLoop waiter;
 
     int i = 0;
-    auto subscription = testClient->subscribeTestMethodServerStreamUpdates(request);
-    QObject::connect(subscription.get(), &QGrpcSubscription::updated, &m_app, [&result, &i, &waiter, subscription]() {
-        SimpleStringMessage ret = subscription->read<SimpleStringMessage>();
+    auto stream = testClient->subscribeTestMethodServerStream(request);
+    QObject::connect(stream.get(), &QGrpcStream::messageReceived, &m_app, [&result, &i, &waiter, stream]() {
+        SimpleStringMessage ret = stream->read<SimpleStringMessage>();
 
         ++i;
 
@@ -269,15 +269,15 @@ TEST_P(ClientTest, StringEchoStreamAbortTest)
     QEventLoop waiter;
 
     int i = 0;
-    auto subscription = testClient->subscribeTestMethodServerStreamUpdates(request);
-    QObject::connect(subscription.get(), &QGrpcSubscription::updated, &m_app, [&result, &i, &waiter, subscription]() {
-        SimpleStringMessage ret = subscription->read<SimpleStringMessage>();
+    auto stream = testClient->subscribeTestMethodServerStream(request);
+    QObject::connect(stream.get(), &QGrpcStream::messageReceived, &m_app, [&result, &i, &waiter, stream]() {
+        SimpleStringMessage ret = stream->read<SimpleStringMessage>();
         ++i;
 
         result.setTestFieldString(result.testFieldString() + ret.testFieldString());
 
         if (i == 3) {
-            subscription->cancel();
+            stream->cancel();
             QTimer::singleShot(4000, &waiter, &QEventLoop::quit);
         }
     });
@@ -301,23 +301,23 @@ TEST_P(ClientTest, StringEchoStreamAbortByTimerTest)
 
 
     int i = 0;
-    auto subscription = testClient->subscribeTestMethodServerStreamUpdates(request);
-    QTimer::singleShot(3500, subscription.get(), [subscription]() {
-        subscription->cancel();
+    auto stream = testClient->subscribeTestMethodServerStream(request);
+    QTimer::singleShot(3500, stream.get(), [stream]() {
+        stream->cancel();
     });
 
     bool isFinished = false;
-    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
+    QObject::connect(stream.get(), &QtProtobuf::QGrpcStream::finished, [&isFinished]() {
         isFinished = true;
     });
 
     bool isError = false;
-    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::error, [&isError]() {
+    QObject::connect(stream.get(), &QtProtobuf::QGrpcStream::error, [&isError]() {
         isError = true;
     });
 
-    QObject::connect(subscription.get(), &QGrpcSubscription::updated, &m_app, [&result, &i, subscription]() {
-        SimpleStringMessage ret = subscription->read<SimpleStringMessage>();
+    QObject::connect(stream.get(), &QGrpcStream::messageReceived, &m_app, [&result, &i, stream]() {
+        SimpleStringMessage ret = stream->read<SimpleStringMessage>();
         ++i;
 
         result.setTestFieldString(result.testFieldString() + ret.testFieldString());
@@ -333,7 +333,7 @@ TEST_P(ClientTest, StringEchoStreamAbortByTimerTest)
     testClient->deleteLater();
 }
 
-TEST_P(ClientTest, StringEchoStreamTestRetUpdates)
+TEST_P(ClientTest, StringEchoStreamTestRet)
 {
     auto testClient = (*GetParam())();
     SimpleStringMessage request;
@@ -343,7 +343,7 @@ TEST_P(ClientTest, StringEchoStreamTestRetUpdates)
 
     QEventLoop waiter;
 
-    testClient->subscribeTestMethodServerStreamUpdates(request, result);
+    testClient->subscribeTestMethodServerStream(request, result);
 
     int i = 0;
     QObject::connect(result.data(), &SimpleStringMessage::testFieldStringChanged, &m_app, [&i]() {
@@ -372,10 +372,10 @@ TEST_P(ClientTest, HugeBlobEchoStreamTest)
     QByteArray dataHash = QCryptographicHash::hash(request.testBytes(), QCryptographicHash::Sha256);
     QEventLoop waiter;
 
-    auto subscription = testClient->subscribeTestMethodBlobServerStreamUpdates(request);
+    auto stream = testClient->subscribeTestMethodBlobServerStream(request);
 
-    QObject::connect(subscription.get(), &QGrpcSubscription::updated, &m_app, [&result, &waiter, subscription]() {
-        BlobMessage ret = subscription->read<BlobMessage>();
+    QObject::connect(stream.get(), &QGrpcStream::messageReceived, &m_app, [&result, &waiter, stream]() {
+        BlobMessage ret = stream->read<BlobMessage>();
         result.setTestBytes(ret.testBytes());
         waiter.quit();
     });
@@ -570,7 +570,7 @@ TEST_P(ClientTest, AsyncReplySubscribeTest)
     testClient->deleteLater();
 }
 
-TEST_P(ClientTest, MultipleSubscriptionsTest)
+TEST_P(ClientTest, MultipleStreamsTest)
 {
     auto testClient = (*GetParam())();
     SimpleStringMessage result;
@@ -578,14 +578,14 @@ TEST_P(ClientTest, MultipleSubscriptionsTest)
     QEventLoop waiter;
     request.setTestFieldString("Stream");
 
-    auto subscription = testClient->subscribeTestMethodServerStreamUpdates(request);
-    auto subscriptionNext = testClient->subscribeTestMethodServerStreamUpdates(request);
+    auto stream = testClient->subscribeTestMethodServerStream(request);
+    auto streamNext = testClient->subscribeTestMethodServerStream(request);
 
-    ASSERT_EQ(subscription, subscriptionNext);
+    ASSERT_EQ(stream, streamNext);
 
     int i = 0;
-    QObject::connect(subscription.get(), &QGrpcSubscription::updated, &m_app, [&result, &i, subscription]() {
-        SimpleStringMessage ret = subscription->read<SimpleStringMessage>();
+    QObject::connect(stream.get(), &QGrpcStream::messageReceived, &m_app, [&result, &i, stream]() {
+        SimpleStringMessage ret = stream->read<SimpleStringMessage>();
         ++i;
 
         result.setTestFieldString(result.testFieldString() + ret.testFieldString());
@@ -599,51 +599,51 @@ TEST_P(ClientTest, MultipleSubscriptionsTest)
     testClient->deleteLater();
 }
 
-TEST_P(ClientTest, MultipleSubscriptionsCancelTest)
+TEST_P(ClientTest, MultipleStreamsCancelTest)
 {
     auto testClient = (*GetParam())();
     SimpleStringMessage result;
     SimpleStringMessage request;
     request.setTestFieldString("Stream");
 
-    auto subscription = testClient->subscribeTestMethodServerStreamUpdates(request);
-    auto subscriptionNext = testClient->subscribeTestMethodServerStreamUpdates(request);
+    auto stream = testClient->subscribeTestMethodServerStream(request);
+    auto streamNext = testClient->subscribeTestMethodServerStream(request);
 
-    ASSERT_EQ(subscription, subscriptionNext);
+    ASSERT_EQ(stream, streamNext);
 
     bool isFinished = false;
-    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
+    QObject::connect(stream.get(), &QtProtobuf::QGrpcStream::finished, [&isFinished]() {
         isFinished = true;
     });
 
     bool isFinishedNext = false;
-    QObject::connect(subscriptionNext.get(), &QtProtobuf::QGrpcSubscription::finished, [&isFinishedNext]() {
+    QObject::connect(streamNext.get(), &QtProtobuf::QGrpcStream::finished, [&isFinishedNext]() {
         isFinishedNext = true;
     });
 
-    subscriptionNext->cancel();
+    streamNext->cancel();
 
     ASSERT_TRUE(isFinished);
     ASSERT_TRUE(isFinishedNext);
 
-    subscription = testClient->subscribeTestMethodServerStreamUpdates(request);
-    ASSERT_NE(subscription, subscriptionNext);
+    stream = testClient->subscribeTestMethodServerStream(request);
+    ASSERT_NE(stream, streamNext);
 
-    subscriptionNext = testClient->subscribeTestMethodServerStreamUpdates(request);
+    streamNext = testClient->subscribeTestMethodServerStream(request);
 
-    ASSERT_EQ(subscription, subscriptionNext);
+    ASSERT_EQ(stream, streamNext);
 
     isFinished = false;
-    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::finished, [&isFinished]() {
+    QObject::connect(stream.get(), &QtProtobuf::QGrpcStream::finished, [&isFinished]() {
         isFinished = true;
     });
 
     isFinishedNext = false;
-    QObject::connect(subscriptionNext.get(), &QtProtobuf::QGrpcSubscription::finished, [&isFinishedNext]() {
+    QObject::connect(streamNext.get(), &QtProtobuf::QGrpcStream::finished, [&isFinishedNext]() {
         isFinishedNext = true;
     });
 
-    subscription->cancel();
+    stream->cancel();
 
     ASSERT_TRUE(isFinished);
     ASSERT_TRUE(isFinishedNext);
@@ -744,19 +744,19 @@ TEST_P(ClientTest, StringEchoStreamThreadTest)
     std::shared_ptr<QThread> thread(QThread::create([&](){
         QEventLoop waiter;
         QThread *validThread = QThread::currentThread();
-        auto subscription = testClient->subscribeTestMethodServerStreamUpdates(request);
-        QObject::connect(subscription.get(), &QGrpcSubscription::updated, &waiter, [&result, &i, &waiter, subscription, &threadsOk, validThread]() {
-            SimpleStringMessage ret = subscription->read<SimpleStringMessage>();
+        auto stream = testClient->subscribeTestMethodServerStream(request);
+        QObject::connect(stream.get(), &QGrpcStream::messageReceived, &waiter, [&result, &i, &waiter, stream, &threadsOk, validThread]() {
+            SimpleStringMessage ret = stream->read<SimpleStringMessage>();
             result.setTestFieldString(result.testFieldString() + ret.testFieldString());
             ++i;
             if (i == 4) {
                 waiter.quit();
             }
-            threadsOk &= subscription->thread() != QThread::currentThread();
+            threadsOk &= stream->thread() != QThread::currentThread();
             threadsOk &= validThread == QThread::currentThread();
         });
 
-        threadsOk &= subscription->thread() != QThread::currentThread();
+        threadsOk &= stream->thread() != QThread::currentThread();
         QTimer::singleShot(20000, &waiter, &QEventLoop::quit);
         waiter.exec();
     }));
@@ -796,13 +796,13 @@ TEST_P(ClientTest, StreamCancelWhileErrorTimeoutTest)
     QEventLoop waiter;
 
     bool ok = false;
-    auto subscription = testClient->subscribeTestMethodServerStreamUpdates(request);
-    QObject::connect(subscription.get(), &QGrpcSubscription::finished, &m_app, [&ok, &waiter]() {
+    auto stream = testClient->subscribeTestMethodServerStream(request);
+    QObject::connect(stream.get(), &QGrpcStream::finished, &m_app, [&ok, &waiter]() {
         ok = true;
         waiter.quit();
     });
-    subscription->cancel();
-    subscription.reset();
+    stream->cancel();
+    stream.reset();
 
     QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
     waiter.exec();

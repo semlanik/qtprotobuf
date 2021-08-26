@@ -37,7 +37,7 @@
 #include <unordered_map>
 
 #include "qgrpcasyncreply.h"
-#include "qgrpcsubscription.h"
+#include "qgrpcstream.h"
 #include "qabstractgrpcclient.h"
 #include "qgrpccredentials.h"
 #include "qprotobufserializerregistry_p.h"
@@ -269,15 +269,15 @@ void QGrpcHttp2Channel::call(const QString &method, const QString &service, cons
     });
 }
 
-void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString &service, QAbstractGrpcClient *client)
+void QGrpcHttp2Channel::subscribe(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client)
 {
-    assert(subscription != nullptr);
-    QNetworkReply *networkReply = dPtr->post(subscription->method(), service, subscription->arg(), true);
+    assert(stream != nullptr);
+    QNetworkReply *networkReply = dPtr->post(stream->method(), service, stream->arg(), true);
 
     std::shared_ptr<QMetaObject::Connection> finishConnection(new QMetaObject::Connection);
     std::shared_ptr<QMetaObject::Connection> abortConnection(new QMetaObject::Connection);
     std::shared_ptr<QMetaObject::Connection> readConnection(new QMetaObject::Connection);
-    *readConnection = QObject::connect(networkReply, &QNetworkReply::readyRead, subscription, [networkReply, subscription, this]() {
+    *readConnection = QObject::connect(networkReply, &QNetworkReply::readyRead, stream, [networkReply, stream, this]() {
         auto replyIt = dPtr->activeStreamReplies.find(networkReply);
 
         QByteArray data = networkReply->readAll();
@@ -289,7 +289,7 @@ void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString
             qProtoDebug() << "First chunk received: " << data.size() << " expectedDataSize: " << expectedDataSize;
 
             if (expectedDataSize == 0) {
-                subscription->handler(QByteArray());
+                stream->handler(QByteArray());
                 return;
             }
 
@@ -303,7 +303,7 @@ void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString
         qProtoDebug() << "Proceed chunk: " << data.size() << " dataContainer: " << dataContainer.container.size() << " capacity: " << dataContainer.expectedSize;
         while (dataContainer.container.size() >= dataContainer.expectedSize && !networkReply->isFinished()) {
             qProtoDebug() << "Full data received: " << data.size() << " dataContainer: " << dataContainer.container.size() << " capacity: " << dataContainer.expectedSize;
-            subscription->handler(dataContainer.container.mid(GrpcMessageSizeHeaderSize, dataContainer.expectedSize - GrpcMessageSizeHeaderSize));
+            stream->handler(dataContainer.container.mid(GrpcMessageSizeHeaderSize, dataContainer.expectedSize - GrpcMessageSizeHeaderSize));
             dataContainer.container.remove(0, dataContainer.expectedSize);
             if (dataContainer.container.size() > GrpcMessageSizeHeaderSize) {
                 dataContainer.expectedSize = QGrpcHttp2ChannelPrivate::getExpectedDataSize(dataContainer.container);
@@ -332,7 +332,7 @@ void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString
         networkReply->deleteLater();
     });
 
-    *finishConnection = QObject::connect(networkReply, &QNetworkReply::finished, subscription, [subscription, service, networkReply, abortConnection, readConnection, finishConnection, client, this]() {
+    *finishConnection = QObject::connect(networkReply, &QNetworkReply::finished, stream, [stream, service, networkReply, abortConnection, readConnection, finishConnection, client, this]() {
         QString errorString = networkReply->errorString();
         QNetworkReply::NetworkError networkError = networkReply->error();
         if (*readConnection) {
@@ -345,22 +345,22 @@ void QGrpcHttp2Channel::subscribe(QGrpcSubscription *subscription, const QString
         dPtr->activeStreamReplies.erase(networkReply);
         QGrpcHttp2ChannelPrivate::abortNetworkReply(networkReply);
         networkReply->deleteLater();
-        qProtoWarning() << subscription->method() << "call" << service << "subscription finished: " << errorString;
+        qProtoWarning() << stream->method() << "call" << service << "stream finished: " << errorString;
         switch (networkError) {
         case QNetworkReply::RemoteHostClosedError:
             qProtoDebug() << "Remote server closed connection. Reconnect silently";
-            subscribe(subscription, service, client);
+            subscribe(stream, service, client);
             break;
         case QNetworkReply::NoError:
             //Reply closed without error
             break;
         default:
-            subscription->error(QGrpcStatus{StatusCodeMap.at(networkError), QString("%1 call %2 subscription failed: %3").arg(service).arg(subscription->method()).arg(errorString)});
+            stream->error(QGrpcStatus{StatusCodeMap.at(networkError), QString("%1 call %2 stream failed: %3").arg(service).arg(stream->method()).arg(errorString)});
             break;
         }
     });
 
-    *abortConnection = QObject::connect(subscription, &QGrpcSubscription::finished, networkReply, [networkReply, finishConnection, abortConnection, readConnection] {
+    *abortConnection = QObject::connect(stream, &QGrpcStream::finished, networkReply, [networkReply, finishConnection, abortConnection, readConnection] {
         if (*finishConnection) {
             QObject::disconnect(*finishConnection);
         }
