@@ -24,34 +24,34 @@
  */
 
 
-#include "qquickgrpcsubscription_p.h"
+#include "qquickgrpcstream_p.h"
 
-#include <QGrpcSubscription>
+#include <QGrpcStream>
 #include <QJSEngine>
 #include <QQmlEngine>
 
 using namespace QtProtobuf;
 
-QQuickGrpcSubscription::QQuickGrpcSubscription(QObject *parent) : QObject(parent)
+QQuickGrpcStream::QQuickGrpcStream(QObject *parent) : QObject(parent)
   , m_enabled(false)
   , m_returnValue(nullptr)
 {
 }
 
-QQuickGrpcSubscription::~QQuickGrpcSubscription()
+QQuickGrpcStream::~QQuickGrpcStream()
 {
-    if (m_subscription) {
-        m_subscription->cancel();
+    if (m_stream) {
+        m_stream->cancel();
     }
     delete m_returnValue;
 }
 
 
-void QQuickGrpcSubscription::updateSubscription()
+void QQuickGrpcStream::updateStream()
 {
-    if (m_subscription) {
-        m_subscription->cancel();
-        m_subscription.reset();
+    if (m_stream) {
+        m_stream->cancel();
+        m_stream.reset();
     }
 
     if (m_returnValue != nullptr) {
@@ -69,14 +69,14 @@ void QQuickGrpcSubscription::updateSubscription()
     }
 }
 
-bool QQuickGrpcSubscription::subscribe()
+bool QQuickGrpcStream::subscribe()
 {
     QString uppercaseMethodName = m_method;
     uppercaseMethodName.replace(0, 1, m_method[0].toUpper());
     const QMetaObject *metaObject = m_client->metaObject();
     QMetaMethod method;
     for (int i = 0; i < metaObject->methodCount(); i++) {
-        if (QString("qmlSubscribe%1Updates_p").arg(uppercaseMethodName) == metaObject->method(i).name()) {
+        if (QString("qmlSubscribe%1_p").arg(uppercaseMethodName) == metaObject->method(i).name()) {
             method = metaObject->method(i);
             break;
         }
@@ -150,27 +150,27 @@ bool QQuickGrpcSubscription::subscribe()
         return false;
     }
 
-    QGrpcSubscriptionShared subscription = nullptr;
+    QGrpcStreamShared stream = nullptr;
     bool ok = method.invoke(m_client, Qt::DirectConnection,
-                                      QGenericReturnArgument("QtProtobuf::QGrpcSubscriptionShared", static_cast<void *>(&subscription)),
+                                      QGenericReturnArgument("QtProtobuf::QGrpcStreamShared", static_cast<void *>(&stream)),
                                       QGenericArgument(method.parameterTypes().at(0).data(), static_cast<const void *>(&argument)),
                                       QGenericArgument(method.parameterTypes().at(1).data(), static_cast<const void *>(&m_returnValue)));
-    if (!ok || subscription == nullptr) {
-        errorString = QString("Unable to call ") + m_method + " invalidate subscription.";
+    if (!ok || stream == nullptr) {
+        errorString = QString("Unable to call ") + m_method + " invalidate stream.";
         qProtoWarning() << errorString;
         error({QGrpcStatus::Unknown, errorString});
         return false;
     }
 
-    m_subscription = subscription;
+    m_stream = stream;
 
-    connect(m_subscription.get(), &QGrpcSubscription::updated, this, [this](){
-        updated(qjsEngine(this)->toScriptValue(m_returnValue));
+    connect(m_stream.get(), &QGrpcStream::messageReceived, this, [this](){
+        messageReceived(qjsEngine(this)->toScriptValue(m_returnValue));
     });
 
-    connect(m_subscription.get(), &QGrpcSubscription::error, this, &QQuickGrpcSubscription::error);//TODO: Probably it's good idea to disable subscription here
+    connect(m_stream.get(), &QGrpcStream::error, this, &QQuickGrpcStream::error);//TODO: Probably it's good idea to disable stream here
 
-    connect(m_subscription.get(), &QGrpcSubscription::finished, this, [this](){ m_subscription.reset(); setEnabled(false); });
+    connect(m_stream.get(), &QGrpcStream::finished, this, [this](){ m_stream.reset(); setEnabled(false); });
 
     return true;
 }

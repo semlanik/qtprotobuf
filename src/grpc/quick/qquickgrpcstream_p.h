@@ -31,40 +31,40 @@
 
 /*!
  * \ingroup QtGrpcQML
- * \class GrpcSubscription
- * \brief GrpcSubscription provides access to gRPC subscriptions from QML.
+ * \class GrpcStream
+ * \brief GrpcStream provides access to gRPC streams from QML.
  *
- * \details GrpcSubscription might be used from QML code to receive updates for gRPC server or bidirectional streaming methods.
+ * \details GrpcStream might be used from QML code to receive updates for gRPC server or bidirectional streaming methods.
  * Follwing properties should be provided and can not be empty, to subscribe streaming method:
  * - client
  * - method
  * - argument
- * Changing any of this properties cause subscription cancelation and re-initialization.
+ * Changing any of this properties cause stream cancelation and re-initialization.
  *
  * \subsection Properties
  * \subsubsection client QtProtobuf::QAbstractGrpcClient *client
- * \details Client used for subscription.
+ * \details Client used for stream.
  *
  * \subsubsection enabled bool enabled
- * \details Controls subscription status. If subscription is active, switch this flag to 'false'
- * to cancel subscription. Switching to 'false' keeps all fields ready to restore subscription.
+ * \details Controls stream status. If stream is active, switch this flag to 'false'
+ * to cancel stream. Switching to 'false' keeps all fields ready to restore stream.
  *
  * \subsubsection method QString method
- * \details The name of streaming method that will be used for subscription.
+ * \details The name of streaming method that will be used for stream.
  *
  * \subsubsection argument QObject *argument
- * \details Pointer to argument that will be used for subscription.
+ * \details Pointer to argument that will be used for stream.
  *
  * \subsubsection returnValue QObject *returnValue
- * \details Value returned by the subscription (Note that it is the same "return" object passed by the "updated" signal)
+ * \details Value returned by the stream (Note that it is the same "return" object passed by the "updated" signal)
  *
  * \subsection Signals
- * \subsubsection updated updated(ReturnType value)
- * \details The signal notifies about received update for subscription. It provides "return" value ready for use in QML.
+ * \subsubsection updated messageReceived(ReturnType value)
+ * \details The signal notifies about received update for stream. It provides "return" value ready for use in QML.
  * \code
- * GrpcSubscription {
+ * GrpcStream {
  *     ...
- *     onUpdated: {
+ *     onMessageReceived: {
  *         //Use value passed as argument to binding
  *         ...
  *     }
@@ -72,15 +72,15 @@
  * \endcode
  *
  * \subsubsection error error(QtProtobuf::QGrpcStatus status)
- * \details The signal notifies about error occured for subscription. Provides GrpcStatus as argument to assigned handler.
- * \note Some errors at subscription initialization phase disable GrpcSubscription
+ * \details The signal notifies about error occured for stream. Provides GrpcStatus as argument to assigned handler.
+ * \note Some errors at stream initialization phase disable GrpcStream
  *
  * \code
- * GrpcSubscription {
- *     id: mySubscription
+ * GrpcStream {
+ *     id: myStream
  *     ...
  *     onError: {
- *         console.log("Subscription error: " + status.code + " " + status.message)
+ *         console.log("Stream error: " + status.code + " " + status.message)
  *     }
  * }
  * \endcode
@@ -90,10 +90,10 @@ class QJSValue;
 
 namespace QtProtobuf {
 
-class QGrpcSubscription;
+class QGrpcStream;
 
 //! \private
-class QQuickGrpcSubscription : public QObject
+class QQuickGrpcStream : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QAbstractGrpcClient *client READ client WRITE setClient NOTIFY clientChanged)
@@ -103,8 +103,8 @@ class QQuickGrpcSubscription : public QObject
     Q_PROPERTY(QObject *returnValue READ returnValue NOTIFY returnValueChanged)
 
 public:
-    QQuickGrpcSubscription(QObject *parent = nullptr);
-    ~QQuickGrpcSubscription();
+    QQuickGrpcStream(QObject *parent = nullptr);
+    ~QQuickGrpcStream();
 
     QAbstractGrpcClient *client() const {
         return m_client;
@@ -133,7 +133,7 @@ public:
 
         m_client = client;
         emit clientChanged();
-        updateSubscription();
+        updateStream();
     }
 
     void setEnabled(bool enabled) {
@@ -143,7 +143,7 @@ public:
 
         m_enabled = enabled;
         emit enabledChanged();
-        updateSubscription();
+        updateStream();
     }
 
     void setMethod(QString method) {
@@ -153,7 +153,7 @@ public:
 
         m_method = method;
         emit methodChanged();
-        updateSubscription();
+        updateStream();
     }
 
     void setArgument(QObject *argument) {
@@ -163,11 +163,11 @@ public:
 
         m_argument = argument;
         emit argumentChanged();
-        updateSubscription();
+        updateStream();
     }
 
 signals:
-    void updated(const QJSValue &value);
+    void messageReceived(const QJSValue &value);
     void error(const QtProtobuf::QGrpcStatus &status);
 
     void clientChanged();
@@ -177,13 +177,13 @@ signals:
     void returnValueChanged();
 
 private:
-    void updateSubscription();
+    void updateStream();
     bool subscribe();
     QPointer<QAbstractGrpcClient> m_client;
     bool m_enabled;
     QString m_method;
     QPointer<QObject> m_argument;
-    std::shared_ptr<QGrpcSubscription> m_subscription;
+    std::shared_ptr<QGrpcStream> m_stream;
     QObject *m_returnValue;
 };
 

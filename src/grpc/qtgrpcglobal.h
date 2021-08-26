@@ -67,7 +67,7 @@
 
 namespace QtProtobuf {
 class QGrpcAsyncReply;
-class QGrpcSubscription;
+class QGrpcStream;
 using QGrpcAsyncReplyShared = std::shared_ptr<QGrpcAsyncReply>;
-using QGrpcSubscriptionShared = std::shared_ptr<QGrpcSubscription>;
+using QGrpcStreamShared = std::shared_ptr<QGrpcStream>;
 }

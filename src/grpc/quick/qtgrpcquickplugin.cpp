@@ -25,7 +25,7 @@
 
 #include "qtgrpcquickplugin.h"
 
-#include "qquickgrpcsubscription_p.h"
+#include "qquickgrpcstream_p.h"
 
 #include <QDebug>
 #include <QQmlEngine>
@@ -39,5 +39,5 @@ void QtGrpcQuickPlugin::registerTypes(const char *uri)
     Q_ASSERT(uri == QLatin1String("QtGrpc"));
 
     qmlRegisterUncreatableType<QtProtobuf::QGrpcStatus>("QtGrpc", QT_PROTOBUF_VERSION_MAJOR, QT_PROTOBUF_VERSION_MINOR, "GrpcStatus", "GrpcStatus only could be recevied from gRPC calls");
-    qmlRegisterType<QQuickGrpcSubscription>("QtGrpc", QT_PROTOBUF_VERSION_MAJOR, QT_PROTOBUF_VERSION_MINOR, "GrpcSubscription");
+    qmlRegisterType<QQuickGrpcStream>("QtGrpc", QT_PROTOBUF_VERSION_MAJOR, QT_PROTOBUF_VERSION_MINOR, "GrpcStream");
 }

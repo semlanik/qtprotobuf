@@ -73,18 +73,18 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
                                                                                       QtProtobuf::QGrpcUserPasswordCredentials<>(name, QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())));
 
     m_client->attachChannel(channel);
-    QtProtobuf::QGrpcSubscriptionShared subscription = m_client->subscribeMessageListUpdates(None());
-    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::error, this, [subscription] {
-        qCritical() << "Subscription error, cancel";
-        subscription->cancel();
+    QtProtobuf::QGrpcStreamShared stream = m_client->subscribeMessageList(None());
+    QObject::connect(stream.get(), &QtProtobuf::QGrpcStream::error, this, [stream] {
+        qCritical() << "Stream error, cancel";
+        stream->cancel();
     });
-    QObject::connect(subscription.get(), &QtProtobuf::QGrpcSubscription::updated, this, [this, name, subscription]() {
+    QObject::connect(stream.get(), &QtProtobuf::QGrpcStream::messageReceived, this, [this, name, stream]() {
         if (m_userName != name) {
             m_userName = name;
             userNameChanged();
             loggedIn();
         }
-        m_messages.reset(subscription->read<qtprotobuf::examples::ChatMessages>().messages());
+        m_messages.reset(stream->read<qtprotobuf::examples::ChatMessages>().messages());
     });
 }
 

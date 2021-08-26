@@ -34,7 +34,7 @@
 
 #include "qabstractgrpccredentials.h"
 #include "qgrpcasyncreply.h"
-#include "qgrpcsubscription.h"
+#include "qgrpcstream.h"
 #include "qabstractgrpcclient.h"
 #include "qgrpccredentials.h"
 #include "qprotobufserializerregistry_p.h"
@@ -43,13 +43,13 @@
 namespace QtProtobuf {
 
 //! \private
-class QGrpcChannelSubscription : public QObject {
+class QGrpcChannelStream : public QObject {
     //! \private
     Q_OBJECT;
 
 public:
-    QGrpcChannelSubscription(grpc::Channel *channel, const QString &method, const QByteArray &data, QObject *parent = nullptr);
-    ~QGrpcChannelSubscription();
+    QGrpcChannelStream(grpc::Channel *channel, const QString &method, const QByteArray &data, QObject *parent = nullptr);
+    ~QGrpcChannelStream();
 
     void cancel();
     void start();
@@ -101,7 +101,7 @@ struct QGrpcChannelPrivate {
 
     void call(const QString &method, const QString &service, const QByteArray &args, QGrpcAsyncReply *reply);
     QGrpcStatus call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret);
-    void subscribe(QGrpcSubscription *subscription, const QString &service, QAbstractGrpcClient *client);
+    void subscribe(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client);
 };
 
 };
