@@ -347,6 +347,22 @@ PropertyMap common::producePropertyMap(const FieldDescriptor *field, const Descr
     return propertyMap;
 }
 
+PropertyMap common::produceOptionalPropertyMap(const FieldDescriptor *field, const Descriptor *scope)
+{
+    PropertyMap map = producePropertyMap(field, scope);
+
+    map["property_type"] = "bool";
+    map["getter_type"] = "bool";
+    map["setter_type"] = "bool";
+    map["scope_type"] = "bool";
+    map["initializer"] = "true";
+    map["scriptable"] = "true";
+    map["property_name"] = "has_" + map["property_name"];
+    map["property_name_cap"] = utils::upperCaseName(map["property_name"]);
+
+    return map;
+}
+
 std::string common::qualifiedName(const std::string &name)
 {
     std::string fieldName(name);

@@ -80,6 +80,7 @@ struct common {
     static TypeMap produceSimpleTypeMap(::google::protobuf::FieldDescriptor::Type type);
     static TypeMap produceTypeMap(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *scope);
     static PropertyMap producePropertyMap(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *scope);
+    static PropertyMap produceOptionalPropertyMap(const ::google::protobuf::FieldDescriptor *field, const ::google::protobuf::Descriptor *scope);
     static std::string qualifiedName(const std::string &name);
     static bool isLocalEnum(const ::google::protobuf::EnumDescriptor *type, const google::protobuf::Descriptor *scope);
     static EnumVisibility enumVisibility(const ::google::protobuf::EnumDescriptor *type, const ::google::protobuf::Descriptor *scope);

@@ -248,6 +248,16 @@ void MessageDeclarationPrinter::printProperties()
         }
     }
 
+    for (int i = 0; i < mDescriptor->field_count(); i++) {
+        const FieldDescriptor *field = mDescriptor->field(i);
+
+        if (!field->is_optional()) {
+            continue;
+        }
+
+        mPrinter->Print(common::produceOptionalPropertyMap(field, mDescriptor), Templates::ReadOnlyPropertyTemplate);
+    }
+
     Outdent();
 }
 
@@ -261,6 +271,12 @@ void MessageDeclarationPrinter::printGetters()
             mPrinter->Print(propertyMap, Templates::GetterMessageDeclarationTemplate);
         } else {
             mPrinter->Print(propertyMap, Templates::GetterTemplate);
+        }
+
+        if (field->is_optional()) {
+            auto optionalMap = common::produceOptionalPropertyMap(field, mDescriptor);
+
+            mPrinter->Print(optionalMap, Templates::GetterTemplate);
         }
 
         if (field->is_repeated()) {
@@ -292,6 +308,11 @@ void MessageDeclarationPrinter::printSetters()
             break;
         default:
             mPrinter->Print(propertyMap, Templates::SetterTemplate);
+            if (field->is_optional()) {
+                mPrinter->Print(propertyMap, Templates::EndOptionalSetterTemplate);
+            } else {
+                mPrinter->Print(propertyMap, Templates::EndSetterTemplate);
+            }
             break;
         }
     });
@@ -324,7 +345,12 @@ void MessageDeclarationPrinter::printSignals()
 {
     Indent();
     for (int i = 0; i < mDescriptor->field_count(); i++) {
-        mPrinter->Print(common::producePropertyMap(mDescriptor->field(i), mDescriptor), Templates::SignalTemplate);
+        const auto field = mDescriptor->field(i);
+        mPrinter->Print(common::producePropertyMap(field, mDescriptor), Templates::SignalTemplate);
+
+        if (field->is_optional()) {
+            mPrinter->Print(common::produceOptionalPropertyMap(field, mDescriptor), Templates::SignalTemplate);
+        }
     }
     Outdent();
 }
@@ -337,6 +363,11 @@ void MessageDeclarationPrinter::printPrivateMethods()
         if (common::hasQmlAlias(field)) {
             mPrinter->Print(propertyMap, Templates::NonScriptableGetterTemplate);
             mPrinter->Print(propertyMap, Templates::NonScriptableSetterTemplate);
+            if (field->is_optional()) {
+                mPrinter->Print(propertyMap, Templates::EndOptionalSetterTemplate);
+            } else {
+                mPrinter->Print(propertyMap, Templates::EndSetterTemplate);
+            }
         }
     });
     Outdent();
@@ -433,6 +464,9 @@ void MessageDeclarationPrinter::printClassMembers()
              mPrinter->Print(propertyMap, Templates::ListMemberTemplate);
         } else {
             mPrinter->Print(propertyMap, Templates::MemberTemplate);
+        }
+        if (field->is_optional()) {
+            mPrinter->Print(common::produceOptionalPropertyMap(field, mDescriptor), Templates::MemberTemplate);
         }
     });
     Outdent();

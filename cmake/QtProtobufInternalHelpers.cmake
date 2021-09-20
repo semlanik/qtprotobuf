@@ -54,6 +54,7 @@ function(qt_protobuf_internal_add_test)
         PROTO_FILES ${proto_files}
         GENERATED_HEADERS ${add_test_target_GENERATED_HEADERS}
         EXCLUDE_HEADERS ${add_test_target_EXCLUDE_HEADERS}
+        ALLOW_PROTO3_OPTIONAL
         ${EXTRA_OPTIONS}
         PROTO_INCLUDES ${add_test_target_PROTO_INCLUDES})
 

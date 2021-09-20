@@ -5,7 +5,7 @@ function(qtprotobuf_link_target TARGET GENERATED_TARGET)
 endfunction()
 
 function(qtprotobuf_generate)
-    set(options MULTI QML COMMENTS FOLDER FIELDENUM)
+    set(options MULTI QML COMMENTS FOLDER FIELDENUM ALLOW_PROTO3_OPTIONAL)
     set(oneValueArgs OUT_DIR TARGET GENERATED_TARGET EXTRA_NAMESPACE)
     set(multiValueArgs GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
     cmake_parse_arguments(qtprotobuf_generate "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -143,6 +143,7 @@ function(qtprotobuf_generate)
             OUTPUT ${GENERATED_SOURCES_FULL} ${GENERATED_HEADERS_FULL}
             COMMAND ${PROTOC_COMMAND}
                 --plugin=protoc-gen-qtprotobufgen=${QT_PROTOBUF_EXECUTABLE}
+                $<IF:$<BOOL:${qtprotobuf_generate_ALLOW_PROTO3_OPTIONAL}>,--experimental_allow_proto3_optional,>
                 --qtprotobufgen_out=${OUT_DIR}
                 ${PROTO_INCLUDES}
                 ${qtprotobuf_generate_PROTO_FILES}
