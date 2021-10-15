@@ -64,19 +64,19 @@ void QQuickGrpcStream::updateStream()
         return;
     }
 
-    if (!subscribe()) {
+    if (!stream()) {
         setEnabled(false);
     }
 }
 
-bool QQuickGrpcStream::subscribe()
+bool QQuickGrpcStream::stream()
 {
     QString uppercaseMethodName = m_method;
     uppercaseMethodName.replace(0, 1, m_method[0].toUpper());
     const QMetaObject *metaObject = m_client->metaObject();
     QMetaMethod method;
     for (int i = 0; i < metaObject->methodCount(); i++) {
-        if (QString("qmlSubscribe%1_p").arg(uppercaseMethodName) == metaObject->method(i).name()) {
+        if (QString("qmlStream%1_p").arg(uppercaseMethodName) == metaObject->method(i).name()) {
             method = metaObject->method(i);
             break;
         }

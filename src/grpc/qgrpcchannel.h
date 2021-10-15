@@ -58,7 +58,7 @@ public:
 
     QGrpcStatus call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
     void call(const QString &method, const QString &service, const QByteArray &args, QtProtobuf::QGrpcAsyncReply *reply) override;
-    void subscribe(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client) override;
+    void stream(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client) override;
     std::shared_ptr<QAbstractProtobufSerializer> serializer() const override;
 
 private:

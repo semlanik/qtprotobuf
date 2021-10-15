@@ -256,7 +256,7 @@ QGrpcStatus QGrpcChannelPrivate::call(const QString &method, const QString &serv
     return call.status;
 }
 
-void QGrpcChannelPrivate::subscribe(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client)
+void QGrpcChannelPrivate::stream(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client)
 {
     assert(stream != nullptr);
 
@@ -335,9 +335,9 @@ void QGrpcChannel::call(const QString &method, const QString &service, const QBy
     dPtr->call(method, service, args, reply);
 }
 
-void QGrpcChannel::subscribe(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client)
+void QGrpcChannel::stream(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client)
 {
-    dPtr->subscribe(stream, service, client);
+    dPtr->stream(stream, service, client);
 }
 
 std::shared_ptr<QAbstractProtobufSerializer> QGrpcChannel::serializer() const

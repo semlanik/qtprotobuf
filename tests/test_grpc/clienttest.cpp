@@ -237,7 +237,7 @@ TEST_P(ClientTest, StringEchoStreamTest)
     QEventLoop waiter;
 
     int i = 0;
-    auto stream = testClient->subscribeTestMethodServerStream(request);
+    auto stream = testClient->streamTestMethodServerStream(request);
     QObject::connect(stream.get(), &QGrpcStream::messageReceived, &m_app, [&result, &i, &waiter, stream]() {
         SimpleStringMessage ret = stream->read<SimpleStringMessage>();
 
@@ -269,7 +269,7 @@ TEST_P(ClientTest, StringEchoStreamAbortTest)
     QEventLoop waiter;
 
     int i = 0;
-    auto stream = testClient->subscribeTestMethodServerStream(request);
+    auto stream = testClient->streamTestMethodServerStream(request);
     QObject::connect(stream.get(), &QGrpcStream::messageReceived, &m_app, [&result, &i, &waiter, stream]() {
         SimpleStringMessage ret = stream->read<SimpleStringMessage>();
         ++i;
@@ -301,7 +301,7 @@ TEST_P(ClientTest, StringEchoStreamAbortByTimerTest)
 
 
     int i = 0;
-    auto stream = testClient->subscribeTestMethodServerStream(request);
+    auto stream = testClient->streamTestMethodServerStream(request);
     QTimer::singleShot(3500, stream.get(), [stream]() {
         stream->cancel();
     });
@@ -343,7 +343,7 @@ TEST_P(ClientTest, StringEchoStreamTestRet)
 
     QEventLoop waiter;
 
-    testClient->subscribeTestMethodServerStream(request, result);
+    testClient->streamTestMethodServerStream(request, result);
 
     int i = 0;
     QObject::connect(result.data(), &SimpleStringMessage::testFieldStringChanged, &m_app, [&i]() {
@@ -372,7 +372,7 @@ TEST_P(ClientTest, HugeBlobEchoStreamTest)
     QByteArray dataHash = QCryptographicHash::hash(request.testBytes(), QCryptographicHash::Sha256);
     QEventLoop waiter;
 
-    auto stream = testClient->subscribeTestMethodBlobServerStream(request);
+    auto stream = testClient->streamTestMethodBlobServerStream(request);
 
     QObject::connect(stream.get(), &QGrpcStream::messageReceived, &m_app, [&result, &waiter, stream]() {
         BlobMessage ret = stream->read<BlobMessage>();
@@ -510,7 +510,7 @@ TEST_F(ClientTest, ClientSyncTestUnattachedChannelSignal)
     delete ret;
 }
 
-TEST_P(ClientTest, AsyncReplySubscribeTest)
+TEST_P(ClientTest, AsyncReplyStreamTest)
 {
     auto testClient = (*GetParam())();
     QTimer callTimeout;
@@ -523,7 +523,7 @@ TEST_P(ClientTest, AsyncReplySubscribeTest)
     callTimeout.setInterval(5000);
     auto reply = testClient->testMethodStatusMessage(request);
 
-    reply->subscribe(&m_app, []() {
+    reply->stream(&m_app, []() {
         ASSERT_TRUE(false);
     },
     [&asyncStatus, &waiter, &statusMessage](const QGrpcStatus &status) {
@@ -542,7 +542,7 @@ TEST_P(ClientTest, AsyncReplySubscribeTest)
     request.setTestFieldString("Hello beach!");
 
     reply = testClient->testMethod(request);
-    reply->subscribe(&m_app, [reply, &result, &waiter]() {
+    reply->stream(&m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
@@ -556,7 +556,7 @@ TEST_P(ClientTest, AsyncReplySubscribeTest)
     request.setTestFieldString("Hello beach1!");
 
     reply = testClient->testMethod(request);
-    reply->subscribe(&m_app, [reply, &result, &waiter]() {
+    reply->stream(&m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     }, []() {
@@ -578,8 +578,8 @@ TEST_P(ClientTest, MultipleStreamsTest)
     QEventLoop waiter;
     request.setTestFieldString("Stream");
 
-    auto stream = testClient->subscribeTestMethodServerStream(request);
-    auto streamNext = testClient->subscribeTestMethodServerStream(request);
+    auto stream = testClient->streamTestMethodServerStream(request);
+    auto streamNext = testClient->streamTestMethodServerStream(request);
 
     ASSERT_EQ(stream, streamNext);
 
@@ -606,8 +606,8 @@ TEST_P(ClientTest, MultipleStreamsCancelTest)
     SimpleStringMessage request;
     request.setTestFieldString("Stream");
 
-    auto stream = testClient->subscribeTestMethodServerStream(request);
-    auto streamNext = testClient->subscribeTestMethodServerStream(request);
+    auto stream = testClient->streamTestMethodServerStream(request);
+    auto streamNext = testClient->streamTestMethodServerStream(request);
 
     ASSERT_EQ(stream, streamNext);
 
@@ -626,10 +626,10 @@ TEST_P(ClientTest, MultipleStreamsCancelTest)
     ASSERT_TRUE(isFinished);
     ASSERT_TRUE(isFinishedNext);
 
-    stream = testClient->subscribeTestMethodServerStream(request);
+    stream = testClient->streamTestMethodServerStream(request);
     ASSERT_NE(stream, streamNext);
 
-    streamNext = testClient->subscribeTestMethodServerStream(request);
+    streamNext = testClient->streamTestMethodServerStream(request);
 
     ASSERT_EQ(stream, streamNext);
 
@@ -744,7 +744,7 @@ TEST_P(ClientTest, StringEchoStreamThreadTest)
     std::shared_ptr<QThread> thread(QThread::create([&](){
         QEventLoop waiter;
         QThread *validThread = QThread::currentThread();
-        auto stream = testClient->subscribeTestMethodServerStream(request);
+        auto stream = testClient->streamTestMethodServerStream(request);
         QObject::connect(stream.get(), &QGrpcStream::messageReceived, &waiter, [&result, &i, &waiter, stream, &threadsOk, validThread]() {
             SimpleStringMessage ret = stream->read<SimpleStringMessage>();
             result.setTestFieldString(result.testFieldString() + ret.testFieldString());
@@ -796,7 +796,7 @@ TEST_P(ClientTest, StreamCancelWhileErrorTimeoutTest)
     QEventLoop waiter;
 
     bool ok = false;
-    auto stream = testClient->subscribeTestMethodServerStream(request);
+    auto stream = testClient->streamTestMethodServerStream(request);
     QObject::connect(stream.get(), &QGrpcStream::finished, &m_app, [&ok, &waiter]() {
         ok = true;
         waiter.quit();

@@ -73,7 +73,7 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
                                                                                       QtProtobuf::QGrpcUserPasswordCredentials<>(name, QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())));
 
     m_client->attachChannel(channel);
-    QtProtobuf::QGrpcStreamShared stream = m_client->subscribeMessageList(None());
+    QtProtobuf::QGrpcStreamShared stream = m_client->streamMessageList(None());
     QObject::connect(stream.get(), &QtProtobuf::QGrpcStream::error, this, [stream] {
         qCritical() << "Stream error, cancel";
         stream->cancel();
