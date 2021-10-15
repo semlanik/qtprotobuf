@@ -35,7 +35,7 @@
  * \brief GrpcStream provides access to gRPC streams from QML.
  *
  * \details GrpcStream might be used from QML code to receive updates for gRPC server or bidirectional streaming methods.
- * Follwing properties should be provided and can not be empty, to subscribe streaming method:
+ * Follwing properties should be provided and can not be empty, to stream streaming method:
  * - client
  * - method
  * - argument
@@ -178,7 +178,7 @@ signals:
 
 private:
     void updateStream();
-    bool subscribe();
+    bool stream();
     QPointer<QAbstractGrpcClient> m_client;
     bool m_enabled;
     QString m_method;

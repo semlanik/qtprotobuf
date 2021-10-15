@@ -56,11 +56,11 @@ AddressBookEngine::AddressBookEngine() : QObject()
     std::shared_ptr<QtProtobuf::QAbstractGrpcChannel> channel(new QtProtobuf::QGrpcHttp2Channel(QUrl("https://localhost:65001"), QtProtobuf::QGrpcSslCredentials(conf) |
                                                                                       QtProtobuf::QGrpcUserPasswordCredentials<>("authorizedUser", QCryptographicHash::hash("test", QCryptographicHash::Md5).toHex())));
     m_client->attachChannel(channel);
-    auto stream = m_client->subscribeContacts(ListFrame());
+    auto stream = m_client->streamContacts(ListFrame());
     connect(stream.get(), &QtProtobuf::QGrpcStream::messageReceived, this, [this, stream]() {
         m_contacts->reset(stream->read<Contacts>().list());
     });
-    m_client->subscribeCallStatus(qtprotobuf::examples::None(), QPointer<CallStatus>(&m_callStatus));
+    m_client->streamCallStatus(qtprotobuf::examples::None(), QPointer<CallStatus>(&m_callStatus));
 }
 
 void AddressBookEngine::addContact(qtprotobuf::examples::Contact *contact)

@@ -53,10 +53,10 @@ public:
     void abort();
 
     /*!
-     * \brief Subscribe to QGrpcAsyncReply signals
+     * \brief Stream to QGrpcAsyncReply signals
      */
     template <typename Func1, typename Func2>
-    inline void subscribe(QObject *receiver, Func1 finishCallback, Func2 errorCallback,
+    inline void stream(QObject *receiver, Func1 finishCallback, Func2 errorCallback,
                                      Qt::ConnectionType type = Qt::AutoConnection)
     {
         QObject::connect(this, &QGrpcAsyncReply::finished, receiver, finishCallback, type);
@@ -64,11 +64,11 @@ public:
     }
 
     /*!
-     * \brief Overloaded QGrpcAsyncReply::subscribe method, to subscribe to finished signal
+     * \brief Overloaded QGrpcAsyncReply::stream method, to stream to finished signal
      *        only
      */
     template <typename Func1>
-    inline void subscribe(QObject *receiver, Func1 finishCallback,
+    inline void stream(QObject *receiver, Func1 finishCallback,
                                      Qt::ConnectionType type = Qt::AutoConnection)
     {
         QObject::connect(this, &QGrpcAsyncReply::finished, receiver, finishCallback, type);

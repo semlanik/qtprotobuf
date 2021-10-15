@@ -61,7 +61,7 @@ using StreamHandler = std::function<void(const QByteArray&)>;
  * \ingroup QtGrpc
  * \brief The QAbstractGrpcClient class is bridge between gRPC clients and channels. QAbstractGrpcClient provides set of
  *        bridge functions for client classes generated out of protobuf services.
- * \details QAbstractGrpcClient provides threads safety for subscribe and call methods of generated clients.
+ * \details QAbstractGrpcClient provides threads safety for stream and call methods of generated clients.
  */
 class Q_GRPC_EXPORT QAbstractGrpcClient : public QObject
 {
@@ -128,20 +128,20 @@ protected:
 
     /*!
      * \private
-     * \brief Subscribes to message notifications from server-stream with given message argument \a arg
+     * \brief Streams to message notifications from server-stream with given message argument \a arg
      * \param[in] method Name of the method to be called
      * \param[in] arg Protobuf message argument for \p method
      * \param[out] signal Callback with return-message as input parameter that will be called each time message
      *             update recevied from server-stream
      */
     template<typename A>
-    QGrpcStreamShared subscribe(const QString &method, const A &arg) {
-        return subscribe(method, arg.serialize(serializer()));
+    QGrpcStreamShared stream(const QString &method, const A &arg) {
+        return stream(method, arg.serialize(serializer()));
     }
 
     /*!
      * \private
-     * \brief Subscribes to message notifications from server-stream with given message argument \a arg
+     * \brief Streams to message notifications from server-stream with given message argument \a arg
      * \param[in] method Name of the method to be called
      * \param[in] arg Protobuf message argument for \p method
      * \param[out] ret Pointer to preallocated return-message structure. \p ret Structure fields will be update each
@@ -150,15 +150,15 @@ protected:
      *       updated message recevied from server-stream
      */
     template<typename A, typename R>
-    QGrpcStreamShared subscribe(const QString &method, const A &arg, const QPointer<R> &ret) {
+    QGrpcStreamShared stream(const QString &method, const A &arg, const QPointer<R> &ret) {
         if (ret.isNull()) {
-            static const QString nullPointerError("Unable to subscribe method: %1. Pointer to return data is null");
+            static const QString nullPointerError("Unable to stream method: %1. Pointer to return data is null");
             error({QGrpcStatus::InvalidArgument, nullPointerError.arg(method)});
             qProtoCritical() << nullPointerError.arg(method);
             return nullptr;
         }
 
-        return subscribe(method, arg.serialize(serializer()), [ret, this](const QByteArray &data) {
+        return stream(method, arg.serialize(serializer()), [ret, this](const QByteArray &data) {
             if (!ret.isNull()) {
                 tryDeserialize(*ret, data);
             } else {
@@ -190,7 +190,7 @@ private:
     QGrpcAsyncReplyShared call(const QString &method, const QByteArray &arg);
 
     //!\private
-    QGrpcStreamShared subscribe(const QString &method, const QByteArray &arg, const QtProtobuf::StreamHandler &handler = {});
+    QGrpcStreamShared stream(const QString &method, const QByteArray &arg, const QtProtobuf::StreamHandler &handler = {});
 
     /*!
      * \private

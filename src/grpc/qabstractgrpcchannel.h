@@ -78,14 +78,14 @@ public:
     virtual void call(const QString &method, const QString &service, const QByteArray &args, QtProtobuf::QGrpcAsyncReply *ret) = 0;
 
     /*!
-     * \brief Subscribes to server-side stream to receive updates for given \p method.
+     * \brief Streams to server-side stream to receive updates for given \p method.
      *        \note This method should not be called directly.
      * \param[in] method remote method is called
      * \param[in] service service identified in URL path format
      * \param[in] args serialized argument message
      * \param[in] handler callback that will be called when message recevied from the server-stream
      */
-    virtual void subscribe(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client) = 0;
+    virtual void stream(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client) = 0;
 
     virtual std::shared_ptr<QAbstractProtobufSerializer> serializer() const = 0;
 
@@ -107,7 +107,7 @@ protected:
     /*!
      * \private
      * \brief Cancels \p stream
-     * \param[in] stream returned by QAbstractGrpcChannel::subscribe() method
+     * \param[in] stream returned by QAbstractGrpcChannel::stream() method
      */
     virtual void cancel(QGrpcStream *stream);
 

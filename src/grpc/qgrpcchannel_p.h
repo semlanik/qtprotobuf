@@ -101,7 +101,7 @@ struct QGrpcChannelPrivate {
 
     void call(const QString &method, const QString &service, const QByteArray &args, QGrpcAsyncReply *reply);
     QGrpcStatus call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret);
-    void subscribe(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client);
+    void stream(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client);
 };
 
 };

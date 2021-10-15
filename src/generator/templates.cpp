@@ -334,7 +334,7 @@ const char *Templates::ClientMethodDefinitionQmlTemplate = "\nvoid $classname$::
                                                            "        return;\n"
                                                            "    }\n\n"
                                                            "    QtProtobuf::QGrpcAsyncReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
-                                                           "    reply->subscribe(jsEngine, [this, reply, callback, jsEngine]() {\n"
+                                                           "    reply->stream(jsEngine, [this, reply, callback, jsEngine]() {\n"
                                                            "        auto result = new $return_type$(reply->read<$return_type$>());\n"
                                                            "        qmlEngine(this)->setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);\n"
                                                            "        QJSValue(callback).call(QJSValueList{jsEngine->toScriptValue(result)});\n"
@@ -359,7 +359,7 @@ const char *Templates::ClientMethodDefinitionQml2Template = "\nvoid $classname$:
                                                             "        return;\n"
                                                             "    }\n\n"
                                                             "    QtProtobuf::QGrpcAsyncReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
-                                                            "    reply->subscribe(jsEngine, [this, reply, jsEngine, safeReturn]() {\n"
+                                                            "    reply->stream(jsEngine, [this, reply, jsEngine, safeReturn]() {\n"
                                                             "        if (safeReturn.isNull()) {\n"
                                                             "            qProtoWarning() << \"Return value is destroyed. Ignore call result\";\n"
                                                             "            return;\n"
@@ -378,21 +378,21 @@ const char *Templates::QmlRegisterEnumTypeTemplate = "qmlRegisterUncreatableType
 
 
 const char *Templates::ClientMethodSignalDeclarationTemplate = "Q_SIGNAL void $method_name$Updated(const $return_type$ &);\n";
-const char *Templates::ClientMethodServerStreamDeclarationTemplate = "QtProtobuf::QGrpcStreamShared subscribe$method_name_upper$(const $param_type$ &$param_name$);\n";
-const char *Templates::ClientMethodServerStream2DeclarationTemplate = "QtProtobuf::QGrpcStreamShared subscribe$method_name_upper$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
-const char *Templates::ClientMethodServerStreamQmlDeclarationTemplate = "Q_INVOKABLE QtProtobuf::QGrpcStreamShared qmlSubscribe$method_name_upper$_p($param_type$ *$param_name$, $return_type$ *$return_name$);\n";
+const char *Templates::ClientMethodServerStreamDeclarationTemplate = "QtProtobuf::QGrpcStreamShared stream$method_name_upper$(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodServerStream2DeclarationTemplate = "QtProtobuf::QGrpcStreamShared stream$method_name_upper$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
+const char *Templates::ClientMethodServerStreamQmlDeclarationTemplate = "Q_INVOKABLE QtProtobuf::QGrpcStreamShared qmlStream$method_name_upper$_p($param_type$ *$param_name$, $return_type$ *$return_name$);\n";
 
-const char *Templates::ClientMethodServerStreamDefinitionTemplate = "QtProtobuf::QGrpcStreamShared $classname$::subscribe$method_name_upper$(const $param_type$ &$param_name$)\n"
+const char *Templates::ClientMethodServerStreamDefinitionTemplate = "QtProtobuf::QGrpcStreamShared $classname$::stream$method_name_upper$(const $param_type$ &$param_name$)\n"
                                                                     "{\n"
-                                                                    "    return subscribe(\"$method_name$\", $param_name$);\n"
+                                                                    "    return stream(\"$method_name$\", $param_name$);\n"
                                                                     "}\n";
-const char *Templates::ClientMethodServerStream2DefinitionTemplate = "QtProtobuf::QGrpcStreamShared $classname$::subscribe$method_name_upper$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
+const char *Templates::ClientMethodServerStream2DefinitionTemplate = "QtProtobuf::QGrpcStreamShared $classname$::stream$method_name_upper$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
                                                                      "{\n"
-                                                                     "    return subscribe(\"$method_name$\", $param_name$, $return_name$);\n"
+                                                                     "    return stream(\"$method_name$\", $param_name$, $return_name$);\n"
                                                                      "}\n";
-const char *Templates::ClientMethodServerStreamQmlDefinitionTemplate = "QtProtobuf::QGrpcStreamShared $classname$::qmlSubscribe$method_name_upper$_p($param_type$ *$param_name$, $return_type$ *$return_name$)\n"
+const char *Templates::ClientMethodServerStreamQmlDefinitionTemplate = "QtProtobuf::QGrpcStreamShared $classname$::qmlStream$method_name_upper$_p($param_type$ *$param_name$, $return_type$ *$return_name$)\n"
                                                                        "{\n"
-                                                                       "    return subscribe(\"$method_name$\", *$param_name$, QPointer<$return_type$>($return_name$));\n"
+                                                                       "    return stream(\"$method_name$\", *$param_name$, QPointer<$return_type$>($return_name$));\n"
                                                                        "}\n";
 
 const char *Templates::ListSuffix = "Repeated";
