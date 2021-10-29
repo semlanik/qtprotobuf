@@ -48,7 +48,7 @@ class Q_GRPC_EXPORT QGrpcAsyncOperationBase : public QObject
     Q_OBJECT
 public:
     /*!
-     * \brief Reads message from raw byte array stored in QGrpcAsyncReply
+     * \brief Reads message from raw byte array stored in QGrpcCallReply
      * \return Copy of deserialized message or non-initialized message in case of exceptional situation
      */
     template <typename T>

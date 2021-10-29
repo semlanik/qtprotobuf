@@ -36,7 +36,7 @@
 
 #include <unordered_map>
 
-#include "qgrpcasyncreply.h"
+#include "qgrpccallreply.h"
 #include "qgrpcstream.h"
 #include "qabstractgrpcclient.h"
 #include "qgrpccredentials.h"
@@ -228,7 +228,7 @@ QGrpcStatus QGrpcHttp2Channel::call(const QString &method, const QString &servic
     return {grpcStatus, QString::fromUtf8(networkReply->rawHeader(GrpcStatusMessage))};
 }
 
-void QGrpcHttp2Channel::call(const QString &method, const QString &service, const QByteArray &args, QGrpcAsyncReply *reply)
+void QGrpcHttp2Channel::call(const QString &method, const QString &service, const QByteArray &args, QGrpcCallReply *reply)
 {
     assert(reply != nullptr);
     QNetworkReply *networkReply = dPtr->post(method, service, args);
@@ -256,7 +256,7 @@ void QGrpcHttp2Channel::call(const QString &method, const QString &service, cons
         networkReply->deleteLater();
     });
 
-    *abortConnection = QObject::connect(reply, &QGrpcAsyncReply::error, networkReply, [networkReply, connection, abortConnection] (const QGrpcStatus &status) {
+    *abortConnection = QObject::connect(reply, &QGrpcCallReply::error, networkReply, [networkReply, connection, abortConnection] (const QGrpcStatus &status) {
         if (status.code() == QGrpcStatus::Aborted) {
             if (*connection) {
                 QObject::disconnect(*connection);

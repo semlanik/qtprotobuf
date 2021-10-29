@@ -291,8 +291,8 @@ const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $
                                                  "{\n";
 const char *Templates::QObjectMacro = "Q_OBJECT";
 const char *Templates::ClientMethodDeclarationSyncTemplate = "QtProtobuf::QGrpcStatus $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
-const char *Templates::ClientMethodDeclarationAsyncTemplate = "QtProtobuf::QGrpcAsyncReplyShared $method_name$(const $param_type$ &$param_name$);\n";
-const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcAsyncReplyShared)> &callback);\n";
+const char *Templates::ClientMethodDeclarationAsyncTemplate = "QtProtobuf::QGrpcCallReplyShared $method_name$(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcCallReplyShared)> &callback);\n";
 const char *Templates::ClientMethodDeclarationQmlTemplate = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, const QJSValue &callback, const QJSValue &errorCallback);\n";
 const char *Templates::ClientMethodDeclarationQml2Template = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, $return_type$ *$return_name$, const QJSValue &errorCallback);\n";
 
@@ -306,14 +306,14 @@ const char *Templates::ClientMethodDefinitionSyncTemplate = "\nQtProtobuf::QGrpc
                                                             "{\n"
                                                             "    return call(\"$method_name$\", $param_name$, $return_name$);\n"
                                                             "}\n";
-const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nQtProtobuf::QGrpcAsyncReplyShared $classname$::$method_name$(const $param_type$ &$param_name$)\n"
+const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nQtProtobuf::QGrpcCallReplyShared $classname$::$method_name$(const $param_type$ &$param_name$)\n"
                                                              "{\n"
                                                              "    return call(\"$method_name$\", $param_name$);\n"
                                                              "}\n";
-const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QGrpcAsyncReplyShared)> &callback)\n"
+const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QGrpcCallReplyShared)> &callback)\n"
                                                               "{\n"
-                                                              "    QtProtobuf::QGrpcAsyncReplyShared reply = call(\"$method_name$\", $param_name$);\n"
-                                                              "    QObject::connect(reply.get(), &QtProtobuf::QGrpcAsyncReply::finished, context, [reply, callback]() {\n"
+                                                              "    QtProtobuf::QGrpcCallReplyShared reply = call(\"$method_name$\", $param_name$);\n"
+                                                              "    QObject::connect(reply.get(), &QtProtobuf::QGrpcCallReply::finished, context, [reply, callback]() {\n"
                                                               "        callback(reply);\n"
                                                               "    });\n"
                                                               "}\n";
@@ -333,8 +333,8 @@ const char *Templates::ClientMethodDefinitionQmlTemplate = "\nvoid $classname$::
                                                            "        qProtoWarning() << \"Unable to call $classname$::$method_name$, it's only callable from JS engine context\";\n"
                                                            "        return;\n"
                                                            "    }\n\n"
-                                                           "    QtProtobuf::QGrpcAsyncReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
-                                                           "    reply->stream(jsEngine, [this, reply, callback, jsEngine]() {\n"
+                                                           "    QtProtobuf::QGrpcCallReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
+                                                           "    reply->subscribe(jsEngine, [this, reply, callback, jsEngine]() {\n"
                                                            "        auto result = new $return_type$(reply->read<$return_type$>());\n"
                                                            "        qmlEngine(this)->setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);\n"
                                                            "        QJSValue(callback).call(QJSValueList{jsEngine->toScriptValue(result)});\n"
@@ -358,8 +358,8 @@ const char *Templates::ClientMethodDefinitionQml2Template = "\nvoid $classname$:
                                                             "        qProtoWarning() << \"Unable to call $classname$::$method_name$, it's only callable from JS engine context\";\n"
                                                             "        return;\n"
                                                             "    }\n\n"
-                                                            "    QtProtobuf::QGrpcAsyncReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
-                                                            "    reply->stream(jsEngine, [this, reply, jsEngine, safeReturn]() {\n"
+                                                            "    QtProtobuf::QGrpcCallReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
+                                                            "    reply->subscribe(jsEngine, [this, reply, jsEngine, safeReturn]() {\n"
                                                             "        if (safeReturn.isNull()) {\n"
                                                             "            qProtoWarning() << \"Return value is destroyed. Ignore call result\";\n"
                                                             "            return;\n"

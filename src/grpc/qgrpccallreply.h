@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once //QGrpcAsyncReply
+#pragma once //QGrpcCallReply
 
 #include <functional>
 #include <QMutex>
@@ -39,11 +39,11 @@ namespace QtProtobuf {
 
 /*!
  * \ingroup QtGrpc
- * \brief The QGrpcAsyncReply class contains data for asynchronous call of gRPC client API. It's owned by client class, that
- *        created it. QGrpcAsyncReply could be used by QAbstractGrpcChannel implementations to control call work flow and
- *        abort calls if possible in case if QGrpcAsyncReply::abort method called by library user.
+ * \brief The QGrpcCallReply class contains data for asynchronous call of gRPC client API. It's owned by client class, that
+ *        created it. QGrpcCallReply could be used by QAbstractGrpcChannel implementations to control call work flow and
+ *        abort calls if possible in case if QGrpcCallReply::abort method called by library user.
  */
-class Q_GRPC_EXPORT QGrpcAsyncReply final : public QGrpcAsyncOperationBase
+class Q_GRPC_EXPORT QGrpcCallReply final : public QGrpcAsyncOperationBase
 {
     Q_OBJECT
 public:
@@ -53,38 +53,38 @@ public:
     void abort();
 
     /*!
-     * \brief Stream to QGrpcAsyncReply signals
+     * \brief Subscribe to QGrpcCallReply signals
      */
     template <typename Func1, typename Func2>
-    inline void stream(QObject *receiver, Func1 finishCallback, Func2 errorCallback,
+    inline void subscribe(QObject *receiver, Func1 finishCallback, Func2 errorCallback,
                                      Qt::ConnectionType type = Qt::AutoConnection)
     {
-        QObject::connect(this, &QGrpcAsyncReply::finished, receiver, finishCallback, type);
-        QObject::connect(this, &QGrpcAsyncReply::error, receiver, errorCallback, type);
+        QObject::connect(this, &QGrpcCallReply::finished, receiver, finishCallback, type);
+        QObject::connect(this, &QGrpcCallReply::error, receiver, errorCallback, type);
     }
 
     /*!
-     * \brief Overloaded QGrpcAsyncReply::stream method, to stream to finished signal
+     * \brief Overloaded QGrpcCallReply::subscribe method, to subscribe to finished signal
      *        only
      */
     template <typename Func1>
-    inline void stream(QObject *receiver, Func1 finishCallback,
+    inline void subscribe(QObject *receiver, Func1 finishCallback,
                                      Qt::ConnectionType type = Qt::AutoConnection)
     {
-        QObject::connect(this, &QGrpcAsyncReply::finished, receiver, finishCallback, type);
+        QObject::connect(this, &QGrpcCallReply::finished, receiver, finishCallback, type);
     }
 
 protected:
     //! \private
-    QGrpcAsyncReply(const std::shared_ptr<QAbstractGrpcChannel> &channel, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(channel, parent)
+    QGrpcCallReply(const std::shared_ptr<QAbstractGrpcChannel> &channel, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(channel, parent)
     {}
     //! \private
-    ~QGrpcAsyncReply() = default;
+    ~QGrpcCallReply() = default;
 
 private:
     //! \private
-    QGrpcAsyncReply();
-    Q_DISABLE_COPY_MOVE(QGrpcAsyncReply)
+    QGrpcCallReply();
+    Q_DISABLE_COPY_MOVE(QGrpcCallReply)
 
     friend class QAbstractGrpcClient;
 };

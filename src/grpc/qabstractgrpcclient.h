@@ -46,7 +46,7 @@
  */
 namespace QtProtobuf {
 
-class QGrpcAsyncReply;
+class QGrpcCallReply;
 class QGrpcStream;
 class QGrpcAsyncOperationBase;
 class QAbstractGrpcChannel;
@@ -117,12 +117,12 @@ protected:
 
     /*!
      * \private
-     * \brief Calls \p method of service client asynchronously and returns pointer to assigned to call AsyncReply
+     * \brief Calls \p method of service client asynchronously and returns pointer to assigned to call QGrpcCallReply
      * \param[in] method Name of the method to be called
      * \param[in] arg Protobuf message argument for \p method
      */
     template<typename A>
-    QGrpcAsyncReplyShared call(const QString &method, const A &arg) {
+    QGrpcCallReplyShared call(const QString &method, const A &arg) {
         return call(method, arg.serialize(serializer()));
     }
 
@@ -187,7 +187,7 @@ private:
     QGrpcStatus call(const QString &method, const QByteArray &arg, QByteArray &ret);
 
     //!\private
-    QGrpcAsyncReplyShared call(const QString &method, const QByteArray &arg);
+    QGrpcCallReplyShared call(const QString &method, const QByteArray &arg);
 
     //!\private
     QGrpcStreamShared stream(const QString &method, const QByteArray &arg, const QtProtobuf::StreamHandler &handler = {});

@@ -106,7 +106,7 @@ TEST_F(ClientTest, CheckMethodsGeneration)
     QPointer<SimpleStringMessage> result(new SimpleStringMessage);
     testClient.testMethod(request, result);
     testClient.testMethod(request);
-    testClient.testMethod(request, &testClient, [](QGrpcAsyncReplyShared) {});
+    testClient.testMethod(request, &testClient, [](QGrpcCallReplyShared) {});
     delete result;
 }
 
@@ -130,8 +130,8 @@ TEST_P(ClientTest, StringEchoAsyncTest)
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
 
-    QGrpcAsyncReplyShared reply = testClient->testMethod(request);
-    QObject::connect(reply.get(), &QGrpcAsyncReply::finished, &m_app, [reply, &result, &waiter]() {
+    QGrpcCallReplyShared reply = testClient->testMethod(request);
+    QObject::connect(reply.get(), &QGrpcCallReply::finished, &m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
         reply->deleteLater();
         waiter.quit();
@@ -149,7 +149,7 @@ TEST_P(ClientTest, StringEchoAsync2Test)
     SimpleStringMessage request;
     request.setTestFieldString("Hello beach!");
     QEventLoop waiter;
-    testClient->testMethod(request, &m_app, [&result, &waiter](QGrpcAsyncReplyShared reply) {
+    testClient->testMethod(request, &m_app, [&result, &waiter](QGrpcCallReplyShared reply) {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
@@ -167,17 +167,17 @@ TEST_P(ClientTest, StringEchoImmediateAsyncAbortTest)
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
     QEventLoop waiter;
-    QGrpcAsyncReplyShared reply = testClient->testMethod(request);
+    QGrpcCallReplyShared reply = testClient->testMethod(request);
 
     result.setTestFieldString("Result not changed by echo");
-    QObject::connect(reply.get(), &QGrpcAsyncReply::finished, &m_app, [&waiter, &result, reply]() {
+    QObject::connect(reply.get(), &QGrpcCallReply::finished, &m_app, [&waiter, &result, reply]() {
         result = reply->read<SimpleStringMessage>();
         reply->deleteLater();
         waiter.quit();
     });
 
     QGrpcStatus::StatusCode asyncStatus = QGrpcStatus::StatusCode::Ok;
-    QObject::connect(reply.get(), &QGrpcAsyncReply::error, [&asyncStatus](const QGrpcStatus &status) {
+    QObject::connect(reply.get(), &QGrpcCallReply::error, [&asyncStatus](const QGrpcStatus &status) {
         asyncStatus = status.code();
     });
 
@@ -204,20 +204,20 @@ TEST_P(ClientTest, StringEchoDeferredAsyncAbortTest)
     SimpleStringMessage request;
     request.setTestFieldString("sleep");
     QEventLoop waiter;
-    QGrpcAsyncReplyShared reply = testClient->testMethod(request);
+    QGrpcCallReplyShared reply = testClient->testMethod(request);
 
     result.setTestFieldString("Result not changed by echo");
     bool errorCalled = false;
     reply = testClient->testMethod(request);
-    QObject::connect(reply.get(), &QGrpcAsyncReply::finished, &m_app, [reply, &result, &waiter]() {
+    QObject::connect(reply.get(), &QGrpcCallReply::finished, &m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
-    QObject::connect(reply.get(), &QGrpcAsyncReply::error, [&errorCalled]() {
+    QObject::connect(reply.get(), &QGrpcCallReply::error, [&errorCalled]() {
         errorCalled = true;
     });
 
-    QTimer::singleShot(500, reply.get(), &QGrpcAsyncReply::abort);
+    QTimer::singleShot(500, reply.get(), &QGrpcCallReply::abort);
     QTimer::singleShot(5000, &waiter, &QEventLoop::quit);
 
     waiter.exec();
@@ -397,8 +397,8 @@ TEST_P(ClientTest, StatusMessageAsyncTest)
     QEventLoop waiter;
     QString statusMessage;
 
-    QGrpcAsyncReplyShared reply = testClient->testMethodStatusMessage(request);
-    QObject::connect(reply.get(), &QGrpcAsyncReply::error, [&asyncStatus, &waiter, &statusMessage](const QGrpcStatus &status) {
+    QGrpcCallReplyShared reply = testClient->testMethodStatusMessage(request);
+    QObject::connect(reply.get(), &QGrpcCallReply::error, [&asyncStatus, &waiter, &statusMessage](const QGrpcStatus &status) {
         asyncStatus = status.code();
         statusMessage = status.message();
         waiter.quit();
@@ -523,7 +523,7 @@ TEST_P(ClientTest, AsyncReplyStreamTest)
     callTimeout.setInterval(5000);
     auto reply = testClient->testMethodStatusMessage(request);
 
-    reply->stream(&m_app, []() {
+    reply->subscribe(&m_app, []() {
         ASSERT_TRUE(false);
     },
     [&asyncStatus, &waiter, &statusMessage](const QGrpcStatus &status) {
@@ -542,7 +542,7 @@ TEST_P(ClientTest, AsyncReplyStreamTest)
     request.setTestFieldString("Hello beach!");
 
     reply = testClient->testMethod(request);
-    reply->stream(&m_app, [reply, &result, &waiter]() {
+    reply->subscribe(&m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     });
@@ -556,7 +556,7 @@ TEST_P(ClientTest, AsyncReplyStreamTest)
     request.setTestFieldString("Hello beach1!");
 
     reply = testClient->testMethod(request);
-    reply->stream(&m_app, [reply, &result, &waiter]() {
+    reply->subscribe(&m_app, [reply, &result, &waiter]() {
         result = reply->read<SimpleStringMessage>();
         waiter.quit();
     }, []() {
@@ -710,9 +710,9 @@ TEST_P(ClientTest, StringEchoAsyncThreadTest)
     std::shared_ptr<QThread> thread(QThread::create([&](){
         QEventLoop waiter;
         QThread *validThread = QThread::currentThread();
-        QGrpcAsyncReplyShared reply = testClient->testMethod(request);
+        QGrpcCallReplyShared reply = testClient->testMethod(request);
         QObject::connect(reply.get(), &QObject::destroyed, [&replyDestroyed]{replyDestroyed = true;});
-        QObject::connect(reply.get(), &QGrpcAsyncReply::finished, &waiter, [reply, &result, &waiter, &threadsOk, validThread]() {
+        QObject::connect(reply.get(), &QGrpcCallReply::finished, &waiter, [reply, &result, &waiter, &threadsOk, validThread]() {
             threadsOk &= reply->thread() != QThread::currentThread();
             threadsOk &= validThread == QThread::currentThread();
             result = reply->read<SimpleStringMessage>();

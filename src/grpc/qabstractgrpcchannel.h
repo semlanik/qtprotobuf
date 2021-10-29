@@ -38,7 +38,7 @@ class QThread;
 
 namespace QtProtobuf {
 
-class QGrpcAsyncReply;
+class QGrpcCallReply;
 class QGrpcStream;
 class QAbstractGrpcClient;
 class QAbstractProtobufSerializer;
@@ -65,17 +65,17 @@ public:
     virtual QGrpcStatus call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) = 0;
 
     /*!
-     * \brief Calls \p method asynchronously with given serialized messge \p args. Result of method call is written to QGrpcAsyncReply.
+     * \brief Calls \p method asynchronously with given serialized messge \p args. Result of method call is written to QGrpcCallReply.
      *        \note This method is asynchronous, that means it returns control imediately after it is called.
      *        \note This method should not be called directly.
      * \param[in] method remote method is called
      * \param[in] service service identified in URL path format
      * \param[in] args serialized argument message
-     * \param[out] ret QGrpcAsyncReply that will be returned to end-point user to read data once call complete.
-     *            QGrpcAsyncReply lifecycle is managed by QAbstractGrpcClient only.
-     *            \see QGrpcAsyncReply for details
+     * \param[out] ret QGrpcCallReply that will be returned to end-point user to read data once call complete.
+     *            QGrpcCallReply lifecycle is managed by QAbstractGrpcClient only.
+     *            \see QGrpcCallReply for details
      */
-    virtual void call(const QString &method, const QString &service, const QByteArray &args, QtProtobuf::QGrpcAsyncReply *ret) = 0;
+    virtual void call(const QString &method, const QString &service, const QByteArray &args, QtProtobuf::QGrpcCallReply *ret) = 0;
 
     /*!
      * \brief Streams to server-side stream to receive updates for given \p method.
@@ -102,7 +102,7 @@ protected:
      * \brief Aborts async call for given \p reply
      * \param[in] reply returned by asynchronous QAbstractGrpcChannel::call() method
      */
-    virtual void abort(QGrpcAsyncReply *reply);
+    virtual void abort(QGrpcCallReply *reply);
 
     /*!
      * \private
@@ -111,7 +111,7 @@ protected:
      */
     virtual void cancel(QGrpcStream *stream);
 
-    friend class QGrpcAsyncReply;
+    friend class QGrpcCallReply;
     friend class QGrpcStream;
 private:
     Q_DISABLE_COPY(QAbstractGrpcChannel)

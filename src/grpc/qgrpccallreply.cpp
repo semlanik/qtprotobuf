@@ -23,13 +23,13 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "qgrpcasyncreply.h"
+#include "qgrpccallreply.h"
 
 #include <QThread>
 
 using namespace QtProtobuf;
 
-void QGrpcAsyncReply::abort()
+void QGrpcCallReply::abort()
 {
     if (thread() != QThread::currentThread()) {
         QMetaObject::invokeMethod(this, [this](){m_channel->abort(this);}, Qt::BlockingQueuedConnection);

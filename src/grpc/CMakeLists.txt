@@ -1,7 +1,7 @@
 qt_protobuf_internal_add_library(Grpc
     SOURCES
         qgrpcasyncoperationbase.cpp
-        qgrpcasyncreply.cpp
+        qgrpccallreply.cpp
         qgrpcstream.cpp
         qgrpcstatus.cpp
         qabstractgrpcchannel.cpp
@@ -13,7 +13,7 @@ qt_protobuf_internal_add_library(Grpc
         qgrpcuserpasswordcredentials.cpp
     PUBLIC_HEADER
         qgrpcasyncoperationbase_p.h
-        qgrpcasyncreply.h
+        qgrpccallreply.h
         qgrpcstream.h
         qgrpcstatus.h
         qabstractgrpcchannel.h
