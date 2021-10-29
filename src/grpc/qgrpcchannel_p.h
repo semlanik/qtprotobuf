@@ -33,7 +33,7 @@
 #include <grpcpp/security/credentials.h>
 
 #include "qabstractgrpccredentials.h"
-#include "qgrpcasyncreply.h"
+#include "qgrpccallreply.h"
 #include "qgrpcstream.h"
 #include "qabstractgrpcclient.h"
 #include "qgrpccredentials.h"
@@ -99,7 +99,7 @@ struct QGrpcChannelPrivate {
     QGrpcChannelPrivate(const QUrl &url, std::shared_ptr<grpc::ChannelCredentials> credentials);
     ~QGrpcChannelPrivate();
 
-    void call(const QString &method, const QString &service, const QByteArray &args, QGrpcAsyncReply *reply);
+    void call(const QString &method, const QString &service, const QByteArray &args, QGrpcCallReply *reply);
     QGrpcStatus call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret);
     void stream(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client);
 };

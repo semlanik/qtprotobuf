@@ -25,7 +25,7 @@
 
 #include "qabstractgrpcchannel.h"
 
-#include "qgrpcasyncreply.h"
+#include "qgrpccallreply.h"
 #include "qgrpcstream.h"
 #include <QThread>
 
@@ -45,7 +45,7 @@ QAbstractGrpcChannel::QAbstractGrpcChannel() : dPtr(new QAbstractGrpcChannelPriv
 
 QAbstractGrpcChannel::~QAbstractGrpcChannel() = default;
 
-void QAbstractGrpcChannel::abort(QGrpcAsyncReply *reply)
+void QAbstractGrpcChannel::abort(QGrpcCallReply *reply)
 {
     assert(reply != nullptr);
     reply->setData({});

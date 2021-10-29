@@ -44,7 +44,7 @@
 #include <grpcpp/security/credentials.h>
 
 #include "qabstractgrpccredentials.h"
-#include "qgrpcasyncreply.h"
+#include "qgrpccallreply.h"
 #include "qgrpcstatus.h"
 #include "qgrpcstream.h"
 #include "qabstractgrpcclient.h"
@@ -204,7 +204,7 @@ QGrpcChannelPrivate::~QGrpcChannelPrivate()
 {
 }
 
-void QGrpcChannelPrivate::call(const QString &method, const QString &service, const QByteArray &args, QGrpcAsyncReply *reply)
+void QGrpcChannelPrivate::call(const QString &method, const QString &service, const QByteArray &args, QGrpcCallReply *reply)
 {
     QString rpcName = QString("/%1/%2").arg(service).arg(method);
 
@@ -230,7 +230,7 @@ void QGrpcChannelPrivate::call(const QString &method, const QString &service, co
         QObject::disconnect(*abortConnection);
     });
 
-    *abortConnection = QObject::connect(reply, &QGrpcAsyncReply::error, call.get(), [call, connection, abortConnection](const QGrpcStatus &status){
+    *abortConnection = QObject::connect(reply, &QGrpcCallReply::error, call.get(), [call, connection, abortConnection](const QGrpcStatus &status){
         if (status.code() == QGrpcStatus::Aborted) {
             QObject::disconnect(*connection);
             QObject::disconnect(*abortConnection);
@@ -330,7 +330,7 @@ QGrpcStatus QGrpcChannel::call(const QString &method, const QString &service, co
     return dPtr->call(method, service, args, ret);
 }
 
-void QGrpcChannel::call(const QString &method, const QString &service, const QByteArray &args, QGrpcAsyncReply *reply)
+void QGrpcChannel::call(const QString &method, const QString &service, const QByteArray &args, QGrpcCallReply *reply)
 {
     dPtr->call(method, service, args, reply);
 }

@@ -25,7 +25,7 @@
 
 #include "qabstractgrpcclient.h"
 
-#include "qgrpcasyncreply.h"
+#include "qgrpccallreply.h"
 #include "qgrpcstream.h"
 #include "qprotobufserializerregistry_p.h"
 
@@ -94,27 +94,27 @@ QGrpcStatus QAbstractGrpcClient::call(const QString &method, const QByteArray &a
     return callStatus;
 }
 
-QGrpcAsyncReplyShared QAbstractGrpcClient::call(const QString &method, const QByteArray &arg)
+QGrpcCallReplyShared QAbstractGrpcClient::call(const QString &method, const QByteArray &arg)
 {
-    QGrpcAsyncReplyShared reply;
+    QGrpcCallReplyShared reply;
     if (thread() != QThread::currentThread()) {
-        QMetaObject::invokeMethod(this, [&]()->QGrpcAsyncReplyShared {
+        QMetaObject::invokeMethod(this, [&]()->QGrpcCallReplyShared {
                                       qProtoDebug() << "Method: " << dPtr->service << method << " called from different thread";
                                       return call(method, arg);
                                   }, Qt::BlockingQueuedConnection, &reply);
     } else if (dPtr->channel) {
-        reply.reset(new QGrpcAsyncReply(dPtr->channel, this), [](QGrpcAsyncReply *reply) { reply->deleteLater(); });
+        reply.reset(new QGrpcCallReply(dPtr->channel, this), [](QGrpcCallReply *reply) { reply->deleteLater(); });
 
         auto errorConnection = std::make_shared<QMetaObject::Connection>();
         auto finishedConnection = std::make_shared<QMetaObject::Connection>();
-        *errorConnection = connect(reply.get(), &QGrpcAsyncReply::error, this, [this, reply, errorConnection, finishedConnection](const QGrpcStatus &status) mutable {
+        *errorConnection = connect(reply.get(), &QGrpcCallReply::error, this, [this, reply, errorConnection, finishedConnection](const QGrpcStatus &status) mutable {
             error(status);
             QObject::disconnect(*finishedConnection);
             QObject::disconnect(*errorConnection);
             reply.reset();
         });
 
-        *finishedConnection = connect(reply.get(), &QGrpcAsyncReply::finished, [reply, errorConnection, finishedConnection]() mutable {
+        *finishedConnection = connect(reply.get(), &QGrpcCallReply::finished, [reply, errorConnection, finishedConnection]() mutable {
             QObject::disconnect(*finishedConnection);
             QObject::disconnect(*errorConnection);
             reply.reset();
