@@ -180,8 +180,8 @@ const char *Templates::GetterPrivateMessageDefinitionTemplate = "$getter_type$ *
                                                                 "    return m_$property_name$.get();\n"
                                                                 "}\n\n";
 
-const char *Templates::GetterMessageDeclarationTemplate = "const $getter_type$ &$property_name$() const;\n";
-const char *Templates::GetterMessageDefinitionTemplate = "const $getter_type$ &$classname$::$property_name$() const\n{\n"
+const char *Templates::GetterMessageDeclarationTemplate = "$getter_type$ &$property_name$() const;\n";
+const char *Templates::GetterMessageDefinitionTemplate = "$getter_type$ &$classname$::$property_name$() const\n{\n"
                                                          "    return *m_$property_name$;\n"
                                                          "}\n\n";
 
