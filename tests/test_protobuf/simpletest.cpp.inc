@@ -976,5 +976,12 @@ TEST_F(SimpleTest, SimpleInt32ComplexMessageMapMessageCompareTest)
     SimpleInt32ComplexMessageMapMessage test2 = SimpleInt32ComplexMessageMapMessage({{20, msg3}, {30, msg4}});
     ASSERT_TRUE(test1 == test2);
 }
+
+TEST_F(SimpleTest, AccessMessageFieldsFromGetter)
+{
+    ComplexMessage msg1;
+    msg1.testComplexField().setTestFieldString("AccessMessageFieldsFromGetter");
+    ASSERT_TRUE(msg1 == ComplexMessage(0, {"AccessMessageFieldsFromGetter"}));
+}
 } // tests
 } // qtprotobuf
