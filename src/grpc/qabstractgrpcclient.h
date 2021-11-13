@@ -83,7 +83,7 @@ signals:
      * \param[out] code gRPC channel StatusCode
      * \param[out] errorText Error description from channel or from QGrpc
      */
-    void error(const QGrpcStatus &status);
+    void error(const QGrpcStatus &status) const;
 
 protected:
     QAbstractGrpcClient(const QString &service, QObject *parent = nullptr);
@@ -108,9 +108,15 @@ protected:
         }
 
         QByteArray retData;
-        status = call(method, arg.serialize(serializer()), retData);
-        if (status == QGrpcStatus::StatusCode::Ok) {
-            return tryDeserialize(*ret, retData);
+        bool ok = false;
+        QByteArray argData = trySerialize(arg, ok);
+        if (ok) {
+            status = call(method, argData, retData);
+            if (status == QGrpcStatus::StatusCode::Ok) {
+                status = tryDeserialize(*ret, retData);
+            }
+        } else {
+            status = QGrpcStatus({QGrpcStatus::Unknown, QLatin1String("Serializing failed. Serializer is not ready")});
         }
         return status;
     }
@@ -123,7 +129,12 @@ protected:
      */
     template<typename A>
     QGrpcCallReplyShared call(const QString &method, const A &arg) {
-        return call(method, arg.serialize(serializer()));
+        bool ok = false;
+        QByteArray argData = trySerialize(arg, ok);
+        if (!ok) {
+            return QGrpcCallReplyShared();
+        }
+        return call(method, argData);
     }
 
     /*!
@@ -136,7 +147,12 @@ protected:
      */
     template<typename A>
     QGrpcStreamShared stream(const QString &method, const A &arg) {
-        return stream(method, arg.serialize(serializer()));
+        bool ok = false;
+        QByteArray argData = trySerialize(arg, ok);
+        if (!ok) {
+            return QGrpcStreamShared();
+        }
+        return stream(method, argData);
     }
 
     /*!
@@ -157,8 +173,12 @@ protected:
             qProtoCritical() << nullPointerError.arg(method);
             return nullptr;
         }
-
-        return stream(method, arg.serialize(serializer()), [ret, this](const QByteArray &data) {
+        bool ok = false;
+        QByteArray argData = trySerialize(arg, ok);
+        if (!ok) {
+            return QGrpcStreamShared();
+        }
+        return stream(method, argData, [ret, this](const QByteArray &data) {
             if (!ret.isNull()) {
                 tryDeserialize(*ret, data);
             } else {
@@ -174,12 +194,6 @@ protected:
      * \param[in] method Name of method stream for to be canceled
      */
     void cancel(const QString &method);
-
-    /*!
-     * \brief serializer provides assigned to client serializer
-     * \return pointer to serializer. Serializer is owned by QtProtobuf::QProtobufSerializerRegistry.
-     */
-    QAbstractProtobufSerializer *serializer() const;
 
     friend class QGrpcAsyncOperationBase;
 private:
@@ -199,24 +213,51 @@ private:
     template<typename R>
     QGrpcStatus tryDeserialize(R &ret, const QByteArray &retData) {
         QGrpcStatus status{QGrpcStatus::Ok};
-        try {
-            ret.deserialize(serializer(), retData);
-        } catch (std::invalid_argument &) {
-            static const QLatin1String invalidArgumentErrorMessage("Response deserialization failed invalid field found");
-            status = {QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage};
-            error(status);
-            qProtoCritical() << invalidArgumentErrorMessage;
-        } catch (std::out_of_range &) {
-            static const QLatin1String outOfRangeErrorMessage("Invalid size of received buffer");
-            status = {QGrpcStatus::OutOfRange, outOfRangeErrorMessage};
-            error(status);
-            qProtoCritical() << outOfRangeErrorMessage;
-        } catch (...) {
-            status = {QGrpcStatus::Internal, QLatin1String("Unknown exception caught during deserialization")};
+        auto _serializer = serializer();
+        if (_serializer != nullptr) {
+            try {
+                ret.deserialize(_serializer.get(), retData);
+            } catch (std::invalid_argument &) {
+                static const QLatin1String invalidArgumentErrorMessage("Response deserialization failed invalid field found");
+                status = {QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage};
+                error(status);
+                qProtoCritical() << invalidArgumentErrorMessage;
+            } catch (std::out_of_range &) {
+                static const QLatin1String outOfRangeErrorMessage("Invalid size of received buffer");
+                status = {QGrpcStatus::OutOfRange, outOfRangeErrorMessage};
+                error(status);
+                qProtoCritical() << outOfRangeErrorMessage;
+            } catch (...) {
+                status = {QGrpcStatus::Internal, QLatin1String("Unknown exception caught during deserialization")};
+                error(status);
+            }
+        } else {
+            status = {QGrpcStatus::Unknown, QLatin1String("Deserializing failed. Serializer is not ready")};
             error(status);
         }
         return status;
     }
+
+
+    template<typename R>
+    QByteArray trySerialize(const R &arg, bool &ok) {
+        ok = false;
+        QGrpcStatus status{QGrpcStatus::Ok};
+        auto _serializer = serializer();
+        if (_serializer == nullptr) {
+            error({QGrpcStatus::Unknown, QLatin1String("Serializing failed. Serializer is not ready")});
+            return QByteArray();
+        }
+        ok = true;
+        return arg.serialize(_serializer.get());
+    }
+
+    /*!
+     * \private
+     * \brief serializer provides assigned to client serializer
+     * \return pointer to serializer. Serializer is owned by QtProtobuf::QProtobufSerializerRegistry.
+     */
+    std::shared_ptr<QAbstractProtobufSerializer> serializer() const;
 
     Q_DISABLE_COPY_MOVE(QAbstractGrpcClient)
 

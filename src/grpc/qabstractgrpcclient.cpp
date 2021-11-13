@@ -37,13 +37,10 @@ namespace QtProtobuf {
 //! \private
 class QAbstractGrpcClientPrivate final {
 public:
-    QAbstractGrpcClientPrivate(const QString &service) : service(service) {
-        serializer = QProtobufSerializerRegistry::instance().getSerializer("protobuf");
-    }
+    QAbstractGrpcClientPrivate(const QString &service) : service(service) {}
 
     std::shared_ptr<QAbstractGrpcChannel> channel;
     const QString service;
-    std::shared_ptr<QAbstractProtobufSerializer> serializer;
     std::vector<QGrpcStreamShared> activeStreams;
 };
 }
@@ -70,7 +67,6 @@ void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChann
         stream->cancel();
     }
     dPtr->channel = channel;
-    dPtr->serializer = channel->serializer();
     for (auto stream : dPtr->activeStreams) {
         stream->cancel();
     }
@@ -194,7 +190,10 @@ QGrpcStreamShared QAbstractGrpcClient::stream(const QString &method, const QByte
     return grpcStream;
 }
 
-QAbstractProtobufSerializer *QAbstractGrpcClient::serializer() const
+std::shared_ptr<QAbstractProtobufSerializer> QAbstractGrpcClient::serializer() const
 {
-    return dPtr->serializer.get();
+    if (dPtr->channel == nullptr || dPtr->channel->serializer() == nullptr) {
+        return nullptr;
+    }
+    return dPtr->channel->serializer();
 }

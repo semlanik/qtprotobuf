@@ -41,7 +41,8 @@ namespace QtProtobuf {
 /*!
  * \ingroup QtGrpc
  * \private
- * \brief The QGrpcAsyncOperationBase class implements stream logic
+ * \brief The QGrpcAsyncOperationBase class implements common logic to
+ *        handle communication in Grpc channel.
  */
 class Q_GRPC_EXPORT QGrpcAsyncOperationBase : public QObject
 {
@@ -55,16 +56,9 @@ public:
     T read() {
         QMutexLocker locker(&m_asyncLock);
         T value;
-        try {
-            value.deserialize(static_cast<QAbstractGrpcClient*>(parent())->serializer(), m_data);
-        } catch (std::invalid_argument &) {
-            static const QLatin1String invalidArgumentErrorMessage("Response deserialization failed invalid field found");
-            error({QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage});
-        } catch (std::out_of_range &) {
-            static const QLatin1String outOfRangeErrorMessage("Invalid size of received buffer");
-            error({QGrpcStatus::OutOfRange, outOfRangeErrorMessage});
-        } catch (...) {
-            error({QGrpcStatus::Internal, QLatin1String("Unknown exception caught during deserialization")});
+        auto client = static_cast<QAbstractGrpcClient*>(parent());
+        if (client) {
+            client->tryDeserialize(value, m_data);
         }
         return value;
     }
