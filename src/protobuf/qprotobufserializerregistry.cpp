@@ -109,9 +109,9 @@ struct QProtobufSerializerRegistryPrivateRecord final
 
     QObject* loadPluginImpl()
     {
-        if (loader == nullptr || !loader->load())
-        {
-            qProtoWarning() << "Can't load plugin from" << libPath << loader->errorString();
+        if (loader == nullptr || !loader->load()) {
+            qProtoWarning() << "Can't load plugin from" << libPath
+                            << "loader error" << (loader != nullptr ? loader->errorString() : "");
             return nullptr;
         }
         return loader->instance();

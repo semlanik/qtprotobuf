@@ -484,7 +484,7 @@ TEST_F(ClientTest, ClientSyncTestUnattachedChannel)
     QGrpcStatus status = testClient.testMethodStatusMessage(request, ret);
 
     ASSERT_EQ(status.code(), QGrpcStatus::Unknown);
-    ASSERT_STREQ("No channel(s) attached.", status.message().toStdString().c_str());
+    ASSERT_STREQ("Serializing failed. Serializer is not ready", status.message().toStdString().c_str());
     delete ret;
 }
 
@@ -506,7 +506,7 @@ TEST_F(ClientTest, ClientSyncTestUnattachedChannelSignal)
     waiter.exec();
 
     ASSERT_EQ(asyncStatus, QGrpcStatus::Unknown);
-    ASSERT_STREQ("No channel(s) attached.", asyncStatus.message().toStdString().c_str());
+    ASSERT_STREQ("Serializing failed. Serializer is not ready", asyncStatus.message().toStdString().c_str());
     delete ret;
 }
 
