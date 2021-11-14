@@ -29,7 +29,6 @@
 #include <QMutex>
 #include <memory>
 
-#include "qabstractgrpcchannel.h"
 #include "qabstractgrpcclient.h"
 #include "qgrpcasyncoperationbase_p.h"
 
@@ -50,7 +49,7 @@ public:
     /*!
      * \brief Cancels this stream and try to abort call in channel
      */
-    void cancel();
+    void abort() override;
 
     /*!
      * \brief Returns method for this stream
@@ -88,8 +87,8 @@ signals:
 
 protected:
     //! \private
-    QGrpcStream(const std::shared_ptr<QAbstractGrpcChannel> &channel, const QString &method,
-                      const QByteArray &arg, const StreamHandler &handler, QAbstractGrpcClient *parent);
+    QGrpcStream(const QString &method, const QByteArray &arg,
+                const StreamHandler &handler, QAbstractGrpcClient *parent);
     //! \private
     virtual ~QGrpcStream() = default;
 

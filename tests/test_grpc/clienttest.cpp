@@ -277,7 +277,7 @@ TEST_P(ClientTest, StringEchoStreamAbortTest)
         result.setTestFieldString(result.testFieldString() + ret.testFieldString());
 
         if (i == 3) {
-            stream->cancel();
+            stream->abort();
             QTimer::singleShot(4000, &waiter, &QEventLoop::quit);
         }
     });
@@ -303,7 +303,7 @@ TEST_P(ClientTest, StringEchoStreamAbortByTimerTest)
     int i = 0;
     auto stream = testClient->streamTestMethodServerStream(request);
     QTimer::singleShot(3500, stream.get(), [stream]() {
-        stream->cancel();
+        stream->abort();
     });
 
     bool isFinished = false;
@@ -621,7 +621,7 @@ TEST_P(ClientTest, MultipleStreamsCancelTest)
         isFinishedNext = true;
     });
 
-    streamNext->cancel();
+    streamNext->abort();
 
     ASSERT_TRUE(isFinished);
     ASSERT_TRUE(isFinishedNext);
@@ -643,7 +643,7 @@ TEST_P(ClientTest, MultipleStreamsCancelTest)
         isFinishedNext = true;
     });
 
-    stream->cancel();
+    stream->abort();
 
     ASSERT_TRUE(isFinished);
     ASSERT_TRUE(isFinishedNext);
@@ -801,7 +801,7 @@ TEST_P(ClientTest, StreamCancelWhileErrorTimeoutTest)
         ok = true;
         waiter.quit();
     });
-    stream->cancel();
+    stream->abort();
     stream.reset();
 
     QTimer::singleShot(5000, &waiter, &QEventLoop::quit);

@@ -29,7 +29,6 @@
 #include <QMutex>
 #include <memory>
 
-#include "qabstractgrpcchannel.h"
 #include "qabstractgrpcclient.h"
 #include "qgrpcasyncoperationbase_p.h"
 
@@ -50,7 +49,7 @@ public:
     /*!
      * \brief Aborts this reply and try to abort call in channel
      */
-    void abort();
+    void abort() override;
 
     /*!
      * \brief Subscribe to QGrpcCallReply signals
@@ -76,7 +75,7 @@ public:
 
 protected:
     //! \private
-    QGrpcCallReply(const std::shared_ptr<QAbstractGrpcChannel> &channel, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(channel, parent)
+    QGrpcCallReply(QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(parent)
     {}
     //! \private
     ~QGrpcCallReply() = default;

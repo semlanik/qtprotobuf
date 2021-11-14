@@ -76,7 +76,7 @@ void SimpleChatEngine::login(const QString &name, const QString &password)
     QtProtobuf::QGrpcStreamShared stream = m_client->streamMessageList(None());
     QObject::connect(stream.get(), &QtProtobuf::QGrpcStream::error, this, [stream] {
         qCritical() << "Stream error, cancel";
-        stream->cancel();
+        stream->abort();
     });
     QObject::connect(stream.get(), &QtProtobuf::QGrpcStream::messageReceived, this, [this, name, stream]() {
         if (m_userName != name) {

@@ -38,25 +38,8 @@ struct QAbstractGrpcChannelPrivate {
     const QThread *thread;
 };
 
-QAbstractGrpcChannel::QAbstractGrpcChannel() : dPtr(new QAbstractGrpcChannelPrivate)
-{
-
-}
-
+QAbstractGrpcChannel::QAbstractGrpcChannel() : dPtr(new QAbstractGrpcChannelPrivate) {}
 QAbstractGrpcChannel::~QAbstractGrpcChannel() = default;
-
-void QAbstractGrpcChannel::abort(QGrpcCallReply *reply)
-{
-    assert(reply != nullptr);
-    reply->setData({});
-    reply->error({QGrpcStatus::StatusCode::Aborted, QLatin1String("Call aborted by user or timeout")});
-}
-
-void QAbstractGrpcChannel::cancel(QGrpcStream *stream)
-{
-    assert(stream != nullptr);
-    stream->finished();
-}
 
 const QThread *QAbstractGrpcChannel::thread() const
 {

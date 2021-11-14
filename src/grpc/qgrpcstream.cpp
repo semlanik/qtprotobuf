@@ -30,8 +30,7 @@
 
 using namespace QtProtobuf;
 
-QGrpcStream::QGrpcStream(const std::shared_ptr<QAbstractGrpcChannel> &channel, const QString &method,
-                                     const QByteArray &arg, const StreamHandler &handler, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(channel, parent)
+QGrpcStream::QGrpcStream(const QString &method, const QByteArray &arg, const StreamHandler &handler, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(parent)
   , m_method(method)
   , m_arg(arg)
 {
@@ -47,11 +46,11 @@ void QGrpcStream::addHandler(const StreamHandler &handler)
     }
 }
 
-void QGrpcStream::cancel()
+void QGrpcStream::abort()
 {
     if (thread() != QThread::currentThread()) {
-        QMetaObject::invokeMethod(this, [this](){m_channel->cancel(this);}, Qt::BlockingQueuedConnection);
+        QMetaObject::invokeMethod(this, &QGrpcStream::finished, Qt::BlockingQueuedConnection);
     } else {
-        m_channel->cancel(this);
+        finished();
     }
 }

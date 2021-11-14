@@ -64,11 +64,11 @@ void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChann
         throw std::runtime_error("Call from another thread");
     }
     for (auto stream : dPtr->activeStreams) {
-        stream->cancel();
+        stream->abort();
     }
     dPtr->channel = channel;
     for (auto stream : dPtr->activeStreams) {
-        stream->cancel();
+        stream->abort();
     }
 }
 
@@ -105,7 +105,7 @@ QGrpcCallReplyShared QAbstractGrpcClient::call(const QString &method, const QByt
                                       return call(method, arg);
                                   }, Qt::BlockingQueuedConnection, &reply);
     } else if (dPtr->channel) {
-        reply.reset(new QGrpcCallReply(dPtr->channel, this), [](QGrpcCallReply *reply) { reply->deleteLater(); });
+        reply.reset(new QGrpcCallReply(this), [](QGrpcCallReply *reply) { reply->deleteLater(); });
 
         auto errorConnection = std::make_shared<QMetaObject::Connection>();
         auto finishedConnection = std::make_shared<QMetaObject::Connection>();
@@ -140,7 +140,7 @@ QGrpcStreamShared QAbstractGrpcClient::stream(const QString &method, const QByte
                                       return stream(method, arg, handler);
                                   }, Qt::BlockingQueuedConnection, &grpcStream);
     } else if (dPtr->channel) {
-        grpcStream.reset(new QGrpcStream(dPtr->channel, method, arg, handler, this), [](QGrpcStream *stream) { stream->deleteLater(); });
+        grpcStream.reset(new QGrpcStream(method, arg, handler, this), [](QGrpcStream *stream) { stream->deleteLater(); });
 
         auto it = std::find_if(std::begin(dPtr->activeStreams), std::end(dPtr->activeStreams), [grpcStream](const QGrpcStreamShared &activeStream) {
            return *activeStream == *grpcStream;

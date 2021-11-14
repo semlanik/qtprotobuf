@@ -46,16 +46,9 @@
  */
 namespace QtProtobuf {
 
-class QGrpcCallReply;
-class QGrpcStream;
 class QGrpcAsyncOperationBase;
 class QAbstractGrpcChannel;
 class QAbstractGrpcClientPrivate;
-
-/*!
- * \private
- */
-using StreamHandler = std::function<void(const QByteArray&)>;
 
 /*!
  * \ingroup QtGrpc
