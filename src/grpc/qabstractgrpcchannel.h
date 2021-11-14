@@ -38,8 +38,6 @@ class QThread;
 
 namespace QtProtobuf {
 
-class QGrpcCallReply;
-class QGrpcStream;
 class QAbstractGrpcClient;
 class QAbstractProtobufSerializer;
 struct QAbstractGrpcChannelPrivate;
@@ -96,23 +94,6 @@ protected:
     QAbstractGrpcChannel();
     //! \private
     virtual ~QAbstractGrpcChannel();
-
-    /*!
-     * \private
-     * \brief Aborts async call for given \p reply
-     * \param[in] reply returned by asynchronous QAbstractGrpcChannel::call() method
-     */
-    virtual void abort(QGrpcCallReply *reply);
-
-    /*!
-     * \private
-     * \brief Cancels \p stream
-     * \param[in] stream returned by QAbstractGrpcChannel::stream() method
-     */
-    virtual void cancel(QGrpcStream *stream);
-
-    friend class QGrpcCallReply;
-    friend class QGrpcStream;
 private:
     Q_DISABLE_COPY(QAbstractGrpcChannel)
     std::unique_ptr<QAbstractGrpcChannelPrivate> dPtr;

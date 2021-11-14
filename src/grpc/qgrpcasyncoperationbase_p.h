@@ -31,7 +31,6 @@
 #include <functional>
 #include <memory>
 
-#include "qabstractgrpcchannel.h"
 #include "qabstractgrpcclient.h"
 
 #include "qtgrpcglobal.h"
@@ -74,10 +73,12 @@ public:
         m_data = data;
     }
 
+    virtual void abort() = 0;
+
 signals:
     /*!
-     * \brief The signal is emitted when reply is ready for read. Usualy called by channel when all chunks of data
-     *        recevied
+     * \brief The signal indicates the end of communication for this call. If signal emitted by
+     *        stream this means that stream is succesfully closed either by client or server.
      */
     void finished();
 
@@ -89,12 +90,10 @@ signals:
 
 protected:
     //! \private
-    QGrpcAsyncOperationBase(const std::shared_ptr<QAbstractGrpcChannel> &channel, QAbstractGrpcClient *parent) : QObject(parent)
-      , m_channel(channel) {}
+    QGrpcAsyncOperationBase(QAbstractGrpcClient *parent) : QObject(parent) {}
     //! \private
     virtual ~QGrpcAsyncOperationBase();
 
-    std::shared_ptr<QAbstractGrpcChannel> m_channel;
 private:
     QGrpcAsyncOperationBase();
     Q_DISABLE_COPY_MOVE(QGrpcAsyncOperationBase)

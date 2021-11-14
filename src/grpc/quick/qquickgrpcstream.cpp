@@ -41,7 +41,7 @@ QQuickGrpcStream::QQuickGrpcStream(QObject *parent) : QObject(parent)
 QQuickGrpcStream::~QQuickGrpcStream()
 {
     if (m_stream) {
-        m_stream->cancel();
+        m_stream->abort();
     }
     delete m_returnValue;
 }
@@ -50,7 +50,7 @@ QQuickGrpcStream::~QQuickGrpcStream()
 void QQuickGrpcStream::updateStream()
 {
     if (m_stream) {
-        m_stream->cancel();
+        m_stream->abort();
         m_stream.reset();
     }
 

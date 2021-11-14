@@ -31,9 +31,13 @@ using namespace QtProtobuf;
 
 void QGrpcCallReply::abort()
 {
+    auto abortFunc = [this]() {
+        this->setData({});
+        this->error({QGrpcStatus::StatusCode::Aborted, QLatin1String("Call aborted by user or timeout")});
+    };
     if (thread() != QThread::currentThread()) {
-        QMetaObject::invokeMethod(this, [this](){m_channel->abort(this);}, Qt::BlockingQueuedConnection);
+        QMetaObject::invokeMethod(this, abortFunc, Qt::BlockingQueuedConnection);
     } else {
-        m_channel->abort(this);
+        abortFunc();
     }
 }
