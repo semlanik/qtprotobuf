@@ -59,6 +59,9 @@ public:
 public slots:
     void qmlEngineAvailable(QQmlEngine *engine)
     {
-        engine->rootContext()->setContextProperty("qVersion", QT_VERSION);
+        QVersionNumber qtVersion = QVersionNumber::fromString(qVersion());
+        engine->rootContext()->setContextProperty("qVersion", qVersion());
+        engine->rootContext()->setContextProperty("qVersionMajor", qtVersion.majorVersion());
+        engine->rootContext()->setContextProperty("qVersionMinor", qtVersion.minorVersion());
     }
 };

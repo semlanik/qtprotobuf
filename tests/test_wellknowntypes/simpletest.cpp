@@ -120,7 +120,7 @@ TEST_F(WellknowntypesTest, EmptyTest)
 TEST_F(WellknowntypesTest, FieldMaskTest)
 {
     ASSERT_GT(qMetaTypeId<FieldMask>(), 0);
-    assertMessagePropertyRegistered<FieldMask, QStringList>(1, "QStringList", "pathsData");
+    assertMessagePropertyRegistered<FieldMask, QStringList>(1, "QStringList", "paths");
 }
 
 TEST_F(WellknowntypesTest, SourceContextTest)
@@ -162,11 +162,10 @@ TEST_F(WellknowntypesTest, TimestampTest)
 TEST_F(WellknowntypesTest, TypeTest)
 {
     ASSERT_GT(qMetaTypeId<Type>(), 0);
-    Q_PROPERTY(QStringList oneofs READ oneofs WRITE setOneofs NOTIFY oneofsChanged)
 
     assertMessagePropertyRegistered<Type, QString>(1, "QString", "name");
     assertMessagePropertyRegistered<Type, FieldRepeated>(2, "google::protobuf::FieldRepeated", "fieldsData");
-    assertMessagePropertyRegistered<Type, QStringList>(3, "QStringList", "oneofsData");
+    assertMessagePropertyRegistered<Type, QStringList>(3, "QStringList", "oneofs");
     assertMessagePropertyRegistered<Type, OptionRepeated>(4, "google::protobuf::OptionRepeated", "optionsData");
     assertMessagePropertyRegistered<Type, SourceContext *>(5, "google::protobuf::SourceContext*", "sourceContext", true);
     assertMessagePropertyRegistered<Type, SyntaxGadget::Syntax>(6, "google::protobuf::SyntaxGadget::Syntax", "syntax");

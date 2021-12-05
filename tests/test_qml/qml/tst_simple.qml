@@ -62,6 +62,11 @@ TestCase {
         testFieldString: "Test string"
     }
 
+    SimpleFileEnumMessage {
+        id: enumListMessage
+        globalEnumList: [TestEnum.TEST_ENUM_VALUE0, TestEnum.TEST_ENUM_VALUE1]
+    }
+
     MessageUpperCase {
         id: caseSenseMsg
     }
@@ -342,5 +347,15 @@ TestCase {
         compare(noPackageMessageUser.testField.testFieldInt, 42, "Package-less message contains invalid value");
         noPackageMessageUser.testField.testFieldInt = 43;
         compare(noPackageMessageUser.testField.testFieldInt, 43, "Package-less message contains invalid value");
+    }
+
+    function test_enumListMessage() {
+        if (qVersionMajor > 6 && qVersionMinor > 3) { // This was only fixed in Qt6 (perhaps in the version greater than or equal to 6.3)
+            compare(enumListMessage.globalEnumList.length, 2, "Global enum list size differs the expected one");
+            compare(typeof(enumListMessage.globalEnumList[1]), typeof(TestEnum.TEST_ENUM_VALUE1), "Global enum list value type doesn't match the enum type");
+            compare(enumListMessage.globalEnumList[1], TestEnum.TEST_ENUM_VALUE1, "Global enum list value 1 doesn't match");
+        } else {
+            verify(enumListMessage.globalEnumList[0] == TestEnum.TEST_ENUM_VALUE0)
+        }
     }
 }

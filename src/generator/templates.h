@@ -70,6 +70,7 @@ public:
 
     static const char *PropertyTemplate;
     static const char *RepeatedPropertyTemplate;
+    static const char *RepeatedMessagePropertyTemplate;
     static const char *NonScriptablePropertyTemplate;
     static const char *NonScriptableAliasPropertyTemplate;
     static const char *MessagePropertyTemplate;
