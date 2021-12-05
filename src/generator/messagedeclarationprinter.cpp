@@ -226,7 +226,13 @@ void MessageDeclarationPrinter::printProperties()
         } else if (common::hasQmlAlias(field)) {
             propertyTemplate = Templates::NonScriptablePropertyTemplate;
         } else if (field->is_repeated() && !field->is_map()) {
-            propertyTemplate = Templates::RepeatedPropertyTemplate;
+            // Non-message list properties don't require an extra QQmlListProperty to access
+            // their data, so the property name should not contain the 'Data' suffix
+            if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
+                propertyTemplate = Templates::RepeatedMessagePropertyTemplate;
+            } else {
+                propertyTemplate = Templates::RepeatedPropertyTemplate;
+            }
         }
         mPrinter->Print(common::producePropertyMap(field, mDescriptor), propertyTemplate);
     }
