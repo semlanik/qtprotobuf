@@ -66,6 +66,9 @@ void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChann
                            "You have to be confident that channel routines are working in the same thread as QAbstractGrpcClient";
         throw std::runtime_error("Call from another thread");
     }
+    for (auto stream : dPtr->activeStreams) {
+        stream->cancel();
+    }
     dPtr->channel = channel;
     dPtr->serializer = channel->serializer();
 }
