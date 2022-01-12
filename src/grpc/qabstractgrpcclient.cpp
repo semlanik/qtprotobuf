@@ -71,6 +71,9 @@ void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChann
     }
     dPtr->channel = channel;
     dPtr->serializer = channel->serializer();
+    for (auto stream : dPtr->activeStreams) {
+        stream->cancel();
+    }
 }
 
 QGrpcStatus QAbstractGrpcClient::call(const QString &method, const QByteArray &arg, QByteArray &ret)
