@@ -351,9 +351,19 @@ void QGrpcHttp2Channel::stream(QGrpcStream *grpcStream, const QString &service, 
             qProtoDebug() << "Remote server closed connection. Reconnect silently";
             stream(grpcStream, service, client);
             break;
-        case QNetworkReply::NoError:
-            //Reply closed without error
+        case QNetworkReply::NoError: {
+            // Reply is closed without network error, but may contain an unhandled data
+            // TODO: processReply returns the data, that might need the processing. It's should be taken into account in
+            // new HTTP/2 channel implementation.
+            QGrpcStatus::StatusCode grpcStatus;
+            QGrpcHttp2ChannelPrivate::processReply(networkReply, grpcStatus);
+            if (grpcStatus != QGrpcStatus::StatusCode::Ok) {
+                grpcStream->error(QGrpcStatus{grpcStatus, QString::fromUtf8(networkReply->rawHeader(GrpcStatusMessage))});
+            } else {
+                grpcStream->finished();
+            }
             break;
+        }
         default:
             grpcStream->error(QGrpcStatus{StatusCodeMap.at(networkError), QString("%1 call %2 stream failed: %3").arg(service).arg(grpcStream->method()).arg(errorString)});
             break;
