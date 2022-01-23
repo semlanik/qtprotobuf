@@ -69,6 +69,7 @@ public:
     static const char *QObjectMacro;
 
     static const char *PropertyTemplate;
+    static const char *ReadOnlyPropertyTemplate;
     static const char *RepeatedPropertyTemplate;
     static const char *RepeatedMessagePropertyTemplate;
     static const char *NonScriptablePropertyTemplate;
@@ -147,6 +148,8 @@ public:
     static const char *SetterTemplateDefinitionComplexType;
     static const char *SetterTemplate;
     static const char *NonScriptableSetterTemplate;
+    static const char *EndSetterTemplate;
+    static const char *EndOptionalSetterTemplate;
     static const char *SignalsBlockTemplate;
     static const char *SignalTemplate;
     static const char *FieldsOrderingContainerTemplate;

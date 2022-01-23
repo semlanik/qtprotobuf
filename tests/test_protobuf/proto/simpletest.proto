@@ -634,3 +634,11 @@ message LowerCaseFieldMessageName {
 message NoPackageMessage {
     SimpleIntMessageExt testField = 1;
 }
+
+message OptionalScalarMessage {
+    optional int32 testField = 1;
+}
+
+message OptionalNonScalarMessage {
+    optional EmptyMessage testField = 1;
+}

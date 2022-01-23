@@ -136,6 +136,8 @@ public:
     GeneratorBase(Mode mode);
     virtual ~GeneratorBase() = default;
 
+    ::google::protobuf::uint64 GetSupportedFeatures() const override { return FEATURE_PROTO3_OPTIONAL; }
+
     virtual bool GenerateAll(const std::vector<const ::google::protobuf::FileDescriptor *> &files,
                              const std::string &parameter,
                              ::google::protobuf::compiler::GeneratorContext *generatorContext,

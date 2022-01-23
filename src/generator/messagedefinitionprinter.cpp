@@ -194,6 +194,10 @@ void MessageDefinitionPrinter::printInitializationList(int fieldCount)
                 }
             }
         }
+
+        if (field->is_optional()) {
+            mPrinter->Print(common::produceOptionalPropertyMap(field, mDescriptor), Templates::PropertyDefaultInitializerTemplate);
+        }
     }
 }
 
@@ -372,16 +376,33 @@ void MessageDefinitionPrinter::printGetters()
         case FieldDescriptor::TYPE_MESSAGE:
             if (!field->is_map() && !field->is_repeated() && !common::isQtType(field)) {
                 mPrinter->Print(propertyMap, Templates::SetterPrivateTemplateDefinitionMessageType);
+                if (field->is_optional()) {
+                    mPrinter->Print(propertyMap, Templates::EndOptionalSetterTemplate);
+                } else {
+                    mPrinter->Print(propertyMap, Templates::EndSetterTemplate);
+                }
+
                 mPrinter->Print(propertyMap, Templates::SetterTemplateDefinitionMessageType);
             } else {
                 mPrinter->Print(propertyMap, Templates::SetterTemplateDefinitionComplexType);
+            }
+            if (field->is_optional()) {
+                mPrinter->Print(propertyMap, Templates::EndOptionalSetterTemplate);
+            } else {
+                mPrinter->Print(propertyMap, Templates::EndSetterTemplate);
             }
             break;
         case FieldDescriptor::FieldDescriptor::TYPE_STRING:
         case FieldDescriptor::FieldDescriptor::TYPE_BYTES:
             mPrinter->Print(propertyMap, Templates::SetterTemplateDefinitionComplexType);
+            if (field->is_optional()) {
+                mPrinter->Print(propertyMap, Templates::EndOptionalSetterTemplate);
+            } else {
+                mPrinter->Print(propertyMap, Templates::EndSetterTemplate);
+            }
             break;
         default:
+            mPrinter->Print(propertyMap, "/* default ending */");
             break;
         }
     });

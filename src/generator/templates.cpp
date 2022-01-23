@@ -86,6 +86,7 @@ const char *Templates::ProtoClassDeclarationBeginTemplate = "\nclass $classname$
                                                             "    Q_DECLARE_PROTOBUF_SERIALIZERS($classname$)\n";
 
 const char *Templates::PropertyTemplate = "Q_PROPERTY($property_type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed SCRIPTABLE $scriptable$)\n";
+const char *Templates::ReadOnlyPropertyTemplate = "Q_PROPERTY($property_type$ $property_name$ READ $property_name$ NOTIFY $property_name$Changed SCRIPTABLE $scriptable$)\n";
 const char *Templates::RepeatedPropertyTemplate = "Q_PROPERTY($property_list_type$ $property_name$ READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed SCRIPTABLE $scriptable$)\n";
 const char *Templates::RepeatedMessagePropertyTemplate = "Q_PROPERTY($property_list_type$ $property_name$Data READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed SCRIPTABLE $scriptable$)\n";
 const char *Templates::NonScriptablePropertyTemplate = "Q_PROPERTY($property_type$ $property_name$_p READ $property_name$ WRITE set$property_name_cap$ NOTIFY $property_name$Changed SCRIPTABLE false)\n";
@@ -208,37 +209,40 @@ const char *Templates::SetterPrivateTemplateDefinitionMessageType = "void $class
                                                                     "    if (m_$property_name$.get() != $property_name$) {\n"
                                                                     "        m_$property_name$.reset($property_name$);\n"
                                                                     "        $property_name$Changed();\n"
-                                                                    "    }\n"
-                                                                    "}\n\n";
+                                                                    "    }\n";
 
 const char *Templates::SetterTemplateDeclarationMessageType = "void set$property_name_cap$(const $setter_type$ &$property_name$);\n";
 const char *Templates::SetterTemplateDefinitionMessageType = "void $classname$::set$property_name_cap$(const $setter_type$ &$property_name$)\n{\n"
                                                              "    if (*m_$property_name$ != $property_name$) {\n"
                                                              "        *m_$property_name$ = $property_name$;\n"
                                                              "        $property_name$Changed();\n"
-                                                             "    }\n"
-                                                             "}\n\n";
+                                                             "    }\n";
 
 const char *Templates::SetterTemplateDeclarationComplexType = "void set$property_name_cap$(const $setter_type$ &$property_name$);\n";
 const char *Templates::SetterTemplateDefinitionComplexType = "void $classname$::set$property_name_cap$(const $setter_type$ &$property_name$)\n{\n"
                                                              "    if (m_$property_name$ != $property_name$) {\n"
                                                              "        m_$property_name$ = $property_name$;\n"
                                                              "        $property_name$Changed();\n"
-                                                             "    }\n"
-                                                             "}\n\n";
+                                                             "    }\n";
 
 const char *Templates::SetterTemplate = "void set$property_name_cap$(const $setter_type$ &$property_name$) {\n"
                                         "    if (m_$property_name$ != $property_name$) {\n"
                                         "        m_$property_name$ = $property_name$;\n"
                                         "        $property_name$Changed();\n"
-                                        "    }\n"
-                                        "}\n\n";
+                                        "    }\n";
 const char *Templates::NonScriptableSetterTemplate = "void set$property_name_cap$_p(const $qml_alias_type$ &$property_name$) {\n"
                                                      "    if (m_$property_name$ != $property_name$) {\n"
                                                      "        m_$property_name$ = $property_name$;\n"
                                                      "        $property_name$Changed();\n"
-                                                     "    }\n"
-                                                     "}\n\n";
+                                                     "    }\n";
+
+const char *Templates::EndSetterTemplate = "}\n\n";
+
+const char *Templates::EndOptionalSetterTemplate = "    if (!m_has_$property_name$) {\n"
+                                                   "        m_has_$property_name$ = true;\n"
+                                                   "        Q_EMIT has_$property_name$Changed();\n"
+                                                   "    }\n"
+                                                   "}\n\n";
 
 const char *Templates::SignalsBlockTemplate = "\nsignals:\n";
 const char *Templates::SignalTemplate = "void $property_name$Changed();\n";
