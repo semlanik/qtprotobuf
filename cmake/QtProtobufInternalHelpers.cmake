@@ -16,7 +16,7 @@ endfunction()
 function(qt_protobuf_internal_add_test)
     set(options MULTI QML FIELDENUM)
     set(oneValueArgs QML_DIR TARGET EXTRA_NAMESPACE)
-    set(multiValueArgs SOURCES GENERATED_HEADERS EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
+    set(multiValueArgs SOURCES EXCLUDE_HEADERS PROTO_FILES PROTO_INCLUDES)
     cmake_parse_arguments(add_test_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     ## test sources build
@@ -50,9 +50,8 @@ function(qt_protobuf_internal_add_test)
     endif()
 
     qtprotobuf_generate(TARGET ${add_test_target_TARGET}
-        OUT_DIR ${GENERATED_SOURCES_DIR}
+        OUTPUT_DIRECTORY ${GENERATED_SOURCES_DIR}
         PROTO_FILES ${proto_files}
-        GENERATED_HEADERS ${add_test_target_GENERATED_HEADERS}
         EXCLUDE_HEADERS ${add_test_target_EXCLUDE_HEADERS}
         ${EXTRA_OPTIONS}
         PROTO_INCLUDES ${add_test_target_PROTO_INCLUDES})
@@ -77,13 +76,13 @@ function(qt_protobuf_internal_add_example)
     cmake_parse_arguments(arg "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
-    
+
     file(GLOB PROTO_FILES ABSOLUTE ${arg_PROTO_FILES})
     file(GLOB SOURCES ${arg_SOURCES})
 
     add_executable(${arg_TARGET} ${SOURCES} ${arg_RESOURCES})
     qtprotobuf_generate(TARGET ${arg_TARGET}
-        OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+        OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
         PROTO_FILES ${PROTO_FILES}
         QML)
 

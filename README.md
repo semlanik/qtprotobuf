@@ -418,7 +418,7 @@ file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.pr
 # and link them to the MyTarget as static library
 add_executable(MyTarget main.cpp) # Add your target here
 qtprotobuf_generate(TARGET MyTarget
-OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
 PROTO_FILES ${PROTO_FILES})
 
 ```
@@ -427,16 +427,9 @@ Another option is to pre-specify expected generated headers to prevent dummy-par
 
 ```cmake
 ...
-set(GENERATED_HEADERS
-# List of artifacts expected after qtprotobufgen job done.
-# Usually it's full list of messages in all packages with .h header suffix
-...
-)
-...
 qtprotobuf_generate(TARGET MyTarget
-OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
-PROTO_FILES ${PROTO_FILES}
-GENERATED_HEADERS ${GENERATED_HEADERS})
+OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
+PROTO_FILES ${PROTO_FILES})
 ...
 ```
 
@@ -454,13 +447,11 @@ qtprotobuf_generate is cmake helper function that automatically generates STATIC
 
 ***Parameters:***
 
-*TARGET* - name of you target that generated code archive will be linked to
+*TARGET* - a name of your target that the generated code will be linked to.
 
 *GENERATED_TARGET* - name that will be used for generated archive library target. It's usefull when you supposed to have multiple generated targets to be linked to single one.
 
-*OUT_DIR* - output directory that will contain generated artifacts. Usually subfolder in build directory should be used
-
-*GENERATED_HEADERS* - List of header files expected after generator job finished
+*OUTPUT_DIRECTORY* - output directory that will contain generated artifacts. Usually subfolder in build directory should be used
 
 *EXCLUDE_HEADERS* - List of header files to be excluded from pre-parsed list of expected header files (e.g. nested messages that are not supported by QtProtobuf generator)
 

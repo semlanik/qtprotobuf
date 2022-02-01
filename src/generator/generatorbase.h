@@ -89,10 +89,9 @@ namespace generator {
  *
  * \brief qtprotobuf_generate is cmake helper function that automatically generates STATIC library target from your .proto files
  *
- * \param TARGET name of you target that generated code archive will be linked to
+ * \param TARGET a name of your target that the generated code will be linked to.
  * \param GENERATED_TARGET name that will be used for generated archive library target. It's usefull when you supposed to have multiple generated targets to be linked to single one.
- * \param OUT_DIR output directory that will contain generated artifacts. Usually subfolder in build directory should be used
- * \param GENERATED_HEADERS List of header files expected after generator job finished
+ * \param OUTPUT_DIRECTORY output directory that will contain generated artifacts. Usually subfolder in build directory should be used
  * \param EXCLUDE_HEADERS List of header files to be excluded from pre-parsed list of expected header files (e.g. nested messages that are not supported by QtProtobuf generator)
  * \param PROTO_FILES List of .proto files that will be used in generation procedure
  * \param MULTI Enables multi-files generation mode. If provided in parameter list generator will create pair of header/source files for each message

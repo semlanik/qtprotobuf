@@ -26,7 +26,7 @@ if(TARGET Qt5::Qml)
 endif()
 
 qtprotobuf_generate(TARGET ProtobufQtTypes
-    OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
     PROTO_FILES ${PROTO_FILE}
     FOLDER
     ${qml_enabled}

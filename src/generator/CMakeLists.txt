@@ -23,21 +23,17 @@ qt_protobuf_internal_add_executable(qtprotobufgen
         protobuf::libprotoc
 )
 
-set_property(TARGET qtprotobufgen
-    PROPERTY PROTO_PARSER "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go"
-)
-
 configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake"
     "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" COPYONLY
 )
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/parsemessages.go"
-    "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go" COPYONLY
+configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtPreParseProtoFile.cmake"
+    "${QT_PROTOBUF_BINARY_DIR}/QtPreParseProtoFile.cmake" COPYONLY
 )
 
 if(QT_PROTOBUF_INSTALL)
     install(FILES
            "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake"
-           "${QT_PROTOBUF_BINARY_DIR}/parsemessages.go"
+           "${QT_PROTOBUF_BINARY_DIR}/QtPreParseProtoFile.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE}"
         COMPONENT dev
     )
