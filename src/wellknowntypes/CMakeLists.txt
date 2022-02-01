@@ -26,7 +26,7 @@ function(add_wellknowntype type_name)
             message(STATUS "Add well-known type ${PROTO_FILE}")
             qtprotobuf_generate(TARGET ProtobufWellKnownTypes
                 GENERATED_TARGET ${type_name}
-                OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated"
+                OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated"
                 PROTO_FILES "${PROTO_FILE}"
                 PROTO_INCLUDES "-I\"${dir}\""
                 ${qml_enabled}
