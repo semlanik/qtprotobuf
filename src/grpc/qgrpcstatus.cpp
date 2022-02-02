@@ -25,7 +25,7 @@
 
 #include "qgrpcstatus.h"
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 //! \private
 class QGrpcStatusPrivate {
 public:
@@ -91,13 +91,14 @@ bool QGrpcStatus::operator ==(const QGrpcStatus &other) const
     return dPtr->m_code == other.dPtr->m_code;
 }
 
-}
+QT_END_NAMESPACE
 
-bool operator ==(QtProtobuf::QGrpcStatus::StatusCode code, const QtProtobuf::QGrpcStatus &status)
+bool operator ==(QGrpcStatus::StatusCode code, const QGrpcStatus &status)
 {
     return status == code;
 }
-bool operator !=(QtProtobuf::QGrpcStatus::StatusCode code, const QtProtobuf::QGrpcStatus &status)
+
+bool operator !=(QGrpcStatus::StatusCode code, const QGrpcStatus &status)
 {
     return status != code;
 }

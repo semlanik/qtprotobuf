@@ -26,11 +26,11 @@
 #include <QByteArray>
 #include <stdexcept>
 
-#include "qtprotobufglobal.h"
+#include <QtProtobuf/qtprotobufglobal.h>
 
 #pragma once //QProtobufSelfcheckIterator
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 /*!
  * \ingroup QtProtobuf
@@ -47,7 +47,7 @@ public:
       , m_containerSize(other.m_containerSize)
       , m_it(other.m_it) {
         if (m_sizeLeft > m_containerSize || m_sizeLeft < 0) {
-            throw std::out_of_range("Container is less than required fields number. Deserialization failed");
+            QT_THROW(std::out_of_range("Container is less than required fields number. Deserialization failed"));
         }
     }
 
@@ -59,7 +59,7 @@ public:
     QProtobufSelfcheckIterator &operator ++() {
         --m_sizeLeft;
         if (m_sizeLeft < 0) {
-            throw std::out_of_range("Container is less than required fields number. Deserialization failed");
+            QT_THROW(std::out_of_range("Container is less than required fields number. Deserialization failed"));
         }
         ++m_it;
         return *this;
@@ -68,7 +68,7 @@ public:
     QProtobufSelfcheckIterator &operator --() {
         ++m_sizeLeft;
         if (m_sizeLeft > m_containerSize) {
-            throw std::out_of_range("Container is less than required fields number. Deserialization failed");
+            QT_THROW(std::out_of_range("Container is less than required fields number. Deserialization failed"));
         }
         --m_it;
         return *this;
@@ -77,7 +77,7 @@ public:
     QProtobufSelfcheckIterator &operator +=(int count) {
         m_sizeLeft -= count;
         if (m_sizeLeft < 0) {
-            throw std::out_of_range("Container is less than required fields number. Deserialization failed");
+            QT_THROW(std::out_of_range("Container is less than required fields number. Deserialization failed"));
         }
         m_it += count;
         return *this;
@@ -86,7 +86,7 @@ public:
     QProtobufSelfcheckIterator &operator -=(int count) {
         m_sizeLeft += count;
         if (m_sizeLeft > m_containerSize) {
-            throw std::out_of_range("Container is less than required fields number. Deserialization failed");
+            QT_THROW(std::out_of_range("Container is less than required fields number. Deserialization failed"));
         }
         m_it -= count;
         return *this;
@@ -100,7 +100,7 @@ public:
         m_containerSize = other.m_containerSize;
         m_sizeLeft = other.m_sizeLeft;
         if (m_sizeLeft > m_containerSize || m_sizeLeft < 0) {
-            throw std::out_of_range("Container is less than required fields number. Deserialization failed");
+            QT_THROW(std::out_of_range("Container is less than required fields number. Deserialization failed"));
         }
         m_it = other.m_it;
         return *this;
@@ -140,4 +140,4 @@ inline QProtobufSelfcheckIterator operator +(const QProtobufSelfcheckIterator &i
     return itNew += lenght;
 }
 
-}
+QT_END_NAMESPACE

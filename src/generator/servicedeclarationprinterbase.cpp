@@ -39,7 +39,6 @@
 using namespace ::QtProtobuf::generator;
 using namespace ::google::protobuf;
 using namespace ::google::protobuf::compiler;
-using namespace QtProtobuf::generator;
 
 ServiceDeclarationPrinterBase::ServiceDeclarationPrinterBase(const ::google::protobuf::ServiceDescriptor *service,
                 const std::shared_ptr<::google::protobuf::io::Printer> &printer) :

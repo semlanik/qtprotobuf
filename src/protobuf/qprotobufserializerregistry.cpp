@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "qtprotobuflogging.h"
+#include "qtprotobuflogging_p.h"
 #include "qprotobufserializerregistry_p.h"
 #include "qprotobufserializer.h"
 #include "qprotobufjsonserializer.h"
@@ -35,6 +35,7 @@
 #include <QPluginLoader>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QLibraryInfo>
 
 namespace {
 const QLatin1String TypeNames("types");
@@ -53,12 +54,11 @@ const QLatin1String LibExtension(".so");
 const QLatin1String LibPrefix("lib");
 #endif
 
-static const char *QtProtobufPluginPath = QT_PROTOBUF_PLUGIN_PATH;
-const QString DefaultImpl("Default");
+const QLatin1String DefaultImpl("Default");
 }
 
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 //! \private
 struct QProtobufSerializerRegistryPrivateRecord final
 {
@@ -111,7 +111,7 @@ struct QProtobufSerializerRegistryPrivateRecord final
     {
         if (loader == nullptr || !loader->load()) {
             qProtoWarning() << "Can't load plugin from" << libPath
-                            << "loader error" << (loader != nullptr ? loader->errorString() : "");
+                            << "loader error" << (loader != nullptr ? loader->errorString() : QLatin1String(""));
             return nullptr;
         }
         return loader->instance();
@@ -137,7 +137,7 @@ public:
         std::shared_ptr<QProtobufSerializerRegistryPrivateRecord> plugin = std::shared_ptr<QProtobufSerializerRegistryPrivateRecord>(new QProtobufSerializerRegistryPrivateRecord());
         plugin->createDefaultImpl();
         m_plugins[DefaultImpl] = plugin;
-        m_pluginPath = QString::fromUtf8(QtProtobufPluginPath);
+        m_pluginPath = QLibraryInfo::path(QLibraryInfo::PluginsPath);
         QString envPluginPath = QString::fromUtf8(qgetenv("QT_PROTOBUF_PLUGIN_PATH"));
         if (!envPluginPath.isEmpty()) {
             m_pluginPath = envPluginPath;
@@ -167,10 +167,6 @@ public:
     std::unordered_map<QString/*pluginName*/, std::shared_ptr<QProtobufSerializerRegistryPrivateRecord>> m_plugins;
     QString m_pluginPath;
 };
-
-}
-
-using namespace QtProtobuf;
 
 QProtobufSerializerRegistry::QProtobufSerializerRegistry() :
     dPtr(new QProtobufSerializerRegistryPrivate())
@@ -253,3 +249,5 @@ int QProtobufSerializerRegistry::pluginRating(const QString &plugin)
 
     return implementation->metaData.value(Rating).toInt();
 }
+
+QT_END_NAMESPACE

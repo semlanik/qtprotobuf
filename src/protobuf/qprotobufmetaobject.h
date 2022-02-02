@@ -25,11 +25,11 @@
 
 #pragma once //QProtobufMetaObject
 
-#include "qtprotobufglobal.h"
-#include "qtprotobuftypes.h"
+#include <QtProtobuf/qtprotobufglobal.h>
+#include <QtProtobuf/qtprotobuftypes.h>
 
 #include <QMetaObject>
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 /*!
  * \ingroup QtProtobuf
@@ -43,7 +43,7 @@ public:
     const QMetaObject &staticMetaObject;
     const QProtobufPropertyOrdering &propertyOrdering;
 private:
-    QProtobufMetaObject();
+    QProtobufMetaObject() = delete;
 };
 
-}
+QT_END_NAMESPACE

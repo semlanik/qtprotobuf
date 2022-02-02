@@ -25,9 +25,9 @@
 
 #pragma once //QGrpcUserPasswordCredentials
 
-#include "qgrpccredentials.h"
+#include <QtGrpc/qgrpccredentials.h>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 constexpr char defaultUserFieldName[] = "user-name";
 constexpr char defaultPasswordFieldName[] = "user-password";
@@ -53,16 +53,17 @@ public:
      * \param password value that will be assigned to PasswordFieldName header for each gRPC call
      */
     QGrpcUserPasswordCredentials(const QString &userName, const QString &password) :
-        m_map(QtProtobuf::QGrpcCredentialMap{{QLatin1String(UserFieldName), QVariant::fromValue(userName)},
+        m_map(QGrpcCredentialMap{{QLatin1String(UserFieldName), QVariant::fromValue(userName)},
                                       {QLatin1String(PasswordFieldName), QVariant::fromValue(password)}})
 	{}
 
     //!\private
-	QtProtobuf::QGrpcCredentialMap operator()() {
+    QGrpcCredentialMap operator()() {
 		return m_map;
 	}
 private:
 	QGrpcUserPasswordCredentials() = default;
-    QtProtobuf::QGrpcCredentialMap m_map;
+    QGrpcCredentialMap m_map;
 };
-}
+
+QT_END_NAMESPACE

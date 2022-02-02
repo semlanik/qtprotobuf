@@ -25,12 +25,12 @@
 
 #pragma once //QGrpcHttp2Channel
 
-#include "qabstractgrpcchannel.h"
+#include <QtGrpc/qabstractgrpcchannel.h>
 
 #include <QUrl>
 #include <memory>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 class QAbstractGrpcCredentials;
 struct QGrpcHttp2ChannelPrivate;
@@ -38,7 +38,7 @@ struct QGrpcHttp2ChannelPrivate;
  * \ingroup QtGrpc
  * \brief The QGrpcHttp2Channel class is HTTP/2 implementation of QAbstractGrpcChannel interface
  * \details For QGrpcHttp2Channel utilizes channel and call credentials.
- *          For channel credential QGrpcHttp2Channel supports SslConfigCredential key. When https
+ *          For channel credential QGrpcHttp2Channel supports QGrpcSslConfigCredential key. When https
  *          is used, this key has to be explicitly specified and provide QSslConfiguration and value.
  *          Provided QSslConfiguration will be used to establish HTTP/2 secured connection.
  *          All keys passed as QGrpcCallCredentials will be used as HTTP/2 headers with related values
@@ -56,7 +56,7 @@ public:
     ~QGrpcHttp2Channel();
 
     QGrpcStatus call(const QString &method, const QString &service, const QByteArray &args, QByteArray &ret) override;
-    void call(const QString &method, const QString &service, const QByteArray &args, QtProtobuf::QGrpcCallReply *reply) override;
+    void call(const QString &method, const QString &service, const QByteArray &args, QGrpcCallReply *reply) override;
     void stream(QGrpcStream *stream, const QString &service, QAbstractGrpcClient *client) override;
     std::shared_ptr<QAbstractProtobufSerializer> serializer() const override;
 private:
@@ -64,4 +64,5 @@ private:
 
     std::unique_ptr<QGrpcHttp2ChannelPrivate> dPtr;
 };
-}
+
+QT_END_NAMESPACE

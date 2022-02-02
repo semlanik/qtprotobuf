@@ -33,13 +33,12 @@
 #include <functional>
 #include <memory>
 
-#include "qtprotobuftypes.h"
-#include "qtprotobuflogging.h"
-#include "qprotobufselfcheckiterator.h"
+#include <QtProtobuf/qtprotobuftypes.h>
+#include <QtProtobuf/qprotobufselfcheckiterator.h>
 
-#include "qtprotobufglobal.h"
+#include <QtProtobuf/qtprotobufglobal.h>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 class QProtobufMetaProperty;
 class QProtobufMetaObject;
@@ -62,7 +61,7 @@ class QProtobufMetaObject;
  *          };
  *          \endcode
  *          Practically code above is generated automaticaly by running qtprotobufgenerator or using cmake build macro
- *          qtprotobuf_generate, based on .proto files. But it's still possible to reuse manually written code if needed.
+ *          qt6_protobuf_generate, based on .proto files. But it's still possible to reuse manually written code if needed.
  *
  *          This class should be used as base for specific serializers. The handlers property contains all
  *          message-specific serializers and should be used while serialization/deserialization. Inherited classes should reimplement
@@ -81,7 +80,6 @@ public:
     template<typename T>
     QByteArray serialize(const QObject *object) {
         Q_ASSERT(object != nullptr);
-        qProtoDebug() << T::staticMetaObject.className() << "serialize";
         return serializeMessage(object, T::protobufMetaObject);
     }
 
@@ -97,15 +95,14 @@ public:
     template<typename T>
     void deserialize(T *object, const QByteArray &data) {
         Q_ASSERT(object != nullptr);
-        qProtoDebug() << T::staticMetaObject.className() << "deserialize";
         //Initialize default object first and make copy aferwards, it's necessary to set default
         //values of properties that was not stored in data.
         T newValue;
-        try {
+        QT_TRY {
             deserializeMessage(&newValue, T::protobufMetaObject, data);
-        } catch(...) {
+        } QT_CATCH(...) {
             *object = newValue;
-            throw;
+            QT_RETHROW;
         }
         *object = newValue;
     }
@@ -220,6 +217,7 @@ public:
      */
     virtual QByteArray serializeMapEnd(QByteArray &buffer, const QProtobufMetaProperty &metaProperty) const {
         Q_UNUSED(metaProperty);
+        Q_UNUSED(buffer);
         return {};
     }
 
@@ -244,7 +242,7 @@ public:
      *
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
      */
-    virtual QByteArray serializeEnum(int64 value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const = 0;
+    virtual QByteArray serializeEnum(QtProtobuf::int64 value, const QMetaEnum &metaEnum, const QProtobufMetaProperty &metaProperty) const = 0;
 
     /*!
      * \brief serializeEnumList  Method called to serialize list of enum values
@@ -255,7 +253,7 @@ public:
      *
      * \see https://developers.google.com/protocol-buffers/docs/proto3#maps for details
      */
-    virtual QByteArray serializeEnumList(const QList<int64> &value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const = 0;
+    virtual QByteArray serializeEnumList(const QList<QtProtobuf::int64> &value, const QMetaEnum &metaEnum, const QProtobufMetaProperty &metaProperty) const = 0;
 
     /*!
      * \brief deserializeEnum Deserializes enum value from byte stream
@@ -263,7 +261,7 @@ public:
      * \param[in] metaEnum Information about enumeration type
      * \param[in] it Points to serialized raw key/value data
      */
-    virtual void deserializeEnum(int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const = 0;
+    virtual void deserializeEnum(QtProtobuf::int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const = 0;
 
     /*!
      * \brief deserializeEnum Deserializes list of enum values from byte stream
@@ -271,12 +269,13 @@ public:
      * \param[in] metaEnum Information about enumeration type
      * \param[in] it Points to serialized raw key/value data
      */
-    virtual void deserializeEnumList(QList<int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const = 0;
+    virtual void deserializeEnumList(QList<QtProtobuf::int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const = 0;
 };
 /*! \} */
-}
 
-#include "qabstractprotobufserializer_p.h"
+QT_END_NAMESPACE
+
+#include <QtProtobuf/qabstractprotobufserializercommon.h>
 
 /*!
  * \brief Registers serializers for type T in QtProtobuf global serializers registry

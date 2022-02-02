@@ -10,7 +10,7 @@ QT.protobuf.module_config = @QT_PROTOBUF_EXTRA_CONFIG@
 CONFIG += c++14
 DEFINES += @QT_PROTOBUF_EXTRA_COMPILE_DIFINITIONS@
 
-defineTest(qtprotobuf_generate) {
+defineTest(qt6_protobuf_generate) {
     OK = false
 
     QML_ENABLED = $$1

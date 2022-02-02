@@ -25,10 +25,10 @@
 
 #pragma once //QGrpcInsecureCredentials
 
-#include "qgrpccredentials.h"
-#include "qtgrpcglobal.h"
+#include <QtGrpc/qgrpccredentials.h>
+#include <QtGrpc/qtgrpcglobal.h>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 /*!
  * \ingroup QtGrpc
  * \brief The QGrpcInsecureCallCredentials class is dummy implementation of
@@ -36,7 +36,8 @@ namespace QtProtobuf {
  *
  *        Use it when you don't need any call credentials.
  */
-class Q_GRPC_EXPORT QGrpcInsecureCallCredentials final : public QGrpcCallCredentials {
+class Q_GRPC_EXPORT QGrpcInsecureCallCredentials final : public QGrpcCallCredentials
+{
 public:
     QGrpcCredentialMap operator()() const {
         return QGrpcCredentialMap{};
@@ -50,10 +51,12 @@ public:
  *
  *        Use it when you don't need any channel credentials.
  */
-class Q_GRPC_EXPORT QGrpcInsecureChannelCredentials final : public QGrpcChannelCredentials {
+class Q_GRPC_EXPORT QGrpcInsecureChannelCredentials final : public QGrpcChannelCredentials
+{
 public:
     QGrpcCredentialMap channelCredentials() const {
         return QGrpcCredentialMap{};
     }
 };
-}
+
+QT_END_NAMESPACE

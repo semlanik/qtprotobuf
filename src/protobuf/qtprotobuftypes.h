@@ -25,7 +25,7 @@
 
 #pragma once //QtProtobufTypes
 
-#include "qtprotobufglobal.h"
+#include <QtProtobuf/qtprotobufglobal.h>
 
 #include <QList>
 #include <QMap>
@@ -36,7 +36,7 @@
 #include <list>
 #include <type_traits>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 /*!
  * \ingroup QtProtobuf
@@ -56,8 +56,8 @@ enum WireTypes {
 };
 
 //! \private
-struct PropertyOrderingInfo {
-    PropertyOrderingInfo(int _qtProperty, const QString &_jsonName) : qtProperty(_qtProperty)
+struct QProtobufPropertyOrderingInfo {
+    QProtobufPropertyOrderingInfo(int _qtProperty, const QString &_jsonName) : qtProperty(_qtProperty)
       , jsonName(_jsonName) {}
 
     int qtProperty;
@@ -75,8 +75,9 @@ struct PropertyOrderingInfo {
 
 //! \private
 //!
-using QProtobufPropertyOrdering = std::unordered_map<int, PropertyOrderingInfo>;
+using QProtobufPropertyOrdering = std::unordered_map<int, QProtobufPropertyOrderingInfo>;
 
+namespace QtProtobuf {
 /*!
  * \private
  * \ingroup QtProtobuf
@@ -190,7 +191,7 @@ using int32List = QList<int32>;
  * \ingroup QtProtobuf
  * \brief alias for list of QtProtobuf::int64
  */
-using int64List = QList<int64>;
+using int64List = QList<QtProtobuf::int64>;
 
 /*!
  * \ingroup QtProtobuf
@@ -242,22 +243,15 @@ using sfixed64List = QList<sfixed64>;
 
 /*!
  * \ingroup QtProtobuf
- * \brief alias for list of QtProtobuf::float
+ * \brief alias for list of float
  */
 using FloatList = QList<float>;
 
 /*!
  * \ingroup QtProtobuf
- * \brief alias for list of QtProtobuf::double
+ * \brief alias for list of double
  */
 using DoubleList = QList<double>;
-
-/*!
- * \ingroup QtProtobuf
- * \brief qRegisterProtobufTypes
- * This method should be called in all applications that supposed to use QtProtobuf
- */
-Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
 
 /*! \} */
 
@@ -265,13 +259,13 @@ Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
 using RegisterFunction = std::function<void(void)>;
 
 //!\private
-Q_PROTOBUF_EXPORT std::list<RegisterFunction>& registerFunctions();
+Q_PROTOBUF_EXPORT std::list<QtProtobuf::RegisterFunction>& registerFunctions();
 
 //!\private
 template <typename T>
 struct ProtoTypeRegistrar {
-    ProtoTypeRegistrar(RegisterFunction initializer) {
-        registerFunctions().push_back(initializer);
+    ProtoTypeRegistrar(QtProtobuf::RegisterFunction initializer) {
+        QtProtobuf::registerFunctions().push_back(initializer);
     }
 };
 
@@ -314,7 +308,14 @@ bool repeatedValueCompare(const QMap<K, QSharedPointer<V>>& a, const QMap<K, QSh
     return true;
 }
 
-}
+} //namespace QtProtobuf
+
+/*!
+ * \brief qRegisterProtobufTypes
+ * This method should be called in all applications that supposed to use QtProtobuf
+ */
+// TODO Qt6: Replace with the automatic type registrar
+Q_PROTOBUF_EXPORT void qRegisterProtobufTypes();
 
 Q_DECLARE_METATYPE(QtProtobuf::int32)
 Q_DECLARE_METATYPE(QtProtobuf::int64)

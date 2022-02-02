@@ -138,7 +138,7 @@ QGrpcChannelStream::~QGrpcChannelStream()
 
 void QGrpcChannelStream::cancel() {
     // TODO: check thread safety
-    qProtoDebug() << "Stream thread terminated";
+    qGrpcDebug() << "Stream thread terminated";
     context.TryCancel();
 }
 
@@ -191,7 +191,7 @@ QGrpcChannelCall::~QGrpcChannelCall()
 void QGrpcChannelCall::cancel()
 {
     // TODO: check thread safety
-    qProtoDebug() << "Call thread terminated";
+    qGrpcDebug() << "Call thread terminated";
     context.TryCancel();
 }
 
@@ -278,7 +278,7 @@ void QGrpcChannelPrivate::stream(QGrpcStream *stream, const QString &service, QA
     });
 
     *connection = QObject::connect(sub.get(), &QGrpcChannelStream::finished, stream, [sub, stream, readConnection, abortConnection, service, connection, clientConnection](){
-        qProtoDebug() << "Stream ended with server closing connection";
+        qGrpcDebug() << "Stream ended with server closing connection";
 
         QObject::disconnect(*connection);
         QObject::disconnect(*readConnection);
@@ -292,7 +292,7 @@ void QGrpcChannelPrivate::stream(QGrpcStream *stream, const QString &service, QA
     });
 
     *abortConnection = QObject::connect(stream, &QGrpcStream::finished, sub.get(), [connection, abortConnection, readConnection, sub, clientConnection] {
-        qProtoDebug() << "Stream client was finished";
+        qGrpcDebug() << "Stream client was finished";
 
         QObject::disconnect(*connection);
         QObject::disconnect(*readConnection);
@@ -303,7 +303,7 @@ void QGrpcChannelPrivate::stream(QGrpcStream *stream, const QString &service, QA
     });
 
     *clientConnection = QObject::connect(client, &QAbstractGrpcClient::destroyed, sub.get(), [readConnection, connection, abortConnection, sub, clientConnection](){
-        qProtoDebug() << "Grpc client was destroyed";
+        qGrpcDebug() << "Grpc client was destroyed";
 
         QObject::disconnect(*connection);
         QObject::disconnect(*readConnection);

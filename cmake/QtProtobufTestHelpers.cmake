@@ -1,42 +1,4 @@
-function(qt_protobuf_internal_protobuf_generate_all)
-    set(options)
-    set(oneValueArgs OUTPUT_DIRECTORY TARGET)
-    set(multiValueArgs GENERATED_SOURCES PROTO_FILES)
-    cmake_parse_arguments(arg "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    set(GEN_TARGET "${arg_TARGET}_generate")
-
-    foreach(PROTO_FILE IN LISTS arg_PROTO_FILES)
-        get_filename_component(BASE_DIR "${PROTO_FILE}" DIRECTORY)
-        list(APPEND PROTO_INCLUDES "-I${BASE_DIR}")
-    endforeach()
-
-    if(NOT DEFINED arg_OUTPUT_DIRECTORY)
-        set(OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
-    else()
-        set(OUTPUT_DIRECTORY "${arg_OUTPUT_DIRECTORY}")
-    endif()
-
-    file(MAKE_DIRECTORY "${OUTPUT_DIRECTORY}")
-
-    if(NOT TARGET gRPC::grpc_cpp_plugin)
-        message(FATAL_ERROR "gRPC plugin is not found")
-    endif()
-
-    add_custom_command(
-        OUTPUT ${GENERATED_SOURCES}
-        COMMAND protobuf::protoc
-        ARGS --grpc_out="${OUTPUT_DIRECTORY}"
-            --cpp_out="${OUTPUT_DIRECTORY}"
-            ${PROTO_INCLUDES}
-            "--plugin=protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>"
-            ${arg_PROTO_FILES}
-        DEPENDS ${arg_PROTO_FILES}
-    )
-
-    add_custom_target(${GEN_TARGET} DEPENDS ${arg_PROTO_FILES} ${GENERATED_SOURCES})
-    add_dependencies(${arg_TARGET} ${GEN_TARGET})
-endfunction()
 
 function(qt_protobuf_internal_add_target_qml)
     set(options)

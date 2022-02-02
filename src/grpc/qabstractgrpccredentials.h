@@ -25,13 +25,13 @@
 
 #pragma once
 
-#include "qtgrpcglobal.h"
-
 #include <QHash>
 #include <QString>
 #include <QVariant>
 
-namespace QtProtobuf {
+#include <QtGrpc/qtgrpcglobal.h>
+
+QT_BEGIN_NAMESPACE
 
 using QGrpcCredentialMap = QHash<QLatin1String, QVariant>;
 
@@ -42,4 +42,5 @@ public:
     virtual QGrpcCredentialMap callCredentials() = 0;
     virtual QGrpcCredentialMap channelCredentials() = 0;
 };
-}
+
+QT_END_NAMESPACE

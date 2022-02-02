@@ -33,18 +33,16 @@
 #include <QPointer>
 #include <QByteArray>
 
-#include <qtprotobuflogging.h>
-#include <qabstractprotobufserializer.h>
+#include <QtProtobuf/qabstractprotobufserializer.h>
 
-#include "qabstractgrpcchannel.h"
-
-#include "qtgrpcglobal.h"
+#include <QtGrpc/qabstractgrpcchannel.h>
+#include <QtGrpc/qtgrpcglobal.h>
 
 /*!
  * \defgroup QtGrpc
  * \brief Qt framework based gRPC clients and services
  */
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 class QGrpcAsyncOperationBase;
 class QAbstractGrpcChannel;
@@ -93,10 +91,9 @@ protected:
     QGrpcStatus call(const QString &method, const A &arg, const QPointer<R> &ret) {
         QGrpcStatus status{QGrpcStatus::Ok};
         if (ret.isNull()) {
-            static const QString errorString("Unable to call method: %1. Pointer to return data is null");
+            static const QLatin1String errorString("Unable to call method: %1. Pointer to return data is null");
             status = QGrpcStatus{QGrpcStatus::InvalidArgument, errorString.arg(method)};
             error(status);
-            qProtoCritical() << errorString.arg(method);
             return status;
         }
 
@@ -161,9 +158,8 @@ protected:
     template<typename A, typename R>
     QGrpcStreamShared stream(const QString &method, const A &arg, const QPointer<R> &ret) {
         if (ret.isNull()) {
-            static const QString nullPointerError("Unable to stream method: %1. Pointer to return data is null");
+            static const QLatin1String nullPointerError("Unable to stream method: %1. Pointer to return data is null");
             error({QGrpcStatus::InvalidArgument, nullPointerError.arg(method)});
-            qProtoCritical() << nullPointerError.arg(method);
             return nullptr;
         }
         bool ok = false;
@@ -177,7 +173,6 @@ protected:
             } else {
                 static const QLatin1String nullPointerError("Pointer to return data is null while stream update received");
                 error({QGrpcStatus::InvalidArgument, nullPointerError});
-                qProtoCritical() << nullPointerError;
             }
         });
     }
@@ -197,7 +192,7 @@ private:
     QGrpcCallReplyShared call(const QString &method, const QByteArray &arg);
 
     //!\private
-    QGrpcStreamShared stream(const QString &method, const QByteArray &arg, const QtProtobuf::StreamHandler &handler = {});
+    QGrpcStreamShared stream(const QString &method, const QByteArray &arg, const QGrpcStreamHandler &handler = {});
 
     /*!
      * \private
@@ -214,12 +209,10 @@ private:
                 static const QLatin1String invalidArgumentErrorMessage("Response deserialization failed invalid field found");
                 status = {QGrpcStatus::InvalidArgument, invalidArgumentErrorMessage};
                 error(status);
-                qProtoCritical() << invalidArgumentErrorMessage;
             } catch (std::out_of_range &) {
                 static const QLatin1String outOfRangeErrorMessage("Invalid size of received buffer");
                 status = {QGrpcStatus::OutOfRange, outOfRangeErrorMessage};
                 error(status);
-                qProtoCritical() << outOfRangeErrorMessage;
             } catch (...) {
                 status = {QGrpcStatus::Internal, QLatin1String("Unknown exception caught during deserialization")};
                 error(status);
@@ -230,7 +223,6 @@ private:
         }
         return status;
     }
-
 
     template<typename R>
     QByteArray trySerialize(const R &arg, bool &ok) {
@@ -248,7 +240,7 @@ private:
     /*!
      * \private
      * \brief serializer provides assigned to client serializer
-     * \return pointer to serializer. Serializer is owned by QtProtobuf::QProtobufSerializerRegistry.
+     * \return pointer to serializer. Serializer is owned by QProtobufSerializerRegistry.
      */
     std::shared_ptr<QAbstractProtobufSerializer> serializer() const;
 
@@ -256,4 +248,5 @@ private:
 
     std::unique_ptr<QAbstractGrpcClientPrivate> dPtr;
 };
-}
+
+QT_END_NAMESPACE

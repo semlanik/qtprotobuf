@@ -23,6 +23,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "qtprotobuflogging.h"
+#include "qtprotobuflogging_p.h"
 
-Q_LOGGING_CATEGORY(qtprotobuflog, "qtprotobuflog", QtWarningMsg)
+QT_BEGIN_NAMESPACE
+
+Q_LOGGING_CATEGORY(Protobuf, "qt.protobuf", QtWarningMsg)
+
+QT_END_NAMESPACE

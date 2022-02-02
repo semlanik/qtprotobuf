@@ -29,9 +29,10 @@
 #include "qgrpcstream.h"
 #include <QThread>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
-struct QAbstractGrpcChannelPrivate {
+struct QAbstractGrpcChannelPrivate
+{
     QAbstractGrpcChannelPrivate() : thread(QThread::currentThread()) {
         assert(thread != nullptr && "QAbstractGrpcChannel has to be created in QApplication context");
     }
@@ -46,4 +47,4 @@ const QThread *QAbstractGrpcChannel::thread() const
     return dPtr->thread;
 }
 
-}
+QT_END_NAMESPACE

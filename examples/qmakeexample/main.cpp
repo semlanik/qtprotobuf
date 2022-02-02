@@ -29,7 +29,7 @@
 
 int main(int argc, char *argv[])
 {
-    QtProtobuf::qRegisterProtobufTypes();
+    qRegisterProtobufTypes();
     QCoreApplication a(argc, argv);
     return a.exec();
 }

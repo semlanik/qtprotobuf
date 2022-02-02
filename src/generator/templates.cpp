@@ -33,8 +33,8 @@ const std::vector<std::string> Templates::ListOfQmlExeptions{"id", "property", "
 
 const char *Templates::DefaultProtobufIncludesTemplate = "#include <QMetaType>\n"
                                                          "#include <QList>\n"
-                                                         "#include <QProtobufObject>\n"
-                                                         "#include <QProtobufLazyMessagePointer>\n"
+                                                         "#include <QtProtobuf/qprotobufobject.h>\n"
+                                                         "#include <QtProtobuf/qprotobuflazymessagepointer.h>\n"
                                                          "#include <QSharedPointer>\n"
                                                          "\n"
                                                          "#include <memory>\n"
@@ -42,7 +42,7 @@ const char *Templates::DefaultProtobufIncludesTemplate = "#include <QMetaType>\n
                                                          "\n";
 
 const char *Templates::QmlProtobufIncludesTemplate = "#include <QtQml/QQmlListProperty>\n"
-                                                     "#include <QQmlListPropertyConstructor>\n\n";
+                                                     "#include <QtProtobuf/qtprotobufqmllistpropertyconstructor.h>\n\n";
 
 const char *Templates::GlobalEnumClassNameTemplate = "GlobalEnums";
 
@@ -55,7 +55,7 @@ const char *Templates::InternalIncludeTemplate =  "#include \"$include$.h\"\n";
 const char *Templates::ExternalIncludeTemplate = "#include <$include$>\n";
 const char *Templates::GlobalEnumIncludeTemplate = "#include <globalenums.h>\n";
 
-const char *Templates::UsingQtProtobufNamespaceTemplate = "\nusing namespace QtProtobuf;\n";
+const char *Templates::UsingQtProtobufNamespaceTemplate = "\n";
 const char *Templates::ManualRegistrationDeclaration = "static void registerTypes();\n";
 const char *Templates::ManualRegistrationComplexTypeDefinition = "void $type$::registerTypes()\n{\n"
                                                                  "    qRegisterMetaType<$type$>(\"$full_type$\");\n"
@@ -200,7 +200,7 @@ const char *Templates::GetterContainerExtraTemplate = "$getter_type$ &$property_
 
 const char *Templates::GetterQmlListDeclarationTemplate = "QQmlListProperty<$scope_type$> $property_name$_l();\n";
 const char *Templates::GetterQmlListDefinitionTemplate = "QQmlListProperty<$full_type$> $classname$::$property_name$_l()\n{\n"
-                                                         "    return QtProtobuf::constructQmlListProperty<$scope_type$>(this, &m_$property_name$);\n"
+                                                         "    return qProtobufConstructQmlListProperty<$scope_type$>(this, &m_$property_name$);\n"
                                                          "}\n\n";
 
 const char *Templates::SetterPrivateTemplateDeclarationMessageType = "void set$property_name_cap$_p($setter_type$ *$property_name$);\n";
@@ -243,8 +243,8 @@ const char *Templates::NonScriptableSetterTemplate = "void set$property_name_cap
 const char *Templates::SignalsBlockTemplate = "\nsignals:\n";
 const char *Templates::SignalTemplate = "void $property_name$Changed();\n";
 
-const char *Templates::FieldsOrderingContainerTemplate = "const QtProtobuf::QProtobufMetaObject $type$::protobufMetaObject = QtProtobuf::QProtobufMetaObject($type$::staticMetaObject, $type$::propertyOrdering);\n"
-                                                         "const QtProtobuf::QProtobufPropertyOrdering $type$::propertyOrdering = {";
+const char *Templates::FieldsOrderingContainerTemplate = "const QProtobufMetaObject $type$::protobufMetaObject = QProtobufMetaObject($type$::staticMetaObject, $type$::propertyOrdering);\n"
+                                                         "const QProtobufPropertyOrdering $type$::propertyOrdering = {";
 const char *Templates::FieldOrderTemplate = "{$field_number$, {$property_number$, \"$json_name$\"}}";
 
 const char *Templates::EnumTemplate = "$type$";
@@ -291,9 +291,9 @@ const char *Templates::QEnumTemplate = "Q_ENUM($type$)\n";
 const char *Templates::ClassDefinitionTemplate = "\nclass $classname$ : public $parent_class$\n"
                                                  "{\n";
 const char *Templates::QObjectMacro = "Q_OBJECT";
-const char *Templates::ClientMethodDeclarationSyncTemplate = "QtProtobuf::QGrpcStatus $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
-const char *Templates::ClientMethodDeclarationAsyncTemplate = "QtProtobuf::QGrpcCallReplyShared $method_name$(const $param_type$ &$param_name$);\n";
-const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QtProtobuf::QGrpcCallReplyShared)> &callback);\n";
+const char *Templates::ClientMethodDeclarationSyncTemplate = "QGrpcStatus $method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
+const char *Templates::ClientMethodDeclarationAsyncTemplate = "QGrpcCallReplyShared $method_name$(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodDeclarationAsync2Template = "Q_INVOKABLE void $method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QGrpcCallReplyShared)> &callback);\n";
 const char *Templates::ClientMethodDeclarationQmlTemplate = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, const QJSValue &callback, const QJSValue &errorCallback);\n";
 const char *Templates::ClientMethodDeclarationQml2Template = "Q_INVOKABLE void $method_name$($param_type$ *$param_name$, $return_type$ *$return_name$, const QJSValue &errorCallback);\n";
 
@@ -303,18 +303,18 @@ const char *Templates::ServerMethodDeclarationTemplate = "Q_INVOKABLE virtual $r
 const char *Templates::ClientConstructorDefinitionTemplate = "\n$classname$::$classname$(QObject *parent) : $parent_class$(\"$service_name$\", parent)\n"
                                                              "{\n"
                                                              "}\n";
-const char *Templates::ClientMethodDefinitionSyncTemplate = "\nQtProtobuf::QGrpcStatus $classname$::$method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
+const char *Templates::ClientMethodDefinitionSyncTemplate = "\nQGrpcStatus $classname$::$method_name$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
                                                             "{\n"
                                                             "    return call(\"$method_name$\", $param_name$, $return_name$);\n"
                                                             "}\n";
-const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nQtProtobuf::QGrpcCallReplyShared $classname$::$method_name$(const $param_type$ &$param_name$)\n"
+const char *Templates::ClientMethodDefinitionAsyncTemplate = "\nQGrpcCallReplyShared $classname$::$method_name$(const $param_type$ &$param_name$)\n"
                                                              "{\n"
                                                              "    return call(\"$method_name$\", $param_name$);\n"
                                                              "}\n";
 const char *Templates::ClientMethodDefinitionAsync2Template = "\nvoid $classname$::$method_name$(const $param_type$ &$param_name$, const QObject *context, const std::function<void(QGrpcCallReplyShared)> &callback)\n"
                                                               "{\n"
-                                                              "    QtProtobuf::QGrpcCallReplyShared reply = call(\"$method_name$\", $param_name$);\n"
-                                                              "    QObject::connect(reply.get(), &QtProtobuf::QGrpcCallReply::finished, context, [reply, callback]() {\n"
+                                                              "    QGrpcCallReplyShared reply = call(\"$method_name$\", $param_name$);\n"
+                                                              "    QObject::connect(reply.get(), &QGrpcCallReply::finished, context, [reply, callback]() {\n"
                                                               "        callback(reply);\n"
                                                               "    });\n"
                                                               "}\n";
@@ -334,7 +334,7 @@ const char *Templates::ClientMethodDefinitionQmlTemplate = "\nvoid $classname$::
                                                            "        qProtoWarning() << \"Unable to call $classname$::$method_name$, it's only callable from JS engine context\";\n"
                                                            "        return;\n"
                                                            "    }\n\n"
-                                                           "    QtProtobuf::QGrpcCallReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
+                                                           "    QGrpcCallReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
                                                            "    reply->subscribe(jsEngine, [this, reply, callback, jsEngine]() {\n"
                                                            "        auto result = new $return_type$(reply->read<$return_type$>());\n"
                                                            "        qmlEngine(this)->setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);\n"
@@ -359,7 +359,7 @@ const char *Templates::ClientMethodDefinitionQml2Template = "\nvoid $classname$:
                                                             "        qProtoWarning() << \"Unable to call $classname$::$method_name$, it's only callable from JS engine context\";\n"
                                                             "        return;\n"
                                                             "    }\n\n"
-                                                            "    QtProtobuf::QGrpcCallReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
+                                                            "    QGrpcCallReplyShared reply = call(\"$method_name$\", *$param_name$);\n"
                                                             "    reply->subscribe(jsEngine, [this, reply, jsEngine, safeReturn]() {\n"
                                                             "        if (safeReturn.isNull()) {\n"
                                                             "            qProtoWarning() << \"Return value is destroyed. Ignore call result\";\n"
@@ -379,19 +379,19 @@ const char *Templates::QmlRegisterEnumTypeTemplate = "qmlRegisterUncreatableType
 
 
 const char *Templates::ClientMethodSignalDeclarationTemplate = "Q_SIGNAL void $method_name$Updated(const $return_type$ &);\n";
-const char *Templates::ClientMethodServerStreamDeclarationTemplate = "QtProtobuf::QGrpcStreamShared stream$method_name_upper$(const $param_type$ &$param_name$);\n";
-const char *Templates::ClientMethodServerStream2DeclarationTemplate = "QtProtobuf::QGrpcStreamShared stream$method_name_upper$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
-const char *Templates::ClientMethodServerStreamQmlDeclarationTemplate = "Q_INVOKABLE QtProtobuf::QGrpcStreamShared qmlStream$method_name_upper$_p($param_type$ *$param_name$, $return_type$ *$return_name$);\n";
+const char *Templates::ClientMethodServerStreamDeclarationTemplate = "QGrpcStreamShared stream$method_name_upper$(const $param_type$ &$param_name$);\n";
+const char *Templates::ClientMethodServerStream2DeclarationTemplate = "QGrpcStreamShared stream$method_name_upper$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$);\n";
+const char *Templates::ClientMethodServerStreamQmlDeclarationTemplate = "Q_INVOKABLE QGrpcStreamShared qmlStream$method_name_upper$_p($param_type$ *$param_name$, $return_type$ *$return_name$);\n";
 
-const char *Templates::ClientMethodServerStreamDefinitionTemplate = "QtProtobuf::QGrpcStreamShared $classname$::stream$method_name_upper$(const $param_type$ &$param_name$)\n"
+const char *Templates::ClientMethodServerStreamDefinitionTemplate = "QGrpcStreamShared $classname$::stream$method_name_upper$(const $param_type$ &$param_name$)\n"
                                                                     "{\n"
                                                                     "    return stream(\"$method_name$\", $param_name$);\n"
                                                                     "}\n";
-const char *Templates::ClientMethodServerStream2DefinitionTemplate = "QtProtobuf::QGrpcStreamShared $classname$::stream$method_name_upper$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
+const char *Templates::ClientMethodServerStream2DefinitionTemplate = "QGrpcStreamShared $classname$::stream$method_name_upper$(const $param_type$ &$param_name$, const QPointer<$return_type$> &$return_name$)\n"
                                                                      "{\n"
                                                                      "    return stream(\"$method_name$\", $param_name$, $return_name$);\n"
                                                                      "}\n";
-const char *Templates::ClientMethodServerStreamQmlDefinitionTemplate = "QtProtobuf::QGrpcStreamShared $classname$::qmlStream$method_name_upper$_p($param_type$ *$param_name$, $return_type$ *$return_name$)\n"
+const char *Templates::ClientMethodServerStreamQmlDefinitionTemplate = "QGrpcStreamShared $classname$::qmlStream$method_name_upper$_p($param_type$ *$param_name$, $return_type$ *$return_name$)\n"
                                                                        "{\n"
                                                                        "    return stream(\"$method_name$\", *$param_name$, QPointer<$return_type$>($return_name$));\n"
                                                                        "}\n";

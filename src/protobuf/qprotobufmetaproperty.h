@@ -26,16 +26,15 @@
 #pragma once //QProtobufMetaProperty
 
 #include <QMetaProperty>
+#include <QtProtobuf/qtprotobufglobal.h>
 
-#include "qtprotobufglobal.h"
-
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 /*!
  * \ingroup QtProtobuf
  * \private
  * \brief The QProtobufMetaProperty class
  */
-struct PropertyOrderingInfo;
+struct QProtobufPropertyOrderingInfo;
 
 class Q_PROTOBUF_EXPORT QProtobufMetaProperty : public QMetaProperty
 {
@@ -49,4 +48,4 @@ private:
     const QString &m_jsonName;
 };
 
-}
+QT_END_NAMESPACE

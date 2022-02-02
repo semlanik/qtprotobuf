@@ -1,0 +1,366 @@
+syntax = "proto3";
+
+import "basicmessages.proto";
+
+package qtprotobufnamespace.tests;
+
+//MAPS
+//Types to String
+message SimpleSInt32StringMapMessage {
+    map<sint32, string> mapField = 1;
+}
+
+message SimpleSInt64StringMapMessage {
+    map<sint64, string> mapField = 2;
+}
+
+message SimpleInt32StringMapMessage {
+    map<int32, string> mapField = 3;
+}
+
+message SimpleInt64StringMapMessage {
+    map<int64, string> mapField = 4;
+}
+
+message SimpleUInt32StringMapMessage {
+    map<uint32, string> mapField = 5;
+}
+
+message SimpleUInt64StringMapMessage {
+    map<uint64, string> mapField = 6;
+}
+
+message SimpleFixed32StringMapMessage {
+    map<fixed32, string> mapField = 7;
+}
+
+message SimpleFixed64StringMapMessage {
+    map<fixed64, string> mapField = 8;
+}
+
+message SimpleSFixed32StringMapMessage {
+    map<sfixed32, string> mapField = 9;
+}
+
+message SimpleSFixed64StringMapMessage {
+    map<sfixed64, string> mapField = 10;
+}
+
+message SimpleStringStringMapMessage {
+    map<string, string> mapField = 13;
+}
+
+//Types to sint32
+message SimpleSInt32SInt32MapMessage {
+    map<sint32, sint32> mapField = 1;
+}
+
+message SimpleSInt64SInt32MapMessage {
+    map<sint64, sint32> mapField = 2;
+}
+
+message SimpleInt32SInt32MapMessage {
+    map<int32, sint32> mapField = 3;
+}
+
+message SimpleInt64SInt32MapMessage {
+    map<int64, sint32> mapField = 4;
+}
+
+message SimpleUInt32SInt32MapMessage {
+    map<uint32, sint32> mapField = 5;
+}
+
+message SimpleUInt64SInt32MapMessage {
+    map<uint64, sint32> mapField = 6;
+}
+
+message SimpleFixed32SInt32MapMessage {
+    map<fixed32, sint32> mapField = 7;
+}
+
+message SimpleFixed64SInt32MapMessage {
+    map<fixed64, sint32> mapField = 8;
+}
+
+message SimpleSFixed32SInt32MapMessage {
+    map<sfixed32, sint32> mapField = 9;
+}
+
+message SimpleSFixed64SInt32MapMessage {
+    map<sfixed64, sint32> mapField = 10;
+}
+
+message SimpleStringSInt32MapMessage {
+    map<string, sint32> mapField = 13;
+}
+
+//Types to sint64
+message SimpleSInt32SInt64MapMessage {
+    map<sint32, sint64> mapField = 1;
+}
+
+message SimpleSInt64SInt64MapMessage {
+    map<sint64, sint64> mapField = 2;
+}
+
+message SimpleInt32SInt64MapMessage {
+    map<int32, sint64> mapField = 3;
+}
+
+message SimpleInt64SInt64MapMessage {
+    map<int64, sint64> mapField = 4;
+}
+
+message SimpleUInt32SInt64MapMessage {
+    map<uint32, sint64> mapField = 5;
+}
+
+message SimpleUInt64SInt64MapMessage {
+    map<uint64, sint64> mapField = 6;
+}
+
+message SimpleFixed32SInt64MapMessage {
+    map<fixed32, sint64> mapField = 7;
+}
+
+message SimpleFixed64SInt64MapMessage {
+    map<fixed64, sint64> mapField = 8;
+}
+
+message SimpleSFixed32SInt64MapMessage {
+    map<sfixed32, sint64> mapField = 9;
+}
+
+message SimpleSFixed64SInt64MapMessage {
+    map<sfixed64, sint64> mapField = 10;
+}
+
+message SimpleStringSInt64MapMessage {
+    map<string, sint64> mapField = 13;
+}
+
+//Types to uint32
+message SimpleSInt32UInt32MapMessage {
+    map<sint32, uint32> mapField = 1;
+}
+
+message SimpleSInt64UInt32MapMessage {
+    map<sint64, uint32> mapField = 2;
+}
+
+message SimpleInt32UInt32MapMessage {
+    map<int32, uint32> mapField = 3;
+}
+
+message SimpleInt64UInt32MapMessage {
+    map<int64, uint32> mapField = 4;
+}
+
+message SimpleUInt32UInt32MapMessage {
+    map<uint32, uint32> mapField = 5;
+}
+
+message SimpleUInt64UInt32MapMessage {
+    map<uint64, uint32> mapField = 6;
+}
+
+message SimpleFixed32UInt32MapMessage {
+    map<fixed32, uint32> mapField = 7;
+}
+
+message SimpleFixed64UInt32MapMessage {
+    map<fixed64, uint32> mapField = 8;
+}
+
+message SimpleSFixed32UInt32MapMessage {
+    map<sfixed32, uint32> mapField = 9;
+}
+
+message SimpleSFixed64UInt32MapMessage {
+    map<sfixed64, uint32> mapField = 10;
+}
+
+message SimpleStringUInt32MapMessage {
+    map<string, uint32> mapField = 13;
+}
+
+//Types to uint64
+message SimpleSInt32UInt64MapMessage {
+    map<sint32, uint64> mapField = 1;
+}
+
+message SimpleSInt64UInt64MapMessage {
+    map<sint64, uint64> mapField = 2;
+}
+
+message SimpleInt32UInt64MapMessage {
+    map<int32, uint64> mapField = 3;
+}
+
+message SimpleInt64UInt64MapMessage {
+    map<int64, uint64> mapField = 4;
+}
+
+message SimpleUInt32UInt64MapMessage {
+    map<uint32, uint64> mapField = 5;
+}
+
+message SimpleUInt64UInt64MapMessage {
+    map<uint64, uint64> mapField = 6;
+}
+
+message SimpleFixed32UInt64MapMessage {
+    map<fixed32, uint64> mapField = 7;
+}
+
+message SimpleFixed64UInt64MapMessage {
+    map<fixed64, uint64> mapField = 8;
+}
+
+message SimpleSFixed32UInt64MapMessage {
+    map<sfixed32, uint64> mapField = 9;
+}
+
+message SimpleSFixed64UInt64MapMessage {
+    map<sfixed64, uint64> mapField = 10;
+}
+
+message SimpleStringUInt64MapMessage {
+    map<string, uint64> mapField = 13;
+}
+
+//Types to int32
+message SimpleSInt32Int32MapMessage {
+    map<sint32, int32> mapField = 1;
+}
+
+message SimpleSInt64Int32MapMessage {
+    map<sint64, int32> mapField = 2;
+}
+
+message SimpleInt32Int32MapMessage {
+    map<int32, int32> mapField = 3;
+}
+
+message SimpleInt64Int32MapMessage {
+    map<int64, int32> mapField = 4;
+}
+
+message SimpleUInt32Int32MapMessage {
+    map<uint32, int32> mapField = 5;
+}
+
+message SimpleUInt64Int32MapMessage {
+    map<uint64, int32> mapField = 6;
+}
+
+message SimpleFixed32Int32MapMessage {
+    map<fixed32, int32> mapField = 7;
+}
+
+message SimpleFixed64Int32MapMessage {
+    map<fixed64, int32> mapField = 8;
+}
+
+message SimpleSFixed32Int32MapMessage {
+    map<sfixed32, int32> mapField = 9;
+}
+
+message SimpleSFixed64Int32MapMessage {
+    map<sfixed64, int32> mapField = 10;
+}
+
+message SimpleStringInt32MapMessage {
+    map<string, int32> mapField = 13;
+}
+
+//Types to int64
+message SimpleSInt32Int64MapMessage {
+    map<sint32, int64> mapField = 1;
+}
+
+message SimpleSInt64Int64MapMessage {
+    map<sint64, int64> mapField = 2;
+}
+
+message SimpleInt32Int64MapMessage {
+    map<int32, int64> mapField = 3;
+}
+
+message SimpleInt64Int64MapMessage {
+    map<int64, int64> mapField = 4;
+}
+
+message SimpleUInt32Int64MapMessage {
+    map<uint32, int64> mapField = 5;
+}
+
+message SimpleUInt64Int64MapMessage {
+    map<uint64, int64> mapField = 6;
+}
+
+message SimpleFixed32Int64MapMessage {
+    map<fixed32, int64> mapField = 7;
+}
+
+message SimpleFixed64Int64MapMessage {
+    map<fixed64, int64> mapField = 8;
+}
+
+message SimpleSFixed32Int64MapMessage {
+    map<sfixed32, int64> mapField = 9;
+}
+
+message SimpleSFixed64Int64MapMessage {
+    map<sfixed64, int64> mapField = 10;
+}
+
+message SimpleStringInt64MapMessage {
+    map<string, int64> mapField = 13;
+}
+
+//Types to ComplexMessage
+message SimpleSInt32ComplexMessageMapMessage {
+    map<sint32, ComplexMessage> mapField = 1;
+}
+
+message SimpleSInt64ComplexMessageMapMessage {
+    map<sint64, ComplexMessage> mapField = 2;
+}
+
+message SimpleInt32ComplexMessageMapMessage {
+    map<int32, ComplexMessage> mapField = 3;
+}
+
+message SimpleInt64ComplexMessageMapMessage {
+    map<int64, ComplexMessage> mapField = 4;
+}
+
+message SimpleUInt32ComplexMessageMapMessage {
+    map<uint32, ComplexMessage> mapField = 5;
+}
+
+message SimpleUInt64ComplexMessageMapMessage {
+    map<uint64, ComplexMessage> mapField = 6;
+}
+
+message SimpleFixed32ComplexMessageMapMessage {
+    map<fixed32, ComplexMessage> mapField = 7;
+}
+
+message SimpleFixed64ComplexMessageMapMessage {
+    map<fixed64, ComplexMessage> mapField = 8;
+}
+
+message SimpleSFixed32ComplexMessageMapMessage {
+    map<sfixed32, ComplexMessage> mapField = 9;
+}
+
+message SimpleSFixed64ComplexMessageMapMessage {
+    map<sfixed64, ComplexMessage> mapField = 10;
+}
+
+message SimpleStringComplexMessageMapMessage {
+    map<string, ComplexMessage> mapField = 13;
+}

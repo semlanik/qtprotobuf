@@ -25,17 +25,19 @@
 
 #pragma once //QProtobufLazyMessagePointer
 
-#include "qtprotobufglobal.h"
-#include <QObject>
-#if defined(QT_QML_LIB) // TODO: Check how detect this in Qt6
+#include <QtProtobuf/qtprotobufglobal.h>
+#include <QtCore/qobject.h>
+
+#if defined(QT_QML_LIB)
 #  include <QQmlEngine>
 #endif
 
 #include <memory>
 #include <type_traits>
 
+QT_BEGIN_NAMESPACE
 template <typename T>
-class QProtobufLazyMessagePointer {//TODO: final?
+class QProtobufLazyMessagePointer final {
 public:
     QProtobufLazyMessagePointer(T *p = nullptr) : m_ptr(p) {}
 
@@ -104,7 +106,8 @@ private:
         bool qmlCheck = true;
 #endif
         if (m_ptr != nullptr && qmlCheck) {
-            m_ptr.release();//In case if object owned by QML it's qml responsibility to clean it up
+            //If the object owned by QML it's QML's responsibility to clean it up
+            m_ptr.release();
             QObject::disconnect(m_destroyed);
         }
     }
@@ -114,3 +117,5 @@ private:
     mutable std::unique_ptr<T> m_ptr;
     mutable QMetaObject::Connection m_destroyed;
 };
+
+QT_END_NAMESPACE

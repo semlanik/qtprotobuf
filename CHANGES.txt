@@ -46,7 +46,7 @@
     * Improve serializer reentrancy
     * Add static linking for quick plugins
     * Add basic tutorial
-    * Replace qtprotobuf_link_archive with qtprotobuf_link_target
+    * Replace qtprotobuf_link_archive with _qt_internal_link_protobuf_objects
     * Fix static build for well-known types
     * Fix CPack packaging paths
     * Implement "invalid" fields handling in json serializer
@@ -67,17 +67,17 @@
     * Add static compilation for win32 platforms
     generator
     * Fix empty message warning for copy and move operators
-    
+
 2020-02-26 version 0.2.0 (generator/QtProtobuf)
 
     QtProtobuf
-    * Rename generate_qtprotobuf to qtprotobuf_generate
-    * Migrate to new types registration approach. All protobuf types including generated might be registred by calling 'QtProtobuf::qRegisterProtobufTypes()'
+    * Rename generate_qtprotobuf to qt6_protobuf_generate
+    * Migrate to new types registration approach. All protobuf types including generated might be registred by calling 'qRegisterProtobufTypes()'
     * Add basic qmake build procedures support
     * Update well-known types registration. Migrate to common types registration
     * Add .deb package generation based on CPack
     * Add static build support
-    * Migate to options-based parameters for qtprotobuf_generate
+    * Migate to options-based parameters for qt6_protobuf_generate
     * Migrate to whole-archive linking for generated code
     * Supress boringssl warning when compile for windows
     generator

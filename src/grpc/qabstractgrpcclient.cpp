@@ -25,14 +25,15 @@
 
 #include "qabstractgrpcclient.h"
 
+#include <QtProtobuf/private/qprotobufserializerregistry_p.h>
 #include "qgrpccallreply.h"
 #include "qgrpcstream.h"
-#include "qprotobufserializerregistry_p.h"
+#include "qtgrpclogging_p.h"
 
 #include <QTimer>
 #include <QThread>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 //! \private
 class QAbstractGrpcClientPrivate final {
@@ -43,9 +44,6 @@ public:
     const QString service;
     std::vector<QGrpcStreamShared> activeStreams;
 };
-}
-
-using namespace QtProtobuf;
 
 QAbstractGrpcClient::QAbstractGrpcClient(const QString &service, QObject *parent) : QObject(parent)
   , dPtr(std::make_unique<QAbstractGrpcClientPrivate>(service))
@@ -58,10 +56,10 @@ QAbstractGrpcClient::~QAbstractGrpcClient()
 void QAbstractGrpcClient::attachChannel(const std::shared_ptr<QAbstractGrpcChannel> &channel)
 {
     if (channel->thread() != QThread::currentThread()) {
-        qProtoCritical() << "QAbstractGrpcClient::attachChannel is called from different thread.\n"
+        qGrpcCritical() << "QAbstractGrpcClient::attachChannel is called from different thread.\n"
                            "QtGrpc doesn't guarantie thread safety on channel level.\n"
                            "You have to be confident that channel routines are working in the same thread as QAbstractGrpcClient";
-        throw std::runtime_error("Call from another thread");
+        QT_THROW(std::runtime_error("Call from another thread"));
     }
     for (auto stream : dPtr->activeStreams) {
         stream->abort();
@@ -77,7 +75,7 @@ QGrpcStatus QAbstractGrpcClient::call(const QString &method, const QByteArray &a
     QGrpcStatus callStatus{QGrpcStatus::Unknown};
     if (thread() != QThread::currentThread()) {
         QMetaObject::invokeMethod(this, [&]()->QGrpcStatus {
-                                                qProtoDebug() << "Method: " << dPtr->service << method << " called from different thread";
+                                                qGrpcDebug() << "Method: " << dPtr->service << method << " called from different thread";
                                                 return call(method, arg, ret);
                                             }, Qt::BlockingQueuedConnection, &callStatus);
         return callStatus;
@@ -101,7 +99,7 @@ QGrpcCallReplyShared QAbstractGrpcClient::call(const QString &method, const QByt
     QGrpcCallReplyShared reply;
     if (thread() != QThread::currentThread()) {
         QMetaObject::invokeMethod(this, [&]()->QGrpcCallReplyShared {
-                                      qProtoDebug() << "Method: " << dPtr->service << method << " called from different thread";
+                                      qGrpcDebug() << "Method: " << dPtr->service << method << " called from different thread";
                                       return call(method, arg);
                                   }, Qt::BlockingQueuedConnection, &reply);
     } else if (dPtr->channel) {
@@ -130,13 +128,13 @@ QGrpcCallReplyShared QAbstractGrpcClient::call(const QString &method, const QByt
     return reply;
 }
 
-QGrpcStreamShared QAbstractGrpcClient::stream(const QString &method, const QByteArray &arg, const QtProtobuf::StreamHandler &handler)
+QGrpcStreamShared QAbstractGrpcClient::stream(const QString &method, const QByteArray &arg, const QGrpcStreamHandler &handler)
 {
     QGrpcStreamShared grpcStream;
 
     if (thread() != QThread::currentThread()) {
         QMetaObject::invokeMethod(this, [&]()->QGrpcStreamShared {
-                                      qProtoDebug() << "Stream: " << dPtr->service << method << " called from different thread";
+                                      qGrpcDebug() << "Stream: " << dPtr->service << method << " called from different thread";
                                       return stream(method, arg, handler);
                                   }, Qt::BlockingQueuedConnection, &grpcStream);
     } else if (dPtr->channel) {
@@ -153,7 +151,7 @@ QGrpcStreamShared QAbstractGrpcClient::stream(const QString &method, const QByte
 
         auto errorConnection = std::make_shared<QMetaObject::Connection>();
         *errorConnection = connect(grpcStream.get(), &QGrpcStream::error, this, [this, grpcStream](const QGrpcStatus &status) {
-            qProtoWarning() << grpcStream->method() << "call" << dPtr->service << "stream error: " << status.message();
+            qGrpcWarning() << grpcStream->method() << "call" << dPtr->service << "stream error: " << status.message();
             error(status);
             std::weak_ptr<QGrpcStream> weakStream = grpcStream;
             //TODO: Make timeout configurable from channel settings
@@ -162,14 +160,14 @@ QGrpcStreamShared QAbstractGrpcClient::stream(const QString &method, const QByte
                 if (stream) {
                     dPtr->channel->stream(stream.get(), dPtr->service, this);
                 } else {
-                    qProtoDebug() << "Stream for " << dPtr->service << "method" << method << " will not be restored by timeout.";
+                    qGrpcDebug() << "Stream for " << dPtr->service << "method" << method << " will not be restored by timeout.";
                 }
             });
         });
 
         auto finishedConnection = std::make_shared<QMetaObject::Connection>();
         *finishedConnection = connect(grpcStream.get(), &QGrpcStream::finished, this, [this, grpcStream, errorConnection, finishedConnection]() mutable {
-            qProtoWarning() << grpcStream->method() << "call" << dPtr->service << "stream finished";
+            qGrpcWarning() << grpcStream->method() << "call" << dPtr->service << "stream finished";
             auto it = std::find_if(std::begin(dPtr->activeStreams), std::end(dPtr->activeStreams), [grpcStream](QGrpcStreamShared activeStream) {
                return *activeStream == *grpcStream;
             });
@@ -197,3 +195,5 @@ std::shared_ptr<QAbstractProtobufSerializer> QAbstractGrpcClient::serializer() c
     }
     return dPtr->channel->serializer();
 }
+
+QT_END_NAMESPACE

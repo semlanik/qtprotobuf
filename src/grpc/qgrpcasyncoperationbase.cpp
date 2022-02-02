@@ -23,16 +23,17 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "qgrpcasyncoperationbase_p.h"
+#include "qgrpcasyncoperationbase.h"
+#include "qtgrpclogging_p.h"
 
-#include <qtprotobuflogging.h>
-
-using namespace QtProtobuf;
+QT_BEGIN_NAMESPACE
 
 QGrpcAsyncOperationBase::~QGrpcAsyncOperationBase()
 {
-    qProtoDebug() << "Trying ~QGrpcAsyncOperationBase" << this;
+    qGrpcDebug() << "Trying ~QGrpcAsyncOperationBase" << this;
     QMutexLocker locker(&m_asyncLock);
-    qProtoDebug() << "~QGrpcAsyncOperationBase" << this;
+    qGrpcDebug() << "~QGrpcAsyncOperationBase" << this;
     (void)locker;
 }
+
+QT_END_NAMESPACE

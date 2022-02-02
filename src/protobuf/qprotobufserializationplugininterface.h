@@ -31,10 +31,10 @@
 #include <unordered_map>
 #include <memory>
 
-#include "qtprotobufglobal.h"
-#include "qabstractprotobufserializer.h"
+#include <QtProtobuf/qtprotobufglobal.h>
+#include <QtProtobuf/qabstractprotobufserializer.h>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 /*!
  * \ingroup QtProtobuf
@@ -48,17 +48,17 @@ namespace QtProtobuf {
  *          An example of class source code:
  *
  *          \code{.cpp}
- *          class SERIALIZATIONSHARED_EXPORT QtSerializationPlugin : public QObject, QtProtobuf::QProtobufSerializationPluginInterface
+ *          class SERIALIZATIONSHARED_EXPORT QtSerializationPlugin : public QObject, QProtobufSerializationPluginInterface
  *          {
  *              Q_OBJECT
  *              Q_PLUGIN_METADATA(IID SerializatorInterface_iid FILE "serializeinfo.json")
- *              Q_INTERFACES(QtProtobuf::QProtobufSerializationPluginInterface)
+ *              Q_INTERFACES(QProtobufSerializationPluginInterface)
  *
  *          public:
  *              QtSerializationPlugin();
  *              ~QtSerializationPlugin() = default;
  *
- *              virtual std::shared_ptr<QtProtobuf::QAbstractProtobufSerializer> serializer(const QString &serializerName);
+ *              virtual std::shared_ptr<QAbstractProtobufSerializer> serializer(const QString &serializerName);
  *
  *          }
  *          \endcode
@@ -91,9 +91,10 @@ public:
      * \param[in] name of specific serializer that should be supplied by plugin.
      * \return An object to serializer realization.
      */
-    virtual std::shared_ptr<QtProtobuf::QAbstractProtobufSerializer> serializer(const QString &serializerName) = 0;
+    virtual std::shared_ptr<QAbstractProtobufSerializer> serializer(const QString &serializerName) = 0;
 };
 
-}
 #define SerializatorInterface_iid "com.qtprotobuf.QProtobufSerializationPluginInterface"
-Q_DECLARE_INTERFACE(QtProtobuf::QProtobufSerializationPluginInterface, SerializatorInterface_iid)
+Q_DECLARE_INTERFACE(QProtobufSerializationPluginInterface, SerializatorInterface_iid)
+
+QT_END_NAMESPACE

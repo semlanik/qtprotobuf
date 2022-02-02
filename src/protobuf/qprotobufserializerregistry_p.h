@@ -36,7 +36,7 @@
 
 #include "qtprotobufglobal.h"
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 class QProtobufSerializerRegistryPrivate;
 
@@ -76,4 +76,5 @@ private:
 
     std::unique_ptr<QProtobufSerializerRegistryPrivate> dPtr;
 };
-}
+
+QT_END_NAMESPACE

@@ -30,14 +30,13 @@
 #include <functional>
 #include <memory>
 
-#include "qgrpcstatus.h"
-#include "qgrpccredentials.h"
-#include "qtgrpcglobal.h"
+#include <QtGrpc/qgrpcstatus.h>
+#include <QtGrpc/qgrpccredentials.h>
+#include <QtGrpc/qtgrpcglobal.h>
+
+QT_BEGIN_NAMESPACE
 
 class QThread;
-
-namespace QtProtobuf {
-
 class QAbstractGrpcClient;
 class QAbstractProtobufSerializer;
 struct QAbstractGrpcChannelPrivate;
@@ -73,7 +72,7 @@ public:
      *            QGrpcCallReply lifecycle is managed by QAbstractGrpcClient only.
      *            \see QGrpcCallReply for details
      */
-    virtual void call(const QString &method, const QString &service, const QByteArray &args, QtProtobuf::QGrpcCallReply *ret) = 0;
+    virtual void call(const QString &method, const QString &service, const QByteArray &args, QGrpcCallReply *ret) = 0;
 
     /*!
      * \brief Streams to server-side stream to receive updates for given \p method.
@@ -98,4 +97,5 @@ private:
     Q_DISABLE_COPY(QAbstractGrpcChannel)
     std::unique_ptr<QAbstractGrpcChannelPrivate> dPtr;
 };
-}
+
+QT_END_NAMESPACE

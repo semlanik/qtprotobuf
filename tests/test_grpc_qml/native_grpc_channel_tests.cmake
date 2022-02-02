@@ -16,8 +16,8 @@ target_link_libraries(qtgrpc_qml_test_grpc_socket
         ${QT_VERSIONED_PREFIX}::QuickTest
         ${QT_PROTOBUF_NAMESPACE}::Grpc
 )
-qtprotobuf_link_target(qtgrpc_qml_test_grpc_http qtgrpc_test_qtprotobuf_gen)
-qtprotobuf_link_target(qtgrpc_qml_test_grpc_socket qtgrpc_test_qtprotobuf_gen)
+_qt_internal_link_protobuf_objects(qtgrpc_qml_test_grpc_http qtgrpc_test_qtprotobuf_gen)
+_qt_internal_link_protobuf_objects(qtgrpc_qml_test_grpc_socket qtgrpc_test_qtprotobuf_gen)
 if(QT_PROTOBUF_STATIC)
     target_link_libraries(qtgrpc_qml_test_grpc_http PRIVATE ${PROTOBUF_QUICK_PLUGIN_NAME} ${GRPC_QUICK_PLUGIN_NAME})
     target_link_libraries(qtgrpc_qml_test_grpc_socket PRIVATE ${PROTOBUF_QUICK_PLUGIN_NAME} ${GRPC_QUICK_PLUGIN_NAME})

@@ -25,6 +25,8 @@
 
 #include "qgrpccredentials.h"
 
-using namespace QtProtobuf;
+QT_BEGIN_NAMESPACE
 
-const char *QtProtobuf::SslConfigCredential = "sslConfig";
+const char *QGrpcSslConfigCredential = "sslConfig";
+
+QT_END_NAMESPACE

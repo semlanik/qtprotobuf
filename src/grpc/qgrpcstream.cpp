@@ -25,12 +25,13 @@
 
 #include "qgrpcstream.h"
 
-#include <qtprotobuflogging.h>
+#include "qtgrpclogging_p.h"
+
 #include <QThread>
 
-using namespace QtProtobuf;
+QT_BEGIN_NAMESPACE
 
-QGrpcStream::QGrpcStream(const QString &method, const QByteArray &arg, const StreamHandler &handler, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(parent)
+QGrpcStream::QGrpcStream(const QString &method, const QByteArray &arg, const QGrpcStreamHandler &handler, QAbstractGrpcClient *parent) : QGrpcAsyncOperationBase(parent)
   , m_method(method)
   , m_arg(arg)
 {
@@ -39,7 +40,7 @@ QGrpcStream::QGrpcStream(const QString &method, const QByteArray &arg, const Str
     }
 }
 
-void QGrpcStream::addHandler(const StreamHandler &handler)
+void QGrpcStream::addHandler(const QGrpcStreamHandler &handler)
 {
     if (handler) {
         m_handlers.push_back(handler);
@@ -54,3 +55,5 @@ void QGrpcStream::abort()
         finished();
     }
 }
+
+QT_END_NAMESPACE

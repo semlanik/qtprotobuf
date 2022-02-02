@@ -47,7 +47,7 @@ ClientDeclarationPrinter::ClientDeclarationPrinter(const ::google::protobuf::Ser
 
 void ClientDeclarationPrinter::printClientClass()
 {
-    mPrinter->Print({{"classname", mName}, {"parent_class", "QtProtobuf::QAbstractGrpcClient"}}, Templates::ClassDefinitionTemplate);
+    mPrinter->Print({{"classname", mName}, {"parent_class", "QAbstractGrpcClient"}}, Templates::ClassDefinitionTemplate);
     Indent();
     mPrinter->Print(Templates::QObjectMacro);
     mPrinter->Print("\n");

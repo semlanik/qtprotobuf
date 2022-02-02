@@ -16,7 +16,7 @@ if(QT_PROTOBUF_STATIC)
     target_link_libraries(${TARGET} PRIVATE ${PROTOBUF_QUICK_PLUGIN_NAME})
 endif()
 
-qtprotobuf_link_target(${TARGET} qtprotobuf_extranamespace_test_qtprotobuf_gen)
+_qt_internal_link_protobuf_objects(${TARGET} qtprotobuf_extranamespace_test_qtprotobuf_gen)
 
 qt_protobuf_internal_add_target_qml(TARGET ${TARGET} QML_FILES ${QML_FILES})
 qt_protobuf_internal_add_target_windeployqt(TARGET ${TARGET} QML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/qml)

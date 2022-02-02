@@ -60,7 +60,7 @@
  * \code
  * int main(int argc, char *argv[]) {
  *     ...
- *     QtProtobuf::qRegisterProtobufTypes();
+ *     qRegisterProtobufTypes();
  *     Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
  *     ...
  * }
@@ -78,7 +78,7 @@
  * \endcode
  */
 #ifndef Q_PROTOBUF_IMPORT_QUICK_PLUGIN
-    #if defined(QT_PROTOBUF_STATIC) && defined(QT_QML_LIB) // TODO: Check how detect this in Qt6
+    #if defined(QT_PROTOBUF_STATIC) && defined(QT_QML_LIB)
         #include <QtPlugin>
         #include <QQmlExtensionPlugin>
         #define Q_PROTOBUF_IMPORT_QUICK_PLUGIN() \

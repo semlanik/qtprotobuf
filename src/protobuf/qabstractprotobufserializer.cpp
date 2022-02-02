@@ -29,11 +29,10 @@
 #include <QMutex>
 #include <QSemaphore>
 
-#include "qabstractprotobufserializer.h"
+#include <QtProtobuf/qabstractprotobufserializer.h>
 
-using namespace QtProtobuf;
 
-namespace  {
+namespace {
 
 const int MaximumSimultaniousThreads = 64;
 /*!
@@ -77,6 +76,8 @@ private:
     static QtProtobufPrivate::SerializationHandler empty;
 };
 
+QT_BEGIN_NAMESPACE
+
 QtProtobufPrivate::SerializationHandler HandlersRegistry::empty{};
 }
 
@@ -89,3 +90,5 @@ QtProtobufPrivate::SerializationHandler QtProtobufPrivate::findHandler(int userT
 {
     return HandlersRegistry::instance().findHandler(userType);
 }
+
+QT_END_NAMESPACE

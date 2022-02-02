@@ -25,12 +25,12 @@
 
 #pragma once //QGrpcSslCredentials
 
-#include "qgrpccredentials.h"
-#include "qtgrpcglobal.h"
+#include <QtGrpc/qgrpccredentials.h>
+#include <QtGrpc/qtgrpcglobal.h>
 
-#include <QSslConfiguration>
+#include <QtNetwork/qsslconfiguration.h>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 /*!
  * \ingroup QtGrpc
@@ -40,7 +40,7 @@ class Q_GRPC_EXPORT QGrpcSslCredentials final : public QGrpcChannelCredentials
 {
 public:
     QGrpcSslCredentials(const QSslConfiguration &configuation) :
-        m_map(QGrpcCredentialMap{{QLatin1String(SslConfigCredential),
+        m_map(QGrpcCredentialMap{{QLatin1String(QGrpcSslConfigCredential),
               QVariant::fromValue<QSslConfiguration>(configuation)}})
     {}
 
@@ -51,4 +51,5 @@ private:
 	QGrpcSslCredentials() = default;
     QGrpcCredentialMap m_map;
 };
-}
+
+QT_END_NAMESPACE

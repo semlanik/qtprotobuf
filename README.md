@@ -417,7 +417,7 @@ file(GLOB PROTO_FILES ABSOLUTE ${CMAKE_CURRENT_SOURCE_DIR}/path/to/protofile1.pr
 # Function below generates source files for specified PROTO_FILES,
 # and link them to the MyTarget as static library
 add_executable(MyTarget main.cpp) # Add your target here
-qtprotobuf_generate(TARGET MyTarget
+qt6_protobuf_generate(TARGET MyTarget
 OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
 PROTO_FILES ${PROTO_FILES})
 
@@ -427,13 +427,13 @@ Another option is to pre-specify expected generated headers to prevent dummy-par
 
 ```cmake
 ...
-qtprotobuf_generate(TARGET MyTarget
+qt6_protobuf_generate(TARGET MyTarget
 OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
 PROTO_FILES ${PROTO_FILES})
 ...
 ```
 
-In case if you somehow avoided ```qtprotobuf_generate``` usage, you need manualy link QtProtobuf libraries used by project, e.g.:
+In case if you somehow avoided ```qt6_protobuf_generate``` usage, you need manualy link QtProtobuf libraries used by project, e.g.:
 ```cmake
 ...
 target_link_libraries(${TARGET} QtProtobuf::Protobuf QtProtobuf::Grpc QtProtobuf::ProtobufWellKnownTypes)
@@ -441,9 +441,9 @@ target_link_libraries(${TARGET} QtProtobuf::Protobuf QtProtobuf::Grpc QtProtobuf
 ```
 
 ### CMake functions reference
-#### qtprotobuf_generate
+#### qt6_protobuf_generate
 
-qtprotobuf_generate is cmake helper function that automatically generates STATIC library target from your .proto files
+qt6_protobuf_generate is cmake helper function that automatically generates STATIC library target from your .proto files
 
 ***Parameters:***
 
@@ -475,9 +475,9 @@ qtprotobuf_generate is cmake helper function that automatically generates STATIC
 
 *EXTRA_NAMESPACE <namespace>* - Wraps the generated code with the specified namespace. (EXPERIMETAL)
 
-#### qtprotobuf_link_target
+#### _qt_internal_link_protobuf_objects
 
-qtprotobuf_link_target is cmake helper function that links generated protobuf target to your binary. It's useful when you try to link generated target to shared library or/and to executable that doesn't utilize all protobuf generated classes directly from C++ code, but requires them from QML.
+_qt_internal_link_protobuf_objects is cmake helper function that links generated protobuf target to your binary. It's useful when you try to link generated target to shared library or/and to executable that doesn't utilize all protobuf generated classes directly from C++ code, but requires them from QML.
 
 ***Parameters:***
 
@@ -511,12 +511,12 @@ Once build and installation is finished, you may use QtProtobuf and QtGrpc in qm
 QT += protobuf #for protobuf libraries support
 QT += grpc #for grpc libraries support
 ```
-To generate source code and link it to you project use predefined *qtprotobuf_generate* function
+To generate source code and link it to you project use predefined *qt6_protobuf_generate* function
 
 ### qmake functions reference
-#### qtprotobuf_generate([generate_qml=false])
+#### qt6_protobuf_generate([generate_qml=false])
 
-qtprotobuf_generate is qmake helper [test function](https://doc.qt.io/qt-5/qmake-language.html#test-functions) that generates QtProtobuf source code based on files provided by PROTO_FILES global context variable
+qt6_protobuf_generate is qmake helper [test function](https://doc.qt.io/qt-5/qmake-language.html#test-functions) that generates QtProtobuf source code based on files provided by PROTO_FILES global context variable
 
 ***Parameters:***
 
@@ -535,7 +535,7 @@ To enable QtProtobuf project you need to register protobuf types. It's good prac
 ...
 int main(int argc, char *argv[])
 {
-QtProtobuf::qRegisterProtobufTypes();
+qRegisterProtobufTypes();
 ... //Qt application initialization and run
 }
 ```

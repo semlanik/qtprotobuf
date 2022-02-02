@@ -85,14 +85,14 @@ bool QQuickGrpcStream::stream()
     QString errorString;
     if (!method.isValid()) {
         errorString = m_method + "is not either server or bidirectional stream.";
-        qProtoWarning() << errorString;
+        qGrpcWarning() << errorString;
         error({QGrpcStatus::Unimplemented, errorString});
         return false;
     }
 
     if (method.parameterCount() < 2) {
         errorString = QString("Unable to call ") + method.name() + ". Invalid arguments set.";
-        qProtoWarning() << errorString;
+        qGrpcWarning() << errorString;
         error({QGrpcStatus::InvalidArgument, errorString});
         return false;
     }
@@ -100,7 +100,7 @@ bool QQuickGrpcStream::stream()
     QMetaType argumentPointerMetaType(method.parameterType(0));
     if (argumentPointerMetaType.metaObject() != m_argument->metaObject()) {
         errorString = QString("Unable to call ") + method.name() + ". Argument type mismatch: '" + method.parameterTypes().at(0) + "' expected, '" + m_argument->metaObject()->className() + "' provided";
-        qProtoWarning() << errorString;
+        qGrpcWarning() << errorString;
         error({QGrpcStatus::InvalidArgument, errorString});
         return false;
     }
@@ -108,7 +108,7 @@ bool QQuickGrpcStream::stream()
     QMetaType argumentMetaType(QMetaType::type(m_argument->metaObject()->className()));
     if (!argumentMetaType.isValid()) {
         errorString = QString("Argument of type '") + m_argument->metaObject()->className() + "' is not registred in metatype system";
-        qProtoWarning() << errorString;
+        qGrpcWarning() << errorString;
         error({QGrpcStatus::InvalidArgument, errorString});
         return false;
     }
@@ -116,7 +116,7 @@ bool QQuickGrpcStream::stream()
     QObject *argument = reinterpret_cast<QObject*>(argumentMetaType.create(m_argument));
     if (argument == nullptr) {
         errorString = "Unable to create argument copy. Unknown metatype system error";
-        qProtoWarning() << errorString;
+        qGrpcWarning() << errorString;
         error({QGrpcStatus::InvalidArgument, errorString});
         return false;
     }
@@ -125,7 +125,7 @@ bool QQuickGrpcStream::stream()
     QMetaType returnPointerType(method.parameterType(1));
     if (!returnPointerType.isValid()) {
         errorString = QString("Return type argument of type '") + method.parameterTypes().at(1) + "' is not registred in metatype system";
-        qProtoWarning() << errorString;
+        qGrpcWarning() << errorString;
         error({QGrpcStatus::InvalidArgument, errorString});
         return false;
     }
@@ -133,7 +133,7 @@ bool QQuickGrpcStream::stream()
     QMetaType returnMetaType(QMetaType::type(returnPointerType.metaObject()->className()));
     if (!returnMetaType.isValid()) {
         errorString = QString("Unable to allocate return value. '") + returnPointerType.metaObject()->className() + "' is not registred in metatype system";
-        qProtoWarning() << errorString;
+        qGrpcWarning() << errorString;
         error({QGrpcStatus::InvalidArgument, errorString});
         return false;
     }
@@ -145,7 +145,7 @@ bool QQuickGrpcStream::stream()
 
     if (m_returnValue == nullptr) {
         errorString = "Unable to allocate return value. Unknown metatype system error";
-        qProtoWarning() << errorString;
+        qGrpcWarning() << errorString;
         error({QGrpcStatus::Unknown, errorString});
         return false;
     }
@@ -157,7 +157,7 @@ bool QQuickGrpcStream::stream()
                                       QGenericArgument(method.parameterTypes().at(1).data(), static_cast<const void *>(&m_returnValue)));
     if (!ok || stream == nullptr) {
         errorString = QString("Unable to call ") + m_method + " invalidate stream.";
-        qProtoWarning() << errorString;
+        qGrpcWarning() << errorString;
         error({QGrpcStatus::Unknown, errorString});
         return false;
     }

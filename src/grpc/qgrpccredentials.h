@@ -25,13 +25,13 @@
 
 #pragma once //QGrpcCredentials
 
-#include "qtgrpcglobal.h"
-#include "qabstractgrpccredentials.h"
+#include <QtGrpc/qabstractgrpccredentials.h>
+#include <QtGrpc/qtgrpcglobal.h>
 
 #include <memory>
 #include <type_traits>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 /*!
  * \ingroup QtGrpc
@@ -39,7 +39,7 @@ namespace QtProtobuf {
  *        You may inherrit of this calls to create you own credentials implementation,
  *        that will be used for each method call.
  *        Classes inherited of QGrpcCallCredentials should reimplement
- *        QtProtobuf::QGrpcCredentialMap operator() method and return actual credentials
+ *        QGrpcCredentialMap operator() method and return actual credentials
  *        map for the call.
  */
 class Q_GRPC_EXPORT QGrpcCallCredentials {};
@@ -62,8 +62,8 @@ class Q_GRPC_EXPORT QGrpcChannelCredentials {};
  *        authentications parameters.
  */
 template<typename Call, typename Channel,
-         typename std::enable_if_t<std::is_base_of<QtProtobuf::QGrpcCallCredentials, Call>::value &&
-                                   std::is_base_of<QtProtobuf::QGrpcChannelCredentials, Channel>::value, int> = 0>
+         typename std::enable_if_t<std::is_base_of<QGrpcCallCredentials, Call>::value &&
+                                   std::is_base_of<QGrpcChannelCredentials, Channel>::value, int> = 0>
 class QGrpcCredentials final : public QAbstractGrpcCredentials
 {
 public:
@@ -100,27 +100,28 @@ private:
 };
 
 /*!
- * \brief SslConfigCredential
+ * \brief QGrpcSslConfigCredential
  */
-extern Q_GRPC_EXPORT const char *SslConfigCredential;
+extern Q_GRPC_EXPORT const char *QGrpcSslConfigCredential;
 
 /*! \} */
+
+QT_END_NAMESPACE
+
+//! \private
+template<typename Call, typename Channel,
+         typename std::enable_if_t<std::is_base_of<QGrpcCallCredentials, Call>::value &&
+                                   std::is_base_of<QGrpcChannelCredentials, Channel>::value, int> = 0>
+std::unique_ptr<QAbstractGrpcCredentials> operator |(const Call &call, const Channel &channel)
+{
+    return std::unique_ptr<QAbstractGrpcCredentials>(new QGrpcCredentials<Call, Channel>(call, channel));
 }
 
 //! \private
 template<typename Call, typename Channel,
-         typename std::enable_if_t<std::is_base_of<QtProtobuf::QGrpcCallCredentials, Call>::value &&
-                                   std::is_base_of<QtProtobuf::QGrpcChannelCredentials, Channel>::value, int> = 0>
-std::unique_ptr<QtProtobuf::QAbstractGrpcCredentials> operator |(const Call &call, const Channel &channel)
+         typename std::enable_if_t<std::is_base_of<QGrpcCallCredentials, Call>::value &&
+                                   std::is_base_of<QGrpcChannelCredentials, Channel>::value, int> = 0>
+std::unique_ptr<QAbstractGrpcCredentials> operator |(const Channel &channel, const Call &call)
 {
-    return std::unique_ptr<QtProtobuf::QAbstractGrpcCredentials>(new QtProtobuf::QGrpcCredentials<Call, Channel>(call, channel));
-}
-
-//! \private
-template<typename Call, typename Channel,
-         typename std::enable_if_t<std::is_base_of<QtProtobuf::QGrpcCallCredentials, Call>::value &&
-                                   std::is_base_of<QtProtobuf::QGrpcChannelCredentials, Channel>::value, int> = 0>
-std::unique_ptr<QtProtobuf::QAbstractGrpcCredentials> operator |(const Channel &channel, const Call &call)
-{
-    return std::unique_ptr<QtProtobuf::QAbstractGrpcCredentials>(new QtProtobuf::QGrpcCredentials<Call, Channel>(call, channel));
+    return std::unique_ptr<QAbstractGrpcCredentials>(new QGrpcCredentials<Call, Channel>(call, channel));
 }

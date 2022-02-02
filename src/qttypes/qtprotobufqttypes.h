@@ -78,7 +78,7 @@
  * Before any serialization/deserialization of messages that use Qt types as fields, call registration method:
  * \code
  * ... //E.g. somewhere in main.cpp
- * QtProtobuf::qRegisterProtobufQtTypes();
+ * qRegisterProtobufQtTypes();
  * ...
  * \endcode
  *
@@ -88,7 +88,7 @@
  * - QtGui.proto - contains description of Qt types from QtGui module
  *
  * These files also useful if you would like to generate code for other languages or frameworks.
- * They located in project include directories, but no need to specify anything manualy, qtprotobuf_generate macro takes care about all side work for you.
+ * They located in project include directories, but no need to specify anything manualy, qt6_protobuf_generate macro takes care about all side work for you.
  *
  * Import required Qt types module in your interface .proto file, e.g.:
  * \code
@@ -118,10 +118,10 @@
  * \endcode
  */
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 /*!
  * \brief qRegisterProtobufQtTypes registers serializers set for Qt types supported by QtProtobufQtTypes
  * \note Call it before any serialization\deserialization of messages that use QtProtobufQtTypes directly on indirectly
  */
 Q_PROTOBUF_QT_TYPES_EXPORT void qRegisterProtobufQtTypes();
-}
+QT_END_NAMESPACE

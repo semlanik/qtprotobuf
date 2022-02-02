@@ -25,9 +25,8 @@
 
 #pragma once //QProtobufObject
 
-#include "qabstractprotobufserializer.h"
-#include "qprotobufmetaobject.h"
-#include <unordered_map>
+#include <QtProtobuf/qabstractprotobufserializer.h>
+#include <QtProtobuf/qprotobufmetaobject.h>
 
 /*!
  * \defgroup QtProtobuf
@@ -42,8 +41,8 @@
 
 #define Q_DECLARE_PROTOBUF_SERIALIZERS(T)\
     public:\
-        QByteArray serialize(QtProtobuf::QAbstractProtobufSerializer *serializer) const { Q_ASSERT_X(serializer != nullptr, "QProtobufObject", "Serializer is null"); return serializer->serialize<T>(this); }\
-        void deserialize(QtProtobuf::QAbstractProtobufSerializer *serializer, const QByteArray &array) { Q_ASSERT_X(serializer != nullptr, "QProtobufObject", "Serializer is null"); serializer->deserialize<T>(this, array); }\
+        QByteArray serialize(QAbstractProtobufSerializer *serializer) const { Q_ASSERT_X(serializer != nullptr, "QProtobufObject", "Serializer is null"); return serializer->serialize<T>(this); }\
+        void deserialize(QAbstractProtobufSerializer *serializer, const QByteArray &array) { Q_ASSERT_X(serializer != nullptr, "QProtobufObject", "Serializer is null"); serializer->deserialize<T>(this, array); }\
     private:
 
 /*!
@@ -54,6 +53,6 @@
 
 #define Q_PROTOBUF_OBJECT\
     public:\
-        static const QtProtobuf::QProtobufPropertyOrdering propertyOrdering;\
-        static const QtProtobuf::QProtobufMetaObject protobufMetaObject;\
+        static const QProtobufPropertyOrdering propertyOrdering;\
+        static const QProtobufMetaObject protobufMetaObject;\
     private:

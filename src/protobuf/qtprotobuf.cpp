@@ -26,14 +26,10 @@
 #include "qtprotobuftypes.h"
 #include "qprotobufobject.h"
 
-#include <type_traits>
-
-#define registerProtobufType(X) qRegisterMetaType<X>(# X);\
-                                qRegisterMetaType<X>("QtProtobuf::"# X)
+#define registerProtobufType(X) qRegisterMetaType<X>(# X)
 
 namespace QtProtobuf {
 
-namespace  {
 template<typename T>
 void registerBasicConverters() {
     QMetaType::registerConverter<int32_t, T>(T::fromType);
@@ -52,12 +48,13 @@ void registerBasicConverters() {
     QMetaType::registerConverter<T, double>(T::toType);
     QMetaType::registerConverter<T, QString>(T::toString);
 }
-}
 
-std::list<RegisterFunction>& registerFunctions() {
+std::list<QtProtobuf::RegisterFunction>& registerFunctions() {
     static std::list<std::function<void(void)>> registrationList;
     return registrationList;
 }
+
+} //namespace QtProtobuf
 
 void qRegisterProtobufTypes() {
     static bool registred = false;
@@ -65,40 +62,41 @@ void qRegisterProtobufTypes() {
         return;
     }
     registred = true;
-    registerProtobufType(int32);
-    registerProtobufType(int64);
-    registerProtobufType(uint32);
-    registerProtobufType(uint64);
-    registerProtobufType(sint32);
-    registerProtobufType(sint64);
-    registerProtobufType(fixed32);
-    registerProtobufType(fixed64);
-    registerProtobufType(sfixed32);
-    registerProtobufType(sfixed64);
+    registerProtobufType(QtProtobuf::int32);
+    registerProtobufType(QtProtobuf::int64);
+    registerProtobufType(QtProtobuf::uint32);
+    registerProtobufType(QtProtobuf::uint64);
+    registerProtobufType(QtProtobuf::sint32);
+    registerProtobufType(QtProtobuf::sint64);
+    registerProtobufType(QtProtobuf::fixed32);
+    registerProtobufType(QtProtobuf::fixed64);
+    registerProtobufType(QtProtobuf::sfixed32);
+    registerProtobufType(QtProtobuf::sfixed64);
 
-    registerProtobufType(int32List);
-    registerProtobufType(int64List);
-    registerProtobufType(uint32List);
-    registerProtobufType(uint64List);
-    registerProtobufType(sint32List);
-    registerProtobufType(sint64List);
-    registerProtobufType(fixed32List);
-    registerProtobufType(fixed64List);
-    registerProtobufType(sfixed32List);
-    registerProtobufType(sfixed64List);
+    registerProtobufType(QtProtobuf::int32List);
+    registerProtobufType(QtProtobuf::int64List);
+    registerProtobufType(QtProtobuf::uint32List);
+    registerProtobufType(QtProtobuf::uint64List);
+    registerProtobufType(QtProtobuf::sint32List);
+    registerProtobufType(QtProtobuf::sint64List);
+    registerProtobufType(QtProtobuf::fixed32List);
+    registerProtobufType(QtProtobuf::fixed64List);
+    registerProtobufType(QtProtobuf::sfixed32List);
+    registerProtobufType(QtProtobuf::sfixed64List);
 
-    registerProtobufType(DoubleList);
-    registerProtobufType(FloatList);
+    registerProtobufType(QtProtobuf::DoubleList);
+    registerProtobufType(QtProtobuf::FloatList);
 
-    registerBasicConverters<int32>();
-    registerBasicConverters<int64>();
-    registerBasicConverters<sfixed32>();
-    registerBasicConverters<sfixed64>();
-    registerBasicConverters<fixed32>();
-    registerBasicConverters<fixed64>();
+    QtProtobuf::registerBasicConverters<QtProtobuf::int32>();
+    QtProtobuf::registerBasicConverters<QtProtobuf::int64>();
+    QtProtobuf::registerBasicConverters<QtProtobuf::sfixed32>();
+    QtProtobuf::registerBasicConverters<QtProtobuf::sfixed64>();
+    QtProtobuf::registerBasicConverters<QtProtobuf::fixed32>();
+    QtProtobuf::registerBasicConverters<QtProtobuf::fixed64>();
 
-    for (auto registerFunc : registerFunctions()) {
+    for (auto registerFunc : QtProtobuf::registerFunctions()) {
         registerFunc();
     }
 }
-}
+
+QT_END_NAMESPACE

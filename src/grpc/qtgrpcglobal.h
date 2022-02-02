@@ -27,6 +27,9 @@
 
 #include <QtCore/QtGlobal>
 
+#include <memory>
+#include <functional>
+
 #ifndef QT_PROTOBUF_STATIC
     #ifdef QT_BUILD_GRPC_LIB
         #define Q_GRPC_EXPORT Q_DECL_EXPORT
@@ -52,7 +55,7 @@
 #endif
 
 #ifndef Q_GRPC_IMPORT_QUICK_PLUGIN
-    #if defined(QT_PROTOBUF_STATIC) && defined(QT_QML_LIB) // TODO: Check how detect this in Qt6
+    #if defined(QT_PROTOBUF_STATIC) && defined(QT_QML_LIB)
         #include <QtPlugin>
         #include <QQmlExtensionPlugin>
         #define Q_GRPC_IMPORT_QUICK_PLUGIN() \
@@ -63,13 +66,12 @@
     #endif //QT_PROTOBUF_STATIC
 #endif //Q_PROTOBUF_IMPORT_QUICK_PLUGIN
 
-#include <memory>
-#include <functional>
+QT_BEGIN_NAMESPACE
 
-namespace QtProtobuf {
 class QGrpcCallReply;
 class QGrpcStream;
 using QGrpcCallReplyShared = std::shared_ptr<QGrpcCallReply>;
 using QGrpcStreamShared = std::shared_ptr<QGrpcStream>;
-using StreamHandler = std::function<void(const QByteArray&)>;
-}
+using QGrpcStreamHandler = std::function<void(const QByteArray&)>;
+
+QT_END_NAMESPACE

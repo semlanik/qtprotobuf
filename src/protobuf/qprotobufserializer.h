@@ -25,10 +25,10 @@
 
 #pragma once //QProtobufSerializer
 
-#include "qabstractprotobufserializer.h"
-#include "qtprotobufglobal.h"
+#include <QtProtobuf/qabstractprotobufserializer.h>
+#include <QtProtobuf/qtprotobufglobal.h>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 class QProtobufSerializerPrivate;
 /*!
@@ -54,13 +54,13 @@ protected:
     QByteArray serializeMapPair(const QVariant &key, const QVariant &value, const QProtobufMetaProperty &metaProperty) const override;
     bool deserializeMapPair(QVariant &key, QVariant &value, QProtobufSelfcheckIterator &it) const override;
 
-    QByteArray serializeEnum(int64 value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const override;
-    QByteArray serializeEnumList(const QList<int64> &value, const QMetaEnum &metaEnum, const QtProtobuf::QProtobufMetaProperty &metaProperty) const override;
+    QByteArray serializeEnum(QtProtobuf::int64 value, const QMetaEnum &metaEnum, const QProtobufMetaProperty &metaProperty) const override;
+    QByteArray serializeEnumList(const QList<QtProtobuf::int64> &value, const QMetaEnum &metaEnum, const QProtobufMetaProperty &metaProperty) const override;
 
-    void deserializeEnum(int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const override;
-    void deserializeEnumList(QList<int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const override;
+    void deserializeEnum(QtProtobuf::int64 &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const override;
+    void deserializeEnumList(QList<QtProtobuf::int64> &value, const QMetaEnum &metaEnum, QProtobufSelfcheckIterator &it) const override;
 
     std::unique_ptr<QProtobufSerializerPrivate> dPtr;
 };
 
-}
+QT_END_NAMESPACE

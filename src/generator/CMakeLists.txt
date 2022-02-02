@@ -1,4 +1,8 @@
-qt_protobuf_internal_add_executable(qtprotobufgen
+find_package(Protobuf)
+qt_get_tool_target_name(target_name qtprotobufgen)
+qt_internal_add_tool(${target_name}
+    TOOLS_TARGET
+        Protobuf
     SOURCES
         utils.h
         descriptorprinterbase.h
@@ -23,18 +27,18 @@ qt_protobuf_internal_add_executable(qtprotobufgen
         protobuf::libprotoc
 )
 
-configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake"
-    "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" COPYONLY
-)
-configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtPreParseProtoFile.cmake"
-    "${QT_PROTOBUF_BINARY_DIR}/QtPreParseProtoFile.cmake" COPYONLY
-)
+# configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtProtobufGen.cmake"
+#     "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake" COPYONLY
+# )
+# configure_file("${QT_PROTOBUF_CMAKE_DIR}/QtPreParseProtoFile.cmake"
+#     "${QT_PROTOBUF_BINARY_DIR}/QtPreParseProtoFile.cmake" COPYONLY
+# )
 
-if(QT_PROTOBUF_INSTALL)
-    install(FILES
-           "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake"
-           "${QT_PROTOBUF_BINARY_DIR}/QtPreParseProtoFile.cmake"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE}"
-        COMPONENT dev
-    )
-endif()
+# if(QT_PROTOBUF_INSTALL)
+#     install(FILES
+#            "${QT_PROTOBUF_BINARY_DIR}/QtProtobufGen.cmake"
+#            "${QT_PROTOBUF_BINARY_DIR}/QtPreParseProtoFile.cmake"
+#         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${QT_PROTOBUF_NAMESPACE}"
+#         COMPONENT dev
+#     )
+# endif()

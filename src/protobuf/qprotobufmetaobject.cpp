@@ -24,9 +24,13 @@
  */
 
 #include "qprotobufmetaobject.h"
-using namespace QtProtobuf;
+
+QT_BEGIN_NAMESPACE
+
 QProtobufMetaObject::QProtobufMetaObject(const QMetaObject &_staticMetaObject, const QProtobufPropertyOrdering &_propertyOrdering)
     : staticMetaObject(_staticMetaObject)
     , propertyOrdering(_propertyOrdering)
 {
 }
+
+QT_END_NAMESPACE

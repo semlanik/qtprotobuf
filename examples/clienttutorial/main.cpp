@@ -62,13 +62,13 @@
  * }
  * \endcode
  *
- * Integration with your Qt application starts at point when you add protobuf and gRPC generation for .proto filed. Add \ref cmake_qtprotobuf_generate function to your CMakeLists.txt as following:
+ * Integration with your Qt application starts at point when you add protobuf and gRPC generation for .proto filed. Add \ref cmake_qt6_protobuf_generate function to your CMakeLists.txt as following:
  *
  * \code
  * ...
  * add_executable(clienttutorial main.cpp qml.qrc) #Add QtProtobuf generator rules after CMake target defined
  *
- * qtprotobuf_generate(TARGET clienttutorial QML TRUE PROTO_FILES tutorial.proto)
+ * qt6_protobuf_generate(TARGET clienttutorial QML TRUE PROTO_FILES tutorial.proto)
  * ...
  * \endcode
  *
@@ -167,7 +167,7 @@
  * int main(int argc, char *argv[])
  * {
  * ... //Before load QML
- *     QtProtobuf::qRegisterProtobufTypes();
+ *     qRegisterProtobufTypes();
  *     qmlRegisterSingletonType<EchoClientEngine>("qtprotobuf.tutorial", 1, 0, "EchoClientEngine", [](QQmlEngine *engine, QJSEngine *){
  *         static EchoClientEngine echoEngine;
  *         engine->setObjectOwnership(&echoEngine, QQmlEngine::CppOwnership);
@@ -254,7 +254,7 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    QtProtobuf::qRegisterProtobufTypes();
+    qRegisterProtobufTypes();
     qmlRegisterSingletonType<EchoClientEngine>("qtprotobuf.tutorial", 1, 0, "EchoClientEngine", [](QQmlEngine *engine, QJSEngine *) -> QObject *{
         static EchoClientEngine echoEngine;
         engine->setObjectOwnership(&echoEngine, QQmlEngine::CppOwnership);

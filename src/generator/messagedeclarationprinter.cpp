@@ -152,7 +152,7 @@ void MessageDeclarationPrinter::printConstructor(int fieldCount)
 }
 
 void MessageDeclarationPrinter::printMaps()
-{    
+{
     Indent();
     for (int i = 0; i < mDescriptor->field_count(); i++) {
         const FieldDescriptor *field = mDescriptor->field(i);

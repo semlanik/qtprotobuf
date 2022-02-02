@@ -23,7 +23,7 @@ endif()
 
 add_executable(clienttutorial main.cpp echoclientengine.cpp qml.qrc)
 
-qtprotobuf_generate(TARGET clienttutorial
+qt6_protobuf_generate(TARGET clienttutorial
                     PROTO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/tutorial.proto
                     QML TRUE)
 

@@ -49,7 +49,7 @@ function(qt_protobuf_internal_add_test)
         set(EXTRA_OPTIONS ${EXTRA_OPTIONS} EXTRA_NAMESPACE ${add_test_target_EXTRA_NAMESPACE})
     endif()
 
-    qtprotobuf_generate(TARGET ${add_test_target_TARGET}
+    qt6_protobuf_generate(TARGET ${add_test_target_TARGET}
         OUTPUT_DIRECTORY ${GENERATED_SOURCES_DIR}
         PROTO_FILES ${proto_files}
         EXCLUDE_HEADERS ${add_test_target_EXCLUDE_HEADERS}
@@ -81,8 +81,8 @@ function(qt_protobuf_internal_add_example)
     file(GLOB SOURCES ${arg_SOURCES})
 
     add_executable(${arg_TARGET} ${SOURCES} ${arg_RESOURCES})
-    qtprotobuf_generate(TARGET ${arg_TARGET}
-        OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
+    qt6_protobuf_generate(TARGET ${arg_TARGET}
+        OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/qt_protobuf_generated
         PROTO_FILES ${PROTO_FILES}
         QML)
 

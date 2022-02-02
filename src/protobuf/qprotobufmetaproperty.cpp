@@ -26,7 +26,8 @@
 #include "qprotobufmetaproperty.h"
 #include "qtprotobuftypes.h"
 
-using namespace QtProtobuf;
+QT_BEGIN_NAMESPACE
+
 QProtobufMetaProperty::QProtobufMetaProperty(const QMetaProperty &metaProperty,
                                              int fieldIndex,
                                              const QString &jsonName) : QMetaProperty(metaProperty)
@@ -45,3 +46,5 @@ QString QProtobufMetaProperty::jsonPropertyName() const
 {
     return m_jsonName;
 }
+
+QT_END_NAMESPACE

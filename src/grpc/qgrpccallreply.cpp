@@ -27,7 +27,7 @@
 
 #include <QThread>
 
-using namespace QtProtobuf;
+QT_BEGIN_NAMESPACE
 
 void QGrpcCallReply::abort()
 {
@@ -41,3 +41,5 @@ void QGrpcCallReply::abort()
         abortFunc();
     }
 }
+
+QT_END_NAMESPACE

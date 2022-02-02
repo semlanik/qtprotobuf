@@ -25,14 +25,15 @@
 
 #pragma once //QGrpcStatus
 
-#include <QString>
-#include <QMetaType>
-#include <qobjectdefs.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qmetatype.h>
+#include <QtCore/qobjectdefs.h>
 
-#include "qtgrpcglobal.h"
+#include <QtGrpc/qtgrpcglobal.h>
+
 #include <memory>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 class QGrpcStatusPrivate;
 
@@ -55,7 +56,8 @@ class QGrpcStatusPrivate;
  *        processing QGrpcStatus will contain code any of non-Ok QGrpcStatus::StatusCode.
  *        This class combines QGrpcStatus::StatusCode and message returned from channel or QGrpc framework.
  */
-class Q_GRPC_EXPORT QGrpcStatus final {
+class Q_GRPC_EXPORT QGrpcStatus final
+{
     Q_GADGET
     Q_PROPERTY(StatusCode code READ code CONSTANT)
     Q_PROPERTY(QString message READ message CONSTANT)
@@ -114,9 +116,10 @@ public:
 private:
     std::unique_ptr<QGrpcStatusPrivate> dPtr;
 };
-}
 
-bool operator ==(QtProtobuf::QGrpcStatus::StatusCode code, const QtProtobuf::QGrpcStatus &status);
-bool operator !=(QtProtobuf::QGrpcStatus::StatusCode code, const QtProtobuf::QGrpcStatus &status);
+QT_END_NAMESPACE
 
-Q_DECLARE_METATYPE(QtProtobuf::QGrpcStatus)
+bool operator ==(QGrpcStatus::StatusCode code, const QGrpcStatus &status);
+bool operator !=(QGrpcStatus::StatusCode code, const QGrpcStatus &status);
+
+Q_DECLARE_METATYPE(QT_PREPEND_NAMESPACE(QGrpcStatus))

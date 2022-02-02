@@ -1,0 +1,147 @@
+syntax = "proto3";
+
+import "externalpackagetest.proto";
+import "nopackageexternal.proto";
+
+package qtprotobufnamespace.tests;
+
+message SimpleEnumMessage {
+  enum LocalEnum {
+    LOCAL_ENUM_VALUE0 = 0;
+    LOCAL_ENUM_VALUE1 = 1;
+    LOCAL_ENUM_VALUE2 = 2;
+    LOCAL_ENUM_VALUE3 = 3;
+  }
+
+  LocalEnum localEnum = 1;
+}
+
+message SimpleEnumListMessage {
+  enum LocalEnum {
+    LOCAL_ENUM_VALUE0 = 0;
+    LOCAL_ENUM_VALUE1 = 1;
+    LOCAL_ENUM_VALUE2 = 2;
+    LOCAL_ENUM_VALUE3 = 3;
+  }
+
+  repeated LocalEnum localEnumList = 1;
+}
+
+message SimpleFileEnumMessage {
+  TestEnum globalEnum = 1;
+  repeated TestEnum globalEnumList = 2;
+}
+
+message StepChildEnumMessage {
+  SimpleEnumMessage.LocalEnum localStepChildEnum = 1;
+  repeated SimpleEnumMessage.LocalEnum localStepChildList = 2;
+}
+
+message SimpleExternalEnumMessage {
+    qtprotobufnamespace1.externaltests.ExternalTestEnum externalEnum = 1;
+}
+
+message RepeatedExternalComplexMessage {
+    repeated qtprotobufnamespace1.externaltests.ExternalComplexMessage testExternalComplex = 1;
+}
+
+enum TestEnum {
+    TEST_ENUM_VALUE0 = 0;
+    TEST_ENUM_VALUE1 = 1;
+    TEST_ENUM_VALUE2 = 2;
+    TEST_ENUM_VALUE3 = 4;
+    TEST_ENUM_VALUE4 = 3;
+}
+
+enum TestEnumSecondInFile {
+    TEST_ENUM_SIF_VALUE0 = 0;
+    TEST_ENUM_SIF_VALUE1 = 1;
+    TEST_ENUM_SIF_VALUE2 = 2;
+}
+
+message FieldIndexTest1Message {
+    sint32 testField = 31;
+}
+
+message FieldIndexTest2Message {
+    sint32 testField = 8191;
+}
+
+message FieldIndexTest3Message {
+    sint32 testField = 2097151;
+}
+
+message FieldIndexTest4Message {
+    sint32 testField = 536870911;
+}
+
+message Message_Uderscore_name {
+    sint32 testField = 1;
+}
+
+message MessageUderscorename {
+    sint32 testField = 1;
+}
+
+message MessageUnderscoreField {
+    sint32 underScore_Message_field = 1;
+}
+
+message PriorMessageUnderscoreField {
+    sint32 _underScoreMessageField = 1;
+}
+
+message FollowingMessageUnderscoreField {
+    sint32 underScoreMessageField_ = 1;
+}
+
+message CombinedMessageUnderscoreField {
+    sint32 _underScoreMessage_Field_ = 1;
+}
+
+message MessageUpperCase {
+    sint32 TestField = 1;
+}
+
+message MessageReserved {
+    sint32 import = 1;
+    sint32 property = 2;
+    sint32 id = 3;
+}
+
+message MessageUpperCaseReserved {
+    sint32 Import = 1;
+    sint32 Property = 2;
+    sint32 Id = 3;
+}
+
+message MessageEnumReserved {
+    enum ReservedEnum {
+        Import = 0;
+        Property = 1;
+        Id = 2;
+    }
+
+    enum LowerCaseEnum {
+        enumValue0 = 0;
+        enumValue1 = 1;
+        enumValue2 = 2;
+    }
+
+    enum UnderScoreEnum {
+        _enumUnderscoreValue0 = 0;
+        _EnumUnderscoreValue1 = 1;
+    }
+}
+
+message lowerCaseMessageName {
+    sint32 testField = 1;
+}
+
+message LowerCaseFieldMessageName {
+    lowerCaseMessageName testField = 1;
+}
+
+message NoPackageMessage {
+    SimpleIntMessageExt testField = 1;
+}

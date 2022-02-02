@@ -29,12 +29,12 @@
 #include <QMutex>
 #include <memory>
 
-#include "qabstractgrpcclient.h"
-#include "qgrpcasyncoperationbase_p.h"
+#include <QtGrpc/qabstractgrpcclient.h>
+#include <QtGrpc/qgrpcasyncoperationbase.h>
 
-#include "qtgrpcglobal.h"
+#include <QtGrpc/qtgrpcglobal.h>
 
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 /*!
  * \ingroup QtGrpc
@@ -87,4 +87,5 @@ private:
 
     friend class QAbstractGrpcClient;
 };
-}
+
+QT_END_NAMESPACE

@@ -23,6 +23,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include "qtprotobufqttypes.h"
+
 #include <QUrl>
 #include <QChar>
 #include <QUuid>
@@ -49,17 +51,14 @@
 #include <QImage>
 #include <QBuffer>
 
-#include <qtprotobuftypes.h>
-#include <qtprotobufqttypes.h>
-
-#include "qabstractprotobufserializer.h"
-#include "qabstractprotobufserializer_p.h"
+#include <QtProtobuf/qtprotobuftypes.h>
+#include <QtProtobuf/qabstractprotobufserializer.h>
+#include <QtProtobuf/qabstractprotobufserializercommon.h>
 
 #include "QtProtobuf/QtCore.qpb.h"
 #include "QtProtobuf/QtGui.qpb.h"
 
-namespace QtProtobuf {
-
+namespace {
 ::QUrl convert(const ::QtProtobuf::QUrl &from) {
     return ::QUrl(from.url());
 }
@@ -271,24 +270,25 @@ namespace QtProtobuf {
     QBuffer buffer(&data);
     buffer.open(QIODevice::WriteOnly);
     from.save(&buffer, "PNG");
-    qProtoWarning() << "QImage always is sent in PNG format";
-    return ::QtProtobuf::QImage(data, "PNG");
+    return ::QtProtobuf::QImage(data, QLatin1String("PNG"));
 }
 
 template <typename QType, typename PType>
 void registerQtTypeHandler() {
     QtProtobufPrivate::registerHandler(qMetaTypeId<QType>(), {
-                                           [](const QtProtobuf::QAbstractProtobufSerializer *serializer, const QVariant &value, const QtProtobuf::QProtobufMetaProperty &property, QByteArray &buffer) {
+                                           [](const QAbstractProtobufSerializer *serializer, const QVariant &value, const QProtobufMetaProperty &property, QByteArray &buffer) {
                                                PType object(convert(value.value<QType>()));
                                                buffer.append(serializer->serializeObject(&object, PType::protobufMetaObject, property));
                                            },
-                                           [](const QtProtobuf::QAbstractProtobufSerializer *serializer, QtProtobuf::QProtobufSelfcheckIterator &it, QVariant &value) {
+                                           [](const QAbstractProtobufSerializer *serializer, QProtobufSelfcheckIterator &it, QVariant &value) {
                                                PType object;
                                                serializer->deserializeObject(&object, PType::protobufMetaObject, it);
                                                value = QVariant::fromValue<QType>(convert(object));
                                            }, QtProtobufPrivate::ObjectHandler });
 }
+}
 
+QT_BEGIN_NAMESPACE
 void qRegisterProtobufQtTypes() {
     registerQtTypeHandler<::QUrl, ::QtProtobuf::QUrl>();
     registerQtTypeHandler<::QChar, ::QtProtobuf::QChar>();
@@ -315,5 +315,4 @@ void qRegisterProtobufQtTypes() {
     registerQtTypeHandler<::QQuaternion, ::QtProtobuf::QQuaternion>();
     registerQtTypeHandler<::QImage, ::QtProtobuf::QImage>();
 }
-
-}
+QT_END_NAMESPACE

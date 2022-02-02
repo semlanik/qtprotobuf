@@ -29,12 +29,11 @@
 #include <QMutex>
 #include <memory>
 
-#include "qabstractgrpcclient.h"
-#include "qgrpcasyncoperationbase_p.h"
+#include <QtGrpc/qabstractgrpcclient.h>
+#include <QtGrpc/qgrpcasyncoperationbase.h>
+#include <QtGrpc/qtgrpcglobal.h>
 
-#include "qtgrpcglobal.h"
-
-namespace QtProtobuf {
+QT_BEGIN_NAMESPACE
 
 class QAbstractGrpcClient;
 
@@ -88,12 +87,12 @@ signals:
 protected:
     //! \private
     QGrpcStream(const QString &method, const QByteArray &arg,
-                const StreamHandler &handler, QAbstractGrpcClient *parent);
+                const QGrpcStreamHandler &handler, QAbstractGrpcClient *parent);
     //! \private
     virtual ~QGrpcStream() = default;
 
     //! \private
-    void addHandler(const StreamHandler &handler);
+    void addHandler(const QGrpcStreamHandler &handler);
 
     bool operator ==(const QGrpcStream &other) const {
         return other.method() == this->method() &&
@@ -104,7 +103,7 @@ private:
     friend class QAbstractGrpcClient;
     QString m_method;
     QByteArray m_arg;
-    std::vector<StreamHandler> m_handlers;
+    std::vector<QGrpcStreamHandler> m_handlers;
 };
 
-}
+QT_END_NAMESPACE

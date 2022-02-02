@@ -41,7 +41,7 @@ using namespace qtprotobuf::examples;
 
 int main(int argc, char *argv[])
 {
-    QtProtobuf::qRegisterProtobufTypes();
+    qRegisterProtobufTypes();
 
     QGuiApplication app(argc, argv);
 

@@ -81,13 +81,13 @@ namespace generator {
  *
  * For CMake based project QtProtobuf has macroses those should be used to generate code and in link it to your project:
  *
- * - \ref cmake_qtprotobuf_generate
- * - \ref cmake_qtprotobuf_link_target
+ * - \ref cmake_qt6_protobuf_generate
+ * - \ref cmake_qt_internal_link_protobuf_objects
  *
  *
- * \subsection cmake_qtprotobuf_generate qtprotobuf_generate
+ * \subsection cmake_qt6_protobuf_generate qt6_protobuf_generate
  *
- * \brief qtprotobuf_generate is cmake helper function that automatically generates STATIC library target from your .proto files
+ * \brief qt6_protobuf_generate is cmake helper function that automatically generates STATIC library target from your .proto files
  *
  * \param TARGET a name of your target that the generated code will be linked to.
  * \param GENERATED_TARGET name that will be used for generated archive library target. It's usefull when you supposed to have multiple generated targets to be linked to single one.
@@ -102,9 +102,9 @@ namespace generator {
  * \param FIELDENUM Enables generation of field numbers as an enum within the message class.
  * \param EXTRA_NAMESPACE <namespace> Wraps the generated code with the specified namespace(EXPERIMENTAL).
  *
- * \subsection cmake_qtprotobuf_link_target qtprotobuf_link_target
+ * \subsection cmake_qt_internal_link_protobuf_objects _qt_internal_link_protobuf_objects
  *
- * \brief qtprotobuf_link_target is cmake helper function that links generated protobuf target to your binary
+ * \brief _qt_internal_link_protobuf_objects is cmake helper function that links generated protobuf target to your binary
  *
  * \details It's useful when you try to link generated target to shared library or/and to executable that doesn't utilize all protobuf generated classes directly from C++ code, but requires them from QML.
  *
@@ -112,11 +112,11 @@ namespace generator {
  * \param GENERATED_TARGET protobuf generated target name
  *
  * \section qmake
- *  - \ref qmake_qtprotobuf_generate
+ *  - \ref qmake_qt6_protobuf_generate
  *
- * \subsection qmake_qtprotobuf_generate qtprotobuf_generate
+ * \subsection qmake_qt6_protobuf_generate qt6_protobuf_generate
  *
- * \brief qtprotobuf_generate is qmake helper <a href="https://doc.qt.io/qt-5/qmake-language.html#test-functions">test function</a> that generates QtProtobuf source code based on files provided by PROTO_FILES global context variable
+ * \brief qt6_protobuf_generate is qmake helper <a href="https://doc.qt.io/qt-5/qmake-language.html#test-functions">test function</a> that generates QtProtobuf source code based on files provided by PROTO_FILES global context variable
  * \param generate_qml generate_qml enables/disables QML code generation in protobuf classes. If set to `true` QML-related code for lists and QML registration to be generated.
  */
 

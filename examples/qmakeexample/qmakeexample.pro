@@ -9,4 +9,4 @@ SOURCES += \
 
 PROTO_FILES = test1.proto \
               test2.proto
-qtprotobuf_generate(true)
+qt6_protobuf_generate(true)

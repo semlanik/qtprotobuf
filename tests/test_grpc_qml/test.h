@@ -46,7 +46,7 @@ class TestSetup : public QObject {
 public:
     TestSetup(std::shared_ptr<QAbstractGrpcChannel> channel) {
         clientInstance.reset(new TestServiceClient);
-        QtProtobuf::qRegisterProtobufTypes();
+        qRegisterProtobufTypes();
         Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
         Q_GRPC_IMPORT_QUICK_PLUGIN()
         clientInstance->attachChannel(channel);

@@ -1,37 +1,39 @@
-qt_protobuf_internal_add_library(ProtobufWellKnownTypes
+qt_internal_add_module(ProtobufWellKnownTypes
     SOURCES
         dummy.cpp
-    INSTALL_INCLUDEDIR
-         "${CMAKE_INSTALL_INCLUDEDIR}/${QT_PROTOBUF_NAMESPACE}Protobuf/google/protobuf"
-    PUBLIC_INCLUDE_DIRECTORIES
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>"
+    # TODO Qt6: Need to specify the special install include directory for the wellknowntypes module
+    # INSTALL_INCLUDEDIR
+    #  "${CMAKE_INSTALL_INCLUDEDIR}/QtProtobuf/google/protobuf"
     PUBLIC_LIBRARIES
-        Qt5::Core
-        Qt5::Qml
-        ${QT_PROTOBUF_NAMESPACE}::Protobuf
+        Qt::Core
+        Qt::Protobuf
 )
 
-function(add_wellknowntype type_name)
-    set(lookup_dirs "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src"
-        ${Protobuf_INCLUDE_DIRS}
-    )
+qt_internal_extend_target(ProtobufWellKnownTypes
+    CONDITION TARGET Qt::Qml
+    LIBRARIES
+        Qt::Qml
+)
+
+function(qt_internal_add_protobuf_wellknowntype type_name)
+    # TODO Qt6: use WrapProtobuf's INTERFACE_INCLUDE_DIRECTORIES
+    set(lookup_dirs ${Protobuf_INCLUDE_DIRS})
 
     set(qml_enabled "")
-    if(TARGET Qt5::Qml)
+    if(TARGET Qt::Qml)
         set(qml_enabled QML)
     endif()
     foreach(dir ${lookup_dirs})
         file(GLOB PROTO_FILE "${dir}/google/protobuf/${type_name}.proto")
         if(NOT "${PROTO_FILE}" STREQUAL "")
             message(STATUS "Add well-known type ${PROTO_FILE}")
-            qtprotobuf_generate(TARGET ProtobufWellKnownTypes
+            qt6_protobuf_generate(TARGET ProtobufWellKnownTypes
                 GENERATED_TARGET ${type_name}
-                OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated"
+                OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/proto_generated"
                 PROTO_FILES "${PROTO_FILE}"
                 PROTO_INCLUDES "-I\"${dir}\""
                 ${qml_enabled}
                 FOLDER
-                ${extra_type_libraries_options}
             )
             target_include_directories(${type_name} PRIVATE
                 "$<TARGET_PROPERTY:ProtobufWellKnownTypes,INTERFACE_INCLUDE_DIRECTORIES>"
@@ -44,24 +46,20 @@ function(add_wellknowntype type_name)
     endif()
 endfunction()
 
-add_wellknowntype(any)
-add_wellknowntype(duration)
-add_wellknowntype(empty)
-add_wellknowntype(field_mask)
-add_wellknowntype(source_context)
-add_wellknowntype(struct)
-add_wellknowntype(timestamp)
-add_wellknowntype(wrappers)
-add_wellknowntype(type)
+# TODO Qt6: The generated header files are not installed properly.
+qt_internal_add_protobuf_wellknowntype(any)
+qt_internal_add_protobuf_wellknowntype(duration)
+qt_internal_add_protobuf_wellknowntype(empty)
+qt_internal_add_protobuf_wellknowntype(field_mask)
+qt_internal_add_protobuf_wellknowntype(source_context)
+qt_internal_add_protobuf_wellknowntype(struct)
+qt_internal_add_protobuf_wellknowntype(timestamp)
+qt_internal_add_protobuf_wellknowntype(wrappers)
+qt_internal_add_protobuf_wellknowntype(type)
 add_dependencies(type any source_context)
-add_wellknowntype(api)
+qt_internal_add_protobuf_wellknowntype(api)
 add_dependencies(api type source_context)
 
-# TODO: Check if 3rdparty protobuf module is initialized
-if(EXISTS "${QT_PROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src")
-    set_target_properties(ProtobufWellKnownTypes PROPERTIES
-        PROTO_INCLUDES "-I\"${QT_PROTOBUF_SOURCE_DIR}/3rdparty/grpc/third_party/protobuf/src\"")
-elseif(Protobuf_INCLUDE_DIRS)
-    set_target_properties(ProtobufWellKnownTypes PROPERTIES
-        PROTO_INCLUDES "-I\"${Protobuf_INCLUDE_DIRS}\"")
-endif()
+set_target_properties(ProtobufWellKnownTypes PROPERTIES
+    QT_PROTO_INCLUDES "-I\"${Protobuf_INCLUDE_DIRS}\"")
+set_property(TARGET ProtobufWellKnownTypes APPEND PROPERTY EXPORT_PROPERTIES QT_PROTO_INCLUDES)

@@ -36,7 +36,7 @@ class TestSetup : public QObject {
     Q_OBJECT
 public:
     TestSetup() {
-        QtProtobuf::qRegisterProtobufTypes();
+        qRegisterProtobufTypes();
         Q_PROTOBUF_IMPORT_QUICK_PLUGIN()
     }
     ~TestSetup() = default;
