@@ -1,3 +1,5 @@
+# The repo activities are currently on hold.
+
 # QtProtobuf
 
 gRPC and Protobuf generator and bindings for Qt framework
