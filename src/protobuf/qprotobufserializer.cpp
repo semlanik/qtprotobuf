@@ -29,7 +29,7 @@
 #include "qprotobufmetaproperty.h"
 #include "qprotobufmetaobject.h"
 
-using namespace QtProtobuf;
+namespace QtProtobuf {
 
 template<>
 QByteArray QProtobufSerializerPrivate::serializeListType<QByteArray>(const QByteArrayList &listValue, int &outFieldIndex)
@@ -353,3 +353,5 @@ void QProtobufSerializerPrivate::deserializeMapPair(QVariant &key, QVariant &val
 }
 
 QProtobufSerializerPrivate::SerializerRegistry QProtobufSerializerPrivate::handlers = {};
+
+}
