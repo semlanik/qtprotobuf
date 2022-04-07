@@ -39,9 +39,9 @@ function(qtprotobuf_generate)
     list(APPEND generation_options "${generation_type}")
 
     if(arg_QML)
-        if(NOT TARGET Qt::Qml)
+        if(NOT TARGET Qt5::Qml)
             message(FATAL_ERROR "Trying to enable QML support for '${generated_target_name}',"
-                " but Qt::Qml is not a target."
+                " but Qt5::Qml is not a target."
                 "\nfind_package(Qt<VERSION> COMPONENTS Qml) is missing?"
             )
         endif()
