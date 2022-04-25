@@ -1,6 +1,6 @@
 set(CPACK_DEB_COMPONENT_INSTALL ON)
 
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "protobuf-compiler (>= 3.6.0), libprotoc17 (>= 3.6.0), golang (>= 1.10.0), libqt5core5a (>= 5.12.4), libqt5qml5 (>= 5.12.4), libqt5network5 (>= 5.12.4), libqt5quick5 (>= 5.12.4)")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "protobuf-compiler (>= 3.6.0), golang (>= 1.10.0), libqt5core5a (>= 5.12.4), libqt5qml5 (>= 5.12.4), libqt5network5 (>= 5.12.4), libqt5quick5 (>= 5.12.4)")
 set(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS "lib${CPACK_PACKAGE_NAME} (= ${PROJECT_VERSION}), qtdeclarative5-dev (>= 5.12.4), qtbase5-dev (>= 5.12.4), libgrpc-dev (>= 1.15.0), libgrpc++-dev (>= 1.15.0), libprotoc-dev (>= 3.6.0)")
 set(CPACK_DEBIAN_COMPRESSION_TYPE "gzip")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
