@@ -180,6 +180,7 @@ public:
     static const char *QmlRegisterTypeTemplate;
     static const char *QmlRegisterTypeUncreatableTemplate;
     static const char *QmlRegisterEnumTypeTemplate;
+    static const char *OwnershipSetterTemplate;
     //Service templates
     static const char *ClientConstructorDefinitionTemplate;
 
