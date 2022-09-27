@@ -225,6 +225,7 @@ void MessageDefinitionPrinter::printCopyFunctionality()
             mPrinter->Print(propertyMap, Templates::CopyFieldTemplate);
         }
     });
+    mPrinter->Print(Templates::OwnershipSetterTemplate);
     Outdent();
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 
@@ -237,6 +238,7 @@ void MessageDefinitionPrinter::printCopyFunctionality()
             mPrinter->Print(propertyMap, Templates::CopyFieldTemplate);
         }
     });
+    mPrinter->Print(Templates::OwnershipSetterTemplate);  
     mPrinter->Print(Templates::AssignmentOperatorReturnTemplate);
     Outdent();
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
@@ -282,6 +284,7 @@ void MessageDefinitionPrinter::printMoveSemantic()
             }
         }
     });
+    mPrinter->Print(Templates::OwnershipSetterTemplate);
     Outdent();
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
 
@@ -306,6 +309,7 @@ void MessageDefinitionPrinter::printMoveSemantic()
             }
         }
     });
+    mPrinter->Print(Templates::OwnershipSetterTemplate);
     mPrinter->Print(Templates::AssignmentOperatorReturnTemplate);
     Outdent();
     mPrinter->Print(Templates::SimpleBlockEnclosureTemplate);
