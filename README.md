@@ -1,4 +1,4 @@
-# QtProtobuf and QtGrpc are ported to Qt6 and now are part of the [Qt project](https://codereview.qt-project.org/admin/repos/qt/qtgrpc,general). 
+# QtProtobuf and QtGrpc are ported to Qt6 and now are part of the [Qt project](https://github.com/qt/qtgrpc). 
 
 # QtProtobuf
 
