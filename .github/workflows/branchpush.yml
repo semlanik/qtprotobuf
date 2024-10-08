@@ -92,4 +92,4 @@ jobs:
     - name: Run tests
       run: |
         cd build-static
-        ctest -C Release -E grpc --output-on-failure
+        ctest -C Release --output-on-failure
